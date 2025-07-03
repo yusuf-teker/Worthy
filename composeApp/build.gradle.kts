@@ -72,6 +72,9 @@ kotlin {
             api(libs.datastore)
 
             api(libs.napier.logging)
+
+            implementation(libs.compose.material.icons.core)
+
         }
 
         nativeMain.dependencies {
