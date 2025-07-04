@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yusufteker.worthy.core.presentation.theme.MyColors
 import org.koin.compose.viewmodel.koinViewModel
@@ -44,5 +45,6 @@ fun OnboardingScreen(
         MyColors.background
     )){
         Text("Onboarding Screen", color = MyColors.onBackground)
+        Text("aaa", color = Color.Red)
     }
 }

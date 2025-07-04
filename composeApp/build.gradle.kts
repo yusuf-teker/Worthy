@@ -84,7 +84,7 @@ kotlin {
             implementation(libs.kotlin.test)
         }
         dependencies {
-            ksp(libs.androidx.room.compiler)
+            //ksp(libs.androidx.room.compiler)
         }
     }
 }
@@ -115,7 +115,13 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 }
-
+dependencies {
+    add("kspCommonMainMetadata", libs.androidx.room.compiler)
+    add("kspAndroid", libs.androidx.room.compiler)
+    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+    add("kspIosArm64", libs.androidx.room.compiler)
+    add("kspIosX64", libs.androidx.room.compiler)
+}
 dependencies {
     debugImplementation(compose.uiTooling)
 }
