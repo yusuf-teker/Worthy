@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+
+    <string name= "search_hint">Search here </string>
+    <string name= "clear_search">Clear Search</string>
+    <string name= "search_results">Search Results</string>
+    <string name= "no_result">No Result</string>
+
+    <string name= "error_occured">An error occurred</string>
+    <!-- Local Errors -->
+    <string name="error_disk_full">Disk dolu. Lütfen boş alan açın.</string>
+    <string name="error_local_unknown">Bilinmeyen bir hata oluştu.</string>
+
+    <!-- Remote Errors -->
+    <string name="error_request_timeout">İstek zaman aşımına uğradı. Lütfen tekrar deneyin.</string>
+    <string name="error_too_many_requests">Çok fazla istek gönderildi. Lütfen daha sonra tekrar deneyin.</string>
+    <string name="error_no_internet">İnternet bağlantısı yok. Lütfen bağlantınızı kontrol edin.</string>
+    <string name="error_server">Sunucu hatası. Lütfen daha sonra tekrar deneyin.</string>
+    <string name="error_serialization">Veri dönüştürme hatası. Lütfen tekrar deneyin.</string>
+    <string name="error_remote_unknown">Bilinmeyen bir hata oluştu.</string>
+
+    <string name="no_popup_manager">No PopupManager provided</string>
+
+
+
+
+    <!-- Genel -->
+    <string name="common_back">Back</string>
+    <string name="common_menu">Menu</string>
+    <string name="get_started">Get started.</string>
+    <string name="save">Save</string>
+    <string name="error">Error</string>
+    <string name="close">Close</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Confirm</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_overview">Overview</string>
+    <string name="dashboard_savings_goal">Savings Goal</string>
+    <string name="dashboard_desires_budget">Desires Budget</string>
+    <string name="dashboard_monthly_income">Monthly Income</string>
+    <string name="dashboard_evaluate_purchase">Evaluate Purchase</string>
+    <!-- Dashboard – Income Allocation Card -->
+    <string name="income_allocation_title">Income Allocation</string>
+    <string name="income_allocation_this_month">This Month %1$s</string>
+
+    <!-- Bar labels -->
+    <string name="chart_fixed_expenses">Fixed Expenses</string>
+    <string name="chart_desires">Desires</string>
+    <string name="chart_remaining">Remaining</string>
+    <string name="chart_savings">Savings</string>
+
+    <string name="chart_expenses">Expenses</string>  <!-- Yeni eklendi -->
+
+    <!-- Settings -->
+    <string name="label_income_sources">Income Sources</string>
+    <string name="label_fixed_expenses">Fixed Expenses</string>
+    <string name="label_budget">Budget</string>
+    <string name="label_savings">Savings</string>
+    <string name="label_budget_value">Budget: %1$d₺</string>
+
+</resources>

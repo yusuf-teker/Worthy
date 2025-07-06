@@ -52,8 +52,8 @@ fun ThemeColorPreview() {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(text = name, modifier = Modifier.width(100.dp))
-                ColorCircle(color = colorAccessor(lightColorScheme()))
-                ColorCircle(color = colorAccessor(darkColorScheme()))
+                ColorCircle(color = colorAccessor(lightScheme))
+                ColorCircle(color = colorAccessor(darkScheme))
             }
         }
     }

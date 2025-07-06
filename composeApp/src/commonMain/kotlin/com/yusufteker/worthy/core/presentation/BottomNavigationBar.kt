@@ -30,7 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.yusufteker.worthy.app.navigation.Routes
-import com.yusufteker.worthy.core.presentation.theme.customColor
+import com.yusufteker.worthy.core.presentation.theme.AppColors
 
 
 @Composable
@@ -47,7 +47,7 @@ fun BottomNavigationBar(
 
     Surface(
         modifier = modifier,
-        color = Color.Transparent,
+        color = AppColors.transparent,
     ) {
         Row(
             modifier = Modifier
@@ -87,13 +87,13 @@ fun NavItem(
     onClick: () -> Unit
 ) {
     val backgroundColor by animateColorAsState(
-        targetValue = if (selected) Color.Green.copy(alpha = 0.1f) else Color.Transparent,
+        targetValue = if (selected) AppColors.primary.copy(alpha = 0.1f) else Color.Transparent,
         animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing),
         label = "backgroundColorAnimation"
     )
 
     val iconColor by animateColorAsState(
-        targetValue = if (selected) Color.Green else MaterialTheme.colorScheme.onPrimary,
+        targetValue = if (selected) AppColors.primary else AppColors.onSurface.copy(alpha = 0.6f),
         animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing),
         label = "iconColorAnimation"
     )

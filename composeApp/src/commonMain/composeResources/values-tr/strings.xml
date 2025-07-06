@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+
+    <string name= "search_hint">Search here </string>
+    <string name= "clear_search">Clear Search</string>
+    <string name= "search_results">Search Results</string>
+    <string name= "no_result">No Result</string>
+
+    <string name= "error_occured">An error occurred</string>
+    <!-- Local Errors -->
+    <string name="error_disk_full">Disk dolu. Lütfen boş alan açın.</string>
+    <string name="error_local_unknown">Bilinmeyen bir hata oluştu.</string>
+
+    <!-- Remote Errors -->
+    <string name="error_request_timeout">İstek zaman aşımına uğradı. Lütfen tekrar deneyin.</string>
+    <string name="error_too_many_requests">Çok fazla istek gönderildi. Lütfen daha sonra tekrar deneyin.</string>
+    <string name="error_no_internet">İnternet bağlantısı yok. Lütfen bağlantınızı kontrol edin.</string>
+    <string name="error_server">Sunucu hatası. Lütfen daha sonra tekrar deneyin.</string>
+    <string name="error_serialization">Veri dönüştürme hatası. Lütfen tekrar deneyin.</string>
+    <string name="error_remote_unknown">Bilinmeyen bir hata oluştu.</string>
+
+
+    <string name="no_popup_manager">PopupYöneticisi sağlanmadı</string>
+
+
+
+    <!-- Genel -->
+    <string name="common_back">Geri</string>
+    <string name="common_menu">Menü</string>
+    <string name="get_started">Hadi başlayalım.</string>
+    <string name="save">Kaydet</string>
+    <string name="error">Hata</string>
+    <string name="close">Kapat</string>
+    <string name="ok">Tamam</string>
+    <string name="cancel">İptal</string>
+    <string name="confirm">Onayla</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_overview">Genel Bakış</string>
+    <string name="dashboard_savings_goal">Tasarruf Hedefi</string>
+    <string name="dashboard_desires_budget">İstek Bütçesi</string>
+    <string name="dashboard_monthly_income">Aylık Gelir</string>
+    <string name="dashboard_evaluate_purchase">Harcamayı Değerlendir</string>
+    <!-- Dashboard – Income Allocation Card -->
+    <string name="income_allocation_title">Gelir Dağılımı</string>
+    <string name="income_allocation_this_month">Bu Ay %1$s</string>
+
+    <!-- Bar labels -->
+    <string name="chart_fixed_expenses">Sabit Giderler</string>
+    <string name="chart_desires">İstekler</string>
+    <string name="chart_remaining">Kalan</string>
+    <string name="chart_expenses">Harcamalar</string>  <!-- Yeni eklendi -->
+    <string name="chart_savings">Birikim</string>
+
+
+
+    <!-- Settings -->
+
+    <string name="label_income_sources">Gelir Kaynakları</string>
+    <string name="label_fixed_expenses">Sabit Giderler</string>
+    <string name="label_budget">Harcama Bütçesi</string>
+    <string name="label_savings">Birikim</string>
+    <string name="label_budget_value">Harcama Bütçesi: %1$d₺</string>
+
+
+
+
+</resources>
