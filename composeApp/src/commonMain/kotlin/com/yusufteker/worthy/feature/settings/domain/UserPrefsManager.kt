@@ -3,11 +3,11 @@ package com.yusufteker.worthy.feature.settings.domain
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.IOException
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.core.intPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.catch
@@ -26,6 +26,9 @@ class UserPrefsManager(private val dataStore: DataStore<Preferences>) {
         val INCOME_ITEMS = stringPreferencesKey("income_items")
         val EXPENSE_ITEMS = stringPreferencesKey("expense_items")
         val BUDGET_AMOUNT = floatPreferencesKey("budget_amount")
+        val WEEKLY_WORK_HOURS = intPreferencesKey("weekly_work_hours")
+
+        val CURRENCY = stringPreferencesKey("currency")
     }
 
     /* ******** Flows ******** */
@@ -82,6 +85,32 @@ class UserPrefsManager(private val dataStore: DataStore<Preferences>) {
             prefs[BUDGET_AMOUNT] ?: 0f
         }
 
+    /** HAFTALIK ÇALIŞMA SAATİ */
+    val weeklyWorkHours: Flow<Int> = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map { prefs ->
+            prefs[WEEKLY_WORK_HOURS] ?: 0
+        }
+
+    /** SEÇİLEN PARA BİRİMİ */
+    val selectedCurrency: Flow<String> = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map { prefs ->
+            prefs[CURRENCY] ?: "TRY" // Varsayılan olarak Türk Lirası
+        }
+
     /* ******** Kaydetme / Güncelleme ******** */
 
     suspend fun setIncomeItems(items: List<IncomeItem>) {
@@ -99,6 +128,18 @@ class UserPrefsManager(private val dataStore: DataStore<Preferences>) {
     suspend fun setBudgetAmount(amount: Float) {
         dataStore.edit { prefs ->
             prefs[BUDGET_AMOUNT] = amount
+        }
+    }
+
+    suspend fun setWeeklyWorkHours(hours: Int) {
+        dataStore.edit { prefs ->
+            prefs[WEEKLY_WORK_HOURS] = hours
+        }
+    }
+
+    suspend fun setSelectedCurrency(currency: String) {
+        dataStore.edit { prefs ->
+            prefs[CURRENCY] = currency
         }
     }
 

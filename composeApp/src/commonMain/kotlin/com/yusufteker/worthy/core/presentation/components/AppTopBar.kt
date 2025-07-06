@@ -19,6 +19,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppDimens.AppIconSizeSmall
 import com.yusufteker.worthy.core.presentation.theme.AppDimens.AppTopBarHeight
@@ -31,6 +32,7 @@ fun AppTopBar(
     title: String,
     onNavIconClick: (() -> Unit)? = null,
     isBack: Boolean = false,
+    isAlignCenter: Boolean = false,
     actions: @Composable RowScope.() -> Unit = {},
 ) {
 
@@ -54,15 +56,17 @@ fun AppTopBar(
                         .size(AppIconSizeSmall)
                         .clickable { onNavIconClick() }
                 )
+                Spacer(modifier = Modifier.width(Spacing16))
             }
 
-            Spacer(modifier = Modifier.width(Spacing16))
+
 
             Text(
                 text = title,
                 style = AppTypography.titleLarge,
                 color = AppColors.onBackground,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f).align(Alignment.CenterVertically),
+                textAlign = if(isAlignCenter) TextAlign.Center else TextAlign.Start
             )
 
             Row(

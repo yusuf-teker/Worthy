@@ -7,4 +7,6 @@ data class SettingsState(
     val incomeItems: List<IncomeItem> = listOf(),
     val fixedExpenseItems: List<ExpenseItem> = listOf(),
     val budgetAmount: Float = 0f,
-)
+    val weeklyWorkHours: Int = 0,
+    val selectedCurrency: String = "TRY",
+    )

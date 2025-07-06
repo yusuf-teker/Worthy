@@ -82,7 +82,8 @@ fun DashboardScreen(
 
             AppTopBar(
                 title = UiText.StringResourceId(Res.string.dashboard_overview).asString(),
-                onNavIconClick = {  },
+                onNavIconClick = null,
+                isAlignCenter = true,
                 isBack = false,
                 modifier = Modifier.background(AppColors.transparent)
             ) {  }

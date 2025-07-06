@@ -5,6 +5,7 @@ import com.yusufteker.worthy.core.presentation.BaseViewModel
 import com.yusufteker.worthy.feature.settings.domain.ExpenseItem
 import com.yusufteker.worthy.feature.settings.domain.IncomeItem
 import com.yusufteker.worthy.feature.settings.domain.UserPrefsManager
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -28,13 +29,17 @@ class SettingsViewModel(
         combine(
             userPrefsManager.incomeItems,
             userPrefsManager.expenseItems,
-            userPrefsManager.budgetAmount
-        ) { incomeItems, expenseItems, budgetAmount ->
+            userPrefsManager.budgetAmount,
+            userPrefsManager.weeklyWorkHours,
+            userPrefsManager.selectedCurrency
+        ) { incomeItems, expenseItems, budgetAmount, weeklyWorkHours, selectedCurrency ->
             _state.update { currentState ->
                 currentState.copy(
                     incomeItems = incomeItems,
                     fixedExpenseItems = expenseItems,
-                    budgetAmount = budgetAmount
+                    budgetAmount = budgetAmount,
+                    weeklyWorkHours = weeklyWorkHours,
+                    selectedCurrency = selectedCurrency
                 )
             }
         }.launchIn(viewModelScope)
@@ -52,9 +57,41 @@ class SettingsViewModel(
             is SettingsAction.OnSaveIncomeItems -> {
                 saveIncomeItems(action.items)
             }
+
+            is SettingsAction.OnWeeklyWorkHoursChange -> {
+
+                Napier.d { "Weekly work hours changed: ${action.hours}" }
+                updateWeeklyWorkHours(action.hours)
+
+            }
+
+            is SettingsAction.OnCurrencyChange -> {
+                updateCurrency(action.currency)
+
+            }
         }
 
 
+    }
+
+    private fun updateCurrency(currency: String) {
+        viewModelScope.launch {
+            try {
+                userPrefsManager.setSelectedCurrency(currency)
+            } catch (e: Exception) {
+                handleError(e)
+            }
+        }
+    }
+
+    private fun updateWeeklyWorkHours(hours: Int) {
+        viewModelScope.launch {
+            try {
+                userPrefsManager.setWeeklyWorkHours(hours)
+            } catch (e: Exception) {
+                handleError(e)
+            }
+        }
     }
 
     private fun updateBudgetAmount(amount: Float) {

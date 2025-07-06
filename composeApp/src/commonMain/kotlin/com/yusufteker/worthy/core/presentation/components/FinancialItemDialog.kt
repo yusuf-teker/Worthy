@@ -30,7 +30,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
+import com.yusufteker.worthy.core.presentation.theme.Constants.currencySymbols
+import worthy.composeapp.generated.resources.Res
+import worthy.composeapp.generated.resources.add
+import worthy.composeapp.generated.resources.add_new
+import worthy.composeapp.generated.resources.amount_with_currency
+import worthy.composeapp.generated.resources.cancel
+import worthy.composeapp.generated.resources.label_amount
+import worthy.composeapp.generated.resources.label_name
+import worthy.composeapp.generated.resources.save
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -40,8 +50,10 @@ public fun FinancialItemDialog(
     title: String,
     items: List<ItemForDialog>,
     onDismiss: () -> Unit,
-    onSave: (List<ItemForDialog>) -> Unit
-) {
+    onSave: (List<ItemForDialog>) -> Unit,
+    currencyCode: String = currencySymbols.values.first(),
+
+    ) {
     var currentItems by remember { mutableStateOf(items) }
     var showAddDialog by remember { mutableStateOf(false) }
 
@@ -63,7 +75,8 @@ public fun FinancialItemDialog(
                             currentItems = currentItems.map {
                                 if (it.id == item.id) updatedItem else it
                             }
-                        }
+                        },
+                        currencySymbol = currencySymbols.getValue(currencyCode)
                     )
                 }
                 item {
@@ -73,19 +86,20 @@ public fun FinancialItemDialog(
                     ) {
                         Icon(Icons.Default.Add, contentDescription = null)
                         Spacer(Modifier.width(8.dp))
-                        Text("Ekle")
+                        Text(UiText.StringResourceId(Res.string.add).asString())
+
                     }
                 }
             }
         },
         confirmButton = {
             TextButton(onClick = { onSave(currentItems) }) {
-                Text("Kaydet")
+                Text(UiText.StringResourceId(Res.string.save).asString())
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("İptal")
+                Text(UiText.StringResourceId(Res.string.cancel).asString())
             }
         }
     )
@@ -100,7 +114,9 @@ public fun FinancialItemDialog(
                     amount = amount
                 )
                 showAddDialog = false
-            }
+            },
+            currency = currencyCode
+
         )
     }
 }
@@ -109,7 +125,8 @@ public fun FinancialItemDialog(
 private fun FinancialItemRow(
     item: ItemForDialog,
     onDelete: () -> Unit,
-    onEdit: (ItemForDialog) -> Unit
+    onEdit: (ItemForDialog) -> Unit,
+    currencySymbol: String = currencySymbols.values.first()
 ) {
     var isEditing by remember { mutableStateOf(false) }
 
@@ -153,7 +170,9 @@ private fun FinancialItemRow(
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(item.name, style = AppTypography.bodyMedium)
-                Text("${item.amount.toInt()}₺", style = AppTypography.bodySmall)
+                Text(
+                    text = UiText.StringResourceId(id = Res.string.amount_with_currency, arrayOf(item.amount.toInt(), currencySymbol)).asString(),
+                    style = AppTypography.bodySmall)
             }
             Row {
                 IconButton(onClick = { isEditing = true }) {
@@ -170,26 +189,30 @@ private fun FinancialItemRow(
 @Composable
 private fun AddItemDialog(
     onDismiss: () -> Unit,
-    onAdd: (String, Float) -> Unit
+    onAdd: (String, Float) -> Unit,
+    currency: String = currencySymbols.values.first(),
+    nameLabel: String = UiText.StringResourceId(Res.string.label_name).asString(),
+    amountLabel: String = UiText.StringResourceId(Res.string.label_amount, arrayOf(currency)).asString()
+
 ) {
     var name by remember { mutableStateOf("") }
     var amount by remember { mutableStateOf("") }
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Yeni Ekle") },
+        title = { Text(UiText.StringResourceId(Res.string.add_new).asString()) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Ad") },
+                    label = { Text(nameLabel) },
                     modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
                     value = amount,
                     onValueChange = { amount = it },
-                    label = { Text("Tutar (₺)") },
+                    label = { Text(amountLabel) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -219,7 +242,8 @@ private fun AddItemDialog(
 data class ItemForDialog(
     val id: String,
     val name: String,
-    val amount: Float
+    val amount: Float,
+    val currency: String = currencySymbols.values.first()
 )
 
 

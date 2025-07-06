@@ -19,14 +19,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
+import worthy.composeapp.generated.resources.Res
+import worthy.composeapp.generated.resources.amount_with_currency
 
 @Composable
  fun FinancialWidget(
     title: String,
     totalAmount: Float,
     color: Color,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    currencySymbol: String = "₺"
 ) {
     Card(
         modifier = Modifier
@@ -51,7 +55,7 @@ import com.yusufteker.worthy.core.presentation.theme.AppTypography
                     fontWeight = FontWeight.Medium
                 )
                 Text(
-                    text = "${totalAmount.toInt()}₺",
+                    text = UiText.StringResourceId(id = Res.string.amount_with_currency, arrayOf(totalAmount.toInt(), currencySymbol)).asString(),
                     style = AppTypography.bodyMedium,
                     color = color,
                     fontWeight = FontWeight.Bold

@@ -34,6 +34,9 @@
     <string name="ok">Tamam</string>
     <string name="cancel">İptal</string>
     <string name="confirm">Onayla</string>
+    <string name="delete">Sil</string>
+    <string name="edit">Düzenle</string>
+    <string name="add">Ekle</string>
 
     <!-- Dashboard -->
     <string name="dashboard_overview">Genel Bakış</string>
@@ -60,7 +63,17 @@
     <string name="label_fixed_expenses">Sabit Giderler</string>
     <string name="label_budget">Harcama Bütçesi</string>
     <string name="label_savings">Birikim</string>
-    <string name="label_budget_value">Harcama Bütçesi: %1$d₺</string>
+    <string name="label_budget_value">Harcama Bütçesi: %1$d%2$s</string>
+    <string name="label_weekly_work_hours">Haftalık Çalışma Süresi</string>
+    <string name="hour_singular">saat</string>
+    <string name="hours_plural">saat</string>
+    <string name="label_currency">Para Birimi</string>
+    <string name="label_name">Ad</string>
+    <string name="label_amount">Tutar (%1$s)</string>
+    <string name="add_new">Yeni Ekle</string>
+    <string name="amount_with_currency">%1$d%2$s</string>
+    <string name="title_settings">Bütçe ve Ayarlar</string>
+
 
 
 
