@@ -1,9 +1,13 @@
 package com.yusufteker.worthy.feature.settings.presentation
 
 import androidx.lifecycle.viewModelScope
+import com.yusufteker.worthy.core.domain.model.Expense
+import com.yusufteker.worthy.core.domain.model.Income
+import com.yusufteker.worthy.core.domain.repository.CategoryRepository
+import com.yusufteker.worthy.core.domain.repository.ExpenseRepository
+import com.yusufteker.worthy.core.domain.repository.IncomeRepository
+import com.yusufteker.worthy.core.domain.repository.WishlistRepository
 import com.yusufteker.worthy.core.presentation.BaseViewModel
-import com.yusufteker.worthy.feature.settings.domain.ExpenseItem
-import com.yusufteker.worthy.feature.settings.domain.IncomeItem
 import com.yusufteker.worthy.feature.settings.domain.UserPrefsManager
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +18,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SettingsViewModel(
-    private val userPrefsManager: UserPrefsManager
+    private val userPrefsManager: UserPrefsManager,
+    private val incomeRepository: IncomeRepository,
+    private val expenseRepository: ExpenseRepository,
+    private val categoryRepository: CategoryRepository
 ) : BaseViewModel() {
 
 
@@ -23,20 +30,33 @@ class SettingsViewModel(
 
     init {
         observeUserPreferences()
+        observeData()
+
     }
 
+    private fun observeData() {
+        combine(
+            incomeRepository.getAll(),
+            expenseRepository.getAll(),
+            categoryRepository.getAll()
+        ) { incomes, expenses, categories ->
+            _state.update { currentState ->
+                currentState.copy(
+                    incomeItems = incomes,
+                    expenseItems = expenses,
+                    categories = categories
+                )
+            }
+        }.launchIn(viewModelScope)
+    }
     private fun observeUserPreferences() {
         combine(
-            userPrefsManager.incomeItems,
-            userPrefsManager.expenseItems,
             userPrefsManager.budgetAmount,
             userPrefsManager.weeklyWorkHours,
             userPrefsManager.selectedCurrency
-        ) { incomeItems, expenseItems, budgetAmount, weeklyWorkHours, selectedCurrency ->
+        ) {  budgetAmount, weeklyWorkHours, selectedCurrency ->
             _state.update { currentState ->
                 currentState.copy(
-                    incomeItems = incomeItems,
-                    fixedExpenseItems = expenseItems,
                     budgetAmount = budgetAmount,
                     weeklyWorkHours = weeklyWorkHours,
                     selectedCurrency = selectedCurrency
@@ -104,20 +124,35 @@ class SettingsViewModel(
         }
     }
 
-    private fun saveExpenseItems(items: List<ExpenseItem>) {
+    private fun saveExpenseItems(updatedFixedExpenses: List<Expense>) {
         viewModelScope.launch {
             try {
-                userPrefsManager.setExpenseItems(items)
+                val currentFixed = expenseRepository.getFixed()
+                val newIds = updatedFixedExpenses.map { it.id }.toSet()
+
+                val toDelete = currentFixed.filter { it.id !in newIds }
+
+                val toInsertOrUpdate = updatedFixedExpenses
+
+                expenseRepository.deleteAll(toDelete)
+                expenseRepository.insertAll(toInsertOrUpdate)
             } catch (e: Exception) {
                 handleError(e)
             }
         }
     }
 
-    private fun saveIncomeItems(items: List<IncomeItem>) {
+    private fun saveIncomeItems(updatedFixedIncomes: List<Income>) {
         viewModelScope.launch {
             try {
-                userPrefsManager.setIncomeItems(items)
+                val currentFixed = incomeRepository.getFixed()
+                val newIds = updatedFixedIncomes.map { it.id }.toSet()
+
+                val toDelete = currentFixed.filter { it.id !in newIds }
+                val toInsertOrUpdate = updatedFixedIncomes
+
+                incomeRepository.deleteAll(toDelete)
+                incomeRepository.insertAll(toInsertOrUpdate)
             } catch (e: Exception) {
                 handleError(e)
             }

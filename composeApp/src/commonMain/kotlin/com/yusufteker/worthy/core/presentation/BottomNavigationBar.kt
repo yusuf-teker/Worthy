@@ -19,7 +19,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,10 +26,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.dp
 import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.presentation.theme.AppColors
+import org.jetbrains.compose.resources.painterResource
+import worthy.composeapp.generated.resources.Res
+import worthy.composeapp.generated.resources.bottom_icon_graph
+import worthy.composeapp.generated.resources.bottom_icon_wallet
 
 
 @Composable
@@ -40,9 +44,31 @@ fun BottomNavigationBar(
     modifier: Modifier = Modifier
 ) {
     val items = listOf(
-        BottomNavItem("Alarms", Icons.Filled.Home, Routes.Dashboard),
-        BottomNavItem("Add", Icons.Filled.Add, Routes.Trends),
-        BottomNavItem("Settings", Icons.Filled.Settings, Routes.Settings),
+        BottomNavItem(
+            "Home",
+            painter = rememberVectorPainter(Icons.Filled.Home),
+            route = Routes.Dashboard
+        ),
+        BottomNavItem(
+            "Details",
+            painter = painterResource(Res.drawable.bottom_icon_graph),
+            route = Routes.Trends
+        ),
+        BottomNavItem(
+            "Add",
+            painter = rememberVectorPainter(Icons.Filled.Add),
+            route = Routes.Trends
+        ),
+        BottomNavItem(
+            "Wallet",
+            painter = painterResource(Res.drawable.bottom_icon_wallet),
+            route = Routes.Trends
+        ),
+        BottomNavItem(
+            "Settings",
+            painter = rememberVectorPainter(Icons.Filled.Settings),
+            route = Routes.Settings
+        )
     )
 
     Surface(
@@ -76,7 +102,7 @@ fun BottomNavigationBar(
 
 data class BottomNavItem(
     val label: String,
-    val icon: ImageVector,
+    val painter: Painter,
     val route: Routes
 )
 
@@ -109,7 +135,7 @@ fun NavItem(
             .height(36.dp)
     ) {
         Icon(
-            imageVector = item.icon,
+            painter = item.painter,
             contentDescription = item.label,
             tint = iconColor,
             modifier = Modifier.size(24.dp)

@@ -60,12 +60,28 @@ object AppColors {
 
     // >>>>>>> Custom Color  <<<<<<<<
 
-    val accentGreen: Color @Composable get() = if (MaterialTheme.colorScheme.background == Color(0xFF1C1B1F)) {
-        Color(0xFF4CAF50) // Dark
-    } else {
-        Color(0xFF8BC34A) // Light
-    }
+    val darkModeBackground = Color(0xFF1C1B1F)
 
+    val savingsGreen: Color
+        @Composable get() = if (MaterialTheme.colorScheme.background == darkModeBackground) {
+            Color(0xFF4CAF50) // Dark - classic green
+        } else {
+            Color(0xFF8BC34A) // Light - lime green
+        }
+
+    val fixedExpenseGray: Color
+        @Composable get() = if (MaterialTheme.colorScheme.background == darkModeBackground) {
+            Color(0xFF9E9E9E) // Dark - medium gray
+        } else {
+            Color(0xFFBDBDBD) // Light - light gray
+        }
+
+    val budgetBlue: Color
+        @Composable get() = if (MaterialTheme.colorScheme.background == darkModeBackground) {
+            Color(0xFF03A9F4) // Dark - light blue
+        } else {
+            Color(0xFF81D4FA) // Light - soft sky blue
+        }
 
 
     // >>>>>>> Color Lists <<<<<<<<

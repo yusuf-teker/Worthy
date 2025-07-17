@@ -2,6 +2,7 @@ package com.yusufteker.worthy.di
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import com.yusufteker.worthy.core.data.database.db.DatabaseFactory
 import com.yusufteker.worthy.feature.onboarding.domain.OnboardingManager
 import com.yusufteker.worthy.feature.settings.data.createDataStore
 import com.yusufteker.worthy.feature.settings.domain.UserPrefsManager
@@ -19,6 +20,9 @@ actual val platformModule: Module
 
         single { UserPrefsManager(get()) }
         single { OnboardingManager(get()) }
+
+        // Veritabanı oluşturma
+        single { DatabaseFactory() }
 
 
         single<HttpClientEngine> { Darwin.create() } // Platform spesifik dependency

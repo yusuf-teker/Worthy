@@ -7,6 +7,7 @@ import org.koin.dsl.module
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import com.yusufteker.worthy.core.data.database.db.DatabaseFactory
 import com.yusufteker.worthy.feature.onboarding.domain.OnboardingManager
 import com.yusufteker.worthy.feature.settings.data.createDataStore
 import com.yusufteker.worthy.feature.settings.domain.UserPrefsManager
@@ -20,6 +21,9 @@ actual val platformModule: Module
         }
         single { UserPrefsManager(get()) }
         single { OnboardingManager(get()) }
+
+        single { DatabaseFactory(androidApplication()) }
+
 
         single<HttpClientEngine> { OkHttp.create() } // Platform spesifik dependency
     }

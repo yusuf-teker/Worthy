@@ -1,12 +1,7 @@
 package com.yusufteker.worthy.core.presentation.components
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
@@ -14,48 +9,39 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.yusufteker.worthy.core.data.database.entities.ExpenseNeedType
+import com.yusufteker.worthy.core.domain.model.Expense
+import com.yusufteker.worthy.core.domain.model.Income
 import com.yusufteker.worthy.core.presentation.UiText
+import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
 import com.yusufteker.worthy.core.presentation.theme.Constants.currencySymbols
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import worthy.composeapp.generated.resources.Res
-import worthy.composeapp.generated.resources.add
-import worthy.composeapp.generated.resources.add_new
-import worthy.composeapp.generated.resources.amount_with_currency
-import worthy.composeapp.generated.resources.cancel
-import worthy.composeapp.generated.resources.label_amount
-import worthy.composeapp.generated.resources.label_name
-import worthy.composeapp.generated.resources.save
+import worthy.composeapp.generated.resources.*
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
 @Composable
-public fun FinancialItemDialog(
+fun FinancialItemDialog(
     title: String,
     items: List<ItemForDialog>,
     onDismiss: () -> Unit,
     onSave: (List<ItemForDialog>) -> Unit,
     currencyCode: String = currencySymbols.values.first(),
-
-    ) {
+    isExpenseDialog: Boolean = false
+) {
     var currentItems by remember { mutableStateOf(items) }
     var showAddDialog by remember { mutableStateOf(false) }
+    var showEditDialog by remember { mutableStateOf(false) }
+    var itemToEdit by remember { mutableStateOf<ItemForDialog?>(null) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -63,7 +49,7 @@ public fun FinancialItemDialog(
         text = {
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.height(300.dp)
+                modifier = Modifier.heightIn(min = 300.dp)
             ) {
                 items(currentItems) { item ->
                     FinancialItemRow(
@@ -71,23 +57,22 @@ public fun FinancialItemDialog(
                         onDelete = {
                             currentItems = currentItems.filter { it.id != item.id }
                         },
-                        onEdit = { updatedItem ->
-                            currentItems = currentItems.map {
-                                if (it.id == item.id) updatedItem else it
-                            }
+                        onEdit = {
+                            itemToEdit = item
+                            showEditDialog = true
                         },
-                        currencySymbol = currencySymbols.getValue(currencyCode)
+                        currencySymbol = currencySymbols.getValue(currencyCode),
+                        isExpenseDialog = isExpenseDialog
                     )
                 }
                 item {
-                    Button(
-                        onClick = { showAddDialog = true },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Icon(Icons.Default.Add, contentDescription = null)
-                        Spacer(Modifier.width(8.dp))
-                        Text(UiText.StringResourceId(Res.string.add).asString())
-
+                    Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        IconButton(
+                            onClick = { showAddDialog = true },
+                            modifier = Modifier.background(AppColors.transparent)
+                        ) {
+                            Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(32.dp))
+                        }
                     }
                 }
             }
@@ -107,16 +92,38 @@ public fun FinancialItemDialog(
     if (showAddDialog) {
         AddItemDialog(
             onDismiss = { showAddDialog = false },
-            onAdd = { name, amount ->
+            onAdd = { name, amount, isFixed, scheduledDay, needType ->
                 currentItems = currentItems + ItemForDialog(
-                    id = Clock.System.now().toEpochMilliseconds().toString(),
+                    id = Clock.System.now().toEpochMilliseconds().toInt(),
                     name = name,
-                    amount = amount
+                    amount = amount,
+                    isFixed = isFixed,
+                    scheduledDay = scheduledDay,
+                    needType = needType
                 )
                 showAddDialog = false
             },
-            currency = currencyCode
+            currency = currencyCode,
+            isExpenseDialog = isExpenseDialog
+        )
+    }
 
+    if (showEditDialog && itemToEdit != null) {
+        EditItemDialog(
+            item = itemToEdit!!,
+            onDismiss = {
+                showEditDialog = false
+                itemToEdit = null
+            },
+            onSave = { updatedItem ->
+                currentItems = currentItems.map {
+                    if (it.id == updatedItem.id) updatedItem else it
+                }
+                showEditDialog = false
+                itemToEdit = null
+            },
+            currency = currencyCode,
+            isExpenseDialog = isExpenseDialog
         )
     }
 }
@@ -125,62 +132,31 @@ public fun FinancialItemDialog(
 private fun FinancialItemRow(
     item: ItemForDialog,
     onDelete: () -> Unit,
-    onEdit: (ItemForDialog) -> Unit,
-    currencySymbol: String = currencySymbols.values.first()
+    onEdit: () -> Unit,
+    currencySymbol: String = currencySymbols.values.first(),
+    isExpenseDialog: Boolean = false
 ) {
-    var isEditing by remember { mutableStateOf(false) }
-
-    if (isEditing) {
-        var editName by remember { mutableStateOf(item.name) }
-        var editAmount by remember { mutableStateOf(item.amount.toString()) }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            OutlinedTextField(
-                value = editName,
-                onValueChange = { editName = it },
-                modifier = Modifier.weight(1f),
-                singleLine = true
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(item.name, style = AppTypography.bodyMedium)
+            Text(
+                text = UiText.StringResourceId(
+                    id = Res.string.amount_with_currency,
+                    arrayOf(item.amount.toInt(), currencySymbol)
+                ).asString(),
+                style = AppTypography.bodySmall
             )
-            OutlinedTextField(
-                value = editAmount,
-                onValueChange = { editAmount = it },
-                modifier = Modifier.weight(1f),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                singleLine = true
-            )
-            IconButton(
-                onClick = {
-                    val amount = editAmount.toFloatOrNull() ?: 0f
-                    onEdit(item.copy(name = editName, amount = amount))
-                    isEditing = false
-                }
-            ) {
-                Text("✓")
-            }
         }
-    } else {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(item.name, style = AppTypography.bodyMedium)
-                Text(
-                    text = UiText.StringResourceId(id = Res.string.amount_with_currency, arrayOf(item.amount.toInt(), currencySymbol)).asString(),
-                    style = AppTypography.bodySmall)
+        Row {
+            IconButton(onClick = onEdit) {
+                Icon(Icons.Default.Edit, contentDescription = "Düzenle")
             }
-            Row {
-                IconButton(onClick = { isEditing = true }) {
-                    Icon(Icons.Default.Edit, contentDescription = "Düzenle")
-                }
-                IconButton(onClick = onDelete) {
-                    Icon(Icons.Default.Delete, contentDescription = "Sil")
-                }
+            IconButton(onClick = onDelete) {
+                Icon(Icons.Default.Delete, contentDescription = "Sil")
             }
         }
     }
@@ -189,14 +165,16 @@ private fun FinancialItemRow(
 @Composable
 private fun AddItemDialog(
     onDismiss: () -> Unit,
-    onAdd: (String, Float) -> Unit,
+    onAdd: (String, Double, isFixed: Boolean, scheduledDay: Int?, needType: ExpenseNeedType) -> Unit,
     currency: String = currencySymbols.values.first(),
     nameLabel: String = UiText.StringResourceId(Res.string.label_name).asString(),
-    amountLabel: String = UiText.StringResourceId(Res.string.label_amount, arrayOf(currency)).asString()
-
+    amountLabel: String = UiText.StringResourceId(Res.string.label_amount, arrayOf(currency)).asString(),
+    isExpenseDialog: Boolean = false
 ) {
     var name by remember { mutableStateOf("") }
     var amount by remember { mutableStateOf("") }
+    var isFixed by remember { mutableStateOf(true) }
+    var scheduledDay by remember { mutableStateOf<Int?>(1) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -216,34 +194,154 @@ private fun AddItemDialog(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth()
                 )
+                DayOfMonthSelector(
+                    selectedDay = scheduledDay,
+                    onDayChange = { scheduledDay = it }
+                )
             }
         },
         confirmButton = {
             TextButton(
                 onClick = {
-                    val amountFloat = amount.toFloatOrNull() ?: 0f
+                    val amountFloat = amount.toDoubleOrNull() ?: 0.0
                     if (name.isNotBlank() && amountFloat > 0) {
-                        onAdd(name, amountFloat)
+                        onAdd(
+                            name,
+                            amountFloat,
+                            isFixed,
+                            scheduledDay,
+                            if (isExpenseDialog) ExpenseNeedType.NONE else ExpenseNeedType.NEED
+                        )
                     }
                 }
             ) {
-                Text("Ekle")
+                Text(UiText.StringResourceId(Res.string.add).asString())
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("İptal")
+                Text(UiText.StringResourceId(Res.string.cancel).asString())
             }
         }
     )
 }
 
-// Dialog için ortak data class
+@Composable
+private fun EditItemDialog(
+    item: ItemForDialog,
+    onDismiss: () -> Unit,
+    onSave: (ItemForDialog) -> Unit,
+    currency: String = currencySymbols.values.first(),
+    nameLabel: String = UiText.StringResourceId(Res.string.label_name).asString(),
+    amountLabel: String = UiText.StringResourceId(Res.string.label_amount, arrayOf(currency)).asString(),
+    isExpenseDialog: Boolean = false
+) {
+    var name by remember { mutableStateOf(item.name) }
+    var amount by remember { mutableStateOf(item.amount.toString()) }
+    var isFixed by remember { mutableStateOf(item.isFixed) }
+    var scheduledDay by remember { mutableStateOf<Int?>(item.scheduledDay) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Düzenle") }, // Bu da bir string resource olabilir
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text(nameLabel) },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = amount,
+                    onValueChange = { amount = it },
+                    label = { Text(amountLabel) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                DayOfMonthSelector(
+                    selectedDay = scheduledDay,
+                    onDayChange = { scheduledDay = it }
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    val amountFloat = amount.toDoubleOrNull() ?: 0.0
+                    if (name.isNotBlank() && amountFloat > 0) {
+                        onSave(
+                            item.copy(
+                                name = name,
+                                amount = amountFloat,
+                                isFixed = isFixed,
+                                scheduledDay = scheduledDay
+                            )
+                        )
+                    }
+                }
+            ) {
+                Text(UiText.StringResourceId(Res.string.save).asString())
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(UiText.StringResourceId(Res.string.cancel).asString())
+            }
+        }
+    )
+}
+
 data class ItemForDialog(
-    val id: String,
+    val id: Int,
     val name: String,
-    val amount: Float,
-    val currency: String = currencySymbols.values.first()
+    val amount: Double,
+    val currency: String = currencySymbols.values.first(),
+    val isFixed: Boolean = false,
+    val scheduledDay: Int?,
+    val needType: ExpenseNeedType = ExpenseNeedType.NONE,
 )
 
+@OptIn(ExperimentalTime::class)
+fun List<ItemForDialog>.toExpenses(): List<Expense> = map {
+    Expense(
+        id = it.id,
+        name = it.name,
+        amount = it.amount,
+        isFixed = it.isFixed,
+        categoryId = null,
+        scheduledDay = it.scheduledDay,
+        date = Clock.System.now().toEpochMilliseconds(),
+        needType = it.needType,
+    )
+}
 
+@OptIn(ExperimentalTime::class)
+fun List<ItemForDialog>.toIncomes(): List<Income> = map {
+    Income(
+        id = it.id,
+        name = it.name,
+        amount = it.amount,
+        isFixed = it.isFixed,
+        scheduledDay = it.scheduledDay,
+        categoryId = null,
+        date = Clock.System.now().toEpochMilliseconds(),
+        note = null,
+    )
+}
+
+@Preview
+@Composable
+fun FinancialItemDialogPreview() {
+    val items = listOf(
+        ItemForDialog(1, "Gider 1", 100.0, isFixed = true, scheduledDay = -1, needType = ExpenseNeedType.NEED),
+        ItemForDialog(2, "Gider 2", 200.0, isFixed = false, scheduledDay = -1, needType = ExpenseNeedType.WANT),
+        ItemForDialog(3, "Gelir 1", 300.0, scheduledDay = -1)
+    )
+    FinancialItemDialog(
+        title = "Finansal İşlemler",
+        items = items,
+        onDismiss = {},
+        onSave = {}
+    )
+}

@@ -25,7 +25,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.yusufteker.worthy.core.domain.MonthlyAmount
+import com.yusufteker.worthy.core.domain.model.MonthlyAmount
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppDimens.AppIconSizeSmall
@@ -83,7 +83,7 @@ fun IncomeAllocationCard(
             Text(
                 text = UiText.StringResourceId(Res.string.income_allocation_this_month,arrayOf(monthDeltaText)).asString(),
                 style = AppTypography.bodyMedium,
-                color = AppColors.tertiary   // yeşil/turuncu varyant
+                color = AppColors.tertiary
             )
             Spacer(Modifier.height(24.dp))
 

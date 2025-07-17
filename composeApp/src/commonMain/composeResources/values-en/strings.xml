@@ -44,6 +44,33 @@
     <string name="dashboard_desires_budget">Desires Budget</string>
     <string name="dashboard_monthly_income">Monthly Income</string>
     <string name="dashboard_evaluate_purchase">Evaluate Purchase</string>
+
+    <!-- Dashboard Bottom Sheet -->
+    <string name="bottom_sheet_label_amount">Amount</string>
+    <string name="bottom_sheet_label_category">Category</string>
+    <string name="bottom_sheet_button_calculate">Calculate</string>
+    <string name="bottom_sheet_invalid_input">Invalid amount</string>
+    <string name="bottom_sheet_select_category">Please select a category</string>
+
+    <string name="category_food">Food</string>
+    <string name="category_transport">Transport</string>
+    <string name="category_shopping">Shopping</string>
+    <string name="category_entertainment">Entertainment</string>
+    <string name="category_health">Health</string>
+    <string name="category_education">Education</string>
+    <string name="category_other">Other</string>
+
+    <string name="evaluation_income_percent">• %1$s of your income</string>
+    <string name="evaluation_desire_budget_percent">• %1$s of your "wants" budget</string>
+    <string name="evaluation_work_hours">• Equivalent to %1$s hours of work</string>
+    <string name="purchase_note_title">📌 This expense:</string>
+    <string name="purchase_note_remaining">💰 After this expense, you’ll have %1$s%2$s left in your "wants" budget.</string>
+    <string name="fixed_expense">Fixed Expense</string>
+    <string name="fixed_income">Fixed Income</string>
+
+    <string name="desire_expense">Desire Expense</string>
+
+
     <!-- Dashboard – Income Allocation Card -->
     <string name="income_allocation_title">Income Allocation</string>
     <string name="income_allocation_this_month">This Month %1$s</string>
@@ -57,7 +84,8 @@
     <string name="chart_expenses">Expenses</string>  <!-- Yeni eklendi -->
 
     <!-- Settings -->
-    <string name="label_income_sources">Income Sources</string>
+    <string name="label_income_sources">Fixed Incomes</string>
+    <string name="label_expenses">Expenses</string>
     <string name="label_fixed_expenses">Fixed Expenses</string>
     <string name="label_budget">Budget</string>
     <string name="label_savings">Savings</string>
@@ -71,6 +99,10 @@
     <string name="add_new">Add New</string>
     <string name="amount_with_currency">%1$d%2$s</string>
     <string name="title_settings">Budget &amp; Settings</string>
+
+    <string name="last_day">Last day</string>
+    <string name="day_of_month">Day</string>
+    <string name="day_input_hint">Day (1–28)</string>
 
 
 

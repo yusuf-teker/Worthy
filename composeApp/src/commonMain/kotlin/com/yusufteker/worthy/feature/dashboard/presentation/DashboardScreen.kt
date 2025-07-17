@@ -13,33 +13,66 @@ import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
+import androidx.compose.material3.MenuAnchorType.Companion.PrimaryNotEditable
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.text.style.LineHeightStyle
-import com.yusufteker.worthy.core.domain.MonthlyAmount
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
 import com.yusufteker.worthy.core.presentation.components.IncomeAllocationCard
-import com.yusufteker.worthy.core.presentation.components.LabelledProgressBar
 import com.yusufteker.worthy.core.presentation.components.PrimaryButton
+import com.yusufteker.worthy.core.presentation.components.PurchaseEvaluationInfoBox
 import com.yusufteker.worthy.core.presentation.theme.AppBrushes.screenBackground
-import com.yusufteker.worthy.core.presentation.theme.AppDimens.ScreenPadding
 import com.yusufteker.worthy.core.presentation.theme.AppDimens.Spacing16
-import com.yusufteker.worthy.core.presentation.theme.AppDimens.Spacing24
-import com.yusufteker.worthy.core.presentation.theme.AppDimens.Spacing32
 import com.yusufteker.worthy.core.presentation.theme.AppDimens.Spacing8
+import com.yusufteker.worthy.core.presentation.theme.Constants.categories
+import com.yusufteker.worthy.core.presentation.theme.Constants.currencySymbols
+import com.yusufteker.worthy.feature.dashboard.domain.Category
+import com.yusufteker.worthy.feature.dashboard.domain.EvaluationResult
 import org.koin.compose.viewmodel.koinViewModel
 import worthy.composeapp.generated.resources.Res
-import worthy.composeapp.generated.resources.dashboard_desires_budget
+import worthy.composeapp.generated.resources.bottom_sheet_button_calculate
+import worthy.composeapp.generated.resources.bottom_sheet_label_amount
+import worthy.composeapp.generated.resources.bottom_sheet_label_category
+import worthy.composeapp.generated.resources.bottom_sheet_select_category
+import worthy.composeapp.generated.resources.close
 import worthy.composeapp.generated.resources.dashboard_evaluate_purchase
-import worthy.composeapp.generated.resources.dashboard_monthly_income
 import worthy.composeapp.generated.resources.dashboard_overview
-import worthy.composeapp.generated.resources.dashboard_savings_goal
-
 
 
 @Composable
@@ -56,12 +89,13 @@ fun DashboardScreenRoot(
         contentPadding = contentPadding,
         onAction = { action ->
             viewModel.onAction(action)
-            if (action == DashboardAction.FabClicked) onNavigateToEvaluation()
+            if (action == DashboardAction.EvaluateButtonClicked) onNavigateToEvaluation()
         },
         onWishlistClick = onNavigateToWishlist
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
     state: DashboardState,
@@ -71,6 +105,7 @@ fun DashboardScreen(
 ) {
 
 
+        val sheetState = rememberModalBottomSheetState()
 
         Column(Modifier.fillMaxSize()
             .background(
@@ -144,7 +179,7 @@ fun DashboardScreen(
                     Spacer(modifier = Modifier.weight(1f))
                     PrimaryButton(
                         text = UiText.StringResourceId(Res.string.dashboard_evaluate_purchase).asString(),
-                        onClick = { onAction(DashboardAction.FabClicked) },
+                        onClick = { onAction(DashboardAction.EvaluateButtonClicked) },
                         modifier = Modifier
                     )
                 }
@@ -155,4 +190,196 @@ fun DashboardScreen(
         }
 
 
+    if (state.isBottomSheetOpen) {
+        ModalBottomSheet(
+            onDismissRequest = { onAction(DashboardAction.CloseBottomSheetClicked) },
+            sheetState = sheetState,
+            containerColor = AppColors.surface,
+            tonalElevation = 6.dp,
+            shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+        ) {
+            BottomSheetContent(
+                sheetState = sheetState,
+                onClose = {
+                    onAction(DashboardAction.CloseBottomSheetClicked)
+                },
+                onCalculate = { amount ->
+                    onAction(
+                        DashboardAction.CalculateButtonClicked(amount = amount)
+                    )
+                },
+                evaluationResult = state.evaluationResult,
+                currencySymbol = currencySymbols.getValue(state.selectedCurrency)
+            )
+        }
+    }
+
+
+}
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BottomSheetContent(
+    sheetState: SheetState = rememberModalBottomSheetState(),
+    onClose: () -> Unit,
+    onCalculate: (Float?) -> Unit,
+    evaluationResult: EvaluationResult? = null,
+    currencySymbol: String = "₺"
+) {
+    var amount by remember { mutableStateOf("") }
+    var includeTax by remember { mutableStateOf(false) }
+    var selectedCategory by remember { mutableStateOf<Category?>(null) }
+    var isDropdownExpanded by remember { mutableStateOf(false) }
+
+    LaunchedEffect(evaluationResult != null){
+        sheetState.expand()
+    }
+
+
+
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Text("Harcama Hesaplayıcı", style = AppTypography.titleMedium)
+        Spacer(Modifier.height(16.dp))
+
+        evaluationResult?.let {
+            PurchaseEvaluationInfoBox(
+                incomePercent = it.incomePercent,
+                desireBudgetPercent = it.desirePercent,
+                workHoursRequired = it.workHours,
+                remainingDesireBudget = it.remainingDesire,
+                currencySymbol = it.currencySymbol,
+                modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+            )
+            Spacer(Modifier.height(16.dp))
+
+        }
+
+        // Fiyat girişi
+        OutlinedTextField(
+            value = amount,
+            onValueChange = { newValue ->
+                // Sadece sayı ve nokta girişine izin ver
+                if (newValue.isEmpty() || newValue.matches(Regex("^\\d*\\.?\\d*$"))) {
+                    amount = newValue
+                }
+            },
+            label = { Text(UiText.StringResourceId(Res.string.bottom_sheet_label_amount).asString()) },
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+            trailingIcon = {
+                Text(
+                    text = currencySymbol,
+                    style = AppTypography.bodyLarge.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = AppColors.primary
+                    ),
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+            }
+        )
+
+        Spacer(Modifier.height(16.dp))
+
+        // Kategori seçimi
+        ExposedDropdownMenuBox(
+            expanded = isDropdownExpanded,
+            onExpandedChange = { isDropdownExpanded = !isDropdownExpanded }
+        ) {
+            OutlinedTextField(
+                value = selectedCategory?.name?.asString() ?: UiText.StringResourceId(Res.string.bottom_sheet_select_category).asString(),
+                onValueChange = { },
+                readOnly = true,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor(PrimaryNotEditable),
+                label = { Text(UiText.StringResourceId(Res.string.bottom_sheet_label_category).asString()) },
+                leadingIcon = {
+                    selectedCategory?.icon?.let { icon ->
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = null,
+                            tint = AppColors.primary
+                        )
+                    }
+                },
+                trailingIcon = {
+                    Icon(
+                        imageVector = if (isDropdownExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.ArrowDropDown,
+                        contentDescription = null
+                    )
+                }
+            )
+
+            ExposedDropdownMenu(
+                expanded = isDropdownExpanded,
+                onDismissRequest = { isDropdownExpanded = false }
+            ) {
+                categories.forEach { category ->
+                    DropdownMenuItem(
+                        text = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Icon(
+                                    imageVector = category.icon,
+                                    contentDescription = null,
+                                    tint = AppColors.primary,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(Modifier.width(12.dp))
+                                Text(category.name.asString())
+                            }
+                        },
+                        onClick = {
+                            selectedCategory = category
+                            isDropdownExpanded = false
+                        }
+                    )
+                }
+            }
+        }
+
+        Spacer(Modifier.height(16.dp))
+
+        // Vergi checkbox
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Checkbox(checked = includeTax, onCheckedChange = { includeTax = it })
+            Text("Vergi dahil")
+        }
+
+        Spacer(Modifier.height(16.dp))
+
+        // Hesapla butonu
+        PrimaryButton(
+            text = UiText.StringResourceId(Res.string.bottom_sheet_button_calculate).asString(),
+            onClick = {
+                onCalculate(amount.toFloatOrNull())
+                /*
+                val input = amount.toFloatOrNull()
+                result = if (input != null && selectedCategory != null) {
+                    val calculated = if (includeTax) input * 1.2f else input
+                    UiText.StringResourceId(
+                        id = Res.string.bottom_sheet_result,
+                        args = arrayOf(calculated, selectedCategory!!.name)
+                    )
+                } else if (input == null) {
+                    UiText.StringResourceId(Res.string.bottom_sheet_invalid_input)
+                } else {
+                    UiText.StringResourceId(Res.string.bottom_sheet_select_category)
+                }*/
+
+            },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+
+        Spacer(Modifier.height(24.dp))
+        TextButton(onClick = onClose, modifier = Modifier.align(Alignment.End)) {
+            Text(UiText.StringResourceId(Res.string.close).asString())
+        }
+    }
 }

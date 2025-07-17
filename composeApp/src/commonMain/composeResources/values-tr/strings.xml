@@ -44,12 +44,40 @@
     <string name="dashboard_desires_budget">İstek Bütçesi</string>
     <string name="dashboard_monthly_income">Aylık Gelir</string>
     <string name="dashboard_evaluate_purchase">Harcamayı Değerlendir</string>
+
+    <!-- Dashboard Bottom Sheet -->
+    <string name="bottom_sheet_label_amount">Tutar</string>
+    <string name="bottom_sheet_label_category">Kategori</string>
+    <string name="bottom_sheet_button_calculate">Hesapla</string>
+    <string name="bottom_sheet_result">Sonuç: %1$.2f ₺ (%2$s)</string>
+    <string name="bottom_sheet_invalid_input">Geçersiz tutar</string>
+    <string name="bottom_sheet_select_category">Lütfen kategori seçin</string>
+
+    <string name="category_food">Yiyecek</string>
+    <string name="category_transport">Ulaşım</string>
+    <string name="category_shopping">Alışveriş</string>
+    <string name="category_entertainment">Eğlence</string>
+    <string name="category_health">Sağlık</string>
+    <string name="category_education">Eğitim</string>
+    <string name="category_other">Diğer</string>
+    <string name="evaluation_income_percent">• Gelirinin %1$s oranında</string>
+    <string name="evaluation_desire_budget_percent">• "İstek" bütçenin %1$s kadarını oluşturuyor</string>
+    <string name="evaluation_work_hours">• %1$s saatlik çalışma süresine denk geliyor</string>
+    <string name="purchase_note_title">📌 Bu harcama:</string>
+    <string name="purchase_note_remaining">💰 Bu harcamadan sonra "İstek" bütçende %1$s%2$s kalacak.</string>
+    <string name="fixed_expense">Sabit Gider</string>
+    <string name="fixed_income">Sabit Gelir</string>
+
+    <string name="desire_expense">İstek Gideri</string>
+
+
+
     <!-- Dashboard – Income Allocation Card -->
     <string name="income_allocation_title">Gelir Dağılımı</string>
     <string name="income_allocation_this_month">Bu Ay %1$s</string>
 
     <!-- Bar labels -->
-    <string name="chart_fixed_expenses">Sabit Giderler</string>
+        <string name="chart_fixed_expenses">Sabit Giderler</string>
     <string name="chart_desires">İstekler</string>
     <string name="chart_remaining">Kalan</string>
     <string name="chart_expenses">Harcamalar</string>  <!-- Yeni eklendi -->
@@ -59,7 +87,8 @@
 
     <!-- Settings -->
 
-    <string name="label_income_sources">Gelir Kaynakları</string>
+    <string name="label_income_sources">Sabit Gelirler</string>
+    <string name="label_expenses">Giderler</string>
     <string name="label_fixed_expenses">Sabit Giderler</string>
     <string name="label_budget">Harcama Bütçesi</string>
     <string name="label_savings">Birikim</string>
@@ -73,6 +102,10 @@
     <string name="add_new">Yeni Ekle</string>
     <string name="amount_with_currency">%1$d%2$s</string>
     <string name="title_settings">Bütçe ve Ayarlar</string>
+
+    <string name="last_day">Son gün</string>
+    <string name="day_of_month">Gün</string>
+    <string name="day_input_hint">Gün (1–28)</string>
 
 
 

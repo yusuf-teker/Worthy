@@ -14,10 +14,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,14 +28,10 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.yusufteker.worthy.core.domain.MonthlyAmount
+import com.yusufteker.worthy.core.domain.model.MonthlyAmount
 import com.yusufteker.worthy.core.presentation.theme.AppColors
-import com.yusufteker.worthy.core.presentation.theme.AppDimens.AppIconSizeSmall
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import worthy.composeapp.generated.resources.Res
-import worthy.composeapp.generated.resources.history
 
 @Composable
 fun ColumnBarChart(

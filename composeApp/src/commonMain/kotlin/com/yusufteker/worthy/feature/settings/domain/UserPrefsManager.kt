@@ -214,7 +214,4 @@ class UserPrefsManager(private val dataStore: DataStore<Preferences>) {
         items.sumOf { it.amount.toDouble() }.toFloat()
     }
 
-    val totalExpenses: Flow<Float> = expenseItems.map { items ->
-        items.sumOf { it.amount.toDouble() }.toFloat()
-    }
 }
