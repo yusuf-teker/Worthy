@@ -3,10 +3,12 @@ package com.yusufteker.worthy.core.data.mappers
 import com.yusufteker.worthy.core.data.database.entities.CategoryEntity
 import com.yusufteker.worthy.core.data.database.entities.ExpenseEntity
 import com.yusufteker.worthy.core.data.database.entities.IncomeEntity
+import com.yusufteker.worthy.core.data.database.entities.RecurringFinancialItemEntity
 import com.yusufteker.worthy.core.data.database.entities.WishlistItemEntity
 import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.Expense
 import com.yusufteker.worthy.core.domain.model.Income
+import com.yusufteker.worthy.core.domain.model.RecurringFinancialItem
 import com.yusufteker.worthy.core.domain.model.WishlistItem
 import kotlin.time.ExperimentalTime
 
@@ -97,4 +99,33 @@ fun Category.toEntity() = CategoryEntity(
     type = type,
     createdAt = createdAt,
     userCreated = userCreated
+)
+
+
+fun RecurringFinancialItemEntity.toDomain(): RecurringFinancialItem = RecurringFinancialItem(
+    id = id,
+    groupId = groupId,
+    name = name,
+    amount = amount,
+    isIncome = isIncome,
+    needType = needType,
+    scheduledDay = scheduledDay,
+    startMonth = startMonth,
+    startYear = startYear,
+    endMonth = endMonth,
+    endYear = endYear,
+)
+
+fun RecurringFinancialItem.toEntity(): RecurringFinancialItemEntity = RecurringFinancialItemEntity(
+    id = id,
+    groupId = groupId,
+    name = name,
+    amount = amount,
+    isIncome = isIncome,
+    needType = needType,
+    scheduledDay = scheduledDay,
+    startMonth = startMonth,
+    startYear = startYear,
+    endMonth = endMonth,
+    endYear = endYear,
 )

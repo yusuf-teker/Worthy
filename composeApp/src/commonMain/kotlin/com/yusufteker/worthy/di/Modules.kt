@@ -6,10 +6,12 @@ import com.yusufteker.worthy.core.data.database.db.WorthyDatabase
 import com.yusufteker.worthy.core.data.database.repository.CategoryRepositoryImpl
 import com.yusufteker.worthy.core.data.database.repository.ExpenseRepositoryImpl
 import com.yusufteker.worthy.core.data.database.repository.IncomeRepositoryImpl
+import com.yusufteker.worthy.core.data.database.repository.RecurringFinancialItemRepositoryImpl
 import com.yusufteker.worthy.core.data.database.repository.WishlistRepositoryImpl
 import com.yusufteker.worthy.core.domain.repository.CategoryRepository
 import com.yusufteker.worthy.core.domain.repository.ExpenseRepository
 import com.yusufteker.worthy.core.domain.repository.IncomeRepository
+import com.yusufteker.worthy.core.domain.repository.RecurringFinancialItemRepository
 import com.yusufteker.worthy.core.domain.repository.WishlistRepository
 import com.yusufteker.worthy.core.presentation.BaseViewModel
 import com.yusufteker.worthy.feature.dashboard.presentation.DashboardViewModel
@@ -44,17 +46,19 @@ val sharedModule = module {
     single { get<WorthyDatabase>().incomeDao }
     single { get<WorthyDatabase>().wishlistDao }
     single { get<WorthyDatabase>().categoryDao }
+    single { get<WorthyDatabase>().recurringFinancialItemDao }
 
     // Repository implementasyonlarını bind et
     single<ExpenseRepository> { ExpenseRepositoryImpl(get()) }
     single<IncomeRepository> { IncomeRepositoryImpl(get()) }
     single<WishlistRepository> { WishlistRepositoryImpl(get()) }
     single<CategoryRepository> { CategoryRepositoryImpl(get()) }
+    single<RecurringFinancialItemRepository> { RecurringFinancialItemRepositoryImpl(get()) }
 
 
 
     viewModel { OnboardingViewModel(get()) }
     viewModel { BaseViewModel() }
     viewModel { DashboardViewModel(get()) }
-    viewModel { SettingsViewModel(get(),get(),get(),get() )}
+    viewModel { SettingsViewModel(get(),get(),get(),get(), get() )}
 }

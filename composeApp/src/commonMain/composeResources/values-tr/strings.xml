@@ -37,6 +37,12 @@
     <string name="delete">Sil</string>
     <string name="edit">Düzenle</string>
     <string name="add">Ekle</string>
+    <string name="amount">Tutar</string>
+    <string name="name">Ad</string>
+    <string name="income_name">Gelir Adı</string>
+    <string name="expense_name">Gider Adı</string>
+    <string name ="incomes">Gelirler</string>
+    <string name ="expenses">Giderler</string>
 
     <!-- Dashboard -->
     <string name="dashboard_overview">Genel Bakış</string>
@@ -107,7 +113,17 @@
     <string name="day_of_month">Gün</string>
     <string name="day_input_hint">Gün (1–28)</string>
 
-
+    <string name="update">Güncelle</string>
+    <string name="amount_must_be_greater_than_zero">Tutar 0'dan büyük olmalı.</string>
+    <string name="new_amount">Yeni Tutar</string>
+    <string name="start_date_must_be_before">Başlangıç tarihi en geç %1$d / %2$d olabilir.</string>
+    <string name="date_ranges_conflict">%1$s (%2$d/%3$d) ile %4$s (%5$d/%6$d) tarihleri çakışıyor.</string>
+    <string name="start_dates_cannot_be_same">Başlangıç tarihleri aynı olamaz: %1$d / %2$d</string>
+    <string name="start_date_after_end_date">Başlangıç tarihi bitiş tarihinden önce olmalıdır.</string>
+    <string name="missing_month_or_year">Ay veya yıl eksik.</string>
+    <string name="edit_income_expense_group">Gelir/Gider Grubu Düzenle</string>
+    <string name="add_expense">Gider Ekle</string>
+    <string name="add_income">Gelir Ekle</string>
 
 
 

@@ -22,7 +22,10 @@ fun PieChart(
     dividerColor: Color = Color.Black,
     dividerStrokeWidth: Float = 2f
 ) {
-    val total = values.sum().takeIf { it > 0f } ?: 1f
+    // Negatifleri 0 yap
+    val positiveValues = values.map { if (it > 0f) it else 0f }
+    val total = positiveValues.sum().takeIf { it > 0f } ?: 1f
+
     val progress = remember { Animatable(0f) }
 
     LaunchedEffect(values) {
@@ -37,62 +40,68 @@ fun PieChart(
         val radius = minOf(size.width, size.height) / 2f
         var startAngle = -90f
 
-        if (values.isEmpty() || values.all { it == 0f }) {
+        if (positiveValues.isEmpty() || positiveValues.all { it == 0f }) {
             drawArc(
-                color = Color.Red,
+                color = colors.getOrElse(0) { Color.Red }, // İlk rengini kullan
                 startAngle = 0f,
                 sweepAngle = 360f * progress.value,
                 useCenter = true
             )
         } else {
             // Dilimleri çiz
-            values.forEachIndexed { i, v ->
+            positiveValues.forEachIndexed { i, v ->
                 val sweep = 360f * (v / total) * progress.value
-                drawArc(
-                    color = colors.getOrElse(i) { Color.Gray },
-                    startAngle = startAngle,
-                    sweepAngle = sweep,
-                    useCenter = true
-                )
+
+                if (v > 0f) {
+                    drawArc(
+                        color = colors.getOrElse(i) { Color.Gray },
+                        startAngle = startAngle,
+                        sweepAngle = sweep,
+                        useCenter = true
+                    )
+                }
                 startAngle += 360f * (v / total)
             }
 
             // Sınırları çiz
-            startAngle = -90f
-            values.forEachIndexed { i, v ->
-                val sweep = 360f * (v / total) * progress.value
 
-                // Sadece sweep > 0 olan dilimlerin sınırlarını çiz
-                if (sweep > 0) {
-                    // Başlangıç çizgisi
-                    val startAngleRad =(startAngle.toDouble()).toRadians()
-                    val startX = center.x + radius * cos(startAngleRad).toFloat()
-                    val startY = center.y + radius * sin(startAngleRad).toFloat()
+            val positiveCount = positiveValues.count { it > 0f }
 
-                    drawLine(
-                        color = dividerColor,
-                        start = center,
-                        end = Offset(startX, startY),
-                        strokeWidth = dividerStrokeWidth
-                    )
+            if (positiveCount > 1){
+                startAngle = -90f
 
-                    // Eğer son dilim değilse, bitiş çizgisini de çiz
-                    if (i < values.size - 1) {
-                        val endAngleRad = ((startAngle + sweep).toDouble()).toRadians()
-                        val endX = center.x + radius * cos(endAngleRad).toFloat()
-                        val endY = center.y + radius * sin(endAngleRad).toFloat()
+
+                positiveValues.forEachIndexed { i, v ->
+                    val sweep = 360f * (v / total) * progress.value
+                    if (sweep > 0) {
+                        val startAngleRad = startAngle.toDouble().toRadians()
+                        val startX = center.x + radius * cos(startAngleRad).toFloat()
+                        val startY = center.y + radius * sin(startAngleRad).toFloat()
 
                         drawLine(
                             color = dividerColor,
                             start = center,
-                            end = Offset(endX, endY),
+                            end = Offset(startX, startY),
                             strokeWidth = dividerStrokeWidth
                         )
-                    }
-                }
 
-                startAngle += 360f * (v / total)
+                        if (i < positiveValues.size - 1) {
+                            val endAngleRad = (startAngle + sweep).toDouble().toRadians()
+                            val endX = center.x + radius * cos(endAngleRad).toFloat()
+                            val endY = center.y + radius * sin(endAngleRad).toFloat()
+
+                            drawLine(
+                                color = dividerColor,
+                                start = center,
+                                end = Offset(endX, endY),
+                                strokeWidth = dividerStrokeWidth
+                            )
+                        }
+                    }
+                    startAngle += 360f * (v / total)
+                }
             }
+
         }
     }
 }

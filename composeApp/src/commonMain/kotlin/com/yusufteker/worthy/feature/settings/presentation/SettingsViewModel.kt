@@ -1,11 +1,15 @@
 package com.yusufteker.worthy.feature.settings.presentation
 
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewModelScope
 import com.yusufteker.worthy.core.domain.model.Expense
 import com.yusufteker.worthy.core.domain.model.Income
+import com.yusufteker.worthy.core.domain.model.startDate
 import com.yusufteker.worthy.core.domain.repository.CategoryRepository
 import com.yusufteker.worthy.core.domain.repository.ExpenseRepository
 import com.yusufteker.worthy.core.domain.repository.IncomeRepository
+import com.yusufteker.worthy.core.domain.repository.RecurringFinancialItemRepository
 import com.yusufteker.worthy.core.domain.repository.WishlistRepository
 import com.yusufteker.worthy.core.presentation.BaseViewModel
 import com.yusufteker.worthy.feature.settings.domain.UserPrefsManager
@@ -16,17 +20,50 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.collections.component1
+import kotlin.collections.component2
 
 class SettingsViewModel(
     private val userPrefsManager: UserPrefsManager,
     private val incomeRepository: IncomeRepository,
     private val expenseRepository: ExpenseRepository,
-    private val categoryRepository: CategoryRepository
+    private val categoryRepository: CategoryRepository,
+    private val recurringRepository: RecurringFinancialItemRepository
 ) : BaseViewModel() {
 
 
     private val _state = MutableStateFlow(SettingsState())
     val state: StateFlow<SettingsState> = _state
+
+    fun calculateTotalFixedIncome(){
+        _state.update { currentState ->
+            currentState.copy(
+                totalFixedIncome = state.value.uniqueIncomeRecurringItems
+                    .groupBy { it.groupId } // groupId’ye göre grupla
+                    .map { (_, items) ->
+                        items.maxByOrNull { it.startDate() } // en güncel tarihli item
+                    }
+                    .filterNotNull()
+                    .sumOf { it.amount }
+                    .toFloat()
+            )
+        }
+    }
+
+    fun calculateTotalFixedExpenses(){
+        _state.update { currentState ->
+            currentState.copy(
+                totalFixedExpenses = state.value.uniqueExpenseRecurringItems
+                    .groupBy { it.groupId } // groupId’ye göre grupla
+                    .map { (_, items) ->
+                        items.maxByOrNull { it.startDate() } // en güncel tarihli item
+                    }
+                    .filterNotNull()
+                    .sumOf { it.amount }
+                    .toFloat()
+            )
+        }
+    }
 
     init {
         observeUserPreferences()
@@ -36,18 +73,40 @@ class SettingsViewModel(
 
     private fun observeData() {
         combine(
-            incomeRepository.getAll(),
-            expenseRepository.getAll(),
-            categoryRepository.getAll()
-        ) { incomes, expenses, categories ->
+            categoryRepository.getAll(),
+            recurringRepository.getAll()
+        ) {  categories, recurringItems ->
             _state.update { currentState ->
                 currentState.copy(
-                    incomeItems = incomes,
-                    expenseItems = expenses,
-                    categories = categories
+                    categories = categories,
+                    incomeRecurringItems = recurringItems.filter { it.isIncome },
+                    expenseRecurringItems = recurringItems.filter { !it.isIncome },
+                    uniqueIncomeRecurringItems = recurringItems.filter { it.isIncome }
+                        .groupBy { it.groupId }.values.map { itemsInGroup ->
+                            itemsInGroup.maxByOrNull { it.startDate() }!! },
+                    uniqueExpenseRecurringItems = recurringItems.filter { !it.isIncome }
+                        .groupBy { it.groupId }.values.map { itemsInGroup ->
+                            itemsInGroup.maxByOrNull { it.startDate() }!! },
+
                 )
             }
+
+            updateBudgetIfNeeded()
+            calculateTotalFixedIncome()
+            calculateTotalFixedExpenses()
+            calculateSavings()
+
+
         }.launchIn(viewModelScope)
+    }
+
+    private fun  calculateSavings(){
+        _state.update { currentState ->
+            val savings = state.value.totalFixedIncome - state.value.totalFixedExpenses - state.value.budgetAmount
+            currentState.copy(
+                savingsAmount = savings.toFloat()
+            )
+        }
     }
     private fun observeUserPreferences() {
         combine(
@@ -73,6 +132,7 @@ class SettingsViewModel(
             is SettingsAction.OnSaveExpenseItems -> {
 
                 saveExpenseItems(action.items)
+
             }
             is SettingsAction.OnSaveIncomeItems -> {
                 saveIncomeItems(action.items)
@@ -89,10 +149,57 @@ class SettingsViewModel(
                 updateCurrency(action.currency)
 
             }
+
+            is SettingsAction.OnSaveRecurringItems -> {
+
+
+
+            }
+
+            is SettingsAction.OnAddNewRecurringItem -> {
+                viewModelScope.launch {
+                    try {
+                        recurringRepository.add(action.item)
+                    } catch (e: Exception) {
+                        handleError(e)
+                    }
+                }
+
+
+            }
+            is SettingsAction.OnDeleteRecurringItem -> {
+                viewModelScope.launch {
+                    try {
+                        recurringRepository.delete(action.item)
+                    } catch (e: Exception) {
+                        handleError(e)
+                    }
+                }
+            }
+            is SettingsAction.OnUpdateRecurringItems -> {
+                viewModelScope.launch {
+                    try {
+                        recurringRepository.updateGroup(action.items)
+                    } catch (e: Exception) {
+                        handleError(e)
+                    }
+                }
+            }
+            is SettingsAction.OnDeleteGroupRecurringItem -> {
+
+                viewModelScope.launch {
+                    try {
+                        recurringRepository.deleteGroup(action.groupId)
+                    } catch (e: Exception) {
+                        handleError(e)
+                    }
+                }
+            }
         }
 
-
     }
+
+
 
     private fun updateCurrency(currency: String) {
         viewModelScope.launch {
@@ -121,6 +228,21 @@ class SettingsViewModel(
             } catch (e: Exception) {
                 handleError(e)
             }
+        }
+    }
+
+    private fun updateBudgetIfNeeded() {
+        val expenseSum: Double = state.value.uniqueExpenseRecurringItems.sumOf {
+            it.amount
+        }
+        val incomeSum: Double = state.value.uniqueIncomeRecurringItems.sumOf {
+            it.amount
+        }
+        if (expenseSum >= incomeSum){
+            updateBudgetAmount (0f )
+        }else if (state.value.budgetAmount < 0){
+            // Gelir daha yüksek + budget -'de kalmıs
+            updateBudgetAmount(0f)
         }
     }
 

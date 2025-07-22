@@ -13,14 +13,17 @@ import com.yusufteker.worthy.core.data.database.model.WishlistItemDao
 import com.yusufteker.worthy.core.data.database.entities.CategoryEntity
 import com.yusufteker.worthy.core.data.database.entities.ExpenseEntity
 import com.yusufteker.worthy.core.data.database.entities.IncomeEntity
+import com.yusufteker.worthy.core.data.database.entities.RecurringFinancialItemEntity
 import com.yusufteker.worthy.core.data.database.entities.WishlistItemEntity
+import com.yusufteker.worthy.core.data.database.model.RecurringFinancialItemDao
 
 @Database(
     entities = [
         ExpenseEntity::class,
         IncomeEntity::class,
         WishlistItemEntity::class,
-        CategoryEntity::class
+        CategoryEntity::class,
+        RecurringFinancialItemEntity::class
     ],
     version = 1,
     exportSchema = false
@@ -33,6 +36,8 @@ abstract class WorthyDatabase : RoomDatabase() {
     abstract val incomeDao: IncomeDao
     abstract val wishlistDao: WishlistItemDao
     abstract val categoryDao: CategoryDao
+
+    abstract val recurringFinancialItemDao: RecurringFinancialItemDao
 
     companion object {
         const val DATABASE_NAME = "app_database"

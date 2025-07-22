@@ -27,17 +27,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.yusufteker.worthy.core.domain.model.startDate
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
 import com.yusufteker.worthy.core.presentation.components.BudgetSlider
 import com.yusufteker.worthy.core.presentation.components.CurrencyPicker
-import com.yusufteker.worthy.core.presentation.components.FinancialItemDialog
 import com.yusufteker.worthy.core.presentation.components.FinancialWidget
-import com.yusufteker.worthy.core.presentation.components.ItemForDialog
 import com.yusufteker.worthy.core.presentation.components.NumberPickerInput
 import com.yusufteker.worthy.core.presentation.components.PieChart
-import com.yusufteker.worthy.core.presentation.components.toExpenses
-import com.yusufteker.worthy.core.presentation.components.toIncomes
+import com.yusufteker.worthy.core.presentation.components.RecurringFinancialItemDialog
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
 import com.yusufteker.worthy.core.presentation.theme.Constants.WEEKLY_MAX_HOURS
@@ -81,11 +79,6 @@ fun SettingsScreen(
     contentPadding: PaddingValues = PaddingValues(),
 ) {
 
-    // Hesaplanan değerler
-    val totalIncome by derivedStateOf { state.incomeItems.sumOf { it.amount.toDouble() }.toFloat() }
-    val totalFixedExpenses by derivedStateOf { state.expenseItems.sumOf { it.amount.toDouble() }.toFloat() }
-    val saving by derivedStateOf { (totalIncome - totalFixedExpenses - state.budgetAmount).coerceAtLeast(0f) }
-
     // Dialog state'leri
     var showIncomeDialog by remember { mutableStateOf(false) }
     var showFixedExpenseDialog by remember { mutableStateOf(false) }
@@ -107,7 +100,7 @@ fun SettingsScreen(
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             // PIE CHART
             PieChart(
-                values = listOf(totalFixedExpenses, state.budgetAmount, saving),
+                values = listOf(state.totalFixedExpenses, state.budgetAmount, state.savingsAmount),
                 colors = listOf(AppColors.fixedExpenseGray, AppColors.budgetBlue, AppColors.savingsGreen),
                 modifier = Modifier
                     .size(120.dp)
@@ -121,18 +114,18 @@ fun SettingsScreen(
             BudgetSlider(
                 modifier = Modifier.fillMaxWidth(),
                 budgetAmount = state.budgetAmount,
-                totalIncome = totalIncome,
-                totalFixedExpenses = totalFixedExpenses,
+                totalIncome = state.totalFixedIncome,
+                totalFixedExpenses = state.totalFixedExpenses,
                 selectedCurrency = state.selectedCurrency,
                 onBudgetChange = { v ->
-                    onAction(SettingsAction.OnBudgetValueChange(v.coerceIn(0f, (totalIncome - totalFixedExpenses).coerceAtLeast(0f))))
+                    onAction(SettingsAction.OnBudgetValueChange(v.coerceIn(0f, (state.totalFixedIncome - state.totalFixedExpenses).coerceAtLeast(0f))))
                 },
                 currencySymbols = currencySymbols
             )
             // INCOME WIDGET
             FinancialWidget(
                 title = UiText.StringResourceId(Res.string.label_income_sources).asString(),
-                totalAmount = totalIncome,
+                totalAmount = state.totalFixedIncome,
                 color = AppColors.primary,
                 onClick = { showIncomeDialog = true },
                 currencySymbol = currencySymbols.getValue(state.selectedCurrency)
@@ -141,7 +134,7 @@ fun SettingsScreen(
             // FIXED EXPENSES WIDGET
             FinancialWidget(
                 title = UiText.StringResourceId(Res.string.label_fixed_expenses).asString(),
-                totalAmount = totalFixedExpenses,
+                totalAmount = state.totalFixedExpenses,
                 color = AppColors.primary,
                 onClick = { showFixedExpenseDialog = true },
                 currencySymbol = currencySymbols.getValue(state.selectedCurrency)
@@ -157,9 +150,9 @@ fun SettingsScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
-            ReadOnlyRow( UiText.StringResourceId(Res.string.label_fixed_expenses).asString(), totalFixedExpenses,  AppColors.fixedExpenseGray,  currencySymbols.getValue(state.selectedCurrency))
+            ReadOnlyRow( UiText.StringResourceId(Res.string.label_fixed_expenses).asString(), state.totalFixedExpenses,  AppColors.fixedExpenseGray,  currencySymbols.getValue(state.selectedCurrency))
             ReadOnlyRow( UiText.StringResourceId(Res.string.label_budget).asString(), state.budgetAmount, AppColors.budgetBlue, currencySymbols.getValue(state.selectedCurrency))
-            ReadOnlyRow( UiText.StringResourceId(Res.string.label_savings).asString(), saving, AppColors.savingsGreen, currencySymbols.getValue(state.selectedCurrency))
+            ReadOnlyRow( UiText.StringResourceId(Res.string.label_savings).asString(), state.savingsAmount, AppColors.savingsGreen, currencySymbols.getValue(state.selectedCurrency))
         }
 
 
@@ -193,34 +186,67 @@ fun SettingsScreen(
     }
 
     // INCOME DIALOG
-    if (showIncomeDialog) {
-        FinancialItemDialog(
-            title =  UiText.StringResourceId(Res.string.label_income_sources).asString(),
-            items = state.incomeItems.map { ItemForDialog(it.id, it.name, it.amount, scheduledDay = it.scheduledDay) },
-            onDismiss = { showIncomeDialog = false },
-            onSave = { newItems ->
-                onAction(SettingsAction.OnSaveIncomeItems( newItems.toIncomes()))
+
+    if (showIncomeDialog){
+
+        RecurringFinancialItemDialog(
+
+            title = UiText.StringResourceId(Res.string.label_income_sources).asString(),
+            items = state.incomeRecurringItems,
+            isIncome = true,
+            onDismiss = {
+                showIncomeDialog = false
+                        },
+            onClose = {
                 showIncomeDialog = false
             },
-            currencyCode = state.selectedCurrency
+            onUpdateGroup = { items ->
+                onAction(SettingsAction.OnUpdateRecurringItems(items))
+            },
+            onDeleteGroup = { groupId ->
+                onAction(SettingsAction.OnDeleteGroupRecurringItem(groupId))
+            },
+            onDelete = {
+                onAction(SettingsAction.OnDeleteRecurringItem(it))
+            },
+            onAddNew = {
+                onAction(SettingsAction.OnAddNewRecurringItem(it))
+            },
+            //currencyCode = state.selectedCurrency,
+            //isExpenseDialog = true
         )
     }
 
     // FIXED EXPENSES DIALOG
-    if (showFixedExpenseDialog) {
-        FinancialItemDialog(
+
+    if (showFixedExpenseDialog){
+        RecurringFinancialItemDialog(
+
             title = UiText.StringResourceId(Res.string.label_fixed_expenses).asString(),
-            items = state.expenseItems.map { ItemForDialog(it.id, it.name, it.amount, isFixed = it.isFixed, scheduledDay = it.scheduledDay, needType = it.needType) },
-            onDismiss = { showFixedExpenseDialog = false },
-            onSave = { newItems ->
-                onAction(SettingsAction.OnSaveExpenseItems( newItems.toExpenses() ))
+            items = state.expenseRecurringItems,
+            isIncome = false,
+            onDismiss = {  showFixedExpenseDialog = false },
+            onClose = {
                 showFixedExpenseDialog = false
             },
-            currencyCode = state.selectedCurrency,
-            isExpenseDialog = true
+            onUpdateGroup = { items ->
+                onAction(SettingsAction.OnUpdateRecurringItems(items))
+            },
+            onDeleteGroup = { groupId ->
+                onAction(SettingsAction.OnDeleteGroupRecurringItem(groupId))
+            },
+            onDelete = {
+                onAction(SettingsAction.OnDeleteRecurringItem(it))
+            },
+            onAddNew = {
+                onAction(SettingsAction.OnAddNewRecurringItem(it))
+            },
+            //currencyCode = state.selectedCurrency,
+            //isExpenseDialog = true
         )
     }
 }
+
 
 @Composable
 private fun ReadOnlyRow(label: String, amount: Float, color: Color, currencySymbol: String = "₺") {
