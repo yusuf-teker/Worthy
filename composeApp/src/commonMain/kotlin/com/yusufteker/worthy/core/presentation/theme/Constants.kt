@@ -3,7 +3,7 @@ package com.yusufteker.worthy.core.presentation.theme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ShoppingCart
 import com.yusufteker.worthy.core.presentation.UiText
-import com.yusufteker.worthy.feature.dashboard.domain.Category
+import com.yusufteker.worthy.screen.dashboard.domain.Category
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.category_education
 import worthy.composeapp.generated.resources.category_entertainment

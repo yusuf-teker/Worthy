@@ -14,11 +14,12 @@ import com.yusufteker.worthy.core.domain.repository.IncomeRepository
 import com.yusufteker.worthy.core.domain.repository.RecurringFinancialItemRepository
 import com.yusufteker.worthy.core.domain.repository.WishlistRepository
 import com.yusufteker.worthy.core.presentation.BaseViewModel
-import com.yusufteker.worthy.feature.dashboard.presentation.DashboardViewModel
-import com.yusufteker.worthy.feature.onboarding.domain.OnboardingManager
-import com.yusufteker.worthy.feature.onboarding.presentation.OnboardingViewModel
-import com.yusufteker.worthy.feature.settings.domain.UserPrefsManager
-import com.yusufteker.worthy.feature.settings.presentation.SettingsViewModel
+import com.yusufteker.worthy.screen.dashboard.presentation.DashboardViewModel
+import com.yusufteker.worthy.screen.onboarding.domain.OnboardingManager
+import com.yusufteker.worthy.screen.onboarding.presentation.OnboardingViewModel
+import com.yusufteker.worthy.screen.settings.domain.UserPrefsManager
+import com.yusufteker.worthy.screen.settings.presentation.SettingsViewModel
+import com.yusufteker.worthy.screen.wishlist.presentation.WishlistViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -61,4 +62,5 @@ val sharedModule = module {
     viewModel { BaseViewModel() }
     viewModel { DashboardViewModel(get()) }
     viewModel { SettingsViewModel(get(),get(),get(),get(), get() )}
+    viewModel { WishlistViewModel() }
 }

@@ -28,10 +28,11 @@ import androidx.navigation.compose.navigation
 import com.yusufteker.worthy.core.presentation.BottomNavigationBar
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppDimens.ScreenPadding
-import com.yusufteker.worthy.feature.dashboard.presentation.DashboardScreenRoot
-import com.yusufteker.worthy.feature.onboarding.domain.OnboardingManager
-import com.yusufteker.worthy.feature.onboarding.presentation.OnboardingScreenRoot
-import com.yusufteker.worthy.feature.settings.presentation.SettingsScreenRoot
+import com.yusufteker.worthy.screen.dashboard.presentation.DashboardScreenRoot
+import com.yusufteker.worthy.screen.onboarding.domain.OnboardingManager
+import com.yusufteker.worthy.screen.onboarding.presentation.OnboardingScreenRoot
+import com.yusufteker.worthy.screen.settings.presentation.SettingsScreenRoot
+import com.yusufteker.worthy.screen.wishlist.presentation.WishlistScreenRoot
 import io.github.aakira.napier.Napier
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -119,24 +120,6 @@ fun AppNavHost(
                         },
                     )
                 }
-
-                /*
-                composable<Routes.UserSetupScreen> {
-                    UserSetupScreenRoot(
-                        contentPadding = innerPadding,
-                        onNavigateBack = {
-                            navController.popBackStack()
-                        },
-                        onNavigateToDashboard = {
-                            // Setup tamamlandıktan sonra ana ekrana geçiş
-                            navController.navigate(Routes.MainGraph) {
-                                popUpTo(Routes.OnboardingGraph) { inclusive = true }
-                                launchSingleTop = true
-                            }
-                        }
-                    )
-                }
-                */
             }
 
             // Main Graph (Ana ekran ve yönlendirmeler)
@@ -163,77 +146,12 @@ fun AppNavHost(
                     )
                 }
 
-                /*
-                                composable<Routes.ItemEvaluationScreen> { entry ->
-                                    val args = entry.toRoute<Routes.ItemEvaluationScreen>()
-                                    val sharedViewModel = entry.sharedKoinViewModel<SharedEvaluationViewModel>(navController = navController)
+                composable<Routes.Wishlist> {
+                    WishlistScreenRoot(
+                        contentPadding = innerPadding,
+                    )
+                }
 
-                                    ItemEvaluationScreenRoot(
-                                        productName = args.productName,
-                                        price = args.price,
-                                        category = args.category,
-                                        contentPadding = innerPadding,
-                                        onNavigateBack = {
-                                            navController.popBackStack()
-                                        },
-                                        onAddToWishlist = { item ->
-                                            sharedViewModel.addToWishlist(item)
-                                            navController.navigate(Routes.WishlistScreen)
-                                        }
-                                    )
-                                }
-
-                                composable<Routes.WishlistScreen> { entry ->
-                                    val sharedViewModel = entry.sharedKoinViewModel<SharedEvaluationViewModel>(navController = navController)
-                                    val wishlistItems by sharedViewModel.wishlistItems.collectAsStateWithLifecycle()
-
-                                    WishlistScreenRoot(
-                                        contentPadding = innerPadding,
-                                        wishlistItems = wishlistItems,
-                                        onNavigateToEvaluation = { productName, price ->
-                                            navController.navigate(
-                                                Routes.ItemEvaluationScreen(
-                                                    productName = productName,
-                                                    price = price
-                                                )
-                                            )
-                                        },
-                                        onItemDetailClick = { itemId ->
-                                            navController.navigate(Routes.WishlistItemDetailScreen(itemId))
-                                        }
-                                    )
-                                }
-
-                                composable<Routes.WishlistItemDetailScreen> { backStackEntry ->
-                                    val args = backStackEntry.toRoute<Routes.WishlistItemDetailScreen>()
-                                    val itemId = args.itemId
-
-                                    WishlistItemDetailScreenRoot(
-                                        itemId = itemId,
-                                        contentPadding = innerPadding,
-                                        onBackClick = {
-                                            navController.popBackStack()
-                                        },
-                                        onEvaluateAgain = { productName, price ->
-                                            navController.navigate(
-                                                Routes.ItemEvaluationScreen(
-                                                    productName = productName,
-                                                    price = price
-                                                )
-                                            )
-                                        }
-                                    )
-                                }
-
-                                composable<Routes.TrendsScreen> {
-                                    TrendsScreenRoot(
-                                        contentPadding = innerPadding,
-                                        onNavigateBack = {
-                                            navController.popBackStack()
-                                        }
-                                    )
-                                }
-                */
                 composable<Routes.Settings> {
                     SettingsScreenRoot(
                         contentPadding = innerPadding,

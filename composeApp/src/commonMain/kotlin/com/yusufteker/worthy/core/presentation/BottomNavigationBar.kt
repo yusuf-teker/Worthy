@@ -35,6 +35,7 @@ import org.jetbrains.compose.resources.painterResource
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.bottom_icon_graph
 import worthy.composeapp.generated.resources.bottom_icon_wallet
+import worthy.composeapp.generated.resources.bottom_icon_wishlist
 
 
 @Composable
@@ -63,6 +64,11 @@ fun BottomNavigationBar(
             "Wallet",
             painter = painterResource(Res.drawable.bottom_icon_wallet),
             route = Routes.Trends
+        ),
+        BottomNavItem(
+            "Wishlist",
+            painter = painterResource(Res.drawable.bottom_icon_wishlist),
+            route = Routes.Wishlist
         ),
         BottomNavItem(
             "Settings",

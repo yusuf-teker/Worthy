@@ -4,7 +4,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.window.ComposeUIViewController
 import com.yusufteker.worthy.app.App
 import com.yusufteker.worthy.di.initKoin
-import com.yusufteker.worthy.feature.settings.data.createDataStore
+import com.yusufteker.worthy.screen.settings.data.createDataStore
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
 

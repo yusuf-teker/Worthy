@@ -8,9 +8,9 @@ import org.koin.dsl.module
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.yusufteker.worthy.core.data.database.db.DatabaseFactory
-import com.yusufteker.worthy.feature.onboarding.domain.OnboardingManager
-import com.yusufteker.worthy.feature.settings.data.createDataStore
-import com.yusufteker.worthy.feature.settings.domain.UserPrefsManager
+import com.yusufteker.worthy.screen.onboarding.domain.OnboardingManager
+import com.yusufteker.worthy.screen.settings.data.createDataStore
+import com.yusufteker.worthy.screen.settings.domain.UserPrefsManager
 
 import org.koin.android.ext.koin.androidApplication
 

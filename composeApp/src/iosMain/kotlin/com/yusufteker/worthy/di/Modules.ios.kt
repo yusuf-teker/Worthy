@@ -3,9 +3,9 @@ package com.yusufteker.worthy.di
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.yusufteker.worthy.core.data.database.db.DatabaseFactory
-import com.yusufteker.worthy.feature.onboarding.domain.OnboardingManager
-import com.yusufteker.worthy.feature.settings.data.createDataStore
-import com.yusufteker.worthy.feature.settings.domain.UserPrefsManager
+import com.yusufteker.worthy.screen.onboarding.domain.OnboardingManager
+import com.yusufteker.worthy.screen.settings.data.createDataStore
+import com.yusufteker.worthy.screen.settings.domain.UserPrefsManager
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.darwin.Darwin
 import org.koin.core.module.Module
