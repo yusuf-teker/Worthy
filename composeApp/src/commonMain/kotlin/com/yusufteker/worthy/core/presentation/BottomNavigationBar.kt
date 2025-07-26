@@ -63,12 +63,12 @@ fun BottomNavigationBar(
         BottomNavItem(
             "Wallet",
             painter = painterResource(Res.drawable.bottom_icon_wallet),
-            route = Routes.Trends
+            route = Routes.Wallet
         ),
         BottomNavItem(
             "Wishlist",
             painter = painterResource(Res.drawable.bottom_icon_wishlist),
-            route = Routes.Wishlist
+            route = Routes.WishlistGraph
         ),
         BottomNavItem(
             "Settings",

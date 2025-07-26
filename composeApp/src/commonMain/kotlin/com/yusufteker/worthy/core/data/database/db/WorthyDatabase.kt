@@ -9,13 +9,15 @@ import com.yusufteker.worthy.core.data.converters.RoomTypeConverters
 import com.yusufteker.worthy.core.data.database.model.CategoryDao
 import com.yusufteker.worthy.core.data.database.model.ExpenseDao
 import com.yusufteker.worthy.core.data.database.model.IncomeDao
-import com.yusufteker.worthy.core.data.database.model.WishlistItemDao
 import com.yusufteker.worthy.core.data.database.entities.CategoryEntity
 import com.yusufteker.worthy.core.data.database.entities.ExpenseEntity
 import com.yusufteker.worthy.core.data.database.entities.IncomeEntity
 import com.yusufteker.worthy.core.data.database.entities.RecurringFinancialItemEntity
-import com.yusufteker.worthy.core.data.database.entities.WishlistItemEntity
+import com.yusufteker.worthy.screen.wishlist.list.data.database.entities.WishlistItemEntity
 import com.yusufteker.worthy.core.data.database.model.RecurringFinancialItemDao
+import com.yusufteker.worthy.screen.wishlist.list.data.database.entities.WishlistCategoryEntity
+import com.yusufteker.worthy.screen.wishlist.list.data.database.model.WishlistCategoryDao
+import com.yusufteker.worthy.screen.wishlist.list.data.database.model.WishlistItemDao
 
 @Database(
     entities = [
@@ -23,7 +25,10 @@ import com.yusufteker.worthy.core.data.database.model.RecurringFinancialItemDao
         IncomeEntity::class,
         WishlistItemEntity::class,
         CategoryEntity::class,
-        RecurringFinancialItemEntity::class
+        RecurringFinancialItemEntity::class,
+        WishlistCategoryEntity::class,
+
+
     ],
     version = 1,
     exportSchema = false
@@ -34,8 +39,10 @@ abstract class WorthyDatabase : RoomDatabase() {
 
     abstract val expenseDao: ExpenseDao
     abstract val incomeDao: IncomeDao
-    abstract val wishlistDao: WishlistItemDao
     abstract val categoryDao: CategoryDao
+
+    abstract val wishlistItemDao: WishlistItemDao
+    abstract val wishlistCategoryDao: WishlistCategoryDao
 
     abstract val recurringFinancialItemDao: RecurringFinancialItemDao
 

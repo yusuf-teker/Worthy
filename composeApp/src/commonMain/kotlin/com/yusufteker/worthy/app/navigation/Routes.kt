@@ -24,6 +24,14 @@ sealed class Routes {
     data object Wishlist : Routes()
 
     @Serializable
+    data object WishlistAdd : Routes()
+
+    @Serializable
+    data class WishlistDetail(val id: Int) : Routes()
+
+    @Serializable
+    data object Wallet : Routes()
+    @Serializable
     data object Trends : Routes()
 
     @Serializable
@@ -31,5 +39,8 @@ sealed class Routes {
 
     @Serializable
     data object MainGraph : Routes()
+
+    @Serializable
+    data object WishlistGraph : Routes()
 
 }

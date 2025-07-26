@@ -124,6 +124,7 @@ class SettingsViewModel(
         when(action){
             is SettingsAction.OnBudgetValueChange -> {
                 updateBudgetAmount(action.newBudget)
+                calculateSavings()
             }
 
             is SettingsAction.OnSaveExpenseItems -> {

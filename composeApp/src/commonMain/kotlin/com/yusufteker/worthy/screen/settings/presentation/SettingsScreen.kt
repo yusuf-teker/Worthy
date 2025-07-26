@@ -28,12 +28,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
-import com.yusufteker.worthy.core.presentation.components.BudgetSlider
+import com.yusufteker.worthy.screen.settings.presentation.components.BudgetSlider
 import com.yusufteker.worthy.core.presentation.components.CurrencyPicker
-import com.yusufteker.worthy.core.presentation.components.FinancialWidget
+import com.yusufteker.worthy.screen.settings.presentation.components.FinancialWidget
 import com.yusufteker.worthy.core.presentation.components.NumberPickerInput
 import com.yusufteker.worthy.core.presentation.components.PieChart
-import com.yusufteker.worthy.core.presentation.components.RecurringFinancialItemDialog
+import com.yusufteker.worthy.screen.settings.presentation.components.RecurringFinancialItemDialog
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
 import com.yusufteker.worthy.core.presentation.theme.Constants.WEEKLY_MAX_HOURS

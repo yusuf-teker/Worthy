@@ -8,6 +8,7 @@ import org.koin.dsl.module
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.yusufteker.worthy.core.data.database.db.DatabaseFactory
+import com.yusufteker.worthy.core.media.ImageSaver
 import com.yusufteker.worthy.screen.onboarding.domain.OnboardingManager
 import com.yusufteker.worthy.screen.settings.data.createDataStore
 import com.yusufteker.worthy.screen.settings.domain.UserPrefsManager
@@ -24,6 +25,7 @@ actual val platformModule: Module
 
         single { DatabaseFactory(androidApplication()) }
 
+        single { ImageSaver(androidApplication()) }
 
         single<HttpClientEngine> { OkHttp.create() } // Platform spesifik dependency
     }

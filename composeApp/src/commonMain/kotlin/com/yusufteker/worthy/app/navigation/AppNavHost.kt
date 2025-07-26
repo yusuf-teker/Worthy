@@ -25,6 +25,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
+import androidx.navigation.toRoute
 import com.yusufteker.worthy.core.presentation.BottomNavigationBar
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppDimens.ScreenPadding
@@ -32,7 +33,10 @@ import com.yusufteker.worthy.screen.dashboard.presentation.DashboardScreenRoot
 import com.yusufteker.worthy.screen.onboarding.domain.OnboardingManager
 import com.yusufteker.worthy.screen.onboarding.presentation.OnboardingScreenRoot
 import com.yusufteker.worthy.screen.settings.presentation.SettingsScreenRoot
-import com.yusufteker.worthy.screen.wishlist.presentation.WishlistScreenRoot
+import com.yusufteker.worthy.screen.wallet.presentation.WalletScreenRoot
+import com.yusufteker.worthy.screen.wishlist.add.presentation.WishlistAddScreenRoot
+import com.yusufteker.worthy.screen.wishlist.detail.presentation.WishlistDetailScreenRoot
+import com.yusufteker.worthy.screen.wishlist.list.presentation.WishlistScreenRoot
 import io.github.aakira.napier.Napier
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -146,11 +150,44 @@ fun AppNavHost(
                     )
                 }
 
-                composable<Routes.Wishlist> {
-                    WishlistScreenRoot(
+
+                navigation<Routes.WishlistGraph>(
+                    startDestination = Routes.Wishlist
+                ){
+                    composable<Routes.Wishlist> { entry ->
+
+                        WishlistScreenRoot(
+                            contentPadding = innerPadding,
+                            navigateToWishlistAdd = {
+                                navController.navigate(Routes.WishlistAdd)
+                            },
+                            navigateToWishlistDetail = { wishlistId ->
+                                navController.navigate(Routes.WishlistDetail(wishlistId))
+                            }
+                        )
+
+
+                    }
+                    composable<Routes.WishlistAdd> {
+                        WishlistAddScreenRoot(
+                            contentPadding = innerPadding,
+                        )
+                    }
+
+                    composable<Routes.WishlistDetail> {
+                        val args = it.toRoute<Routes.WishlistDetail>()
+                        val wishlistId = args.id
+                        WishlistDetailScreenRoot(
+                            contentPadding = innerPadding,
+                        )
+                    }
+                }
+                composable<Routes.Wallet> {
+                    WalletScreenRoot(
                         contentPadding = innerPadding,
                     )
                 }
+
 
                 composable<Routes.Settings> {
                     SettingsScreenRoot(

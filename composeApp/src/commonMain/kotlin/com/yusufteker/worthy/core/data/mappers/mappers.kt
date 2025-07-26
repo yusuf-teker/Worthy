@@ -4,12 +4,14 @@ import com.yusufteker.worthy.core.data.database.entities.CategoryEntity
 import com.yusufteker.worthy.core.data.database.entities.ExpenseEntity
 import com.yusufteker.worthy.core.data.database.entities.IncomeEntity
 import com.yusufteker.worthy.core.data.database.entities.RecurringFinancialItemEntity
-import com.yusufteker.worthy.core.data.database.entities.WishlistItemEntity
+import com.yusufteker.worthy.screen.wishlist.list.data.database.entities.WishlistItemEntity
 import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.Expense
 import com.yusufteker.worthy.core.domain.model.Income
 import com.yusufteker.worthy.core.domain.model.RecurringFinancialItem
-import com.yusufteker.worthy.core.domain.model.WishlistItem
+import com.yusufteker.worthy.screen.wishlist.list.data.database.entities.WishlistCategoryEntity
+import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistCategory
+import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistItem
 import kotlin.time.ExperimentalTime
 
 // Expense
@@ -61,27 +63,49 @@ fun Income.toEntity() = IncomeEntity(
 )
 
 // WishlistItem
-fun WishlistItemEntity.toDomain() = WishlistItem(
+// data/mapper/WishlistMapper.kt
+fun WishlistItemEntity.toDomain(category: WishlistCategoryEntity?) = WishlistItem(
     id = id,
     name = name,
     price = price,
-    categoryId = categoryId,
+    category = category?.toDomain(),
     priority = priority,
     isPurchased = isPurchased,
     addedDate = addedDate,
-    note = note
+    note = note,
+    imageUri = imageUri
 )
 
-fun WishlistItem.toEntity() = WishlistItemEntity(
+fun WishlistCategoryEntity.toDomain() = WishlistCategory(
+    id = id,
+    name = name,
+    icon = icon,
+    colorHex = colorHex
+)
+
+fun WishlistItem.toEntity(): WishlistItemEntity = WishlistItemEntity(
     id = id,
     name = name,
     price = price,
-    categoryId = categoryId,
+    categoryId = category?.id,
     priority = priority,
     isPurchased = isPurchased,
     addedDate = addedDate,
-    note = note
+    note = note,
+    imageUri = imageUri
 )
+
+
+
+fun WishlistCategory.toEntity(): WishlistCategoryEntity {
+    return WishlistCategoryEntity(
+        id = id,
+        name = name,
+        icon = icon,
+        colorHex = colorHex,
+    )
+}
+
 
 // Category
 @OptIn(ExperimentalTime::class)

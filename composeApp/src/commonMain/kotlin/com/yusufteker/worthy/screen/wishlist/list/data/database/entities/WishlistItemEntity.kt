@@ -1,10 +1,10 @@
-package com.yusufteker.worthy.core.data.database.entities
+package com.yusufteker.worthy.screen.wishlist.list.data.database.entities
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-
+import com.yusufteker.worthy.core.data.database.entities.CategoryEntity
 
 @Entity(
     tableName = "wishlist",
@@ -12,7 +12,7 @@ import androidx.room.PrimaryKey
         entity = CategoryEntity::class,
         parentColumns = ["id"],
         childColumns = ["categoryId"],
-        onDelete = ForeignKey.SET_NULL
+        onDelete = ForeignKey.Companion.SET_NULL
     )],
     indices = [Index("categoryId")]
 )
@@ -24,5 +24,7 @@ data class WishlistItemEntity(
     val priority: Int = 0,
     val isPurchased: Boolean = false,
     val addedDate: Long,
-    val note: String? = null
+    val note: String? = null,
+    val imageUri: String? = null
 )
+

@@ -1,4 +1,4 @@
-package com.yusufteker.worthy.core.presentation.components
+package com.yusufteker.worthy.screen.settings.presentation.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -304,7 +304,7 @@ fun RecurringItemAddDialog(
 
 
 
-                DayOfMonthSelector(
+                _root_ide_package_.com.yusufteker.worthy.core.presentation.components.DayOfMonthSelector(
                     selectedDay = scheduledDay,
                     onDayChange = { scheduledDay = it }
                 )
@@ -312,7 +312,7 @@ fun RecurringItemAddDialog(
 
                 // Başlangıç ve Bitiş Tarihleri
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    DateSelector(
+                    _root_ide_package_.com.yusufteker.worthy.core.presentation.components.DateSelector(
                         month = startMonth,
                         onMonthChanged = { startMonth = it },
                         year = startYear,
@@ -521,7 +521,7 @@ fun RecurringItemGroupEditDialog(
                     key = { it.id }
                 ) { item ->
 
-                    SwipeToDeleteWrapper(
+                    _root_ide_package_.com.yusufteker.worthy.core.presentation.components.SwipeToDeleteWrapper(
                         shape = CardDefaults.shape,
                         onDelete = {
                             onDelete(item)
@@ -530,7 +530,7 @@ fun RecurringItemGroupEditDialog(
                         },
 
 
-                    ){
+                        ) {
                         ExistingRecurringItemCard(
                             item = item,
                             months = months,
@@ -736,7 +736,7 @@ fun ExistingRecurringItemCard(
             )
 
             Row {
-                DateSelector(
+                _root_ide_package_.com.yusufteker.worthy.core.presentation.components.DateSelector(
                     title = "Baş. Tar.",
                     month = item.startMonth,
                     onMonthChanged = { onUpdate(item.copy(startMonth = it)) },
@@ -748,7 +748,7 @@ fun ExistingRecurringItemCard(
             }
 
             Row {
-                DateSelector(
+                _root_ide_package_.com.yusufteker.worthy.core.presentation.components.DateSelector(
                     title = "Bit. Tar.",
                     month = item.endMonth,
                     onMonthChanged = { onUpdate(item.copy(endMonth = it)) },
@@ -821,8 +821,18 @@ fun ExistingRecurringItemCard(
         Spacer(Modifier.height(8.dp))
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            DropdownMenuSelector(months, startMonth, isNullable = false, onSelected = onStartMonthChange)
-            DropdownMenuSelector(years, startYear, isNullable = false, onSelected = onStartYearChange)
+            _root_ide_package_.com.yusufteker.worthy.core.presentation.components.DropdownMenuSelector(
+                months,
+                startMonth,
+                isNullable = false,
+                onSelected = onStartMonthChange
+            )
+            _root_ide_package_.com.yusufteker.worthy.core.presentation.components.DropdownMenuSelector(
+                years,
+                startYear,
+                isNullable = false,
+                onSelected = onStartYearChange
+            )
         }
 
         Spacer(Modifier.height(8.dp))

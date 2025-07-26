@@ -1,4 +1,4 @@
-package com.yusufteker.worthy.core.presentation.components
+package com.yusufteker.worthy.screen.settings.presentation.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
