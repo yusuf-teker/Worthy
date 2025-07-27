@@ -29,10 +29,19 @@ fun WishlistAddScreen(
             .padding(contentPadding),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        ImagePickerComponent(
-            selectedImage = state.imageBitmap,
-            onImageSelected = { onAction(WishlistAddAction.OnImageSelected(it)) },
-            modifier = Modifier.fillMaxWidth()
-        )
+
+        BoxWithConstraints(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            val size = minOf(maxWidth, maxHeight)
+
+            ImagePickerComponent(
+                selectedImage = state.imageBitmap,
+                onImageSelected = { onAction(WishlistAddAction.OnImageSelected(it)) },
+                modifier = Modifier.size(size)
+            )
+        }
+
+
     }
 }

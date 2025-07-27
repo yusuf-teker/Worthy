@@ -43,6 +43,8 @@ kotlin {
             implementation(libs.koin.androidx.compose)
             implementation(libs.ktor.client.okhttp)
 
+            implementation(libs.uCrop)
+
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -76,6 +78,8 @@ kotlin {
             implementation(libs.compose.material.icons.core)
 
             implementation(libs.kotlinx.datetime)
+
+
 
         }
 

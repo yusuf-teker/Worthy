@@ -36,6 +36,6 @@ interface ImagePicker {
      */
     fun requestCameraPermission(onResult: (Boolean) -> Unit)
 
-    fun cropImage(image: ImageBitmap, onCropped: (ImageBitmap?) -> Unit)
+    fun cropImage(image: ImageBitmap,aspectRatio: Float = 1f, onCropped: (ImageBitmap?) -> Unit)
 
 }

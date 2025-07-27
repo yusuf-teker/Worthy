@@ -25,6 +25,7 @@ coil3 = "3.2.0"
 sqlite = "2.5.2"
 compose = "1.7.3"
 kotlinx-datetime = "0.7.1"
+uCrop = "2.2.6"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -64,7 +65,7 @@ datastore-preferences = { module = "androidx.datastore:datastore-preferences", v
 napier-logging = { module = "io.github.aakira:napier", version.ref = "napier-logging" }
 compose-material-icons-core = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "compose" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
-
+uCrop = { module = "com.github.yalantis:ucrop", version.ref = "uCrop" }
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }

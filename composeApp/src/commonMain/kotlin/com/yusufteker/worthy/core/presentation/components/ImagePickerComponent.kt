@@ -98,7 +98,11 @@ fun ImagePickerComponent(
             if (granted) {
                 imagePicker.pickFromCamera { bitmap ->
 
-                    bitmap?.let { onImageSelected(it) }
+                    bitmap?.let {
+                        imagePicker.cropImage(it) { cropped ->
+                            cropped?.let { onImageSelected(it) }
+                        }
+                    }
                     showCameraPermissionDialog = false
 
                 }
@@ -106,35 +110,6 @@ fun ImagePickerComponent(
                 showCameraPermissionDialog = false
             }
         }
-        /*
-        AlertDialog(
-            onDismissRequest = { showCameraPermissionDialog = false },
-            title = { Text("Kamera İzni Gerekli") },
-            text = {
-                Text("Fotoğraf çekebilmek için kamera iznine ihtiyacımız var.")
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showCameraPermissionDialog = false
-                        permissionChecker.requestCameraPermission { granted ->
-                            if (granted) {
-                                imagePicker.pickFromCamera { bitmap ->
-                                    bitmap?.let { onImageSelected(it) }
-                                }
-                            }
-                        }
-                    }
-                ) {
-                    Text("İzin Ver")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showCameraPermissionDialog = false }) {
-                    Text("İptal")
-                }
-            }
-        )*/
     }
 
     // Bottom Sheet
@@ -196,7 +171,11 @@ fun ImagePickerComponent(
                             if (imagePicker.isCameraAvailable()) {
                                 if (permissionChecker.hasCameraPermission()) {
                                     imagePicker.pickFromCamera { bitmap ->
-                                        bitmap?.let { onImageSelected(it) }
+                                        bitmap?.let {
+                                            imagePicker.cropImage(it) { cropped ->
+                                                cropped?.let { onImageSelected(it) }
+                                            }
+                                        }
 
                                     }
                                 } else {
