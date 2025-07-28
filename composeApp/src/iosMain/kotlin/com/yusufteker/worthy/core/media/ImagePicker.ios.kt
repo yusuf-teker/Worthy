@@ -35,6 +35,7 @@ actual fun rememberImagePicker(): ImagePicker {
 class IOSImagePicker : ImagePicker {
 
     override fun pickFromGallery(onResult: (ImageBitmap?) -> Unit) {
+        Napier.d(tag = "IOS", message = "IOSImagePicker.pickFromGallery called")
         galleryCallback = onResult
 
         val picker = UIImagePickerController()
@@ -47,6 +48,7 @@ class IOSImagePicker : ImagePicker {
     }
 
     override fun pickFromCamera(onResult: (ImageBitmap?) -> Unit) {
+        Napier.d(tag = "IOS", message ="IOSImagePicker.pickFromCamera called")
         cameraCallback = onResult
 
         if (!isCameraAvailable()) {
@@ -58,6 +60,8 @@ class IOSImagePicker : ImagePicker {
     }
 
     private fun launchCamera() {
+
+        Napier.d(tag = "IOS", message ="IOSImagePicker.launchCamera called")
         val picker = UIImagePickerController()
         picker.sourceType = UIImagePickerControllerSourceType.UIImagePickerControllerSourceTypeCamera
         picker.mediaTypes = listOf("public.image")
@@ -68,6 +72,7 @@ class IOSImagePicker : ImagePicker {
     }
 
     override fun isCameraAvailable(): Boolean {
+        Napier.d(tag = "IOS", message ="IOSImagePicker.isCameraAvailable called")
         return UIImagePickerController.isSourceTypeAvailable(
             UIImagePickerControllerSourceType.UIImagePickerControllerSourceTypeCamera
         )
@@ -83,7 +88,7 @@ class IOSImagePicker : ImagePicker {
         aspectRatio: Float,
         onCropped: (ImageBitmap?) -> Unit
     ) {
-        Napier.d("IOSImagePicker.cropImage called with aspectRatio: $aspectRatio")
+        Napier.d(tag = "IOS", message ="IOSImagePicker.cropImage called with aspectRatio: $aspectRatio")
         cropCallback = onCropped
 
         val uiImage = image.toUIImage()
@@ -123,6 +128,7 @@ class GalleryPickerDelegate : NSObject(), UIImagePickerControllerDelegateProtoco
         val image = didFinishPickingMediaWithInfo[UIImagePickerControllerOriginalImage] as? UIImage
         val bitmap = image?.toImageBitmap()
 
+        Napier.d(tag = "IOS", message = "GalleryPickerDelegate.didFinishPickingMediaWithInfo called")
         galleryCallback?.invoke(bitmap)
         galleryCallback = null
 
@@ -130,6 +136,7 @@ class GalleryPickerDelegate : NSObject(), UIImagePickerControllerDelegateProtoco
     }
 
     override fun imagePickerControllerDidCancel(picker: UIImagePickerController) {
+        Napier.d(tag = "IOS", message = "GalleryPickerDelegate.didCancel called")
         galleryCallback?.invoke(null)
         galleryCallback = null
 
@@ -143,6 +150,7 @@ class CameraPickerDelegate : NSObject(), UIImagePickerControllerDelegateProtocol
         picker: UIImagePickerController,
         didFinishPickingMediaWithInfo: Map<Any?, *>
     ) {
+        Napier.d(tag = "IOS", message = "CameraPickerDelegate.didFinishPickingMediaWithInfo called")
         val image = didFinishPickingMediaWithInfo[UIImagePickerControllerOriginalImage] as? UIImage
         val bitmap = image?.toImageBitmap()
 
@@ -153,6 +161,7 @@ class CameraPickerDelegate : NSObject(), UIImagePickerControllerDelegateProtocol
     }
 
     override fun imagePickerControllerDidCancel(picker: UIImagePickerController) {
+        Napier.d(tag = "IOS", message = "CameraPickerDelegate.didCancel called")
         cameraCallback?.invoke(null)
         cameraCallback = null
 
@@ -171,6 +180,10 @@ class CropViewControllerDelegate : NSObject(), TOCropViewControllerDelegateProto
     ) {
         val bitmap = didCropToImage.toImageBitmap()
 
+        Napier.d(
+            tag = "IOS",
+            message = "CropViewControllerDelegate.didCropToImage called with angle: $angle"
+        )
         cropCallback?.invoke(bitmap)
         cropCallback = null
 
@@ -208,7 +221,7 @@ fun UIImage.toImageBitmap(): ImageBitmap? {
 fun ImageBitmap.toUIImage(): UIImage? {
     return try {
         // ImageBitmap'i Skia Image'a çevir
-        val skiaImage = org.jetbrains.skia.Image.makeFromBitmap(this.asSkiaBitmap())
+        val skiaImage = Image.makeFromBitmap(this.asSkiaBitmap())
 
         // PNG formatında encode et
         val encodedData = skiaImage.encodeToData(org.jetbrains.skia.EncodedImageFormat.PNG)

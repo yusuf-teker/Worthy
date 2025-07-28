@@ -137,13 +137,13 @@ fun ImagePickerComponent(
                         .fillMaxWidth()
                         .clickable {
 
+                            Napier.d(tag = " ImagePickerComponent", message = "ImagePickerComponent: Gallery image selected")
                             imagePicker.pickFromGallery { bitmap ->
-                                //bitmap?.let { onImageSelected(it) }
-
+                                Napier.d(tag = " ImagePickerComponent", message = "ImagePickerComponent: Gallery image selected")
                                 bitmap?.let {
-                                    Napier.d("ImagePickerComponent: Gallery image selected")
+                                    Napier.d(tag = " ImagePickerComponent", message = "ImagePickerComponent: Gallery image selected")
                                     imagePicker.cropImage(it) { cropped ->
-                                        Napier.d("ImagePickerComponent: Cropped image result: $cropped")
+                                        Napier.d(tag = " ImagePickerComponent", message ="ImagePickerComponent: Cropped image result: $cropped")
 
                                         cropped?.let { onImageSelected(it) }
                                     }
@@ -178,9 +178,9 @@ fun ImagePickerComponent(
                                 if (permissionChecker.hasCameraPermission()) {
                                     imagePicker.pickFromCamera { bitmap ->
                                         bitmap?.let {
-                                            Napier.d("ImagePickerComponent: Camera image selected")
+                                            Napier.d(tag = "IOS ImagePickerComponent", message ="ImagePickerComponent: Camera image selected")
                                             imagePicker.cropImage(it) { cropped ->
-                                                Napier.d("ImagePickerComponent: Cropped image result: $cropped")
+                                                Napier.d(tag = "IOS ImagePickerComponent", message ="ImagePickerComponent: Cropped image result: $cropped")
 
                                                 cropped?.let { onImageSelected(it) }
                                             }
@@ -217,81 +217,5 @@ fun ImagePickerComponent(
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
-    }
-}
-
-// Kullanım örneği
-@Composable
-fun ImagePickerScreen() {
-    var selectedImage by remember { mutableStateOf<ImageBitmap?>(null) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "Modern Görsel Seçici",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(bottom = 32.dp)
-        )
-
-        ImagePickerComponent(
-            selectedImage = selectedImage,
-            onImageSelected = { bitmap ->
-                selectedImage = bitmap
-            },
-            placeholder = "Profil fotoğrafı\nekleyin",
-            imageSize = 150.dp
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        if (selectedImage != null) {
-            Button(
-                onClick = { selectedImage = null }
-            ) {
-                Text("Görseli Kaldır")
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant
-            )
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Text(
-                    text = "Özellikler:",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-                Text("• Galeri: İzin gerektirmez (PickVisualMedia)")
-                Text("• Kamera: Sadece kamera izni gerekir")
-                Text("• Modern Android 13+ desteği")
-                Text("• iOS ile tam uyumlu")
-            }
-        }
-    }
-}
-
-
-@Preview
-@Composable
-fun ImagePickerComponentPreview() {
-    MaterialTheme {
-        ImagePickerComponent(
-            selectedImage = null,
-            onImageSelected = {},
-            placeholder = "Görsel Seçin",
-            imageSize = 200.dp,
-            modifier = Modifier.padding(16.dp)
-        )
     }
 }

@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.yalantis.ucrop.UCrop
+import io.github.aakira.napier.Napier
 import java.io.File
 import java.io.FileOutputStream
 
@@ -39,6 +40,7 @@ actual fun rememberImagePicker(): ImagePicker {
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
     ) { success: Boolean ->
+        Napier.d(tag = "AndroidImagePicker", message = "cameraLauncher result: $success")
         val bitmap = if (success) {
             currentPhotoUri?.let { loadImageFromUri(context, it) }
         } else null
@@ -49,6 +51,7 @@ actual fun rememberImagePicker(): ImagePicker {
     val cropLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
+        Napier.d(tag = "AndroidImagePicker", message = "cropLauncher result: ${result.resultCode}")
         //Crop için yeni ekran açılıyor o ekranda işlem yapılıyor
         // sonrasında bu callback tetikleniyor
         if (result.resultCode == android.app.Activity.RESULT_OK) {
