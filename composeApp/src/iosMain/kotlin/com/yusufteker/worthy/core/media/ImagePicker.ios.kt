@@ -6,24 +6,17 @@ import androidx.compose.ui.graphics.toComposeImageBitmap
 import kotlinx.cinterop.*
 import platform.Foundation.*
 import platform.UIKit.*
-
-import cocoapods.TOCropViewController.TOCropViewController
-import cocoapods.TOCropViewController.TOCropViewControllerAspectRatioPreset
 import platform.CoreGraphics.CGRect
 import platform.darwin.NSObject
 import platform.posix.memcpy
-
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asSkiaBitmap
 import cocoapods.TOCropViewController.*
-import io.github.aakira.napier.Napier
 import org.jetbrains.skia.Image
 
 // Global callbacks
-private var galleryCallback: ((ImageBitmap?) -> Unit)? = null
-private var cameraCallback: ((ImageBitmap?) -> Unit)? = null
-private var cropCallback: ((ImageBitmap?) -> Unit)? = null
-private var permissionCallback: ((Boolean) -> Unit)? = null
+private var mainGalleryCallback: ((ImageBitmap?) -> Unit)? = null
+private var mainCameraCallback: ((ImageBitmap?) -> Unit)? = null
 
 @Composable
 actual fun rememberImagePicker(): ImagePicker {
@@ -34,62 +27,95 @@ actual fun rememberImagePicker(): ImagePicker {
 
 class IOSImagePicker : ImagePicker {
 
+    // Delegate referansını class seviyesinde saklıyoruz, GC'ye gitmesin diye
+    private var cropDelegate: CropViewControllerDelegate? = null
+
+    @OptIn(ExperimentalForeignApi::class)
+    private fun presentCropViewController(image: UIImage, aspectRatio: Float, finalCallback: (ImageBitmap?) -> Unit) {
+
+        NSOperationQueue.mainQueue.addOperationWithBlock {
+            try {
+                val cropViewController = TOCropViewController(image)
+
+                // Aspect ratio ayarı: TOCropViewController presetleri sınırlı, float oranına göre en yakın preset seçiyoruz
+                cropViewController.aspectRatioLockEnabled = true
+                cropViewController.aspectRatioPickerButtonHidden = true
+                cropViewController.resetButtonHidden = true
+                cropViewController.rotateButtonsHidden = false
+
+                cropViewController.aspectRatioPreset = when {
+                    aspectRatio == 1f -> TOCropViewControllerAspectRatioPreset.TOCropViewControllerAspectRatioPresetSquare
+                    aspectRatio > 1.7f -> TOCropViewControllerAspectRatioPreset.TOCropViewControllerAspectRatioPreset16x9
+                    aspectRatio > 1.3f -> TOCropViewControllerAspectRatioPreset.TOCropViewControllerAspectRatioPreset4x3
+                    aspectRatio > 1.1f -> TOCropViewControllerAspectRatioPreset.TOCropViewControllerAspectRatioPreset3x2
+                    else -> TOCropViewControllerAspectRatioPreset.TOCropViewControllerAspectRatioPresetOriginal
+                }
+
+                cropDelegate = CropViewControllerDelegate(finalCallback)
+                cropViewController.delegate = cropDelegate
+
+                val rootViewController = getCurrentViewController()
+                if (rootViewController != null) {
+                    rootViewController.presentViewController(
+                        cropViewController,
+                        animated = true,
+                        completion = {
+                        }
+                    )
+                } else {
+                    finalCallback(null)
+                }
+            } catch (e: Exception) {
+                finalCallback(null)
+            }
+        }
+    }
+
     override fun pickFromGallery(onResult: (ImageBitmap?) -> Unit) {
-        Napier.d(tag = "IOS", message = "IOSImagePicker.pickFromGallery called")
-        galleryCallback = onResult
+        mainGalleryCallback = onResult
 
         val picker = UIImagePickerController()
         picker.sourceType = UIImagePickerControllerSourceType.UIImagePickerControllerSourceTypePhotoLibrary
         picker.mediaTypes = listOf("public.image")
-        picker.delegate = GalleryPickerDelegate()
+        picker.delegate = GalleryPickerDelegate(this)
 
-        val rootViewController = getCurrentViewController()
-        rootViewController?.presentViewController(picker, true, null)
+        getCurrentViewController()?.presentViewController(picker, true, null)
     }
 
     override fun pickFromCamera(onResult: (ImageBitmap?) -> Unit) {
-        Napier.d(tag = "IOS", message ="IOSImagePicker.pickFromCamera called")
-        cameraCallback = onResult
+        mainCameraCallback = onResult
 
         if (!isCameraAvailable()) {
             onResult(null)
             return
         }
-
         launchCamera()
     }
 
     private fun launchCamera() {
-
-        Napier.d(tag = "IOS", message ="IOSImagePicker.launchCamera called")
         val picker = UIImagePickerController()
         picker.sourceType = UIImagePickerControllerSourceType.UIImagePickerControllerSourceTypeCamera
         picker.mediaTypes = listOf("public.image")
-        picker.delegate = CameraPickerDelegate()
+        picker.delegate = CameraPickerDelegate(this)
 
-        val rootViewController = getCurrentViewController()
-        rootViewController?.presentViewController(picker, true, null)
+        getCurrentViewController()?.presentViewController(picker, true, null)
     }
 
     override fun isCameraAvailable(): Boolean {
-        Napier.d(tag = "IOS", message ="IOSImagePicker.isCameraAvailable called")
         return UIImagePickerController.isSourceTypeAvailable(
             UIImagePickerControllerSourceType.UIImagePickerControllerSourceTypeCamera
         )
     }
 
     override fun requestCameraPermission(onResult: (Boolean) -> Unit) {
-        onResult(true) // iOS'ta otomatik permission request
+        onResult(true) // iOS otomatik permission handling
     }
 
-    @OptIn(ExperimentalForeignApi::class)
     override fun cropImage(
         image: ImageBitmap,
         aspectRatio: Float,
         onCropped: (ImageBitmap?) -> Unit
     ) {
-        Napier.d(tag = "IOS", message ="IOSImagePicker.cropImage called with aspectRatio: $aspectRatio")
-        cropCallback = onCropped
 
         val uiImage = image.toUIImage()
         if (uiImage == null) {
@@ -97,80 +123,106 @@ class IOSImagePicker : ImagePicker {
             return
         }
 
-        val cropViewController = TOCropViewController(uiImage)
+        presentCropViewController(uiImage, aspectRatio, onCropped)
+    }
 
-        // 1:1 aspect ratio settings
-        cropViewController.aspectRatioPreset =
-            TOCropViewControllerAspectRatioPreset.TOCropViewControllerAspectRatioPresetSquare
-        cropViewController.aspectRatioLockEnabled = true
-        cropViewController.aspectRatioPickerButtonHidden = true
-        cropViewController.resetButtonHidden = true
-        cropViewController.rotateButtonsHidden = false
+    internal fun handleGalleryImage(image: UIImage) {
+        val bitmap = image.toImageBitmap()
+        mainGalleryCallback?.invoke(bitmap)
+        mainGalleryCallback = null
+    }
 
-        cropViewController.delegate = CropViewControllerDelegate()
+    internal fun handleCameraImage(image: UIImage) {
+        val bitmap = image.toImageBitmap()
+        mainCameraCallback?.invoke(bitmap)
+        mainCameraCallback = null
+    }
 
-        val rootViewController = getCurrentViewController()
-        rootViewController?.presentViewController(cropViewController, true, null)
+    internal fun handleGalleryCancel() {
+       // mainGalleryCallback?.invoke(null)
+        mainGalleryCallback = null
+    }
+
+    internal fun handleCameraCancel() {
+       // mainCameraCallback?.invoke(null)
+        mainCameraCallback = null
     }
 
     private fun getCurrentViewController(): UIViewController? {
-        return UIApplication.sharedApplication.keyWindow?.rootViewController
+        val keyWindow = UIApplication.sharedApplication.keyWindow
+        val rootViewController = keyWindow?.rootViewController
+
+        var topViewController = rootViewController
+        while (topViewController?.presentedViewController != null) {
+            topViewController = topViewController.presentedViewController
+        }
+
+        return topViewController
     }
 }
 
 // Delegates
-class GalleryPickerDelegate : NSObject(), UIImagePickerControllerDelegateProtocol, UINavigationControllerDelegateProtocol {
+
+class GalleryPickerDelegate(
+    private val imagePicker: IOSImagePicker
+) : NSObject(), UIImagePickerControllerDelegateProtocol, UINavigationControllerDelegateProtocol {
 
     override fun imagePickerController(
         picker: UIImagePickerController,
         didFinishPickingMediaWithInfo: Map<Any?, *>
     ) {
         val image = didFinishPickingMediaWithInfo[UIImagePickerControllerOriginalImage] as? UIImage
-        val bitmap = image?.toImageBitmap()
+        if (image == null) {
+            picker.dismissViewControllerAnimated(true) {
+                imagePicker.handleGalleryCancel()
+            }
+            return
+        }
 
-        Napier.d(tag = "IOS", message = "GalleryPickerDelegate.didFinishPickingMediaWithInfo called")
-        galleryCallback?.invoke(bitmap)
-        galleryCallback = null
-
-        picker.dismissViewControllerAnimated(true, null)
+        picker.dismissViewControllerAnimated(true) {
+            imagePicker.handleGalleryImage(image)
+        }
     }
 
     override fun imagePickerControllerDidCancel(picker: UIImagePickerController) {
-        Napier.d(tag = "IOS", message = "GalleryPickerDelegate.didCancel called")
-        galleryCallback?.invoke(null)
-        galleryCallback = null
-
-        picker.dismissViewControllerAnimated(true, null)
+        picker.dismissViewControllerAnimated(true) {
+            imagePicker.handleGalleryCancel()
+        }
     }
 }
 
-class CameraPickerDelegate : NSObject(), UIImagePickerControllerDelegateProtocol, UINavigationControllerDelegateProtocol {
+class CameraPickerDelegate(
+    private val imagePicker: IOSImagePicker
+) : NSObject(), UIImagePickerControllerDelegateProtocol, UINavigationControllerDelegateProtocol {
 
     override fun imagePickerController(
         picker: UIImagePickerController,
         didFinishPickingMediaWithInfo: Map<Any?, *>
     ) {
-        Napier.d(tag = "IOS", message = "CameraPickerDelegate.didFinishPickingMediaWithInfo called")
         val image = didFinishPickingMediaWithInfo[UIImagePickerControllerOriginalImage] as? UIImage
-        val bitmap = image?.toImageBitmap()
+        if (image == null) {
+            picker.dismissViewControllerAnimated(true) {
+                imagePicker.handleCameraCancel()
+            }
+            return
+        }
 
-        cameraCallback?.invoke(bitmap)
-        cameraCallback = null
-
-        picker.dismissViewControllerAnimated(true, null)
+        picker.dismissViewControllerAnimated(true) {
+            imagePicker.handleCameraImage(image)
+        }
     }
 
     override fun imagePickerControllerDidCancel(picker: UIImagePickerController) {
-        Napier.d(tag = "IOS", message = "CameraPickerDelegate.didCancel called")
-        cameraCallback?.invoke(null)
-        cameraCallback = null
-
-        picker.dismissViewControllerAnimated(true, null)
+        picker.dismissViewControllerAnimated(true) {
+            imagePicker.handleCameraCancel()
+        }
     }
 }
 
 @OptIn(ExperimentalForeignApi::class)
-class CropViewControllerDelegate : NSObject(), TOCropViewControllerDelegateProtocol {
+class CropViewControllerDelegate(
+    private val onResult: (ImageBitmap?) -> Unit
+) : NSObject(), TOCropViewControllerDelegateProtocol {
 
     override fun cropViewController(
         cropViewController: TOCropViewController,
@@ -179,29 +231,23 @@ class CropViewControllerDelegate : NSObject(), TOCropViewControllerDelegateProto
         angle: Long
     ) {
         val bitmap = didCropToImage.toImageBitmap()
-
-        Napier.d(
-            tag = "IOS",
-            message = "CropViewControllerDelegate.didCropToImage called with angle: $angle"
-        )
-        cropCallback?.invoke(bitmap)
-        cropCallback = null
-
-        cropViewController.dismissViewControllerAnimated(true, null)
+        cropViewController.dismissViewControllerAnimated(true) {
+            onResult(bitmap)
+        }
     }
 
     override fun cropViewController(
         cropViewController: TOCropViewController,
         didFinishCancelled: Boolean
     ) {
-        cropCallback?.invoke(null)
-        cropCallback = null
-
-        cropViewController.dismissViewControllerAnimated(true, null)
+        cropViewController.dismissViewControllerAnimated(true) {
+            onResult(null)
+        }
     }
 }
 
-// Extension Functions - Bu fonksiyonları kendiniz yazıyorsunuz
+// Extension functions for conversion
+
 @OptIn(ExperimentalForeignApi::class)
 fun UIImage.toImageBitmap(): ImageBitmap? {
     return try {
@@ -212,7 +258,6 @@ fun UIImage.toImageBitmap(): ImageBitmap? {
         val skiaImage = Image.makeFromEncoded(bytes)
         skiaImage.toComposeImageBitmap()
     } catch (e: Exception) {
-        println("Error converting UIImage to ImageBitmap: ${e.message}")
         null
     }
 }
@@ -220,24 +265,18 @@ fun UIImage.toImageBitmap(): ImageBitmap? {
 @OptIn(ExperimentalForeignApi::class)
 fun ImageBitmap.toUIImage(): UIImage? {
     return try {
-        // ImageBitmap'i Skia Image'a çevir
         val skiaImage = Image.makeFromBitmap(this.asSkiaBitmap())
-
-        // PNG formatında encode et
         val encodedData = skiaImage.encodeToData(org.jetbrains.skia.EncodedImageFormat.PNG)
             ?: return null
 
         val byteArray = encodedData.bytes
 
-        // ByteArray'i NSData'ya çevir
         val nsData = byteArray.usePinned { pinned ->
             NSData.create(bytes = pinned.addressOf(0), length = byteArray.size.toULong())
         }
 
-        // NSData'dan UIImage oluştur
         UIImage.imageWithData(nsData)
     } catch (e: Exception) {
-        println("Error converting ImageBitmap to UIImage: ${e.message}")
         null
     }
 }

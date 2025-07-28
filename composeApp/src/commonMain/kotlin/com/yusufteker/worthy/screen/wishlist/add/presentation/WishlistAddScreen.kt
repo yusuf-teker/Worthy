@@ -28,7 +28,7 @@ fun WishlistAddScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(contentPadding).background(Color.Red),
+            .padding(contentPadding),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
 
