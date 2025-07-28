@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.yusufteker.worthy.core.media.rememberImagePicker
 import com.yusufteker.worthy.core.media.rememberPermissionChecker
+import io.github.aakira.napier.Napier
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -99,7 +100,9 @@ fun ImagePickerComponent(
                 imagePicker.pickFromCamera { bitmap ->
 
                     bitmap?.let {
+                        Napier.d ("ImagePickerComponent: Camera image selected")
                         imagePicker.cropImage(it) { cropped ->
+                            Napier.d("ImagePickerComponent: Cropped image result: $cropped")
                             cropped?.let { onImageSelected(it) }
                         }
                     }
@@ -138,7 +141,10 @@ fun ImagePickerComponent(
                                 //bitmap?.let { onImageSelected(it) }
 
                                 bitmap?.let {
+                                    Napier.d("ImagePickerComponent: Gallery image selected")
                                     imagePicker.cropImage(it) { cropped ->
+                                        Napier.d("ImagePickerComponent: Cropped image result: $cropped")
+
                                         cropped?.let { onImageSelected(it) }
                                     }
                                 }
@@ -172,7 +178,10 @@ fun ImagePickerComponent(
                                 if (permissionChecker.hasCameraPermission()) {
                                     imagePicker.pickFromCamera { bitmap ->
                                         bitmap?.let {
+                                            Napier.d("ImagePickerComponent: Camera image selected")
                                             imagePicker.cropImage(it) { cropped ->
+                                                Napier.d("ImagePickerComponent: Cropped image result: $cropped")
+
                                                 cropped?.let { onImageSelected(it) }
                                             }
                                         }

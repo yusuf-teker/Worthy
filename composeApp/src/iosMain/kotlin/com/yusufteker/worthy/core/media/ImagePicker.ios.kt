@@ -2,75 +2,69 @@ package com.yusufteker.worthy.core.media
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import kotlinx.cinterop.*
-import platform.AVFoundation.*
 import platform.Foundation.*
-import platform.Photos.*
 import platform.UIKit.*
-import org.jetbrains.skia.Image
 
-
-// iosMain/src/iosMain/kotlin/ImagePicker.ios.kt
-import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.toComposeImageBitmap
-import kotlinx.cinterop.*
-import platform.AVFoundation.*
-import platform.Foundation.*
-import platform.Photos.*
-import platform.UIKit.*
+import cocoapods.TOCropViewController.TOCropViewController
+import cocoapods.TOCropViewController.TOCropViewControllerAspectRatioPreset
+import platform.CoreGraphics.CGRect
 import platform.darwin.NSObject
 import platform.posix.memcpy
 
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asSkiaBitmap
+import cocoapods.TOCropViewController.*
+import io.github.aakira.napier.Napier
+import org.jetbrains.skia.Image
+
+// Global callbacks
+private var galleryCallback: ((ImageBitmap?) -> Unit)? = null
+private var cameraCallback: ((ImageBitmap?) -> Unit)? = null
+private var cropCallback: ((ImageBitmap?) -> Unit)? = null
+private var permissionCallback: ((Boolean) -> Unit)? = null
+
 @Composable
 actual fun rememberImagePicker(): ImagePicker {
-    return remember { IOSImagePicker() }
+    return remember {
+        IOSImagePicker()
+    }
 }
 
 class IOSImagePicker : ImagePicker {
-    private var currentCallback: ((ImageBitmap?) -> Unit)? = null
-    private var currentDelegate: ImagePickerDelegate? = null
 
     override fun pickFromGallery(onResult: (ImageBitmap?) -> Unit) {
-        currentCallback = onResult
+        galleryCallback = onResult
 
         val picker = UIImagePickerController()
         picker.sourceType = UIImagePickerControllerSourceType.UIImagePickerControllerSourceTypePhotoLibrary
-        picker.allowsEditing = false
+        picker.mediaTypes = listOf("public.image")
+        picker.delegate = GalleryPickerDelegate()
 
-        currentDelegate = ImagePickerDelegate { image ->
-            val bitmap = image?.let { convertUIImageToImageBitmap(it) }
-            currentCallback?.invoke(bitmap)
-            currentCallback = null
-            currentDelegate = null
-        }
-
-        picker.delegate = currentDelegate
-        presentViewController(picker)
+        val rootViewController = getCurrentViewController()
+        rootViewController?.presentViewController(picker, true, null)
     }
 
     override fun pickFromCamera(onResult: (ImageBitmap?) -> Unit) {
-        currentCallback = onResult
+        cameraCallback = onResult
 
         if (!isCameraAvailable()) {
             onResult(null)
             return
         }
 
+        launchCamera()
+    }
+
+    private fun launchCamera() {
         val picker = UIImagePickerController()
         picker.sourceType = UIImagePickerControllerSourceType.UIImagePickerControllerSourceTypeCamera
-        picker.allowsEditing = false
+        picker.mediaTypes = listOf("public.image")
+        picker.delegate = CameraPickerDelegate()
 
-        currentDelegate = ImagePickerDelegate { image ->
-            val bitmap = image?.let { convertUIImageToImageBitmap(it) }
-            currentCallback?.invoke(bitmap)
-            currentCallback = null
-            currentDelegate = null
-        }
-
-        picker.delegate = currentDelegate
-        presentViewController(picker)
+        val rootViewController = getCurrentViewController()
+        rootViewController?.presentViewController(picker, true, null)
     }
 
     override fun isCameraAvailable(): Boolean {
@@ -80,55 +74,157 @@ class IOSImagePicker : ImagePicker {
     }
 
     override fun requestCameraPermission(onResult: (Boolean) -> Unit) {
-        val permissionChecker = IOSPermissionChecker()
-        permissionChecker.requestCameraPermission(onResult)
+        onResult(true) // iOS'ta otomatik permission request
     }
 
-    override fun cropImage(image: ImageBitmap, onCropped: (ImageBitmap?) -> Unit) {
-        onCropped(image) // iOS'ta crop işlemi için özel bir implementasyon yok
-    }
+    @OptIn(ExperimentalForeignApi::class)
+    override fun cropImage(
+        image: ImageBitmap,
+        aspectRatio: Float,
+        onCropped: (ImageBitmap?) -> Unit
+    ) {
+        Napier.d("IOSImagePicker.cropImage called with aspectRatio: $aspectRatio")
+        cropCallback = onCropped
 
-    private fun presentViewController(controller: UIViewController) {
-        val rootViewController = UIApplication.sharedApplication.keyWindow?.rootViewController
-        rootViewController?.presentViewController(controller, animated = true, completion = null)
-    }
-
-    @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
-    private fun convertUIImageToImageBitmap(uiImage: UIImage): ImageBitmap? {
-        return try {
-            val imageData = UIImagePNGRepresentation(uiImage) ?: return null
-
-            val bytes = ByteArray(imageData.length.toInt())
-            imageData.bytes?.let { dataBytes ->
-                bytes.usePinned { pinnedBytes ->
-                    memcpy(pinnedBytes.addressOf(0), dataBytes, imageData.length)
-                }
-            }
-
-            val skiaImage = Image.makeFromEncoded(bytes)
-            skiaImage.toComposeImageBitmap()
-        } catch (e: Exception) {
-            println("Error converting UIImage to ImageBitmap: ${e.message}")
-            null
+        val uiImage = image.toUIImage()
+        if (uiImage == null) {
+            onCropped(null)
+            return
         }
+
+        val cropViewController = TOCropViewController(uiImage)
+
+        // 1:1 aspect ratio settings
+        cropViewController.aspectRatioPreset =
+            TOCropViewControllerAspectRatioPreset.TOCropViewControllerAspectRatioPresetSquare
+        cropViewController.aspectRatioLockEnabled = true
+        cropViewController.aspectRatioPickerButtonHidden = true
+        cropViewController.resetButtonHidden = true
+        cropViewController.rotateButtonsHidden = false
+
+        cropViewController.delegate = CropViewControllerDelegate()
+
+        val rootViewController = getCurrentViewController()
+        rootViewController?.presentViewController(cropViewController, true, null)
+    }
+
+    private fun getCurrentViewController(): UIViewController? {
+        return UIApplication.sharedApplication.keyWindow?.rootViewController
     }
 }
-// Ayrı delegate sınıfı
-class ImagePickerDelegate(
-    private val onImageSelected: (UIImage?) -> Unit
-) : NSObject(), UIImagePickerControllerDelegateProtocol, UINavigationControllerDelegateProtocol {
+
+// Delegates
+class GalleryPickerDelegate : NSObject(), UIImagePickerControllerDelegateProtocol, UINavigationControllerDelegateProtocol {
 
     override fun imagePickerController(
         picker: UIImagePickerController,
         didFinishPickingMediaWithInfo: Map<Any?, *>
     ) {
         val image = didFinishPickingMediaWithInfo[UIImagePickerControllerOriginalImage] as? UIImage
-        onImageSelected(image)
-        picker.dismissViewControllerAnimated(true, completion = null)
+        val bitmap = image?.toImageBitmap()
+
+        galleryCallback?.invoke(bitmap)
+        galleryCallback = null
+
+        picker.dismissViewControllerAnimated(true, null)
     }
 
     override fun imagePickerControllerDidCancel(picker: UIImagePickerController) {
-        onImageSelected(null)
-        picker.dismissViewControllerAnimated(true, completion = null)
+        galleryCallback?.invoke(null)
+        galleryCallback = null
+
+        picker.dismissViewControllerAnimated(true, null)
+    }
+}
+
+class CameraPickerDelegate : NSObject(), UIImagePickerControllerDelegateProtocol, UINavigationControllerDelegateProtocol {
+
+    override fun imagePickerController(
+        picker: UIImagePickerController,
+        didFinishPickingMediaWithInfo: Map<Any?, *>
+    ) {
+        val image = didFinishPickingMediaWithInfo[UIImagePickerControllerOriginalImage] as? UIImage
+        val bitmap = image?.toImageBitmap()
+
+        cameraCallback?.invoke(bitmap)
+        cameraCallback = null
+
+        picker.dismissViewControllerAnimated(true, null)
+    }
+
+    override fun imagePickerControllerDidCancel(picker: UIImagePickerController) {
+        cameraCallback?.invoke(null)
+        cameraCallback = null
+
+        picker.dismissViewControllerAnimated(true, null)
+    }
+}
+
+@OptIn(ExperimentalForeignApi::class)
+class CropViewControllerDelegate : NSObject(), TOCropViewControllerDelegateProtocol {
+
+    override fun cropViewController(
+        cropViewController: TOCropViewController,
+        didCropToImage: UIImage,
+        withRect: CValue<CGRect>,
+        angle: Long
+    ) {
+        val bitmap = didCropToImage.toImageBitmap()
+
+        cropCallback?.invoke(bitmap)
+        cropCallback = null
+
+        cropViewController.dismissViewControllerAnimated(true, null)
+    }
+
+    override fun cropViewController(
+        cropViewController: TOCropViewController,
+        didFinishCancelled: Boolean
+    ) {
+        cropCallback?.invoke(null)
+        cropCallback = null
+
+        cropViewController.dismissViewControllerAnimated(true, null)
+    }
+}
+
+// Extension Functions - Bu fonksiyonları kendiniz yazıyorsunuz
+@OptIn(ExperimentalForeignApi::class)
+fun UIImage.toImageBitmap(): ImageBitmap? {
+    return try {
+        val imageData = UIImagePNGRepresentation(this) ?: return null
+        val bytes = ByteArray(imageData.length.toInt())
+        memcpy(bytes.refTo(0), imageData.bytes, imageData.length)
+
+        val skiaImage = Image.makeFromEncoded(bytes)
+        skiaImage.toComposeImageBitmap()
+    } catch (e: Exception) {
+        println("Error converting UIImage to ImageBitmap: ${e.message}")
+        null
+    }
+}
+
+@OptIn(ExperimentalForeignApi::class)
+fun ImageBitmap.toUIImage(): UIImage? {
+    return try {
+        // ImageBitmap'i Skia Image'a çevir
+        val skiaImage = org.jetbrains.skia.Image.makeFromBitmap(this.asSkiaBitmap())
+
+        // PNG formatında encode et
+        val encodedData = skiaImage.encodeToData(org.jetbrains.skia.EncodedImageFormat.PNG)
+            ?: return null
+
+        val byteArray = encodedData.bytes
+
+        // ByteArray'i NSData'ya çevir
+        val nsData = byteArray.usePinned { pinned ->
+            NSData.create(bytes = pinned.addressOf(0), length = byteArray.size.toULong())
+        }
+
+        // NSData'dan UIImage oluştur
+        UIImage.imageWithData(nsData)
+    } catch (e: Exception) {
+        println("Error converting ImageBitmap to UIImage: ${e.message}")
+        null
     }
 }

@@ -1,0 +1,24 @@
+PODS:
+  - composeApp (1.0):
+    - TOCropViewController (= 2.6.1)
+  - TOCropViewController (2.6.1)
+
+DEPENDENCIES:
+  - composeApp (from `../composeApp`)
+  - TOCropViewController (~> 2.6.1)
+
+SPEC REPOS:
+  trunk:
+    - TOCropViewController
+
+EXTERNAL SOURCES:
+  composeApp:
+    :path: "../composeApp"
+
+SPEC CHECKSUMS:
+  composeApp: f3f82ceffbac34743b3c7f0803f26d9ff25d1938
+  TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
+
+PODFILE CHECKSUM: 0378e6f28c18f454a56bbb24b39b5b95f5925088
+
+COCOAPODS: 1.16.2

@@ -8,7 +8,9 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.jetbrains.kotlin.serialization)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.room)}
+    alias(libs.plugins.room)
+    alias(libs.plugins.cocoapods)
+}
 
 kotlin {
     androidTarget {
@@ -32,6 +34,24 @@ kotlin {
         }
     }
 
+    cocoapods {
+        summary = "Some description for the Shared Module"
+        homepage = "Link to the Shared Module homepage"
+        version = "1.0"
+        ios.deploymentTarget = "18.2"
+        podfile = project.file("../iosApp/Podfile")
+        framework {
+            baseName = "ComposeApp"
+            isStatic = true
+        }
+
+        pod("TOCropViewController") {
+            version = "2.6.1"
+            extraOpts += listOf("-compiler-option", "-fmodules")
+        }
+
+
+    }
 
     sourceSets {
         

@@ -4,33 +4,5 @@
 <dict>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
-
-    <!-- Kamera kullanım izni -->
-    <key>NSCameraUsageDescription</key>
-    <string>Bu uygulama fotoğraf çekmek için kameraya erişim gerektirir.</string>
-
-    <!-- Fotoğraf kütüphanesi erişim izni -->
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>Bu uygulama fotoğraf seçmek için galeri erişimi gerektirir.</string>
-
-    <!-- iOS 14+ için sınırlı fotoğraf erişimi -->
-    <key>NSPhotoLibraryAddUsageDescription</key>
-    <string>Bu uygulama fotoğraf kaydetmek için galeri erişimi gerektirir.</string>
-
-    <!-- Desteklenen cihaz yönelimleri -->
-    <key>UISupportedInterfaceOrientations</key>
-    <array>
-        <string>UIInterfaceOrientationPortrait</string>
-        <string>UIInterfaceOrientationLandscapeLeft</string>
-        <string>UIInterfaceOrientationLandscapeRight</string>
-    </array>
-
-    <key>UISupportedInterfaceOrientations~ipad</key>
-    <array>
-        <string>UIInterfaceOrientationPortrait</string>
-        <string>UIInterfaceOrientationPortraitUpsideDown</string>
-        <string>UIInterfaceOrientationLandscapeLeft</string>
-        <string>UIInterfaceOrientationLandscapeRight</string>
-    </array>
 </dict>
 </plist>
