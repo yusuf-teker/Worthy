@@ -16,12 +16,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.yusufteker.worthy.core.data.database.entities.ExpenseNeedType
+import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Expense
 import com.yusufteker.worthy.core.domain.model.Income
+import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
 import com.yusufteker.worthy.core.presentation.theme.Constants.currencySymbols
+import com.yusufteker.worthy.core.presentation.toFormattedWithThousandsSeparator
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.*
@@ -146,7 +149,7 @@ private fun FinancialItemRow(
             Text(
                 text = UiText.StringResourceId(
                     id = Res.string.amount_with_currency,
-                    arrayOf(item.amount.toInt(), currencySymbol)
+                    arrayOf(item.amount.amount.toFormattedWithThousandsSeparator(), currencySymbol)
                 ).asString(),
                 style = AppTypography.bodySmall
             )
@@ -165,14 +168,14 @@ private fun FinancialItemRow(
 @Composable
 private fun AddItemDialog(
     onDismiss: () -> Unit,
-    onAdd: (String, Double, isFixed: Boolean, scheduledDay: Int?, needType: ExpenseNeedType) -> Unit,
+    onAdd: (String, Money, isFixed: Boolean, scheduledDay: Int?, needType: ExpenseNeedType) -> Unit,
     currency: String = currencySymbols.values.first(),
     nameLabel: String = UiText.StringResourceId(Res.string.label_name).asString(),
     amountLabel: String = UiText.StringResourceId(Res.string.label_amount, arrayOf(currency)).asString(),
     isExpenseDialog: Boolean = false
 ) {
     var name by remember { mutableStateOf("") }
-    var amount by remember { mutableStateOf("") }
+    var amount by remember { mutableStateOf<Money?>(null) }
     var isFixed by remember { mutableStateOf(true) }
     var scheduledDay by remember { mutableStateOf<Int?>(1) }
 
@@ -187,12 +190,12 @@ private fun AddItemDialog(
                     label = { Text(nameLabel) },
                     modifier = Modifier.fillMaxWidth()
                 )
-                OutlinedTextField(
-                    value = amount,
+
+                MoneyInput(
+                    // TODO LABEL DEGIS label = { Text(amountLabel) },
+                    money = amount ?: Money(0.0, Currency.TRY),
                     onValueChange = { amount = it },
-                    label = { Text(amountLabel) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
                 DayOfMonthSelector(
                     selectedDay = scheduledDay,
@@ -203,11 +206,11 @@ private fun AddItemDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    val amountFloat = amount.toDoubleOrNull() ?: 0.0
-                    if (name.isNotBlank() && amountFloat > 0) {
+                    val amountFloat = amount?.amount ?: 0.0
+                    if (name.isNotBlank() && amountFloat > 0 && amount != null) {
                         onAdd(
                             name,
-                            amountFloat,
+                            amount!!,
                             isFixed,
                             scheduledDay,
                             if (isExpenseDialog) ExpenseNeedType.NONE else ExpenseNeedType.NEED
@@ -237,7 +240,7 @@ private fun EditItemDialog(
     isExpenseDialog: Boolean = false
 ) {
     var name by remember { mutableStateOf(item.name) }
-    var amount by remember { mutableStateOf(item.amount.toString()) }
+    var amount by remember { mutableStateOf<Money>(item.amount) }
     var isFixed by remember { mutableStateOf(item.isFixed) }
     var scheduledDay by remember { mutableStateOf<Int?>(item.scheduledDay) }
 
@@ -252,12 +255,12 @@ private fun EditItemDialog(
                     label = { Text(nameLabel) },
                     modifier = Modifier.fillMaxWidth()
                 )
-                OutlinedTextField(
-                    value = amount,
+
+                MoneyInput(
+                    // TODO LABEL DEGIS label = { Text(amountLabel) },
+                    money = amount,
                     onValueChange = { amount = it },
-                    label = { Text(amountLabel) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
                 DayOfMonthSelector(
                     selectedDay = scheduledDay,
@@ -268,17 +271,20 @@ private fun EditItemDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    val amountFloat = amount.toDoubleOrNull() ?: 0.0
-                    if (name.isNotBlank() && amountFloat > 0) {
-                        onSave(
-                            item.copy(
-                                name = name,
-                                amount = amountFloat,
-                                isFixed = isFixed,
-                                scheduledDay = scheduledDay
+                    val amountFloat = amount.amount
+                    amount?.let {
+                        if (name.isNotBlank() && amountFloat > 0 ) {
+                            onSave(
+                                item.copy(
+                                    name = name,
+                                    amount = it,
+                                    isFixed = isFixed,
+                                    scheduledDay = scheduledDay
+                                )
                             )
-                        )
+                        }
                     }
+
                 }
             ) {
                 Text(UiText.StringResourceId(Res.string.save).asString())
@@ -295,7 +301,7 @@ private fun EditItemDialog(
 data class ItemForDialog(
     val id: Int,
     val name: String,
-    val amount: Double,
+    val amount: Money = Money(0.0, Currency.TRY),
     val currency: String = currencySymbols.values.first(),
     val isFixed: Boolean = false,
     val scheduledDay: Int?,
@@ -334,9 +340,9 @@ fun List<ItemForDialog>.toIncomes(): List<Income> = map {
 @Composable
 fun FinancialItemDialogPreview() {
     val items = listOf(
-        ItemForDialog(1, "Gider 1", 100.0, isFixed = true, scheduledDay = -1, needType = ExpenseNeedType.NEED),
-        ItemForDialog(2, "Gider 2", 200.0, isFixed = false, scheduledDay = -1, needType = ExpenseNeedType.WANT),
-        ItemForDialog(3, "Gelir 1", 300.0, scheduledDay = -1)
+        ItemForDialog(1, "Gider 1", Money(100.0, Currency.TRY), isFixed = true, scheduledDay = -1, needType = ExpenseNeedType.NEED),
+        ItemForDialog(2, "Gider 2", Money(200.0, Currency.TRY), isFixed = false, scheduledDay = -1, needType = ExpenseNeedType.WANT),
+        ItemForDialog(3, "Gelir 1", Money(300.0, Currency.TRY), scheduledDay = -1)
     )
     FinancialItemDialog(
         title = "Finansal İşlemler",

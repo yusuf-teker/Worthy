@@ -1,4 +1,4 @@
-package com.yusufteker.worthy.core.data.mappers
+package com.yusufteker.worthy.core.data.database.mappers
 
 import com.yusufteker.worthy.core.data.database.entities.CategoryEntity
 import com.yusufteker.worthy.core.data.database.entities.ExpenseEntity

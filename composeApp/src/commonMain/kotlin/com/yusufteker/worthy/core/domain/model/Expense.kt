@@ -5,7 +5,7 @@ import com.yusufteker.worthy.core.data.database.entities.ExpenseNeedType
 data class Expense(
     val id: Int = 0,
     val name: String,
-    val amount: Double,
+    val amount: Money,
     val categoryId: Int?,
     val needType: ExpenseNeedType = ExpenseNeedType.NEED,
     val scheduledDay: Int? = null,

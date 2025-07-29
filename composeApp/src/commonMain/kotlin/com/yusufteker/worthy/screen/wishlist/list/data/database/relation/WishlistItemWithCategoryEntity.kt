@@ -2,7 +2,7 @@ package com.yusufteker.worthy.screen.wishlist.list.data.database.relation
 
 import androidx.room.Embedded
 import androidx.room.Relation
-import com.yusufteker.worthy.core.data.mappers.toDomain
+import com.yusufteker.worthy.core.data.database.mappers.toDomain
 import com.yusufteker.worthy.screen.wishlist.list.data.database.entities.WishlistCategoryEntity
 import com.yusufteker.worthy.screen.wishlist.list.data.database.entities.WishlistItemEntity
 

@@ -33,6 +33,8 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.compose.rememberAsyncImagePainter
 import coil3.toUri
+import com.yusufteker.worthy.core.domain.model.Currency
+import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistItem
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
@@ -125,7 +127,10 @@ fun WishlistItemCardPreview() {
         item = WishlistItem(
             id = 1,
             name = "Örnek Ürün",
-            price = 99.99,
+            price = Money(
+                amount = 100.0,
+                currency = Currency.TRY
+            ),
             category = null,
             priority = 1,
             isPurchased = false,

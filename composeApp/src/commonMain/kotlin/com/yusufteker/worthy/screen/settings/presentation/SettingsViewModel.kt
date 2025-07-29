@@ -1,13 +1,18 @@
 package com.yusufteker.worthy.screen.settings.presentation
 
 import androidx.lifecycle.viewModelScope
+import com.yusufteker.worthy.core.data.service.DefaultCurrencyConverter
+import com.yusufteker.worthy.core.data.service.DummyCurrencyConverter
+import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Expense
 import com.yusufteker.worthy.core.domain.model.Income
+import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.startDate
 import com.yusufteker.worthy.core.domain.repository.CategoryRepository
 import com.yusufteker.worthy.core.domain.repository.ExpenseRepository
 import com.yusufteker.worthy.core.domain.repository.IncomeRepository
 import com.yusufteker.worthy.core.domain.repository.RecurringFinancialItemRepository
+import com.yusufteker.worthy.core.domain.service.CurrencyConverter
 import com.yusufteker.worthy.core.presentation.BaseViewModel
 import com.yusufteker.worthy.screen.settings.domain.UserPrefsManager
 import io.github.aakira.napier.Napier
@@ -25,7 +30,8 @@ class SettingsViewModel(
     private val incomeRepository: IncomeRepository,
     private val expenseRepository: ExpenseRepository,
     private val categoryRepository: CategoryRepository,
-    private val recurringRepository: RecurringFinancialItemRepository
+    private val recurringRepository: RecurringFinancialItemRepository,
+    private val currencyConverter: CurrencyConverter
 ) : BaseViewModel() {
 
 
@@ -33,33 +39,56 @@ class SettingsViewModel(
     val state: StateFlow<SettingsState> = _state
 
     fun calculateTotalFixedIncome(){
-        _state.update { currentState ->
-            currentState.copy(
-                totalFixedIncome = state.value.uniqueIncomeRecurringItems
-                    .groupBy { it.groupId } // groupId’ye göre grupla
-                    .map { (_, items) ->
-                        items.maxByOrNull { it.startDate() } // en güncel tarihli item
-                    }
-                    .filterNotNull()
-                    .sumOf { it.amount }
-                    .toFloat()
-            )
+        viewModelScope.launch {
+
+            _state.update { currentState ->
+                currentState.copy(
+                    totalFixedIncome = state.value.uniqueIncomeRecurringItems
+                        .groupBy { it.groupId } // groupId’ye göre grupla
+                        .map { (_, items) ->
+                            items.maxByOrNull { it.startDate() } // en güncel tarihli item
+                        }
+                        .filterNotNull()
+                        .sumOf {
+                            currencyConverter.convert(
+                                it.amount,
+                                state.value.selectedCurrency
+                            ).amount
+
+
+                        }
+                )
+            }
+            if (state.value.totalFixedExpenses > state.value.totalFixedIncome){
+                updateBudgetIfNeeded()
+            }
         }
     }
 
     fun calculateTotalFixedExpenses(){
-        _state.update { currentState ->
-            currentState.copy(
-                totalFixedExpenses = state.value.uniqueExpenseRecurringItems
-                    .groupBy { it.groupId } // groupId’ye göre grupla
-                    .map { (_, items) ->
-                        items.maxByOrNull { it.startDate() } // en güncel tarihli item
-                    }
-                    .filterNotNull()
-                    .sumOf { it.amount }
-                    .toFloat()
-            )
+        viewModelScope.launch {
+            _state.update { currentState ->
+                currentState.copy(
+                    totalFixedExpenses = state.value.uniqueExpenseRecurringItems
+                        .groupBy { it.groupId } // groupId’ye göre grupla
+                        .map { (_, items) ->
+                            items.maxByOrNull { it.startDate() } // en güncel tarihli item
+                        }
+                        .filterNotNull()
+                        .sumOf {
+                            currencyConverter.convert(
+                                it.amount,
+                                state.value.selectedCurrency
+                            ).amount
+                        }
+                )
+            }
+            if (state.value.totalFixedExpenses > state.value.totalFixedIncome){
+                 updateBudgetIfNeeded()
+            }
+
         }
+
     }
 
     init {
@@ -71,7 +100,7 @@ class SettingsViewModel(
     private fun observeData() {
         combine(
             categoryRepository.getAll(),
-            recurringRepository.getAll()
+            recurringRepository.getAll(),
         ) {  categories, recurringItems ->
             _state.update { currentState ->
                 currentState.copy(
@@ -88,37 +117,92 @@ class SettingsViewModel(
                 )
             }
 
-            updateBudgetIfNeeded()
-            calculateTotalFixedIncome()
-            calculateTotalFixedExpenses()
-            calculateSavings()
+            calculateAll()
 
 
         }.launchIn(viewModelScope)
     }
 
     private fun  calculateSavings(){
-        _state.update { currentState ->
-            val savings = state.value.totalFixedIncome - state.value.totalFixedExpenses - state.value.budgetAmount
-            currentState.copy(
-                savingsAmount = savings.toFloat()
-            )
+        viewModelScope.launch {
+            _state.update { currentState ->
+                val savings =
+                    state.value.totalFixedIncome
+                    - state.value.totalFixedExpenses
+                    - currencyConverter.convert(money = state.value.budgetAmount, to = state.value.selectedCurrency).amount
+                currentState.copy(
+                    savingsAmount = savings
+                )
+
+            }
         }
+
     }
+
+    private fun updateBudgetIfNeeded() {
+        viewModelScope.launch {
+            val expenseSum: Double = state.value.uniqueExpenseRecurringItems.sumOf {
+                currencyConverter.convert(
+                    it.amount,
+                    state.value.selectedCurrency
+                ).amount
+            }
+            val incomeSum: Double = state.value.uniqueIncomeRecurringItems.sumOf {
+                currencyConverter.convert(
+                    it.amount,
+                    state.value.selectedCurrency
+                ).amount
+            }
+            val budgetAmount = currencyConverter.convert(
+                state.value.budgetAmount,
+                to = state.value.selectedCurrency
+            ).amount
+            if (expenseSum >= incomeSum){
+                updateBudgetAmount ( state.value.budgetAmount.copy(amount = 0.0) )
+            }else if (state.value.budgetAmount.amount < 0){
+                // Gelir daha yüksek + budget -'de kalmıs
+                updateBudgetAmount(state.value.budgetAmount.copy(amount = 0.0))
+            }else if ( (expenseSum + budgetAmount )> incomeSum ){
+                // Gelir daha yüksek + budget +'de kalmıs
+                updateBudgetAmount(
+                    state.value.budgetAmount.copy(
+                        amount = incomeSum - expenseSum
+                    )
+                )
+
+            }
+
+        }
+
+    }
+
     private fun observeUserPreferences() {
         combine(
-            userPrefsManager.budgetAmount,
+            userPrefsManager.budgetMoney,
             userPrefsManager.weeklyWorkHours,
             userPrefsManager.selectedCurrency
         ) {  budgetAmount, weeklyWorkHours, selectedCurrency ->
             _state.update { currentState ->
                 currentState.copy(
-                    budgetAmount = budgetAmount,
+                    budgetAmount =
+                        currencyConverter.convert(
+                            budgetAmount ?: Money(0.0, Currency.TRY),
+                            to = selectedCurrency
+                        ),
                     weeklyWorkHours = weeklyWorkHours,
                     selectedCurrency = selectedCurrency
                 )
             }
+            calculateAll()
         }.launchIn(viewModelScope)
+    }
+
+    fun  calculateAll(){// TODO BAKILACAK OPTİMİZASYON
+        calculateTotalFixedIncome()
+        calculateTotalFixedExpenses()
+        //updateBudgetIfNeeded()
+
+        calculateSavings()
     }
     fun onAction(action: SettingsAction){
         when(action){
@@ -199,7 +283,7 @@ class SettingsViewModel(
 
 
 
-    private fun updateCurrency(currency: String) {
+    private fun updateCurrency(currency: Currency) {
         viewModelScope.launch {
             try {
                 userPrefsManager.setSelectedCurrency(currency)
@@ -219,30 +303,17 @@ class SettingsViewModel(
         }
     }
 
-    private fun updateBudgetAmount(amount: Float) {
+    private fun updateBudgetAmount(amount: Money) {
         viewModelScope.launch {
             try {
-                userPrefsManager.setBudgetAmount(amount)
+                userPrefsManager.setBudgetMoney(amount)
             } catch (e: Exception) {
                 handleError(e)
             }
+
         }
     }
 
-    private fun updateBudgetIfNeeded() {
-        val expenseSum: Double = state.value.uniqueExpenseRecurringItems.sumOf {
-            it.amount
-        }
-        val incomeSum: Double = state.value.uniqueIncomeRecurringItems.sumOf {
-            it.amount
-        }
-        if (expenseSum >= incomeSum){
-            updateBudgetAmount (0f )
-        }else if (state.value.budgetAmount < 0){
-            // Gelir daha yüksek + budget -'de kalmıs
-            updateBudgetAmount(0f)
-        }
-    }
 
     private fun saveExpenseItems(updatedFixedExpenses: List<Expense>) {
         viewModelScope.launch {

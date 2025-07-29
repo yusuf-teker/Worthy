@@ -2,6 +2,7 @@ package com.yusufteker.worthy.core.data.database.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.yusufteker.worthy.core.domain.model.Money
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -11,7 +12,7 @@ data class RecurringFinancialItemEntity @OptIn(ExperimentalTime::class) construc
     val groupId: String,
 
     val name: String,
-    val amount: Double,
+    val amount: Money,
     val isIncome: Boolean, // true: income, false: expense
     val needType: ExpenseNeedType = ExpenseNeedType.NONE, // sadece giderler için
     val scheduledDay: Int? = 1, // 1-28

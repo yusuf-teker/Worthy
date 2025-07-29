@@ -103,7 +103,7 @@
     <string name="label_name">Name</string>
     <string name="label_amount">Amount (%1$s)</string> <!-- %1$s => currency symbol -->
     <string name="add_new">Add New</string>
-    <string name="amount_with_currency">%1$d%2$s</string>
+    <string name="amount_with_currency">%1$s%2$s</string>
     <string name="title_settings">Budget &amp; Settings</string>
 
     <string name="last_day">Last day</string>
@@ -122,6 +122,16 @@
     <string name="missing_month_or_year">Month or year is missing.</string>
     <string name="add_expense">Add Expense</string>
     <string name="add_income">Add Income</string>
+
+
+    <!-- Currency -->
+    <string name="currency_try">Turkish Lira</string>
+    <string name="currency_usd">US Dollar</string>
+    <string name="currency_eur">Euro</string>
+    <string name="currency_gbp">British Pound</string>
+    <string name="currency_gram_gold">Gram Gold</string>
+    <string name="currency_btc">Bitcoin</string>
+
 
 
 </resources>

@@ -3,11 +3,13 @@ package com.yusufteker.worthy.screen.settings.domain
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.IOException
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
+import com.yusufteker.worthy.core.domain.model.Currency
+import com.yusufteker.worthy.core.domain.model.Money
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.catch
@@ -25,7 +27,7 @@ class UserPrefsManager(private val dataStore: DataStore<Preferences>) {
     private companion object {
         val INCOME_ITEMS = stringPreferencesKey("income_items")
         val EXPENSE_ITEMS = stringPreferencesKey("expense_items")
-        val BUDGET_AMOUNT = floatPreferencesKey("budget_amount")
+        val BUDGET_AMOUNT = stringPreferencesKey("budget_amount")
         val WEEKLY_WORK_HOURS = intPreferencesKey("weekly_work_hours")
 
         val CURRENCY = stringPreferencesKey("currency")
@@ -53,37 +55,7 @@ class UserPrefsManager(private val dataStore: DataStore<Preferences>) {
             }
         }
 
-    /** GİDER */
-    val expenseItems: Flow<List<ExpenseItem>> = dataStore.data
-        .catch { exception ->
-            if (exception is IOException) {
-                emit(emptyPreferences())
-            } else {
-                throw exception
-            }
-        }
-        .map { prefs ->
-            try {
-                prefs[EXPENSE_ITEMS]
-                    ?.let { json.decodeFromString<List<ExpenseItem>>(it) }
-                    ?: emptyList()
-            } catch (e: SerializationException) {
-                emptyList()
-            }
-        }
 
-    /** BÜTÇE */
-    val budgetAmount: Flow<Float> = dataStore.data
-        .catch { exception ->
-            if (exception is IOException) {
-                emit(emptyPreferences())
-            } else {
-                throw exception
-            }
-        }
-        .map { prefs ->
-            prefs[BUDGET_AMOUNT] ?: 0f
-        }
 
     /** HAFTALIK ÇALIŞMA SAATİ */
     val weeklyWorkHours: Flow<Int> = dataStore.data
@@ -99,7 +71,7 @@ class UserPrefsManager(private val dataStore: DataStore<Preferences>) {
         }
 
     /** SEÇİLEN PARA BİRİMİ */
-    val selectedCurrency: Flow<String> = dataStore.data
+    val selectedCurrency: Flow<Currency> = dataStore.data
         .catch { exception ->
             if (exception is IOException) {
                 emit(emptyPreferences())
@@ -108,28 +80,33 @@ class UserPrefsManager(private val dataStore: DataStore<Preferences>) {
             }
         }
         .map { prefs ->
-            prefs[CURRENCY] ?: "TRY" // Varsayılan olarak Türk Lirası
+            val savedCode = prefs[CURRENCY] ?: Currency.TRY.name
+            Currency.entries.find { it.name == savedCode } ?: Currency.TRY
         }
 
-    /* ******** Kaydetme / Güncelleme ******** */
 
-    suspend fun setIncomeItems(items: List<IncomeItem>) {
+
+
+
+
+    /** BÜTÇE */
+    suspend fun setBudgetMoney(money: Money) {
+        val json = Json.encodeToString(money)
         dataStore.edit { prefs ->
-            prefs[INCOME_ITEMS] = json.encodeToString(items)
+            prefs[BUDGET_AMOUNT] = json
         }
     }
 
-    suspend fun setExpenseItems(items: List<ExpenseItem>) {
-        dataStore.edit { prefs ->
-            prefs[EXPENSE_ITEMS] = json.encodeToString(items)
+    val budgetMoney: Flow<Money?> = dataStore.data.map { prefs ->
+        prefs[BUDGET_AMOUNT]?.let { json ->
+            try {
+                Json.decodeFromString<Money>(json)
+            } catch (e: Exception) {
+                null
+            }
         }
     }
 
-    suspend fun setBudgetAmount(amount: Float) {
-        dataStore.edit { prefs ->
-            prefs[BUDGET_AMOUNT] = amount
-        }
-    }
 
     suspend fun setWeeklyWorkHours(hours: Int) {
         dataStore.edit { prefs ->
@@ -137,81 +114,16 @@ class UserPrefsManager(private val dataStore: DataStore<Preferences>) {
         }
     }
 
-    suspend fun setSelectedCurrency(currency: String) {
+    suspend fun setSelectedCurrency(currency: Currency) {
         dataStore.edit { prefs ->
-            prefs[CURRENCY] = currency
+            prefs[CURRENCY] = currency.name
         }
     }
 
 
-    suspend fun addIncome(item: IncomeItem) {
-        mutateIncomeList { list -> list + item }
-    }
 
-    suspend fun addExpense(item: ExpenseItem) {
-        mutateExpenseList { list -> list + item }
-    }
-
-    suspend fun updateIncome(item: IncomeItem) {
-        mutateIncomeList { list ->
-            list.map { if (it.id == item.id) item else it }
-        }
-    }
-
-    suspend fun updateExpense(item: ExpenseItem) {
-        mutateExpenseList { list ->
-            list.map { if (it.id == item.id) item else it }
-        }
-    }
-
-    suspend fun removeIncome(id: String) {
-        mutateIncomeList { list -> list.filterNot { it.id == id } }
-    }
-
-    suspend fun removeExpense(id: String) {
-        mutateExpenseList { list -> list.filterNot { it.id == id } }
-    }
-
-    /* ******** Yardımcı Fonksiyonlar ******** */
-    private suspend fun mutateIncomeList(mutator: (List<IncomeItem>) -> List<IncomeItem>) {
-        dataStore.edit { prefs ->
-            val current = try {
-                prefs[INCOME_ITEMS]?.let { json.decodeFromString<List<IncomeItem>>(it) } ?: emptyList()
-            } catch (e: SerializationException) {
-                emptyList()
-            }
-            val updated = mutator(current)
-            prefs[INCOME_ITEMS] = json.encodeToString(updated)
-        }
-    }
-
-    private suspend fun mutateExpenseList(mutator: (List<ExpenseItem>) -> List<ExpenseItem>) {
-        dataStore.edit { prefs ->
-            val current = try {
-                prefs[EXPENSE_ITEMS]?.let { json.decodeFromString<List<ExpenseItem>>(it) } ?: emptyList()
-            } catch (e: SerializationException) {
-                emptyList()
-            }
-            val updated = mutator(current)
-            prefs[EXPENSE_ITEMS] = json.encodeToString(updated)
-        }
-    }
-
-    /* ******** Utility ******** */
-    suspend fun clearAll() {
-        dataStore.edit { it.clear() }
-    }
-
-    suspend fun exportData(): String {
-        var result = ""
-        dataStore.data.map { prefs ->
-            json.encodeToString(prefs.asMap())
-        }.collect { result = it }
-        return result
-    }
-
-    val totalIncome: Flow<Float> = incomeItems.map { items ->
-        items.sumOf { it.amount.toDouble() }.toFloat()
+    val totalIncome: Flow<Double> = incomeItems.map { items ->
+        items.sumOf { it.amount }
     }
 
 }

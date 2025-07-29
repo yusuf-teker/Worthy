@@ -23,10 +23,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.yusufteker.worthy.core.data.database.entities.ExpenseNeedType
+import com.yusufteker.worthy.core.domain.model.Currency
+import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.RecurringFinancialItem
 import com.yusufteker.worthy.core.domain.model.endDate
 import com.yusufteker.worthy.core.domain.model.startDate
 import com.yusufteker.worthy.core.presentation.UiText
+import com.yusufteker.worthy.core.presentation.components.DateSelector
+import com.yusufteker.worthy.core.presentation.components.MoneyInput
 import com.yusufteker.worthy.core.presentation.createTimestampId
 import com.yusufteker.worthy.core.presentation.getCurrentMonth
 import com.yusufteker.worthy.core.presentation.getCurrentYear
@@ -201,7 +205,7 @@ fun RecurringItemRow(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("${item.amount}")
+                Text("${item.amount.formatted()}")
                 Row(modifier = Modifier.weight(1f), horizontalArrangement = Arrangement.End) {
                     IconButton(onClick = { onEdit(item) }) {
                         Icon(Icons.Default.Edit, contentDescription = null)
@@ -223,7 +227,7 @@ fun RecurringItemAddDialog(
 ) {
     var name by remember { mutableStateOf( "") }
     var nameError by remember { mutableStateOf<UiText?>(null) }
-    var amount by remember { mutableStateOf( "") }
+    var amount by remember { mutableStateOf<Money>( Money(0.0, Currency.TRY)) }
     var amountError by remember { mutableStateOf<UiText?>(null) }
     var isIncome by remember { mutableStateOf( true) }
     var needType by remember { mutableStateOf( ExpenseNeedType.NONE) }
@@ -264,16 +268,18 @@ fun RecurringItemAddDialog(
                     )
                 }
 
-                OutlinedTextField(
-                    value = amount,
-                    onValueChange = {
-                        amount = it
+
+                MoneyInput(
+                    money = amount,
+                    onValueChange = { newAmount ->
+                        amount = newAmount
                         amountError = null
                     },
-                    label = { Text(UiText.StringResourceId(Res.string.amount).asString()) },
-                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth(),
                     isError = amountError != null,
+                    errorMessage = amountError
                 )
+
 
                 amountError?.let { errorMessage ->
                     Text(
@@ -331,7 +337,7 @@ fun RecurringItemAddDialog(
                     id = 0,
                     groupId = createTimestampId(),
                     name = name,
-                    amount = amount.toDoubleOrNull() ?: 0.0,
+                    amount = amount,
                     isIncome = isIncome,
                     needType = needType,
                     scheduledDay = scheduledDay,
@@ -342,7 +348,7 @@ fun RecurringItemAddDialog(
                 var isValid = false
                 if (item.name.isBlank()) {
                     nameError = UiText.StringResourceId(Res.string.expense_name)
-                } else if (item.amount <= 0) {
+                } else if (item.amount.amount <= 0) {
                     amountError = UiText.StringResourceId(Res.string.amount_must_be_greater_than_zero)
                 } else {
                     isValid = true
@@ -376,7 +382,7 @@ fun RecurringFinancialItemDialogPreview() {
             id = 1,
             groupId = "3",
             name = "Kira",
-            amount = 1500.0,
+            amount = Money(amount = 1000.0, currency = Currency.TRY),
             isIncome = false,
             needType = ExpenseNeedType.NEED,
             scheduledDay = 5,
@@ -389,7 +395,7 @@ fun RecurringFinancialItemDialogPreview() {
             id = 2,
             groupId = "4",
             name = "Elektrik",
-            amount = 200.0,
+            amount = Money(200.0, currency = Currency.TRY),
             isIncome = false,
             needType = ExpenseNeedType.WANT,
             scheduledDay = 10,
@@ -425,7 +431,7 @@ fun RecurringItemGroupEditDialog(
     //val items = remember { mutableStateListOf<RecurringFinancialItem>().apply { addAll(initialItems) } }
 
     // Temporary item (her zaman gösterilir)
-    var tempAmount by remember { mutableStateOf("") }
+    var tempAmount by remember { mutableStateOf<Money?>(null) }
     var tempStartMonth by remember { mutableStateOf<Int>(getCurrentMonth()) }
     var tempStartYear by remember { mutableStateOf<Int>(getCurrentYear()) }
     var tempEndMonth by remember { mutableStateOf<Int?>(null) }
@@ -489,7 +495,7 @@ fun RecurringItemGroupEditDialog(
                             val newItem = RecurringFinancialItem(
                                 id = 0,
                                 name = name,
-                                amount = tempAmount.toDoubleOrNull() ?: 0.0,
+                                amount = Money(amount = tempAmount?.amount ?: 0.0, currency = Currency.TRY),
                                 startMonth = tempStartMonth,
                                 startYear = tempStartYear,
                                 endMonth = tempEndMonth,
@@ -554,8 +560,8 @@ fun RecurringItemGroupEditDialog(
 
             Button(onClick = {
                 // Eğer temp input anlamlıysa onu da ekle
-                val amount = tempAmount.toDoubleOrNull()
-                if (amount != null && amount > 0.0) {
+                val amount = tempAmount
+                if (amount != null && amount.amount > 0.0) {
                     val newItem = RecurringFinancialItem(
                         id = 0,
                         name = name,
@@ -571,7 +577,7 @@ fun RecurringItemGroupEditDialog(
                     //items.add(newItem)
 
                     // Temp alanlar resetleniyor
-                    tempAmount = ""
+                    tempAmount = null
                     tempStartMonth = getCurrentMonth()
                     tempStartYear = getCurrentYear()
                     tempEndMonth = null
@@ -725,18 +731,19 @@ fun ExistingRecurringItemCard(
             color = if (validationError != null) AppColors.error else Color.Transparent)
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
-            OutlinedTextField(
-                value = item.amount.toString(),
-                onValueChange = {
-                    onUpdate(item.copy(amount = it.toDoubleOrNull() ?: 0.0))
+
+            MoneyInput(
+                money = item.amount,
+                onValueChange = { newAmount ->
+                    onUpdate(item.copy(amount = newAmount))
                 },
-                label = { Text(UiText.StringResourceId(Res.string.amount).asString()) },
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth()
+
             )
 
+
             Row {
-                _root_ide_package_.com.yusufteker.worthy.core.presentation.components.DateSelector(
+                DateSelector(
                     title = "Baş. Tar.",
                     month = item.startMonth,
                     onMonthChanged = { onUpdate(item.copy(startMonth = it)) },
@@ -748,7 +755,7 @@ fun ExistingRecurringItemCard(
             }
 
             Row {
-                _root_ide_package_.com.yusufteker.worthy.core.presentation.components.DateSelector(
+                DateSelector(
                     title = "Bit. Tar.",
                     month = item.endMonth,
                     onMonthChanged = { onUpdate(item.copy(endMonth = it)) },
@@ -775,8 +782,8 @@ fun ExistingRecurringItemCard(
 
 @Composable
     fun NewRecurringItemInput(
-    amount: String,
-    onAmountChange: (String) -> Unit,
+    amount: Money?,
+    onAmountChange: (Money) -> Unit,
     startMonth: Int?,
     onStartMonthChange: (Int) -> Unit,
     startYear: Int?,
@@ -796,16 +803,16 @@ fun ExistingRecurringItemCard(
 
         Text(UiText.StringResourceId(Res.string.new_amount).asString(), style = MaterialTheme.typography.titleMedium)
 
-        OutlinedTextField(
-            value = amount,
-            onValueChange = {
-                onAmountChange(it)
+
+        MoneyInput(
+            money = amount ?: Money(amount = 0.0, currency = Currency.TRY),
+            onValueChange = { newAmount ->
+                onAmountChange(newAmount)
                 amountError = null
             },
-            label = { Text(UiText.StringResourceId( Res.string.amount).asString()) },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth(),
-            isError = amountError != null
+            isError = amountError != null,
+            errorMessage = amountError
         )
 
         amountError?.asString()?.let {
@@ -850,7 +857,7 @@ fun ExistingRecurringItemCard(
 
         Button(
             onClick = {
-                if ((amount.toDoubleOrNull() ?: 0.0) <= 0.0){
+                if ((amount?.amount ?: 0.0) <= 0.0){
                     amountError = UiText.StringResourceId(Res.string.amount_must_be_greater_than_zero)
                 }else{ // SUCCESS CASE
                     onSave()

@@ -1,8 +1,8 @@
 package com.yusufteker.worthy.core.data.database.repository
 
 import com.yusufteker.worthy.core.data.database.model.ExpenseDao
-import com.yusufteker.worthy.core.data.mappers.toDomain
-import com.yusufteker.worthy.core.data.mappers.toEntity
+import com.yusufteker.worthy.core.data.database.mappers.toDomain
+import com.yusufteker.worthy.core.data.database.mappers.toEntity
 import com.yusufteker.worthy.core.domain.model.Expense
 import com.yusufteker.worthy.core.domain.repository.ExpenseRepository
 import kotlinx.coroutines.flow.Flow

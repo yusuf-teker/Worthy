@@ -7,10 +7,18 @@ import com.yusufteker.worthy.core.data.database.repository.CategoryRepositoryImp
 import com.yusufteker.worthy.core.data.database.repository.ExpenseRepositoryImpl
 import com.yusufteker.worthy.core.data.database.repository.IncomeRepositoryImpl
 import com.yusufteker.worthy.core.data.database.repository.RecurringFinancialItemRepositoryImpl
+import com.yusufteker.worthy.core.data.service.DefaultCurrencyConverter
+import com.yusufteker.worthy.core.data.service.datasource.CurrencyRatesCacheDataSourceImpl
+import com.yusufteker.worthy.core.data.service.datasource.CurrencyRatesRemoteDataSourceImpl
+import com.yusufteker.worthy.core.data.service.repository.CurrencyRatesRepositoryImpl
 import com.yusufteker.worthy.core.domain.repository.CategoryRepository
+import com.yusufteker.worthy.core.domain.repository.CurrencyRatesRepository
 import com.yusufteker.worthy.core.domain.repository.ExpenseRepository
 import com.yusufteker.worthy.core.domain.repository.IncomeRepository
 import com.yusufteker.worthy.core.domain.repository.RecurringFinancialItemRepository
+import com.yusufteker.worthy.core.domain.service.CurrencyConverter
+import com.yusufteker.worthy.core.domain.service.datasource.CurrencyRatesCacheDataSource
+import com.yusufteker.worthy.core.domain.service.datasource.CurrencyRatesRemoteDataSource
 import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistRepository
 import com.yusufteker.worthy.core.presentation.BaseViewModel
 import com.yusufteker.worthy.screen.dashboard.presentation.DashboardViewModel
@@ -57,12 +65,17 @@ val sharedModule = module {
     single<CategoryRepository> { CategoryRepositoryImpl(get()) }
     single<RecurringFinancialItemRepository> { RecurringFinancialItemRepositoryImpl(get()) }
 
+    single<CurrencyRatesCacheDataSource> { CurrencyRatesCacheDataSourceImpl() }
+    single<CurrencyRatesRemoteDataSource> { CurrencyRatesRemoteDataSourceImpl() }
+
+    single<CurrencyRatesRepository> { CurrencyRatesRepositoryImpl(get(), get()) }
+    single<CurrencyConverter> { DefaultCurrencyConverter(get()) }
 
 
     viewModel { OnboardingViewModel(get()) }
     viewModel { BaseViewModel() }
     viewModel { DashboardViewModel(get()) }
-    viewModel { SettingsViewModel(get(),get(),get(),get(), get() )}
+    viewModel { SettingsViewModel(get(),get(),get(),get(), get(), get() )}
     viewModel { WishlistViewModel(get(), get()) }
     viewModel { WishlistAddViewModel(get()) }
 }

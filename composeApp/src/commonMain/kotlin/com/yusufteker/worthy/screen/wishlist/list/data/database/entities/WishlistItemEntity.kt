@@ -5,6 +5,8 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.yusufteker.worthy.core.data.database.entities.CategoryEntity
+import com.yusufteker.worthy.core.domain.model.Currency
+import com.yusufteker.worthy.core.domain.model.Money
 
 @Entity(
     tableName = "wishlist",
@@ -19,7 +21,7 @@ import com.yusufteker.worthy.core.data.database.entities.CategoryEntity
 data class WishlistItemEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val name: String,
-    val price: Double,
+    val price: Money,
     val categoryId: Int?,
     val priority: Int = 0,
     val isPurchased: Boolean = false,

@@ -1,6 +1,8 @@
 package com.yusufteker.worthy.screen.settings.presentation
 
 import com.yusufteker.worthy.core.domain.model.Category
+import com.yusufteker.worthy.core.domain.model.Currency
+import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.RecurringFinancialItem
 
 data class SettingsState(
@@ -9,12 +11,13 @@ data class SettingsState(
     val uniqueExpenseRecurringItems: List<RecurringFinancialItem> = emptyList(),
     val expenseRecurringItems: List<RecurringFinancialItem> = emptyList(),
     val categories: List<Category> = emptyList(),
-    val budgetAmount: Float = 0f,
-    val savingsAmount: Float = 0f,
-    val totalFixedIncome: Float = 0f,
-    val totalFixedExpenses: Float = 0f,
+    val budgetAmount: Money = Money(0.0, Currency.TRY),
+    val convertedBudgetAmount: Double = 0.0,
+    val savingsAmount: Double = 0.0,
+    val totalFixedIncome: Double = 0.0,
+    val totalFixedExpenses: Double = 0.0,
     val weeklyWorkHours: Int = 40,
-    val selectedCurrency: String = "USD",
+    val selectedCurrency: Currency = Currency.TRY,
     val isLoading: Boolean = false,
     val errorMessage: String? = null
     )

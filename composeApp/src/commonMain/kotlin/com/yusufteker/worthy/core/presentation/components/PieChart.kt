@@ -15,7 +15,7 @@ import kotlin.math.sin
 
 @Composable
 fun PieChart(
-    values: List<Float>,
+    values: List<Double>,
     colors: List<Color>,
     modifier: Modifier = Modifier,
     animationDuration: Int = 750,
@@ -23,8 +23,8 @@ fun PieChart(
     dividerStrokeWidth: Float = 2f
 ) {
     // Negatifleri 0 yap
-    val positiveValues = values.map { if (it > 0f) it else 0f }
-    val total = positiveValues.sum().takeIf { it > 0f } ?: 1f
+    val positiveValues = values.map { if (it > 0.0) it else 0.0 }
+    val total = positiveValues.sum().takeIf { it > 0.0 } ?: 1.0
 
     val progress = remember { Animatable(0f) }
 
@@ -40,7 +40,7 @@ fun PieChart(
         val radius = minOf(size.width, size.height) / 2f
         var startAngle = -90f
 
-        if (positiveValues.isEmpty() || positiveValues.all { it == 0f }) {
+        if (positiveValues.isEmpty() || positiveValues.all { it == 0.0 }) {
             drawArc(
                 color = colors.getOrElse(0) { Color.Red }, // İlk rengini kullan
                 startAngle = 0f,
@@ -50,7 +50,7 @@ fun PieChart(
         } else {
             // Dilimleri çiz
             positiveValues.forEachIndexed { i, v ->
-                val sweep = 360f * (v / total) * progress.value
+                val sweep = 360.0f * (v / total).toFloat() * progress.value
 
                 if (v > 0f) {
                     drawArc(
@@ -60,7 +60,7 @@ fun PieChart(
                         useCenter = true
                     )
                 }
-                startAngle += 360f * (v / total)
+                startAngle += 360f * (v / total).toFloat()
             }
 
             // Sınırları çiz
@@ -98,7 +98,7 @@ fun PieChart(
                             )
                         }
                     }
-                    startAngle += 360f * (v / total)
+                    startAngle += 360f * (v / total).toFloat()
                 }
             }
 

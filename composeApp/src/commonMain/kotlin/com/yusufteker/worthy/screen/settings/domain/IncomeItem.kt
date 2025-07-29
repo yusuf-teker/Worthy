@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 data class IncomeItem(
     val id: String = "",
     val name: String,
-    val amount: Float
+    val amount: Double
 )

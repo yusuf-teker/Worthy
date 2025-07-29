@@ -71,10 +71,10 @@ class DashboardViewModel(
         delay(800)    // demo loading
 
         _state.update {
-            it.copy(
+            it.copy( // TODO : repository’den gerçek veriyi çek prefden değil
                 userName = "Yusuf",
                 monthlyIncome = userPrefsManager.totalIncome.first().toDouble(),
-                selectedCurrency = userPrefsManager.selectedCurrency.first(),
+                selectedCurrency = userPrefsManager.selectedCurrency.first().symbol,
                 monthlyWorkHours = userPrefsManager.weeklyWorkHours.first() * 4.33f,
                 desireBudget = 10000.0,
                 monthlyExpense = 27000.0,

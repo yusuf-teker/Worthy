@@ -7,9 +7,11 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
+import com.yusufteker.worthy.core.presentation.toFormattedWithThousandsSeparator
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.label_budget_value
 
@@ -17,33 +19,32 @@ import worthy.composeapp.generated.resources.label_budget_value
 @Composable
 fun BudgetSlider(
     modifier: Modifier = Modifier,
-    budgetAmount: Float,
-    totalIncome: Float,
-    totalFixedExpenses: Float,
+    budgetAmount: Money,
+    totalIncome: Double,
+    totalFixedExpenses: Double,
     selectedCurrency: String,
-    onBudgetChange: (Float) -> Unit,
-    currencySymbols: Map<String, String> = mapOf(
-        "TRY" to "₺", "USD" to "$", "EUR" to "€", "GBP" to "£", "JPY" to "¥"
-    ),
+    onBudgetChange: (Double) -> Unit,
 ) {
-    val currency = currencySymbols.getValue(selectedCurrency)
-    val maxValue = (totalIncome - totalFixedExpenses).coerceAtLeast(0f)
+    val currency = selectedCurrency
+    val maxValue = (totalIncome - totalFixedExpenses).coerceAtLeast(0.0)
 
     Column(modifier) {
         // ─── Metin
         Text(
             text = UiText.StringResourceId(
                 id = Res.string.label_budget_value,
-                args = arrayOf(budgetAmount.toInt(), currency)
+                args = arrayOf(budgetAmount.amount.toFormattedWithThousandsSeparator(), currency)
             ).asString(),
             style = AppTypography.bodyMedium
         )
 
         // ─── Kaydırma çubuğu
         Slider(
-            value = budgetAmount,
-            onValueChange = { v -> onBudgetChange(v.coerceIn(0f, maxValue)) },
-            valueRange = 0f..maxValue,
+            value = budgetAmount.amount.toFloat(),
+            onValueChange = { v ->
+                onBudgetChange(v.toDouble().coerceIn(0.0, maxValue))
+                            },
+            valueRange = 0f..maxValue.toFloat(),
             enabled = totalIncome > totalFixedExpenses,
             colors = SliderDefaults.colors(
                 thumbColor = AppColors.primary,

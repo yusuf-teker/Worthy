@@ -7,7 +7,7 @@ data class RecurringFinancialItem(
     val id: Int = 0,
     val groupId: String,
     val name: String,
-    val amount: Double,
+    val amount: Money,
     val isIncome: Boolean,
     val needType: ExpenseNeedType = ExpenseNeedType.NONE,
     val scheduledDay: Int? = 1,

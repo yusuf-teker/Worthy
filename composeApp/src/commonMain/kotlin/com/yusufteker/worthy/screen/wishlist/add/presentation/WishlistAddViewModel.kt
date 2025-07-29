@@ -21,7 +21,6 @@ class WishlistAddViewModel(
                 // TODO
             }
 
-            WishlistAddAction.OnImageRemoved -> TODO()
             is WishlistAddAction.OnImageSelected -> {
 
                 _state.value = _state.value.copy(
@@ -31,6 +30,54 @@ class WishlistAddViewModel(
 
             WishlistAddAction.OnWishlistAdd -> {
                 saveWishlistItem()
+            }
+
+            is WishlistAddAction.OnCategorySelected -> {
+                _state.value = _state.value.copy(
+                    wishlistItem = _state.value.wishlistItem.copy(
+                        category = action.wishlistCategory
+                    )
+                )
+            }
+            is WishlistAddAction.OnNameChanged -> {
+                _state.value = _state.value.copy(
+                    wishlistItem = _state.value.wishlistItem.copy(
+                        name = action.name
+                    )
+                )
+
+            }
+            is WishlistAddAction.OnNoteChanged -> {
+                _state.value = _state.value.copy(
+                    wishlistItem = _state.value.wishlistItem.copy(
+                        note = action.note
+                    )
+                )
+            }
+            is WishlistAddAction.OnPriceChanged ->  {
+                _state.value = _state.value.copy(
+                    wishlistItem = _state.value.wishlistItem.copy(
+                        price = _state.value.wishlistItem.price.setAmount(action.priceAmount)
+                    )
+                )
+            }
+            is WishlistAddAction.OnPriorityChanged -> {
+                _state.value = _state.value.copy(
+                    wishlistItem = _state.value.wishlistItem.copy(
+                        priority = action.priority
+                    )
+                )
+            }
+            is WishlistAddAction.OnPurchasedChanged -> {
+                _state.value = _state.value.copy(
+                    wishlistItem = _state.value.wishlistItem.copy(
+                        isPurchased = action.isPurchased
+                    )
+                )
+            }
+            WishlistAddAction.OnSaveClicked -> {
+
+
             }
         }
     }

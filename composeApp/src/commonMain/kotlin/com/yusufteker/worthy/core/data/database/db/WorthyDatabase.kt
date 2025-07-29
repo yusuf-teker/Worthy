@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.room.TypeConverters
-import com.yusufteker.worthy.core.data.converters.RoomTypeConverters
+import com.yusufteker.worthy.core.data.database.converters.RoomTypeConverters
 import com.yusufteker.worthy.core.data.database.model.CategoryDao
 import com.yusufteker.worthy.core.data.database.model.ExpenseDao
 import com.yusufteker.worthy.core.data.database.model.IncomeDao

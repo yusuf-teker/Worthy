@@ -1,7 +1,7 @@
 package com.yusufteker.worthy.screen.wishlist.list.data.database.repository
 
-import com.yusufteker.worthy.core.data.mappers.toDomain
-import com.yusufteker.worthy.core.data.mappers.toEntity
+import com.yusufteker.worthy.core.data.database.mappers.toDomain
+import com.yusufteker.worthy.core.data.database.mappers.toEntity
 import com.yusufteker.worthy.screen.wishlist.list.data.database.model.WishlistItemDao
 import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistItem
 import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistRepository

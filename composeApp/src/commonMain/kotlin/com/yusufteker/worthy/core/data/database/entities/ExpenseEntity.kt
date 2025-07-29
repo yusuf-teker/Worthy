@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.yusufteker.worthy.core.domain.model.Money
 
 @Entity(
     tableName = "expenses",
@@ -18,7 +19,7 @@ import androidx.room.PrimaryKey
 data class ExpenseEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val name: String,
-    val amount: Double,
+    val amount: Money,
     val categoryId: Int?,
     val scheduledDay: Int? = null,
     val needType: ExpenseNeedType = ExpenseNeedType.NEED,

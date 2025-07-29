@@ -126,5 +126,13 @@
     <string name="add_income">Gelir Ekle</string>
 
 
+    <!-- Currency -->
+    <string name="currency_try">Türk Lirası</string>
+    <string name="currency_usd">Amerikan Doları</string>
+    <string name="currency_eur">Euro</string>
+    <string name="currency_gbp">İngiliz Sterlini</string>
+    <string name="currency_gram_gold">Gram Altın</string>
+    <string name="currency_btc">Bitcoin</string>
+
 
 </resources>

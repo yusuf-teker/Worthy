@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
 import com.yusufteker.worthy.screen.settings.presentation.components.BudgetSlider
@@ -38,6 +39,7 @@ import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
 import com.yusufteker.worthy.core.presentation.theme.Constants.WEEKLY_MAX_HOURS
 import com.yusufteker.worthy.core.presentation.theme.Constants.currencySymbols
+import com.yusufteker.worthy.core.presentation.toFormattedWithThousandsSeparator
 import org.koin.compose.viewmodel.koinViewModel
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.hour_singular
@@ -98,7 +100,7 @@ fun SettingsScreen(
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             // PIE CHART
             PieChart(
-                values = listOf(state.totalFixedExpenses, state.budgetAmount, state.savingsAmount),
+                values = listOf(state.totalFixedExpenses, state.budgetAmount.amount, state.savingsAmount),
                 colors = listOf(AppColors.fixedExpenseGray, AppColors.budgetBlue, AppColors.savingsGreen),
                 modifier = Modifier
                     .size(120.dp)
@@ -114,11 +116,15 @@ fun SettingsScreen(
                 budgetAmount = state.budgetAmount,
                 totalIncome = state.totalFixedIncome,
                 totalFixedExpenses = state.totalFixedExpenses,
-                selectedCurrency = state.selectedCurrency,
+                selectedCurrency = state.selectedCurrency.symbol,
                 onBudgetChange = { v ->
-                    onAction(SettingsAction.OnBudgetValueChange(v.coerceIn(0f, (state.totalFixedIncome - state.totalFixedExpenses).coerceAtLeast(0f))))
+                    onAction(SettingsAction.OnBudgetValueChange(
+                        state.budgetAmount.copy(
+                            amount = v.coerceIn(0.0, (state.totalFixedIncome - state.totalFixedExpenses).coerceAtLeast(0.0)))
+                        )
+
+                    )
                 },
-                currencySymbols = currencySymbols
             )
             // INCOME WIDGET
             FinancialWidget(
@@ -126,7 +132,7 @@ fun SettingsScreen(
                 totalAmount = state.totalFixedIncome,
                 color = AppColors.primary,
                 onClick = { showIncomeDialog = true },
-                currencySymbol = currencySymbols.getValue(state.selectedCurrency)
+                currencySymbol = state.selectedCurrency.symbol
             )
 
             // FIXED EXPENSES WIDGET
@@ -135,7 +141,7 @@ fun SettingsScreen(
                 totalAmount = state.totalFixedExpenses,
                 color = AppColors.primary,
                 onClick = { showFixedExpenseDialog = true },
-                currencySymbol = currencySymbols.getValue(state.selectedCurrency)
+                currencySymbol = state.selectedCurrency.symbol
             )
         }
         }
@@ -148,9 +154,9 @@ fun SettingsScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
-            ReadOnlyRow( UiText.StringResourceId(Res.string.label_fixed_expenses).asString(), state.totalFixedExpenses,  AppColors.fixedExpenseGray,  currencySymbols.getValue(state.selectedCurrency))
-            ReadOnlyRow( UiText.StringResourceId(Res.string.label_budget).asString(), state.budgetAmount, AppColors.budgetBlue, currencySymbols.getValue(state.selectedCurrency))
-            ReadOnlyRow( UiText.StringResourceId(Res.string.label_savings).asString(), state.savingsAmount, AppColors.savingsGreen, currencySymbols.getValue(state.selectedCurrency))
+            ReadOnlyRow( UiText.StringResourceId(Res.string.label_fixed_expenses).asString(), state.totalFixedExpenses,  AppColors.fixedExpenseGray,  state.selectedCurrency.symbol)
+            ReadOnlyRow( UiText.StringResourceId(Res.string.label_budget).asString(), state.budgetAmount.amount, AppColors.budgetBlue, state.selectedCurrency.symbol)
+            ReadOnlyRow( UiText.StringResourceId(Res.string.label_savings).asString(), state.savingsAmount, AppColors.savingsGreen, state.selectedCurrency.symbol)
         }
 
 
@@ -175,9 +181,8 @@ fun SettingsScreen(
             )
             CurrencyPicker(
                 modifier = Modifier.weight(2f),
-                selectedCurrencyCode = state.selectedCurrency,
+                selectedCurrency = state.selectedCurrency,
                 onCurrencySelected = { onAction(SettingsAction.OnCurrencyChange(it)) },
-                currencySymbols = currencySymbols
             )
         }
 
@@ -247,7 +252,7 @@ fun SettingsScreen(
 
 
 @Composable
-private fun ReadOnlyRow(label: String, amount: Float, color: Color, currencySymbol: String = "₺") {
+private fun ReadOnlyRow(label: String, amount: Double, color: Color, currencySymbol: String = "₺") {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Box(
             Modifier
@@ -255,6 +260,6 @@ private fun ReadOnlyRow(label: String, amount: Float, color: Color, currencySymb
                 .background(color, CircleShape)
         )
         Spacer(Modifier.width(8.dp))
-        Text("$label: ${amount.toInt()} $currencySymbol", style = AppTypography.bodyMedium)
+        Text("$label: ${amount.toFormattedWithThousandsSeparator()} $currencySymbol", style = AppTypography.bodyMedium)
     }
 }

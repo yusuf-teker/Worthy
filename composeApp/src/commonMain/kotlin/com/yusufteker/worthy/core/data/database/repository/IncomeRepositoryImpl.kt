@@ -1,8 +1,8 @@
 package com.yusufteker.worthy.core.data.database.repository
 
 import com.yusufteker.worthy.core.data.database.model.IncomeDao
-import com.yusufteker.worthy.core.data.mappers.toDomain
-import com.yusufteker.worthy.core.data.mappers.toEntity
+import com.yusufteker.worthy.core.data.database.mappers.toDomain
+import com.yusufteker.worthy.core.data.database.mappers.toEntity
 import com.yusufteker.worthy.core.domain.model.Income
 import com.yusufteker.worthy.core.domain.repository.IncomeRepository
 import kotlinx.coroutines.flow.Flow
