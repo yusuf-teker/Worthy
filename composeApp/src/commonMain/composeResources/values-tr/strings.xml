@@ -150,5 +150,13 @@
     <string name="image_picker_selected_image_desc">Seçilen Görsel</string>
 
 
+    <!-- Category -->
+
+    <string name="add_new_category">➕ Yeni kategori ekle</string>
+    <string name="create_new_category_title">Yeni Kategori Oluştur</string>
+    <string name="category_name_label">Kategori adı</string>
+    <string name="category_label">Kategori</string>
+    <string name="create_button">Oluştur</string>
+
 
 </resources>

@@ -126,8 +126,7 @@ class SettingsViewModel(
     private fun  calculateSavings(){
         viewModelScope.launch {
             _state.update { currentState ->
-                val savings =
-                    state.value.totalFixedIncome
+                val savings = state.value.totalFixedIncome
                     - state.value.totalFixedExpenses
                     - currencyConverter.convert(money = state.value.budgetAmount, to = state.value.selectedCurrency).amount
                 currentState.copy(
