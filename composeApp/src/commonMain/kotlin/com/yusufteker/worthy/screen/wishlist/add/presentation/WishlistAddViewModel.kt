@@ -57,7 +57,7 @@ class WishlistAddViewModel(
             is WishlistAddAction.OnPriceChanged ->  {
                 _state.value = _state.value.copy(
                     wishlistItem = _state.value.wishlistItem.copy(
-                        price = _state.value.wishlistItem.price.setAmount(action.priceAmount)
+                        price = action.price
                     )
                 )
             }

@@ -170,8 +170,8 @@ private fun AddItemDialog(
     onDismiss: () -> Unit,
     onAdd: (String, Money, isFixed: Boolean, scheduledDay: Int?, needType: ExpenseNeedType) -> Unit,
     currency: String = currencySymbols.values.first(),
-    nameLabel: String = UiText.StringResourceId(Res.string.label_name).asString(),
-    amountLabel: String = UiText.StringResourceId(Res.string.label_amount, arrayOf(currency)).asString(),
+    nameLabel: UiText = UiText.StringResourceId(Res.string.label_name),
+    amountLabel: UiText = UiText.StringResourceId(Res.string.label_amount, arrayOf(currency)),
     isExpenseDialog: Boolean = false
 ) {
     var name by remember { mutableStateOf("") }
@@ -187,12 +187,12 @@ private fun AddItemDialog(
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text(nameLabel) },
+                    label = { Text(nameLabel.asString()) },
                     modifier = Modifier.fillMaxWidth()
                 )
 
                 MoneyInput(
-                    // TODO LABEL DEGIS label = { Text(amountLabel) },
+                    label = amountLabel,
                     money = amount ?: Money(0.0, Currency.TRY),
                     onValueChange = { amount = it },
                     modifier = Modifier.fillMaxWidth(),
@@ -235,8 +235,8 @@ private fun EditItemDialog(
     onDismiss: () -> Unit,
     onSave: (ItemForDialog) -> Unit,
     currency: String = currencySymbols.values.first(),
-    nameLabel: String = UiText.StringResourceId(Res.string.label_name).asString(),
-    amountLabel: String = UiText.StringResourceId(Res.string.label_amount, arrayOf(currency)).asString(),
+    nameLabel: UiText = UiText.StringResourceId(Res.string.label_name),
+    amountLabel: UiText = UiText.StringResourceId(Res.string.label_amount, arrayOf(currency)),
     isExpenseDialog: Boolean = false
 ) {
     var name by remember { mutableStateOf(item.name) }
@@ -246,18 +246,18 @@ private fun EditItemDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Düzenle") }, // Bu da bir string resource olabilir
+        title = { Text(UiText.StringResourceId(Res.string.edit).asString()) }, // Bu da bir string resource olabilir
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text(nameLabel) },
+                    label = { Text(nameLabel.asString()) },
                     modifier = Modifier.fillMaxWidth()
                 )
 
                 MoneyInput(
-                    // TODO LABEL DEGIS label = { Text(amountLabel) },
+                    label = amountLabel,
                     money = amount,
                     onValueChange = { amount = it },
                     modifier = Modifier.fillMaxWidth(),

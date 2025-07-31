@@ -22,14 +22,28 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.yusufteker.worthy.core.media.rememberImagePicker
 import com.yusufteker.worthy.core.media.rememberPermissionChecker
+import com.yusufteker.worthy.core.presentation.UiText
+import com.yusufteker.worthy.core.presentation.theme.AppColors
+import com.yusufteker.worthy.core.presentation.theme.AppTypography
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import worthy.composeapp.generated.resources.Res
+import worthy.composeapp.generated.resources.camera
+import worthy.composeapp.generated.resources.gallery
+import worthy.composeapp.generated.resources.history
+import worthy.composeapp.generated.resources.image_picker_camera
+import worthy.composeapp.generated.resources.image_picker_camera_unavailable
+import worthy.composeapp.generated.resources.image_picker_gallery
+import worthy.composeapp.generated.resources.image_picker_placeholder
+import worthy.composeapp.generated.resources.image_picker_selected_image_desc
+import worthy.composeapp.generated.resources.image_picker_title
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ImagePickerComponent(
     selectedImage: ImageBitmap?,
     onImageSelected: (ImageBitmap) -> Unit,
-    placeholder: String = "Görsel Seçin",
+    placeholder: UiText = UiText.StringResourceId(Res.string.image_picker_placeholder),
     modifier: Modifier = Modifier,
     imageSize: Dp = 200.dp,
     enabled: Boolean = true,
@@ -52,7 +66,7 @@ fun ImagePickerComponent(
             .border(
                 width = 2.dp,
                 color = if (selectedImage != null) Color.Transparent
-                else MaterialTheme.colorScheme.outline,
+                else  AppColors.outline,
                 shape = RoundedCornerShape(12.dp)
             )
             .clickable(enabled = enabled) {
@@ -63,7 +77,7 @@ fun ImagePickerComponent(
         if (selectedImage != null) {
             Image(
                 bitmap = selectedImage,
-                contentDescription = "Seçilen Görsel",
+                contentDescription = UiText.StringResourceId(Res.string.image_picker_selected_image_desc).asString(),
                 modifier = Modifier.fillMaxSize().aspectRatio(1f),
                 contentScale = ContentScale.Crop,
 
@@ -77,15 +91,15 @@ fun ImagePickerComponent(
                     imageVector = Icons.Default.Add,
                     contentDescription = null,
                     modifier = Modifier.size(48.dp),
-                    tint = if (enabled) MaterialTheme.colorScheme.outline
-                    else MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                    tint = if (enabled) AppColors.outline
+                    else  AppColors.outline.copy(alpha = 0.5f)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = placeholder,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = if (enabled) MaterialTheme.colorScheme.outline
-                    else MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                    text = placeholder.asString(),
+                    style = AppTypography.bodyMedium,
+                    color = if (enabled)  AppColors.outline
+                    else  AppColors.outline.copy(alpha = 0.5f),
                     textAlign = TextAlign.Center
                 )
             }
@@ -123,8 +137,8 @@ fun ImagePickerComponent(
                     .padding(16.dp)
             ) {
                 Text(
-                    text = "Görsel Seçin",
-                    style = MaterialTheme.typography.headlineSmall,
+                    text = UiText.StringResourceId(Res.string.image_picker_title).asString(),
+                    style = AppTypography.headlineSmall,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
@@ -150,14 +164,14 @@ fun ImagePickerComponent(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Favorite,
+                        painter = painterResource(resource = Res.drawable.gallery),
                         contentDescription = null,
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(16.dp))
                     Text(
-                        text = "Galeriden Seç",
-                        style = MaterialTheme.typography.bodyLarge
+                        text = UiText.StringResourceId(Res.string.image_picker_gallery).asString(),
+                        style = AppTypography.bodyLarge
                     )
                 }
 
@@ -186,21 +200,22 @@ fun ImagePickerComponent(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Info, // camera,
+                        painter = painterResource(resource = Res.drawable.camera),
                         contentDescription = null,
                         modifier = Modifier.size(24.dp),
                         tint = if (imagePicker.isCameraAvailable())
-                            MaterialTheme.colorScheme.onSurface
-                        else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                            AppColors.onSurface
+                        else AppColors.onSurface.copy(alpha = 0.5f)
                     )
                     Spacer(modifier = Modifier.width(16.dp))
                     Text(
-                        text = if (imagePicker.isCameraAvailable()) "Kamera ile Çek"
-                        else "Kamera Kullanılamıyor",
-                        style = MaterialTheme.typography.bodyLarge,
+                        text = if (imagePicker.isCameraAvailable())
+                            UiText.StringResourceId(Res.string.image_picker_camera).asString()
+                        else UiText.StringResourceId(Res.string.image_picker_camera_unavailable).asString(),
+                        style = AppTypography.bodyLarge,
                         color = if (imagePicker.isCameraAvailable())
-                            MaterialTheme.colorScheme.onSurface
-                        else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                            AppColors.onSurface
+                        else AppColors.onSurface.copy(alpha = 0.5f)
                     )
                 }
 

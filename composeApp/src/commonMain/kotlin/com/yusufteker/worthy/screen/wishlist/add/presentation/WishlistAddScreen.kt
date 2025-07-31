@@ -2,7 +2,7 @@ package com.yusufteker.worthy.screen.wishlist.add.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.OutlinedTextField
@@ -10,14 +10,22 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.components.ImagePickerComponent
-import com.yusufteker.worthy.screen.wishlist.add.presentation.components.PrioritySlider
+import com.yusufteker.worthy.core.presentation.components.MoneyInput
+import com.yusufteker.worthy.screen.wishlist.add.presentation.components.PriorityChooser
 import com.yusufteker.worthy.screen.wishlist.add.presentation.components.WishlistCategoryDropdown
 import org.koin.compose.viewmodel.koinViewModel
+import worthy.composeapp.generated.resources.Res
+import worthy.composeapp.generated.resources.wishlist_button_save
+import worthy.composeapp.generated.resources.wishlist_checkbox_purchased
+import worthy.composeapp.generated.resources.wishlist_label_note_optional
+import worthy.composeapp.generated.resources.wishlist_label_price
+import worthy.composeapp.generated.resources.wishlist_label_product_name
 
 @Composable
 fun WishlistAddScreenRoot(
@@ -46,6 +54,7 @@ fun WishlistAddScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(1f)
+                .clip(RoundedCornerShape(12.dp))
                 .background(Color.LightGray)
         ) {
             val size = minOf(maxWidth, maxHeight)
@@ -61,18 +70,19 @@ fun WishlistAddScreen(
         OutlinedTextField(
             value = state.wishlistItem.name,
             onValueChange = { onAction(WishlistAddAction.OnNameChanged(it)) },
-            label = { Text("Ürün Adı") },
+            label = { Text(UiText.StringResourceId(Res.string.wishlist_label_product_name).asString()) },
             modifier = Modifier.fillMaxWidth()
         )
 
         // 3. Fiyat
-        OutlinedTextField(
-            value = state.wishlistItem.price.formatted() ,
-            onValueChange = { onAction(WishlistAddAction.OnPriceChanged(it.toDoubleOrNull() ?: 0.0)) },
-            label = { "Fiyat (₺)" },
+
+        MoneyInput(
+            money = state.wishlistItem.price,
+            onValueChange = { onAction(WishlistAddAction.OnPriceChanged(it)) },
             modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
+            label = UiText.StringResourceId(Res.string.wishlist_label_price, arrayOf(state.wishlistItem.price.currency.symbol)),
+            //isError = state.isPriceError,
+            //errorMessage = state.priceErrorMessage
         )
 
         // 4. Kategori
@@ -83,16 +93,16 @@ fun WishlistAddScreen(
         )
 
         // 5. Öncelik (1-5)
-        PrioritySlider(
-            priority = state.wishlistItem.priority,
-            onPriorityChanged = { onAction(WishlistAddAction.OnPriorityChanged(it)) }
+        PriorityChooser(
+            value = state.wishlistItem.priority,
+            onValueChange = { onAction(WishlistAddAction.OnPriorityChanged(it)) }
         )
 
         // 6. Not
         OutlinedTextField(
             value = state.wishlistItem.note ?: "",
             onValueChange = { onAction(WishlistAddAction.OnNoteChanged(it)) },
-            label = { Text("Not (isteğe bağlı)") },
+            label = { Text(UiText.StringResourceId(Res.string.wishlist_label_note_optional).asString()) },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -105,7 +115,7 @@ fun WishlistAddScreen(
                 onCheckedChange = { onAction(WishlistAddAction.OnPurchasedChanged(it)) }
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Satın alındı olarak işaretle")
+            Text(UiText.StringResourceId(Res.string.wishlist_checkbox_purchased).asString())
         }
 
         // 8. Kaydet Butonu
@@ -113,7 +123,7 @@ fun WishlistAddScreen(
             onClick = { onAction(WishlistAddAction.OnSaveClicked) },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Kaydet")
+            Text(UiText.StringResourceId(Res.string.wishlist_button_save).asString())
         }
     }
 }

@@ -35,6 +35,7 @@ fun MoneyInput(
     money: Money = Money(0.0, Currency.TRY),
     onValueChange: (Money) -> Unit,
     modifier: Modifier = Modifier,
+    label: UiText = UiText.StringResourceId(Res.string.amount),
     isError: Boolean = false,
     errorMessage: UiText? = null
 ) {
@@ -46,7 +47,7 @@ fun MoneyInput(
             val newAmount = it.toDoubleOrNull() ?: 0.0
             onValueChange(money.copy(amount = newAmount))
         },
-        label = { Text(UiText.StringResourceId(Res.string.amount).asString()) },
+        label = { Text(label.asString()) },
         isError = isError,
         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
         modifier = modifier.fillMaxWidth(),

@@ -134,5 +134,21 @@
     <string name="currency_gram_gold">Gram Altın</string>
     <string name="currency_btc">Bitcoin</string>
 
+    <!-- Wishlist -->
+    <string name="wishlist_label_product_name">Ürün Adı</string>
+    <string name="wishlist_label_price">Fiyat (%1$s)</string>
+    <string name="wishlist_label_note_optional">Not (isteğe bağlı)</string>
+    <string name="wishlist_checkbox_purchased">Satın alındı olarak işaretle</string>
+    <string name="wishlist_button_save">Kaydet</string>
+
+    <!-- Image Picker -->
+    <string name="image_picker_placeholder">Görsel Seçin</string>
+    <string name="image_picker_title">Görsel Seçin</string>
+    <string name="image_picker_gallery">Galeriden Seç</string>
+    <string name="image_picker_camera">Kamera ile Çek</string>
+    <string name="image_picker_camera_unavailable">Kamera Kullanılamıyor</string>
+    <string name="image_picker_selected_image_desc">Seçilen Görsel</string>
+
+
 
 </resources>

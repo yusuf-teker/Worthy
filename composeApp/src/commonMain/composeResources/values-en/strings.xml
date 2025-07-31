@@ -132,6 +132,23 @@
     <string name="currency_gram_gold">Gram Gold</string>
     <string name="currency_btc">Bitcoin</string>
 
+    <!-- Wishlist -->
+
+    <string name="wishlist_label_product_name">Product Name</string>
+    <string name="wishlist_label_price">Price (%1$s)</string>
+    <string name="wishlist_label_note_optional">Note (optional)</string>
+    <string name="wishlist_checkbox_purchased">Mark as purchased</string>
+    <string name="wishlist_button_save">Save</string>
+
+    <!-- Image Picker -->
+    <string name="image_picker_placeholder">Select Image</string>
+    <string name="image_picker_title">Select Image</string>
+    <string name="image_picker_gallery">Choose from Gallery</string>
+    <string name="image_picker_camera">Take Photo</string>
+    <string name="image_picker_camera_unavailable">Camera Unavailable</string>
+    <string name="image_picker_selected_image_desc">Selected Image</string>
+
+
 
 
 </resources>

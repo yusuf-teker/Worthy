@@ -1,6 +1,7 @@
 package com.yusufteker.worthy.screen.wishlist.add.presentation
 
 import androidx.compose.ui.graphics.ImageBitmap
+import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistCategory
 
 sealed interface WishlistAddAction {
@@ -13,7 +14,7 @@ sealed interface WishlistAddAction {
     data class OnCategorySelected(val wishlistCategory: WishlistCategory)
         : WishlistAddAction
 
-    data class OnPriceChanged(val priceAmount: Double) : WishlistAddAction
+    data class OnPriceChanged(val price: Money) : WishlistAddAction
 
     data class OnNameChanged(val name: String) : WishlistAddAction
 
