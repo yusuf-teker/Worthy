@@ -77,5 +77,5 @@ val sharedModule = module {
     viewModel { DashboardViewModel(get()) }
     viewModel { SettingsViewModel(get(),get(),get(),get(), get(), get() )}
     viewModel { WishlistViewModel(get(), get()) }
-    viewModel { WishlistAddViewModel(get()) }
+    viewModel { WishlistAddViewModel(get(),get(),get()) }
 }

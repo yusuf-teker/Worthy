@@ -15,12 +15,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yusufteker.worthy.core.presentation.UiText
+import com.yusufteker.worthy.core.presentation.components.AppTopBar
 import com.yusufteker.worthy.core.presentation.components.ImagePickerComponent
 import com.yusufteker.worthy.core.presentation.components.MoneyInput
 import com.yusufteker.worthy.screen.wishlist.add.presentation.components.PriorityChooser
 import com.yusufteker.worthy.screen.wishlist.add.presentation.components.WishlistCategoryDropdown
 import org.koin.compose.viewmodel.koinViewModel
 import worthy.composeapp.generated.resources.Res
+import worthy.composeapp.generated.resources.add_new
 import worthy.composeapp.generated.resources.wishlist_button_save
 import worthy.composeapp.generated.resources.wishlist_checkbox_purchased
 import worthy.composeapp.generated.resources.wishlist_label_note_optional
@@ -49,6 +51,11 @@ fun WishlistAddScreen(
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+
+        AppTopBar(
+            title = UiText.StringResourceId(Res.string.add_new).asString(),
+           // onBackClick = { onAction(WishlistAddAction.OnBackClicked) }
+        )
         // 1. Görsel seçimi
         BoxWithConstraints(
             modifier = Modifier
@@ -88,8 +95,13 @@ fun WishlistAddScreen(
         // 4. Kategori
         WishlistCategoryDropdown(
             categories = state.wishlistCategories,
-            selectedCategory = state.wishlistItem.category,
-            onCategorySelected = { onAction(WishlistAddAction.OnCategorySelected(it)) }
+            selectedCategory = state.wishlistItem.category ?: state.wishlistCategories.firstOrNull(),
+            onCategorySelected = {
+                onAction(WishlistAddAction.OnCategorySelected(it))
+            },
+            onNewCategoryCreated = {
+                onAction(WishlistAddAction.OnNewCategoryCreated(it))
+            }
         )
 
         // 5. Öncelik (1-5)

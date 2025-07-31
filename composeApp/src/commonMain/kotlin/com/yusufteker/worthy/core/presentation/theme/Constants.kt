@@ -2,8 +2,8 @@ package com.yusufteker.worthy.core.presentation.theme
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ShoppingCart
+import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.presentation.UiText
-import com.yusufteker.worthy.screen.dashboard.domain.Category
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.category_education
 import worthy.composeapp.generated.resources.category_entertainment
@@ -24,13 +24,4 @@ object Constants {
         "JPY" to "¥",
     ).withDefault { "₺" }
 
-    val categories = listOf(
-        Category(UiText.StringResourceId(Res.string.category_food), Icons.Default.ShoppingCart),
-        Category(UiText.StringResourceId(Res.string.category_transport), Icons.Default.ShoppingCart),
-        Category(UiText.StringResourceId(Res.string.category_shopping), Icons.Default.ShoppingCart),
-        Category(UiText.StringResourceId(Res.string.category_entertainment), Icons.Default.ShoppingCart),
-        Category(UiText.StringResourceId(Res.string.category_health), Icons.Default.ShoppingCart),
-        Category(UiText.StringResourceId(Res.string.category_education), Icons.Default.ShoppingCart),
-        Category(UiText.StringResourceId(Res.string.category_other), Icons.Default.ShoppingCart)
-    )
 }

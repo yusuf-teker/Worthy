@@ -44,18 +44,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
+import com.yusufteker.worthy.core.presentation.components.CategoryIcon
 import com.yusufteker.worthy.core.presentation.components.IncomeAllocationCard
 import com.yusufteker.worthy.core.presentation.components.PrimaryButton
 import com.yusufteker.worthy.core.presentation.components.PurchaseEvaluationInfoBox
 import com.yusufteker.worthy.core.presentation.theme.AppBrushes.screenBackground
 import com.yusufteker.worthy.core.presentation.theme.AppDimens.Spacing16
 import com.yusufteker.worthy.core.presentation.theme.AppDimens.Spacing8
-import com.yusufteker.worthy.core.presentation.theme.Constants.categories
 import com.yusufteker.worthy.core.presentation.theme.Constants.currencySymbols
-import com.yusufteker.worthy.screen.dashboard.domain.Category
 import com.yusufteker.worthy.screen.dashboard.domain.EvaluationResult
+import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.bottom_sheet_button_calculate
@@ -201,7 +202,8 @@ fun DashboardScreen(
                     )
                 },
                 evaluationResult = state.evaluationResult,
-                currencySymbol = currencySymbols.getValue(state.selectedCurrency)
+                currencySymbol = currencySymbols.getValue(state.selectedCurrency),
+                categories = state.categories
             )
         }
     }
@@ -215,7 +217,8 @@ fun BottomSheetContent(
     onClose: () -> Unit,
     onCalculate: (Float?) -> Unit,
     evaluationResult: EvaluationResult? = null,
-    currencySymbol: String = "₺"
+    currencySymbol: String = "₺",
+    categories: List<Category> = emptyList()
 ) {
     var amount by remember { mutableStateOf("") }
     var includeTax by remember { mutableStateOf(false) }
@@ -281,7 +284,7 @@ fun BottomSheetContent(
             onExpandedChange = { isDropdownExpanded = !isDropdownExpanded }
         ) {
             OutlinedTextField(
-                value = selectedCategory?.name?.asString() ?: UiText.StringResourceId(Res.string.bottom_sheet_select_category).asString(),
+                value = selectedCategory?.name ?: UiText.StringResourceId(Res.string.bottom_sheet_select_category).asString(),
                 onValueChange = { },
                 readOnly = true,
                 modifier = Modifier
@@ -290,11 +293,7 @@ fun BottomSheetContent(
                 label = { Text(UiText.StringResourceId(Res.string.bottom_sheet_label_category).asString()) },
                 leadingIcon = {
                     selectedCategory?.icon?.let { icon ->
-                        Icon(
-                            imageVector = icon,
-                            contentDescription = null,
-                            tint = AppColors.primary
-                        )
+                        CategoryIcon(iconName = icon,)
                     }
                 },
                 trailingIcon = {
@@ -316,14 +315,9 @@ fun BottomSheetContent(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                Icon(
-                                    imageVector = category.icon,
-                                    contentDescription = null,
-                                    tint = AppColors.primary,
-                                    modifier = Modifier.size(20.dp)
-                                )
+                               CategoryIcon(iconName = category.icon)
                                 Spacer(Modifier.width(12.dp))
-                                Text(category.name.asString())
+                                Text(category.name)
                             }
                         },
                         onClick = {

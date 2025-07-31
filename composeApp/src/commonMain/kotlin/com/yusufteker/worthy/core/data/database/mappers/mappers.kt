@@ -9,8 +9,7 @@ import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.Expense
 import com.yusufteker.worthy.core.domain.model.Income
 import com.yusufteker.worthy.core.domain.model.RecurringFinancialItem
-import com.yusufteker.worthy.screen.wishlist.list.data.database.entities.WishlistCategoryEntity
-import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistCategory
+import com.yusufteker.worthy.screen.wishlist.list.data.database.relation.WishlistWithCategory
 import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistItem
 import kotlin.time.ExperimentalTime
 
@@ -64,66 +63,76 @@ fun Income.toEntity() = IncomeEntity(
 
 // WishlistItem
 // data/mapper/WishlistMapper.kt
-fun WishlistItemEntity.toDomain(category: WishlistCategoryEntity?) = WishlistItem(
-    id = id,
-    name = name,
-    price = price,
-    category = category?.toDomain(),
-    priority = priority,
-    isPurchased = isPurchased,
-    addedDate = addedDate,
-    note = note,
-    imageUri = imageUri
-)
 
-fun WishlistCategoryEntity.toDomain() = WishlistCategory(
-    id = id,
-    name = name,
-    icon = icon,
-    colorHex = colorHex
-)
+fun WishlistWithCategory.toDomain(): WishlistItem {
+    return WishlistItem(
+        id = item.id,
+        name = item.name,
+        price = item.price,
+        priority = item.priority,
+        isPurchased = item.isPurchased,
+        addedDate = item.addedDate,
+        note = item.note,
+        imageUri = item.imageUri,
+        category = category?.toDomain() // CategoryEntity → Category
+    )
+}
 
-fun WishlistItem.toEntity(): WishlistItemEntity = WishlistItemEntity(
-    id = id,
-    name = name,
-    price = price,
-    categoryId = category?.id,
-    priority = priority,
-    isPurchased = isPurchased,
-    addedDate = addedDate,
-    note = note,
-    imageUri = imageUri
-)
-
-
-
-fun WishlistCategory.toEntity(): WishlistCategoryEntity {
-    return WishlistCategoryEntity(
+fun WishlistItemEntity.toDomain(category: Category?): WishlistItem {
+    return WishlistItem(
         id = id,
         name = name,
-        icon = icon,
-        colorHex = colorHex,
+        price = price,
+        category = category,
+        priority = priority,
+        isPurchased = isPurchased,
+        addedDate = addedDate,
+        note = note,
+        imageUri = imageUri
     )
 }
 
 
-// Category
-@OptIn(ExperimentalTime::class)
-fun CategoryEntity.toDomain() = Category(
-    id = id,
-    name = name,
-    type = type,
-    createdAt = createdAt,
-    userCreated = userCreated
-)
+fun WishlistItem.toEntity(): WishlistItemEntity {
+    return WishlistItemEntity(
+        id = id,
+        name = name,
+        price = price,
+        categoryId = category?.id,
+        priority = priority,
+        isPurchased = isPurchased,
+        addedDate = addedDate,
+        note = note,
+        imageUri = imageUri
+    )
+}
 
-fun Category.toEntity() = CategoryEntity(
-    id = id,
-    name = name,
-    type = type,
-    createdAt = createdAt,
-    userCreated = userCreated
-)
+
+
+fun CategoryEntity.toDomain(): Category {
+    return Category(
+        id = id,
+        name = name,
+        type = type,
+        createdAt = createdAt,
+        userCreated = userCreated,
+        icon = icon,
+        colorHex = colorHex
+    )
+}
+
+fun Category.toEntity(): CategoryEntity {
+    return CategoryEntity(
+        id = id,
+        name = name,
+        type = type,
+        createdAt = createdAt,
+        userCreated = userCreated,
+        icon = icon,
+        colorHex = colorHex
+    )
+}
+
 
 
 fun RecurringFinancialItemEntity.toDomain(): RecurringFinancialItem = RecurringFinancialItem(

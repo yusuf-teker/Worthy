@@ -7,9 +7,9 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-import com.yusufteker.worthy.screen.wishlist.list.data.database.entities.WishlistCategoryEntity
+import com.yusufteker.worthy.core.data.database.entities.CategoryEntity
 import com.yusufteker.worthy.screen.wishlist.list.data.database.entities.WishlistItemEntity
-import com.yusufteker.worthy.screen.wishlist.list.data.database.relation.WishlistItemWithCategoryEntity
+import com.yusufteker.worthy.screen.wishlist.list.data.database.relation.WishlistWithCategory
 import kotlinx.coroutines.flow.Flow
 
 // data/local/dao/WishlistItemDao.kt
@@ -18,7 +18,7 @@ interface WishlistItemDao {
 
     @Transaction
     @Query("SELECT * FROM WISHLIST ORDER BY priority DESC, addedDate DESC")
-    suspend fun getAllWithCategory(): List<WishlistItemWithCategoryEntity>
+    suspend fun getAllWithCategory(): List<WishlistWithCategory>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(item: WishlistItemEntity): Long
@@ -34,13 +34,13 @@ interface WishlistItemDao {
 
     @Transaction
     @Query("SELECT * FROM wishlist ORDER BY priority DESC")
-    fun getAllWithCategoryFlow(): Flow<List<WishlistItemWithCategoryEntity>>
+    fun getAllWithCategoryFlow(): Flow<List<WishlistWithCategory>>
 
     @Transaction
     @Query("SELECT * FROM wishlist WHERE categoryId = :categoryId ORDER BY priority DESC")
-    fun getByCategoryFlow(categoryId: Int): Flow<List<WishlistItemWithCategoryEntity>>
+    fun getByCategoryFlow(categoryId: Int): Flow<List<WishlistWithCategory>>
 
-    @Query("SELECT * FROM wishlist_categories WHERE id = :id")
-    suspend fun getCategoryById(id: Int): WishlistCategoryEntity?
+    @Query("SELECT * FROM categories WHERE id = :id")
+    suspend fun getCategoryById(id: Int): CategoryEntity?
 
 }

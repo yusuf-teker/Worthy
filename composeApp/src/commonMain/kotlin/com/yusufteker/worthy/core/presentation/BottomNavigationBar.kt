@@ -66,7 +66,7 @@ fun BottomNavigationBar(
             route = Routes.Wallet
         ),
         BottomNavItem(
-            "Wishlist",
+            "WishlistGraph",
             painter = painterResource(Res.drawable.bottom_icon_wishlist),
             route = Routes.WishlistGraph
         ),
@@ -96,9 +96,11 @@ fun BottomNavigationBar(
                     contentAlignment = Alignment.Center
                 ) {
                     NavItem(
-                        item = item,
-                        selected = item.route.toString() == currentRoute,
-                        onClick = { onItemSelected(item.route) }
+                        item = item, // todo current route ile item.route karşılaştırılacak
+                        selected = item.route.toString().contains( currentRoute , true),
+                        onClick = {
+                            onItemSelected(item.route)
+                        }
                     )
                 }
             }
@@ -119,7 +121,7 @@ fun NavItem(
     onClick: () -> Unit
 ) {
     val backgroundColor by animateColorAsState(
-        targetValue = if (selected) AppColors.primary.copy(alpha = 0.1f) else Color.Transparent,
+        targetValue = if (selected) AppColors.primary.copy(alpha = 0.4f) else Color.Transparent,
         animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing),
         label = "backgroundColorAnimation"
     )

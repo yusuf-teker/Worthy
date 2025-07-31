@@ -24,7 +24,7 @@ class WishlistRepositoryImpl(
     override suspend fun getById(id: Int): WishlistItem? {
         val entity = itemDao.getById(id)
         val category = entity?.categoryId?.let { itemDao.getCategoryById(it) }
-        return entity?.toDomain(category)
+        return entity?.toDomain(category?.toDomain())
     }
 
     override suspend fun insert(item: WishlistItem): Long {

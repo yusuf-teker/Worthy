@@ -11,6 +11,13 @@ interface CategoryDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(category: CategoryEntity): Long
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(categories: List<CategoryEntity>)
+
+    @Query("SELECT * FROM categories")
+    suspend fun getAllOnce(): List<CategoryEntity>
+
+
     @Update
     suspend fun update(category: CategoryEntity)
 
@@ -19,6 +26,9 @@ interface CategoryDao {
 
     @Query("SELECT * FROM categories ORDER BY createdAt DESC")
     fun getAll(): Flow<List<CategoryEntity>>
+
+    @Query("SELECT COUNT(*) FROM categories")
+    suspend fun getCategoryCount(): Int
 
     @Query("SELECT * FROM categories WHERE id = :id")
     suspend fun getById(id: Int): CategoryEntity?

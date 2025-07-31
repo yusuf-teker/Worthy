@@ -1,5 +1,6 @@
 package com.yusufteker.worthy.screen.dashboard.presentation
 
+import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.MonthlyAmount
 import com.yusufteker.worthy.screen.dashboard.domain.EvaluationResult
 
@@ -18,7 +19,8 @@ data class DashboardState(
     var selectedChartIndex: Int? = null,
     var last6MonthAmounts: List<MonthlyAmount> = emptyList(),
     var isBottomSheetOpen: Boolean = false,
-
     var bottomSheetResult: String? = null,
-    var evaluationResult: EvaluationResult? = null
+    var evaluationResult: EvaluationResult? = null,
+    var categories: List<Category> = emptyList()
+
 )

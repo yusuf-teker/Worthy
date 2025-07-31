@@ -2,18 +2,14 @@ package com.yusufteker.worthy.screen.wishlist.list.data.database.relation
 
 import androidx.room.Embedded
 import androidx.room.Relation
-import com.yusufteker.worthy.core.data.database.mappers.toDomain
-import com.yusufteker.worthy.screen.wishlist.list.data.database.entities.WishlistCategoryEntity
+import com.yusufteker.worthy.core.data.database.entities.CategoryEntity
 import com.yusufteker.worthy.screen.wishlist.list.data.database.entities.WishlistItemEntity
 
-//WishlistItemWithCategoryEntity DB de geçerli sadece
-data class WishlistItemWithCategoryEntity(
+data class WishlistWithCategory(
     @Embedded val item: WishlistItemEntity,
     @Relation(
         parentColumn = "categoryId",
         entityColumn = "id"
     )
-    val category: WishlistCategoryEntity?
-) {
-    fun toDomain() = item.toDomain(category)
-}
+    val category: CategoryEntity?
+)
