@@ -93,6 +93,16 @@ object AppColors {
             background
         )
 
+    val priorityColors = listOf(
+        Color(0xFF4CAF50), // Yeşil
+        Color(0xFF8BC34A), // Açık yeşil
+        Color(0xFFFFC107), // Sarı
+        Color(0xFFFF9800), // Turuncu
+        Color(0xFFFF5722)  // Kırmızı
+    )
+
+
+
     // >>>>>>> Static Color  <<<<<<<<
     val transparent: Color @Composable get() = Color.Transparent
 

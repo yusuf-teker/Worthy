@@ -186,4 +186,22 @@
     <string name="category_furniture">Furniture</string>
     <string name="category_travel">Travel</string>
 
+
+    <!-- Search Bar -->
+
+    <string name="search_placeholder">Search...</string>
+    <string name="search_history_label">Search History</string>
+    <string name="no_results">No results found</string>
+    <string name="clear_button">Clear</string>
+    <string name="close_button">Close</string>
+    <string name="main_content">Main Content</string>
+
+
+    <string name="suggestion_phone">Phone</string>
+    <string name="suggestion_headphones">Headphones</string>
+    <string name="suggestion_vacation">Vacation</string>
+    <string name="suggestion_game_console">Console</string>
+    <string name="suggestion_book">Book</string>
+
+
 </resources>

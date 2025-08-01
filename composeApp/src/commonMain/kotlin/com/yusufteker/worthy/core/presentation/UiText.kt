@@ -20,3 +20,7 @@ sealed interface UiText {
         }
     }
 }
+@Composable
+fun List<UiText>.asStringList(): List<String> {
+    return this.map { it.asString() }
+}

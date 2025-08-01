@@ -10,4 +10,8 @@ interface WishlistRepository {
     suspend fun insert(item: WishlistItem): Long
     suspend fun update(item: WishlistItem)
     suspend fun delete(item: WishlistItem)
+    suspend fun deleteById(id: Int)
+
+    fun searchWithCategory(query: String): Flow<List<WishlistItem>>
+
 }

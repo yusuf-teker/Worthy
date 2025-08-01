@@ -7,6 +7,7 @@ import com.yusufteker.worthy.core.data.database.repository.CategoryRepositoryImp
 import com.yusufteker.worthy.core.data.database.repository.ExpenseRepositoryImpl
 import com.yusufteker.worthy.core.data.database.repository.IncomeRepositoryImpl
 import com.yusufteker.worthy.core.data.database.repository.RecurringFinancialItemRepositoryImpl
+import com.yusufteker.worthy.core.data.database.repository.SearchHistoryRepositoryImpl
 import com.yusufteker.worthy.core.data.service.DefaultCurrencyConverter
 import com.yusufteker.worthy.core.data.service.datasource.CurrencyRatesCacheDataSourceImpl
 import com.yusufteker.worthy.core.data.service.datasource.CurrencyRatesRemoteDataSourceImpl
@@ -16,6 +17,7 @@ import com.yusufteker.worthy.core.domain.repository.CurrencyRatesRepository
 import com.yusufteker.worthy.core.domain.repository.ExpenseRepository
 import com.yusufteker.worthy.core.domain.repository.IncomeRepository
 import com.yusufteker.worthy.core.domain.repository.RecurringFinancialItemRepository
+import com.yusufteker.worthy.core.domain.repository.SearchHistoryRepository
 import com.yusufteker.worthy.core.domain.service.CurrencyConverter
 import com.yusufteker.worthy.core.domain.service.datasource.CurrencyRatesCacheDataSource
 import com.yusufteker.worthy.core.domain.service.datasource.CurrencyRatesRemoteDataSource
@@ -39,7 +41,10 @@ expect val platformModule: Module
 val sharedModule = module {
 
     single { PopupManager() }
+
+    // DATA STORE
     single { UserPrefsManager(get()) }
+    single<SearchHistoryRepository> { SearchHistoryRepositoryImpl(get()) }
     single { OnboardingManager(get()) }
 
 
@@ -76,6 +81,6 @@ val sharedModule = module {
     viewModel { BaseViewModel() }
     viewModel { DashboardViewModel(get()) }
     viewModel { SettingsViewModel(get(),get(),get(),get(), get(), get() )}
-    viewModel { WishlistViewModel(get(), get()) }
+    viewModel { WishlistViewModel(get(), get(), get(), get()) }
     viewModel { WishlistAddViewModel(get(),get(),get()) }
 }

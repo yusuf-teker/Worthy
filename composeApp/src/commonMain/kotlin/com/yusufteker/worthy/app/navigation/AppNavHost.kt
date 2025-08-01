@@ -161,6 +161,9 @@ fun AppNavHost(
                             navigateToWishlistAdd = {
                                 navController.navigate(Routes.WishlistAdd)
                             },
+                            navigateBack = {
+                                navController.popBackStack()
+                            },
                             navigateToWishlistDetail = { wishlistId ->
                                 navController.navigate(Routes.WishlistDetail(wishlistId))
                             }
@@ -171,6 +174,9 @@ fun AppNavHost(
                     composable<Routes.WishlistAdd> {
                         WishlistAddScreenRoot(
                             contentPadding = innerPadding,
+                            navigateBack = {
+                                navController.popBackStack()
+                            }
                         )
                     }
 

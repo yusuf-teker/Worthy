@@ -188,4 +188,18 @@
     <string name="category_travel">Seyahat</string>
 
 
+    <!-- Search Bar -->
+    <string name="search_placeholder">Ara...</string>
+    <string name="search_history_label">Geçmiş Aramalar</string>
+    <string name="no_results">Sonuç bulunamadı</string>
+    <string name="clear_button">Temizle</string>
+    <string name="close_button">Kapat</string>
+    <string name="main_content">Ana İçerik</string>
+
+    <string name="suggestion_phone">Telefon</string>
+    <string name="suggestion_headphones">Kulaklık</string>
+    <string name="suggestion_vacation">Tatil</string>
+    <string name="suggestion_game_console">Konsol</string>
+    <string name="suggestion_book">Kitap</string>
+
 </resources>

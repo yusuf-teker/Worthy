@@ -7,6 +7,7 @@ import com.yusufteker.worthy.core.domain.repository.CategoryRepository
 import com.yusufteker.worthy.core.media.ImageSaver
 import com.yusufteker.worthy.core.media.toByteArray
 import com.yusufteker.worthy.core.presentation.BaseViewModel
+import com.yusufteker.worthy.core.presentation.UiEvent
 import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -88,6 +89,10 @@ class WishlistAddViewModel(
                 )
             }
             WishlistAddAction.OnSaveClicked -> {
+                viewModelScope.launch {
+                    saveWishlistItem()
+                    sendUiEvent(UiEvent.NavigateBack)
+                }
 
             }
 
@@ -100,11 +105,13 @@ class WishlistAddViewModel(
     }
 
      fun saveWishlistItem() {
-
          viewModelScope.launch {
-             state.value.imageBitmap?.toByteArray()?.let { byteArray ->
-                 imageSaver.saveImage(byteArray)
-             }
+             val wishlistItem = _state.value.wishlistItem.copy(
+                 imageUri = state.value.imageBitmap?.toByteArray()?.let { byteArray ->
+                     imageSaver.saveImage(byteArray)
+                 }
+             )
+             wishlistRepository.insert(wishlistItem)
          }
     }
 
@@ -112,9 +119,19 @@ class WishlistAddViewModel(
 
         categoryRepository.getAll()
             .onEach { categories ->
+                val wishlistCategories = categories.filter { it.type == CategoryType.WISHLIST }
+
                 _state.update { currentState ->
+                    val shouldUpdateCategory = currentState.wishlistItem.category == null
+                    val defaultCategory = wishlistCategories.firstOrNull()
+
                     currentState.copy(
-                        wishlistCategories = categories.filter { it.type == CategoryType.WISHLIST }
+                        wishlistCategories = wishlistCategories,
+                        wishlistItem = if (shouldUpdateCategory && defaultCategory != null) {
+                            currentState.wishlistItem.copy(category = defaultCategory)
+                        } else {
+                            currentState.wishlistItem
+                        }
                     )
                 }
             }

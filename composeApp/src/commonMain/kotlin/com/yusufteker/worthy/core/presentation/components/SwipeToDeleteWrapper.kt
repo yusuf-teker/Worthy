@@ -25,6 +25,8 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun SwipeToDeleteWrapper(
+    modifier: Modifier = Modifier,
+
     shape: Shape = CardDefaults.shape,
     onDelete: () -> Unit,
     content: @Composable () -> Unit,
@@ -72,7 +74,7 @@ fun SwipeToDeleteWrapper(
                 )
             }
         },
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier
     ) {
         content()
     }

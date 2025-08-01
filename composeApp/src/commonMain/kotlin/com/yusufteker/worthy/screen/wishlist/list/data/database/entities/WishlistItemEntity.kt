@@ -18,7 +18,7 @@ import com.yusufteker.worthy.core.domain.model.Money
     )],
     indices = [Index("categoryId")]
 )
-data class WishlistItemEntity(
+data class  WishlistItemEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val name: String,
     val price: Money,

@@ -9,6 +9,7 @@ import kotlin.math.pow
 import kotlin.random.Random
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 fun Double.toRadians(): Double = this * PI / 180
 
@@ -71,6 +72,17 @@ fun Double.toFormattedWithThousandsSeparator(
     return if (digits > 0) "$formattedInt.$formattedDecimal" else formattedInt
 }
 
+
+
+@OptIn(ExperimentalTime::class)
+fun Long.toFormattedDate(): String {
+    val instant = Instant.fromEpochSeconds(this)
+    val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
+
+    return "${localDateTime.day.toString().padStart(2, '0')}/" +
+            "${localDateTime.month.number.toString().padStart(2, '0')}/" +
+            "${localDateTime.year}"
+}
 
 
 @OptIn(ExperimentalTime::class)

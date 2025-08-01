@@ -38,4 +38,13 @@ class WishlistRepositoryImpl(
     override suspend fun delete(item: WishlistItem) {
         itemDao.delete(item.toEntity())
     }
+    override suspend fun deleteById(id: Int) {
+        itemDao.deleteById(id)
+    }
+
+    override fun searchWithCategory(query: String): Flow<List<WishlistItem>> =
+        itemDao.searchWithCategory("%$query%").map { list ->
+            list.map { it.toDomain() }
+        }
+
 }

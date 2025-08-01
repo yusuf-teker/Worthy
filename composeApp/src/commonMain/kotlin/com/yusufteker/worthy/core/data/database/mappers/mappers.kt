@@ -11,6 +11,7 @@ import com.yusufteker.worthy.core.domain.model.Income
 import com.yusufteker.worthy.core.domain.model.RecurringFinancialItem
 import com.yusufteker.worthy.screen.wishlist.list.data.database.relation.WishlistWithCategory
 import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistItem
+import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 // Expense
@@ -93,6 +94,7 @@ fun WishlistItemEntity.toDomain(category: Category?): WishlistItem {
 }
 
 
+@OptIn(ExperimentalTime::class)
 fun WishlistItem.toEntity(): WishlistItemEntity {
     return WishlistItemEntity(
         id = id,
@@ -101,7 +103,7 @@ fun WishlistItem.toEntity(): WishlistItemEntity {
         categoryId = category?.id,
         priority = priority,
         isPurchased = isPurchased,
-        addedDate = addedDate,
+        addedDate = if (addedDate <= 0L) Clock.System.now().epochSeconds else addedDate,
         note = note,
         imageUri = imageUri
     )

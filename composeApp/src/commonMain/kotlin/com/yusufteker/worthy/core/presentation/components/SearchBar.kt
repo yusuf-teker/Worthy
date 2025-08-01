@@ -2,18 +2,29 @@ package com.yusufteker.worthy.core.presentation.components
 
 
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.DockedSearchBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -27,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
@@ -115,6 +127,105 @@ fun SearchBar(
     }
 }
 
+@Composable
+fun ExpandingSearchBar(
+    text: String,
+    onTextChange: (String) -> Unit,
+    onSearch: () -> Unit,
+    onClear: () -> Unit,
+    searchHistory: List<String>,
+    onHistoryClick: (String) -> Unit
+) {
+    var isFocused by remember { mutableStateOf(false) }
+    val focusManager = LocalFocusManager.current
+    val focusRequester = remember { FocusRequester() }
+
+    val barHeight by animateDpAsState(
+        targetValue = if (isFocused) 56.dp else 48.dp,
+        label = "BarHeight"
+    )
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp)
+                .height(barHeight)
+                .clip(RoundedCornerShape(24.dp))
+                .background(MaterialTheme.colorScheme.surfaceVariant),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            TextField(
+                value = text,
+                onValueChange = {
+                    onTextChange(it)
+                    if (it.isNotEmpty()) isFocused = true
+                },
+                placeholder = { Text("Ara...") },
+                singleLine = true,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester)
+                    .onFocusChanged { focusState ->
+                        isFocused = focusState.isFocused
+                    },
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                ),
+                trailingIcon = {
+                    if (text.isNotEmpty()) {
+                        IconButton(onClick = {
+                            onClear()
+                            focusManager.clearFocus()
+                            isFocused = false
+                        }) {
+                            Icon(Icons.Default.Clear, contentDescription = "Clear")
+                        }
+                    } else {
+                        Icon(Icons.Default.Search, contentDescription = "Search")
+                    }
+                }
+            )
+        }
+
+        // Alt geçmiş liste
+        AnimatedVisibility(
+            visible = isFocused && searchHistory.isNotEmpty(),
+            enter = expandVertically(),
+            exit = shrinkVertically()
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .background(MaterialTheme.colorScheme.surface)
+            ) {
+                searchHistory.forEach { item ->
+                    Text(
+                        text = item,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                onHistoryClick(item)
+                                onTextChange(item)
+                                onSearch()
+                                focusManager.clearFocus()
+                                isFocused = false
+                            }
+                            .padding(12.dp),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+        }
+    }
+}
+
+
 @Preview
 @Composable
 fun SearchBarPreview() {
@@ -124,4 +235,10 @@ fun SearchBarPreview() {
         onSearch = {},
         onClear = {},
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CustomSearchbar(){
+
 }

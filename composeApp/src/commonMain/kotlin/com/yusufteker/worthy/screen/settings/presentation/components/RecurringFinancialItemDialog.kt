@@ -31,6 +31,7 @@ import com.yusufteker.worthy.core.domain.model.startDate
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.components.DateSelector
 import com.yusufteker.worthy.core.presentation.components.MoneyInput
+import com.yusufteker.worthy.core.presentation.components.SwipeToDeleteWrapper
 import com.yusufteker.worthy.core.presentation.createTimestampId
 import com.yusufteker.worthy.core.presentation.getCurrentMonth
 import com.yusufteker.worthy.core.presentation.getCurrentYear
@@ -527,16 +528,14 @@ fun RecurringItemGroupEditDialog(
                     key = { it.id }
                 ) { item ->
 
-                    _root_ide_package_.com.yusufteker.worthy.core.presentation.components.SwipeToDeleteWrapper(
+                    SwipeToDeleteWrapper(
                         shape = CardDefaults.shape,
                         onDelete = {
                             onDelete(item)
                             //items.remove(item)
                             //validationErrors = null
                         },
-
-
-                        ) {
+                    ) {
                         ExistingRecurringItemCard(
                             item = item,
                             months = months,

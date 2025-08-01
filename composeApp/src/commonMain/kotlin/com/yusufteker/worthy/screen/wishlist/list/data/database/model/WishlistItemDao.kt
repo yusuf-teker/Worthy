@@ -28,6 +28,8 @@ interface WishlistItemDao {
 
     @Delete
     suspend fun delete(item: WishlistItemEntity)
+    @Query("DELETE FROM WISHLIST WHERE id = :id")
+    suspend fun deleteById(id: Int)
 
     @Query("SELECT * FROM WISHLIST WHERE id = :id")
     suspend fun getById(id: Int): WishlistItemEntity?
@@ -42,5 +44,8 @@ interface WishlistItemDao {
 
     @Query("SELECT * FROM categories WHERE id = :id")
     suspend fun getCategoryById(id: Int): CategoryEntity?
+
+    @Query("SELECT * FROM wishlist WHERE name LIKE :query OR note LIKE :query")
+    fun searchWithCategory(query: String): Flow<List<WishlistWithCategory>>
 
 }

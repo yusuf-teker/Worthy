@@ -16,6 +16,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.yusufteker.worthy.app.navigation.Routes
+import com.yusufteker.worthy.core.presentation.UiEvent
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
 import com.yusufteker.worthy.core.presentation.components.ImagePickerComponent
@@ -34,8 +36,23 @@ import worthy.composeapp.generated.resources.wishlist_label_product_name
 @Composable
 fun WishlistAddScreenRoot(
     viewModel: WishlistAddViewModel = koinViewModel(),
-    contentPadding: PaddingValues = PaddingValues()
+    contentPadding: PaddingValues = PaddingValues(),
+    navigateBack: () -> Unit = { },
+
 ) {
+
+
+
+    LaunchedEffect(Unit) {
+        viewModel.uiEvent.collect { event ->
+            when(event){
+                is UiEvent.NavigateBack -> {
+                    navigateBack.invoke()
+                }
+                else -> Unit
+            }
+        }
+    }
     val state by viewModel.state.collectAsStateWithLifecycle()
     WishlistAddScreen(state = state, onAction = viewModel::onAction, contentPadding = contentPadding)
 }

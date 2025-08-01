@@ -1,5 +1,6 @@
 package com.yusufteker.worthy.screen.wishlist.list.presentation.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
@@ -27,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -35,7 +38,12 @@ import coil3.compose.rememberAsyncImagePainter
 import coil3.toUri
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Money
+import com.yusufteker.worthy.core.presentation.theme.AppColors
+import com.yusufteker.worthy.core.presentation.theme.AppColors.priorityColors
+import com.yusufteker.worthy.core.presentation.theme.AppTypography
+import com.yusufteker.worthy.core.presentation.toFormattedDate
 import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistItem
+import com.yusufteker.worthy.screen.wishlist.list.domain.priorityColor
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -45,8 +53,7 @@ import kotlin.time.ExperimentalTime
 
 @Composable
 fun WishlistItemCard(
-    item: 
-    WishlistItem,
+    item: WishlistItem,
     onCheckedChange: (Boolean) -> Unit,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -54,15 +61,14 @@ fun WishlistItemCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
             .clickable { onClick() },
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        shape = CardDefaults.shape,
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        border = BorderStroke(1.dp, item.priorityColor)
     ) {
         Row(
-            modifier = Modifier
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
 
             Image(
@@ -73,13 +79,14 @@ fun WishlistItemCard(
                     .clip(RoundedCornerShape(8.dp))
             )
 
+            Spacer(modifier = Modifier.width(8.dp))
 
             Column(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
                     text = item.name,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = AppTypography.titleMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -87,26 +94,26 @@ fun WishlistItemCard(
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = item.price.toString(),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.primary
+                    text = item.price.formatted(),
+                    style = AppTypography.bodyMedium,
+                    color = AppColors.primary
                 )
 
                 item.category?.let {
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = it.name,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        style = AppTypography.labelSmall,
+                        color = AppColors.onSurface.copy(alpha = 0.6f)
                     )
                 }
 
                 item.addedDate.let {
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = "Eklendi: $it",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                        text = "Eklendi: ${it.toFormattedDate()}",
+                        style = AppTypography.labelSmall,
+                        color = AppColors.onSurface.copy(alpha = 0.5f)
                     )
                 }
             }
@@ -155,7 +162,7 @@ fun SimpleKMPImageComponent(
             .fillMaxWidth()
             .height(200.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant),
+            .background(AppColors.surfaceVariant),
         contentAlignment = Alignment.Center
     ) {
         when {
@@ -187,13 +194,13 @@ private fun LoadingContent() {
     ) {
         CircularProgressIndicator(
             modifier = Modifier.size(48.dp),
-            color = MaterialTheme.colorScheme.primary
+            color = AppColors.primary
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = "Resim yükleniyor...",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            style = AppTypography.bodyMedium,
+            color = AppColors.onSurfaceVariant
         )
     }
 }
@@ -218,7 +225,7 @@ private fun PlaceholderContent(
                 imageVector = Icons.Default.Build,
                 contentDescription = "Placeholder",
                 modifier = Modifier.size(64.dp),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                tint = AppColors.onSurfaceVariant.copy(alpha = 0.6f)
             )
         }
 
@@ -226,8 +233,8 @@ private fun PlaceholderContent(
 
         Text(
             text = "Resim bulunamadı",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            style = AppTypography.bodyMedium,
+            color = AppColors.onSurfaceVariant
         )
     }
 }

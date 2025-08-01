@@ -10,5 +10,6 @@ data class WishlistAddState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val wishlistItem: WishlistItem = WishlistItem(),
+
     val wishlistCategories : List<Category> = emptyList(),
 )
