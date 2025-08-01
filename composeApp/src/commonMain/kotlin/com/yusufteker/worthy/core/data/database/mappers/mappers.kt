@@ -113,6 +113,7 @@ fun CategoryEntity.toDomain(): Category {
     return Category(
         id = id,
         name = name,
+        nameResourceKey = nameResourceKey,
         type = type,
         createdAt = createdAt,
         userCreated = userCreated,

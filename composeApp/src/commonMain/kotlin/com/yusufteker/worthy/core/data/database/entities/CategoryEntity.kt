@@ -10,6 +10,7 @@ import com.yusufteker.worthy.core.domain.model.defaultCategories
 data class CategoryEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val name: String,
+    val nameResourceKey: String? = null,
     val type: CategoryType,
     val createdAt: Long,
     val userCreated: Boolean,

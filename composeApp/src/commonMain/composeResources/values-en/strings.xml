@@ -58,13 +58,6 @@
     <string name="bottom_sheet_invalid_input">Invalid amount</string>
     <string name="bottom_sheet_select_category">Please select a category</string>
 
-    <string name="category_food">Food</string>
-    <string name="category_transport">Transport</string>
-    <string name="category_shopping">Shopping</string>
-    <string name="category_entertainment">Entertainment</string>
-    <string name="category_health">Health</string>
-    <string name="category_education">Education</string>
-    <string name="category_other">Other</string>
 
     <string name="evaluation_income_percent">• %1$s of your income</string>
     <string name="evaluation_desire_budget_percent">• %1$s of your "wants" budget</string>
@@ -156,5 +149,41 @@
     <string name="create_new_category_title">Create New Category</string>
     <string name="create_button">Create</string>
 
+    <!-- Category Expense -->
+
+    <string name="category_shopping">Shopping</string>
+    <string name="category_food">Food</string>
+    <string name="category_transport">Transport</string>
+    <string name="category_entertainment">Entertainment</string>
+    <string name="category_health">Health</string>
+    <string name="category_rent">Rent</string>
+    <string name="category_bills">Bills</string>
+    <string name="category_subscriptions">Subscriptions</string>
+    <string name="category_credit_card">Credit Card</string>
+    <string name="category_children">Children</string>
+    <string name="category_pets">Pets</string>
+    <string name="category_gift">Gift</string>
+    <string name="category_clothing">Clothing</string>
+    <string name="category_dining">Dining</string>
+    <string name="category_other_expense">Other</string>
+
+    <!-- Category INCOME -->
+    <string name="category_salary">Salary</string>
+    <string name="category_premium">Premium</string>
+    <string name="category_bonus">Bonus</string>
+    <string name="category_reward">Reward</string>
+    <string name="category_rent_income">Rent Income</string>
+    <string name="category_investment">Investment</string>
+    <string name="category_saving_interest">Saving Interest</string>
+    <string name="category_freelance">Freelance</string>
+    <string name="category_sales_income">Sales Income</string>
+    <string name="category_other_income">Other</string>
+
+    <!-- Category WISHLIST -->
+    <string name="category_technology">Technology</string>
+    <string name="category_fashion">Fashion</string>
+    <string name="category_books">Books</string>
+    <string name="category_furniture">Furniture</string>
+    <string name="category_travel">Travel</string>
 
 </resources>

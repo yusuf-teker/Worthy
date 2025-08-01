@@ -31,6 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yusufteker.worthy.core.domain.model.CategoryType
 import com.yusufteker.worthy.core.domain.model.emojiOptions
+import com.yusufteker.worthy.core.domain.model.getNameResource
+import com.yusufteker.worthy.core.domain.model.getResourceByKey
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.components.CategoryIcon
 import com.yusufteker.worthy.core.presentation.theme.AppColors
@@ -88,10 +90,11 @@ fun WishlistCategoryDropdown(
                 DropdownMenuItem(
                     text = {
                         Text(
-                            text = category.name,
+                            text = category.getNameResource(),
                             modifier = Modifier.padding(start = 8.dp),
                             fontWeight = FontWeight.Medium
                         )
+
                     },
                     leadingIcon = {
                         CategoryIcon(category.icon)

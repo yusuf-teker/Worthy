@@ -1,22 +1,9 @@
 package com.yusufteker.worthy.core.presentation.theme
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ShoppingCart
-import com.yusufteker.worthy.core.domain.model.Category
-import com.yusufteker.worthy.core.presentation.UiText
-import worthy.composeapp.generated.resources.Res
-import worthy.composeapp.generated.resources.category_education
-import worthy.composeapp.generated.resources.category_entertainment
-import worthy.composeapp.generated.resources.category_food
-import worthy.composeapp.generated.resources.category_health
-import worthy.composeapp.generated.resources.category_other
-import worthy.composeapp.generated.resources.category_shopping
-import worthy.composeapp.generated.resources.category_transport
-
 object Constants {
     const val WEEKLY_MAX_HOURS = 84
     val currencies = listOf("TRY", "USD", "EUR", "GBP", "JPY")
-    val currencySymbols = mapOf(
+    val currencySymbols = mapOf( // todo bunlar silinecek
         "TRY" to "₺",
         "USD" to "$",
         "EUR" to "€",

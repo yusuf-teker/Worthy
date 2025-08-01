@@ -59,13 +59,7 @@
     <string name="bottom_sheet_invalid_input">Geçersiz tutar</string>
     <string name="bottom_sheet_select_category">Lütfen kategori seçin</string>
 
-    <string name="category_food">Yiyecek</string>
-    <string name="category_transport">Ulaşım</string>
-    <string name="category_shopping">Alışveriş</string>
-    <string name="category_entertainment">Eğlence</string>
-    <string name="category_health">Sağlık</string>
-    <string name="category_education">Eğitim</string>
-    <string name="category_other">Diğer</string>
+
     <string name="evaluation_income_percent">• Gelirinin %1$s oranında</string>
     <string name="evaluation_desire_budget_percent">• "İstek" bütçenin %1$s kadarını oluşturuyor</string>
     <string name="evaluation_work_hours">• %1$s saatlik çalışma süresine denk geliyor</string>
@@ -157,6 +151,41 @@
     <string name="category_name_label">Kategori adı</string>
     <string name="category_label">Kategori</string>
     <string name="create_button">Oluştur</string>
+    <!-- Category EXPENSE -->
+    <string name="category_shopping">Alışveriş</string>
+    <string name="category_food">Yiyecek</string>
+    <string name="category_transport">Ulaşım</string>
+    <string name="category_entertainment">Ğırlence</string>
+    <string name="category_health">Sağlık</string>
+    <string name="category_rent">Kira</string>
+    <string name="category_bills">Faturalar</string>
+    <string name="category_subscriptions">Abonelikler</string>
+    <string name="category_credit_card">Kredi Kartı</string>
+    <string name="category_children">Çocuk</string>
+    <string name="category_pets">Evcil Hayvan</string>
+    <string name="category_gift">Hediye</string>
+    <string name="category_clothing">Kıyafet</string>
+    <string name="category_dining">Kafe/Restoran</string>
+    <string name="category_other_expense">Diğer</string>
+
+    <!-- Category INCOME -->
+    <string name="category_salary">Maaş</string>
+    <string name="category_premium">Prim</string>
+    <string name="category_bonus">Bonus</string>
+    <string name="category_reward">İkramiye</string>
+    <string name="category_rent_income">Kira Geliri</string>
+    <string name="category_investment">Yatırım</string>
+    <string name="category_saving_interest">Birikim Faizi</string>
+    <string name="category_freelance">Serbest Çalışma</string>
+    <string name="category_sales_income">Satış Geliri</string>
+    <string name="category_other_income">Diğer</string>
+
+    <!-- Category WISHLIST -->
+    <string name="category_technology">Teknoloji</string>
+    <string name="category_fashion">Moda</string>
+    <string name="category_books">Kitap</string>
+    <string name="category_furniture">Mobilya</string>
+    <string name="category_travel">Seyahat</string>
 
 
 </resources>
