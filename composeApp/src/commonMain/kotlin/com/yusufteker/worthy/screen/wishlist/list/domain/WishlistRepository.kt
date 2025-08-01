@@ -11,6 +11,7 @@ interface WishlistRepository {
     suspend fun update(item: WishlistItem)
     suspend fun delete(item: WishlistItem)
     suspend fun deleteById(id: Int)
+    suspend fun updateIsPurchased(itemId: Int, isPurchased: Boolean)
 
     fun searchWithCategory(query: String): Flow<List<WishlistItem>>
 

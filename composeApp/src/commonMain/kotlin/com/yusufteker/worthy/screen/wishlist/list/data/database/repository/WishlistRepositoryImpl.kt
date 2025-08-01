@@ -41,6 +41,9 @@ class WishlistRepositoryImpl(
     override suspend fun deleteById(id: Int) {
         itemDao.deleteById(id)
     }
+    override suspend fun updateIsPurchased(itemId: Int, isPurchased: Boolean) {
+        itemDao.updateIsPurchased(itemId, isPurchased)
+    }
 
     override fun searchWithCategory(query: String): Flow<List<WishlistItem>> =
         itemDao.searchWithCategory("%$query%").map { list ->

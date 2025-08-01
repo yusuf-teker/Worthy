@@ -82,6 +82,12 @@ class WishlistViewModel(
                     Napier.d("Deleted item with ID: ${action.itemId}")
                 }
             }
+
+            is WishlistAction.OnIsItemPurchasedChange -> {
+                viewModelScope.launch {
+                    wishlistRepository.updateIsPurchased(action.itemId, action.isPurchased)
+                }
+            }
         }
     }
 
