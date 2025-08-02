@@ -5,8 +5,12 @@ import com.yusufteker.worthy.core.data.database.mappers.toDomain
 import com.yusufteker.worthy.core.data.database.mappers.toEntity
 import com.yusufteker.worthy.core.domain.model.Expense
 import com.yusufteker.worthy.core.domain.repository.ExpenseRepository
+import com.yusufteker.worthy.core.domain.toEpochMillis
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.datetime.LocalDate
+import kotlin.collections.map
+import kotlin.time.ExperimentalTime
 
 class ExpenseRepositoryImpl(
     private val expenseDao: ExpenseDao
@@ -48,6 +52,11 @@ class ExpenseRepositoryImpl(
         expenseDao.deleteAll(items.map { it.toEntity() })
     }
 
-
+    @OptIn(ExperimentalTime::class)
+    override fun getExpensesSince(startDate: LocalDate): Flow<List<Expense>> {
+        val startMillis = startDate.toEpochMillis()
+        return expenseDao.getExpensesFrom(startMillis)
+            .map { entities -> entities.map { it.toDomain() } }
+    }
 
 }

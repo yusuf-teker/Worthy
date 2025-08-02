@@ -8,25 +8,38 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.yusufteker.worthy.core.domain.model.MonthlyAmount
+import com.yusufteker.worthy.core.domain.model.YearMonth
 import com.yusufteker.worthy.core.presentation.UiText
+import com.yusufteker.worthy.core.presentation.getMonthName
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppDimens.AppIconSizeSmall
 import com.yusufteker.worthy.core.presentation.theme.AppDimens.PaddingL
@@ -55,7 +68,10 @@ fun IncomeAllocationCard(
     ),
     selectedChartIndex: Int? = null,
     onChartSelected: (index: Int) -> Unit,
-    last6MonthAmounts: List<MonthlyAmount>
+    last6MonthAmounts: List<MonthlyAmount>,
+    selectableMonths : List<YearMonth>,
+    selectedMonth : YearMonth,
+    onSelectedMonthChanged: (YearMonth) -> Unit
 
 ) {
 
@@ -68,11 +84,41 @@ fun IncomeAllocationCard(
         border = BorderStroke(1.dp,AppColors.surfaceVariant)
     ) {
         Column(Modifier.padding(24.dp)) {
-            Text(
-                text = UiText.StringResourceId(Res.string.income_allocation_title).asString(),
-                style = AppTypography.titleMedium,
-                color = AppColors.onSurface
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = UiText.StringResourceId(Res.string.income_allocation_title).asString(),
+                    style = AppTypography.titleMedium,
+                    color = AppColors.onSurface,
+                    modifier = Modifier.weight(1f)
+                )
+
+                var expanded by remember { mutableStateOf(false) }
+
+                Box {
+                    TextButton(onClick = { expanded = true }) {
+                        Text(getMonthName(selectedMonth.month).asString())
+                        Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                    }
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        selectableMonths.forEach { monthYear ->
+
+                            DropdownMenuItem(
+                                text = { Text(getMonthName(monthYear.month).asString()) },
+                                onClick = {
+                                    onSelectedMonthChanged(monthYear)
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+            }
             Spacer(Modifier.height(16.dp))
             Text(
                 amountText,
@@ -149,7 +195,17 @@ fun IncomeAllocationCardPreview(){
                 MonthlyAmount("OCAK", 0.4f),
                 MonthlyAmount("SUBAT", 0.2f),
                 MonthlyAmount("MART", 0.3f),
-            )
+            ),
+            onSelectedMonthChanged = {},
+            selectableMonths = listOf(
+                YearMonth(2023, 1),
+                YearMonth(2023, 2),
+                YearMonth(2023, 3),
+                YearMonth(2023, 4),
+                YearMonth(2023, 5),
+                YearMonth(2023, 6)
+            ),
+            selectedMonth = YearMonth(2023, 1)
         )
     }
 }

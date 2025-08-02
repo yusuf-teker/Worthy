@@ -5,4 +5,6 @@ import com.yusufteker.worthy.core.domain.model.Money
 
 interface CurrencyConverter {
     suspend fun convert(money: Money, to: Currency): Money
+
+    suspend fun convertAll(moneyList: List<Money>, to: Currency): List<Money>
 }

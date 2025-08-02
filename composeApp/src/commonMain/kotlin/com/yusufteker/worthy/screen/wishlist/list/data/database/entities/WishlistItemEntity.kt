@@ -26,6 +26,7 @@ data class  WishlistItemEntity(
     val priority: Int = 0,
     val isPurchased: Boolean = false,
     val addedDate: Long,
+    val purchasedDate: Long? = null,
     val note: String? = null,
     val imageUri: String? = null
 )

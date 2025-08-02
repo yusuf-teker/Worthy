@@ -2,6 +2,7 @@ package com.yusufteker.worthy.core.domain.repository
 
 import com.yusufteker.worthy.core.domain.model.Income
 import kotlinx.coroutines.flow.Flow
+import kotlinx.datetime.LocalDate
 
 interface IncomeRepository {
     fun getAll(): Flow<List<Income>>
@@ -16,5 +17,7 @@ interface IncomeRepository {
 
     suspend fun getFixed(): List<Income>
     suspend fun deleteAll(items: List<Income>)
+
+    fun getIncomesSince(startDate: LocalDate): Flow<List<Income>>
 
 }

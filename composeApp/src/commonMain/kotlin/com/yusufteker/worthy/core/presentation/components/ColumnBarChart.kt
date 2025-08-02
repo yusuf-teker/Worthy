@@ -108,7 +108,7 @@ fun ColumnBarChart(
                     style = AppTypography.labelSmall,
                     color = AppColors.onSurfaceVariant ,
                    overflow = TextOverflow.Ellipsis,
-                   maxLines = 1
+                   maxLines = 1 // todo yükseklik bozuluyor sonra ayarlanacak
                 )
             }
         }
@@ -127,7 +127,8 @@ fun MiniBarChart(
         modifier = modifier,
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.Bottom
-    ) {
+    )
+    {
 
         val rowHeight = maxBarHeight * monthlyAmounts.maxOf { it.amount }
         monthlyAmounts.forEachIndexed { idx, v ->

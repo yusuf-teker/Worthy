@@ -4,6 +4,7 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.yusufteker.worthy.core.data.database.db.DatabaseFactory
 import com.yusufteker.worthy.core.data.database.db.WorthyDatabase
 import com.yusufteker.worthy.core.data.database.repository.CategoryRepositoryImpl
+import com.yusufteker.worthy.core.data.database.repository.DashboardRepositoryImpl
 import com.yusufteker.worthy.core.data.database.repository.ExpenseRepositoryImpl
 import com.yusufteker.worthy.core.data.database.repository.IncomeRepositoryImpl
 import com.yusufteker.worthy.core.data.database.repository.RecurringFinancialItemRepositoryImpl
@@ -23,6 +24,7 @@ import com.yusufteker.worthy.core.domain.service.datasource.CurrencyRatesCacheDa
 import com.yusufteker.worthy.core.domain.service.datasource.CurrencyRatesRemoteDataSource
 import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistRepository
 import com.yusufteker.worthy.core.presentation.BaseViewModel
+import com.yusufteker.worthy.screen.dashboard.domain.DashboardRepository
 import com.yusufteker.worthy.screen.dashboard.presentation.DashboardViewModel
 import com.yusufteker.worthy.screen.onboarding.domain.OnboardingManager
 import com.yusufteker.worthy.screen.onboarding.presentation.OnboardingViewModel
@@ -64,22 +66,23 @@ val sharedModule = module {
     single { get<WorthyDatabase>().recurringFinancialItemDao }
 
     // Repository implementasyonlarını bind et
+    single<CurrencyRatesRepository> { CurrencyRatesRepositoryImpl(get(), get()) }
+    single<CurrencyConverter> { DefaultCurrencyConverter(get()) }
+
     single<ExpenseRepository> { ExpenseRepositoryImpl(get()) }
     single<IncomeRepository> { IncomeRepositoryImpl(get()) }
     single<WishlistRepository> { WishlistRepositoryImpl(get()) }
     single<CategoryRepository> { CategoryRepositoryImpl(get()) }
     single<RecurringFinancialItemRepository> { RecurringFinancialItemRepositoryImpl(get()) }
-
+    single<DashboardRepository> { DashboardRepositoryImpl(get(), get(),get(),get()) }
     single<CurrencyRatesCacheDataSource> { CurrencyRatesCacheDataSourceImpl() }
     single<CurrencyRatesRemoteDataSource> { CurrencyRatesRemoteDataSourceImpl() }
 
-    single<CurrencyRatesRepository> { CurrencyRatesRepositoryImpl(get(), get()) }
-    single<CurrencyConverter> { DefaultCurrencyConverter(get()) }
 
 
     viewModel { OnboardingViewModel(get()) }
     viewModel { BaseViewModel() }
-    viewModel { DashboardViewModel(get()) }
+    viewModel { DashboardViewModel(get(),get()) }
     viewModel { SettingsViewModel(get(),get(),get(),get(), get(), get() )}
     viewModel { WishlistViewModel(get(), get(), get(), get()) }
     viewModel { WishlistAddViewModel(get(),get(),get()) }

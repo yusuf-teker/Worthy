@@ -17,4 +17,11 @@ class DummyCurrencyConverter : CurrencyConverter {
         val rate = exchangeRates[money.currency to to] ?: 1.0
         return Money(money.amount * rate, to)
     }
+
+    override suspend fun convertAll(
+        money: List<Money>,
+        to: Currency
+    ): List<Money> {
+        TODO("Not yet implemented")
+    }
 }

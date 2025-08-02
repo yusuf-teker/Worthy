@@ -23,6 +23,7 @@ data class WishlistItem(
     val priority: Int = 0,
     val isPurchased: Boolean = false,
     val addedDate: Long = -1,
+    val purchasedDate: Long? = null,
     val note: String? = "",
     val imageUri: String? = ""
 )

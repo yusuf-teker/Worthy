@@ -34,4 +34,7 @@ interface IncomeDao {
     @Delete
     suspend fun deleteAll(items: List<IncomeEntity>)
 
+    @Query("SELECT * FROM incomes WHERE date >= :startDate ORDER BY date DESC")
+    fun getIncomesFrom(startDate: Long): Flow<List<IncomeEntity>>
+
 }

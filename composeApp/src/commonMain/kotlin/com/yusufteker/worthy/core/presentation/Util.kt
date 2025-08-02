@@ -1,13 +1,25 @@
 package com.yusufteker.worthy.core.presentation
 
+import androidx.compose.runtime.Composable
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
+import worthy.composeapp.generated.resources.Res
+import worthy.composeapp.generated.resources.month_april
+import worthy.composeapp.generated.resources.month_august
+import worthy.composeapp.generated.resources.month_december
+import worthy.composeapp.generated.resources.month_february
+import worthy.composeapp.generated.resources.month_january
+import worthy.composeapp.generated.resources.month_july
+import worthy.composeapp.generated.resources.month_june
+import worthy.composeapp.generated.resources.month_march
+import worthy.composeapp.generated.resources.month_may
+import worthy.composeapp.generated.resources.month_november
+import worthy.composeapp.generated.resources.month_october
+import worthy.composeapp.generated.resources.month_september
 import kotlin.math.PI
 import kotlin.math.absoluteValue
 import kotlin.math.pow
-import kotlin.random.Random
-import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -85,22 +97,22 @@ fun Long.toFormattedDate(): String {
 }
 
 
-@OptIn(ExperimentalTime::class)
-fun getCurrentYear(): Int {
-    return Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year
-}
+@Composable
+fun getMonthName(month: Int): UiText {
+    return when (month) {
+            1 -> UiText.StringResourceId(Res.string.month_january)
+            2 -> UiText.StringResourceId(Res.string.month_february)
+            3 -> UiText.StringResourceId(Res.string.month_march)
+            4 -> UiText.StringResourceId(Res.string.month_april)
+            5 ->UiText.StringResourceId( Res.string.month_may)
+            6 ->UiText.StringResourceId( Res.string.month_june)
+            7 -> UiText.StringResourceId(Res.string.month_july)
+            8 ->UiText.StringResourceId( Res.string.month_august)
+            9 -> UiText.StringResourceId(Res.string.month_september)
+            10 -> UiText.StringResourceId(Res.string.month_october)
+            11 -> UiText.StringResourceId(Res.string.month_november)
+            12 -> UiText.StringResourceId(Res.string.month_december)
+            else -> UiText.StringResourceId(Res.string.month_january) // fallback
+        }
 
-/**
- * Mevcut ayı Int olarak döndürür (1-12 arası)
- */
-@OptIn(ExperimentalTime::class)
-fun getCurrentMonth(): Int {
-    return Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).month.number
-}
-
-@OptIn(ExperimentalTime::class)
-fun createTimestampId(): String {
-    val timestamp = Clock.System.now().toEpochMilliseconds()
-    val random = Random.nextInt(1000, 9999)
-    return "${timestamp}_${random}"
 }

@@ -13,7 +13,6 @@ import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -56,7 +55,6 @@ import com.yusufteker.worthy.core.presentation.theme.AppDimens.Spacing16
 import com.yusufteker.worthy.core.presentation.theme.AppDimens.Spacing8
 import com.yusufteker.worthy.core.presentation.theme.Constants.currencySymbols
 import com.yusufteker.worthy.screen.dashboard.domain.EvaluationResult
-import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.bottom_sheet_button_calculate
@@ -122,30 +120,6 @@ fun DashboardScreen(
                 }
             }else{
                 Spacer(Modifier.height(Spacing8))
-
-                /*
-                           // 1 – Progress barlar
-                           LabelledProgressBar(
-                               label = UiText.StringResourceId(Res.string.dashboard_savings_goal).asString(),
-                               progress = state.savingProgress,
-                               trailingText = "600"
-                           )
-                           Spacer(Modifier.height(Spacing24))
-                           LabelledProgressBar(
-                               label =UiText.StringResourceId(Res.string.dashboard_desires_budget).asString(),
-                               progress = state.desiresSpentFraction,
-                               trailingText = "750"
-                           )
-                           Spacer(Modifier.height(Spacing32))
-
-                           // 2 – Monthly Income başlık
-                           Text(
-                               text = UiText.StringResourceId(Res.string.dashboard_monthly_income).asString(),
-                               style = AppTypography.titleLarge,
-                               color = AppColors.onBackground
-                           )
-                           Spacer(Modifier.height(Spacing16))
-                           */
                 // 3 – Kart
                 IncomeAllocationCard(
                     modifier = Modifier.fillMaxWidth(),
@@ -161,7 +135,12 @@ fun DashboardScreen(
                     onChartSelected = {
                         onAction(DashboardAction.ChartSelected(it))
                     },
-                    last6MonthAmounts = state.last6MonthAmounts
+                    last6MonthAmounts = state.last6MonthAmounts,
+                    selectableMonths = state.selectableMonths,
+                    selectedMonth = state.selectedMonthYear,
+                    onSelectedMonthChanged = { yearMonth ->
+                        onAction(DashboardAction.OnSelectedMonthChanged(yearMonth))
+                    },
 
                 )
 

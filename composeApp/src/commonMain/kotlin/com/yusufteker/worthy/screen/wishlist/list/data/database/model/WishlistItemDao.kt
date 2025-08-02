@@ -48,7 +48,7 @@ interface WishlistItemDao {
     @Query("SELECT * FROM wishlist WHERE name LIKE :query OR note LIKE :query")
     fun searchWithCategory(query: String): Flow<List<WishlistWithCategory>>
 
-    @Query("UPDATE wishlist SET isPurchased = :isPurchased WHERE id = :itemId")
-    suspend fun updateIsPurchased(itemId: Int, isPurchased: Boolean)
+    @Query("UPDATE wishlist SET isPurchased = :isPurchased, purchasedDate = :purchasedTime WHERE id = :itemId")
+    suspend fun updateIsPurchased(itemId: Int, isPurchased: Boolean, purchasedTime: Long?)
 
 }

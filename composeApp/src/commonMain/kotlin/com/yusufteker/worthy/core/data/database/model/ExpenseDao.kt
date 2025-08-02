@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.yusufteker.worthy.core.data.database.entities.ExpenseEntity
+import com.yusufteker.worthy.core.data.database.entities.IncomeEntity
 import kotlinx.coroutines.flow.Flow
 
 
@@ -41,5 +42,9 @@ interface ExpenseDao {
 
     @Delete
     suspend fun deleteAll(items: List<ExpenseEntity>)
+
+    @Query("SELECT * FROM expenses WHERE date >= :startDate ORDER BY date DESC")
+    fun getExpensesFrom(startDate: Long): Flow<List<ExpenseEntity>>
+
 
 }
