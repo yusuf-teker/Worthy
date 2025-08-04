@@ -101,7 +101,17 @@ class WishlistAddViewModel(
 
             is WishlistAddAction.OnNewCategoryCreated -> {
                 viewModelScope.launch {
-                    categoryRepository.insert(action.wishlistCategory)
+                   val categoryId =  categoryRepository.insert(action.wishlistCategory)
+                    _state.update { currentState ->
+                        currentState.copy(
+                            wishlistItem = state.value.wishlistItem.copy(
+                                category = action.wishlistCategory.copy(
+                                    id = categoryId.toInt()
+                                )
+                            )
+                        )
+
+                    }
                 }
             }
 

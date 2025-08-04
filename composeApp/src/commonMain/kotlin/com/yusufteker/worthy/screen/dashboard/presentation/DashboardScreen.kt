@@ -124,8 +124,8 @@ fun DashboardScreen(
                 // 3 – Kart
                 IncomeAllocationCard(
                     modifier = Modifier.fillMaxWidth(),
-                    amountText = state.totalCurrentIncomeRecurringMoney.formatted(),// todo + income eklenecek
-                    monthDeltaText = "+10%",
+                    amountText = state.totalSelectedMonthIncomeRecurringMoney.formatted(),// todo + income eklenecek
+                    incomeChangeRatio = state.incomeChangeRatio,
                     barsFractions = listOf(
                         state.fixedExpenseFraction,
                         state.desiresSpentFraction,

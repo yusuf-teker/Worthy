@@ -7,7 +7,6 @@ import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.DashboardMonthlyAmount
 import com.yusufteker.worthy.core.domain.model.Money
-import com.yusufteker.worthy.core.domain.model.MonthlyAmount
 import com.yusufteker.worthy.core.domain.model.YearMonth
 import com.yusufteker.worthy.screen.dashboard.domain.DashboardRecurringData
 import com.yusufteker.worthy.screen.dashboard.domain.EvaluationResult
@@ -36,16 +35,20 @@ data class DashboardState(
     val remainingFraction: Float = 0f,
     val expensesFraction: Float = 0f,
 
+    // Mini Bar
     val miniBarsFractions: List<List<Float?>> = emptyList(),
     val selectedMiniBarsFraction: List<Float?> = emptyList(),
     val miniBarsMonths:List<List<Int>> = emptyList(),
     val selectedMiniBarsMonths: List<Int> = emptyList(),
 
 
+    //Total Income
+    val totalSelectedMonthIncomeRecurringMoney: Money = Money(0.0, selectedCurrency),
+    val incomeChangeRatio : Double = 0.0,
 
-    val totalCurrentIncomeRecurringMoney: Money = Money(0.0, selectedCurrency),
-
+    //BAR CHART
     val dashboardRecurringData: DashboardRecurringData? = null,
+
     val recurringIncomeMonthlyAmountList: List<DashboardMonthlyAmount> = emptyList(),
     val filteredRecurringIncomeMonthlyAmountList: List<DashboardMonthlyAmount> = emptyList(),
     val recurringExpenseMonthlyAmountList: List<DashboardMonthlyAmount> = emptyList(),

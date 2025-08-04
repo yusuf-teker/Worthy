@@ -36,9 +36,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.yusufteker.worthy.core.domain.model.DashboardMonthlyAmount
 import com.yusufteker.worthy.core.domain.model.YearMonth
 import com.yusufteker.worthy.core.presentation.UiText
+import com.yusufteker.worthy.core.presentation.formatPercentageChange
 import com.yusufteker.worthy.core.presentation.getMonthName
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppDimens.AppIconSizeSmall
@@ -60,7 +60,7 @@ import worthy.composeapp.generated.resources.income_allocation_title
 @Composable
 fun IncomeAllocationCard(
     amountText: String = "$5,000",
-    monthDeltaText: String = "+10%",
+    incomeChangeRatio: Double = 0.0,
     barsFractions: List<Float>,
     miniBarsFractions: List<Float?>,
     miniBarsMonths: List<Int>,
@@ -128,9 +128,9 @@ fun IncomeAllocationCard(
             )
             Spacer(Modifier.height(4.dp))
             Text(
-                text = UiText.StringResourceId(Res.string.income_allocation_this_month,arrayOf(monthDeltaText)).asString(),
+                text = UiText.StringResourceId(Res.string.income_allocation_this_month,arrayOf(formatPercentageChange(incomeChangeRatio))).asString(),
                 style = AppTypography.bodyMedium,
-                color = AppColors.tertiary
+                color = if (incomeChangeRatio > 0) AppColors.savingsGreen else AppColors.error
             )
             Spacer(Modifier.height(24.dp))
 

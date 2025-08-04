@@ -31,10 +31,13 @@ import androidx.compose.ui.unit.dp
 import com.yusufteker.worthy.core.domain.model.DashboardMonthlyAmount
 import com.yusufteker.worthy.core.domain.model.MonthlyAmount
 import com.yusufteker.worthy.core.domain.model.sumWithoutCurrencyConverted
+import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.getMonthName
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import worthy.composeapp.generated.resources.Res
+import worthy.composeapp.generated.resources.no_data
 
 @Composable
 fun ColumnBarChart(
@@ -113,40 +116,39 @@ fun ColumnBarChart(
                     style = AppTypography.labelSmall,
                     color = AppColors.onSurfaceVariant ,
                    overflow = TextOverflow.Ellipsis,
-                   maxLines = 2 // todo yükseklik bozuluyor sonra ayarlanacak
+                   maxLines = 2
                 )
             }
         }
     }
 }
 
+
+
 @Composable
-fun MiniBarChart2( // todo sadece aynı currency olanların verilmeis lazım
+fun MiniBarChart(
     values: List<Float?>, // 0f–1f oranlar
-    monthlyAmounts: List<DashboardMonthlyAmount>,
+    labels: List<Int>, // Ay isimleri
     modifier: Modifier = Modifier,
     barColor: Color = AppColors.secondary
 ) {
     val maxBarHeight = 60.dp
 
-    if (monthlyAmounts.isNotEmpty() && values.isNotEmpty()){
-        Row(
-            modifier = modifier,
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.Bottom
-        )
-        {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.Bottom
+    ) {
 
-            val rowHeight = maxBarHeight * monthlyAmounts.maxOf { it.amount.sumWithoutCurrencyConverted().amount  }.toInt()
-            monthlyAmounts.forEachIndexed { idx, dashboardMonthlyAmount ->
-                val total = dashboardMonthlyAmount.amount.sumWithoutCurrencyConverted()
-
+        if (values.isNotEmpty()){
+            values.forEachIndexed { idx, value ->
+                val heightRatio = value?.coerceIn(0f, 1f) ?: 0f
                 val animatedHeight = remember { Animatable(0f) }
 
-                LaunchedEffect(Unit) {
+                LaunchedEffect(value) {
                     animatedHeight.animateTo(
-                        targetValue = (maxBarHeight * total.amount.toFloat()).value,
-                        animationSpec = tween(600, easing = FastOutSlowInEasing)
+                        targetValue = (maxBarHeight * heightRatio).value,
+                        animationSpec = tween(durationMillis = 600, easing = FastOutSlowInEasing)
                     )
                 }
 
@@ -157,7 +159,7 @@ fun MiniBarChart2( // todo sadece aynı currency olanların verilmeis lazım
                     Box(
                         modifier = Modifier
                             .width(16.dp)
-                            .height(rowHeight)
+                            .height(maxBarHeight)
                             .clip(RoundedCornerShape(2.dp)),
                         contentAlignment = Alignment.BottomCenter
                     ) {
@@ -171,74 +173,22 @@ fun MiniBarChart2( // todo sadece aynı currency olanların verilmeis lazım
                     }
 
                     Spacer(Modifier.height(4.dp))
+
                     Text(
-                        text = getMonthName(monthlyAmounts.get(idx).yearMonth.month).asString(),
+                        text = getMonthName(labels.get(idx)).asString(),
                         style = AppTypography.labelSmall,
-                        color = AppColors.onSurfaceVariant
+                        color = AppColors.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }
+        }else { // Values is Empty
+            Text(
+                text = UiText.StringResourceId(Res.string.no_data).asString()
+            )
         }
-    }
 
-}
-
-@Composable
-fun MiniBarChart(
-    values: List<Float?>, // 0f–1f oranlar (nullable)
-    labels: List<Int>, // Ay isimleri veya başka etiketler
-    modifier: Modifier = Modifier,
-    barColor: Color = AppColors.secondary
-) {
-    val maxBarHeight = 60.dp
-
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.Bottom
-    ) {
-        values.forEachIndexed { idx, value ->
-            val heightRatio = value?.coerceIn(0f, 1f) ?: 0f
-            val animatedHeight = remember { Animatable(0f) }
-
-            LaunchedEffect(value) {
-                animatedHeight.animateTo(
-                    targetValue = (maxBarHeight * heightRatio).value,
-                    animationSpec = tween(durationMillis = 600, easing = FastOutSlowInEasing)
-                )
-            }
-
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(horizontal = 4.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .width(16.dp)
-                        .height(maxBarHeight)
-                        .clip(RoundedCornerShape(2.dp)),
-                    contentAlignment = Alignment.BottomCenter
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(animatedHeight.value.dp)
-                            .clip(RoundedCornerShape(2.dp))
-                            .background(barColor)
-                    )
-                }
-
-                Spacer(Modifier.height(4.dp))
-
-                Text(
-                    text = getMonthName(labels.get(idx)).asString(),
-                    style = AppTypography.labelSmall,
-                    color = AppColors.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-        }
     }
 }
 

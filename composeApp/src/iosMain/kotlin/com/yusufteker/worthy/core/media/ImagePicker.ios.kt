@@ -12,6 +12,7 @@ import platform.posix.memcpy
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asSkiaBitmap
 import cocoapods.TOCropViewController.*
+import io.github.aakira.napier.Napier
 import org.jetbrains.skia.Image
 
 // Global callbacks
@@ -199,16 +200,17 @@ class CameraPickerDelegate(
         picker: UIImagePickerController,
         didFinishPickingMediaWithInfo: Map<Any?, *>
     ) {
-        val image = didFinishPickingMediaWithInfo[UIImagePickerControllerOriginalImage] as? UIImage
-        if (image == null) {
-            picker.dismissViewControllerAnimated(true) {
-                imagePicker.handleCameraCancel()
+        NSOperationQueue.mainQueue.addOperationWithBlock  {
+            val image = didFinishPickingMediaWithInfo[UIImagePickerControllerOriginalImage] as? UIImage
+            if (image == null) {
+                picker.dismissViewControllerAnimated(true) {
+                    imagePicker.handleCameraCancel()
+                }
+            } else {
+                picker.dismissViewControllerAnimated(true) {
+                    imagePicker.handleCameraImage(image)
+                }
             }
-            return
-        }
-
-        picker.dismissViewControllerAnimated(true) {
-            imagePicker.handleCameraImage(image)
         }
     }
 
@@ -251,20 +253,25 @@ class CropViewControllerDelegate(
 @OptIn(ExperimentalForeignApi::class)
 fun UIImage.toImageBitmap(): ImageBitmap? {
     return try {
+
         val imageData = UIImagePNGRepresentation(this) ?: return null
         val bytes = ByteArray(imageData.length.toInt())
         memcpy(bytes.refTo(0), imageData.bytes, imageData.length)
 
         val skiaImage = Image.makeFromEncoded(bytes)
-        skiaImage.toComposeImageBitmap()
+        val x = skiaImage.toComposeImageBitmap()
+        x // 0.5 sn
+
     } catch (e: Exception) {
         null
     }
 }
 
 @OptIn(ExperimentalForeignApi::class)
-fun ImageBitmap.toUIImage(): UIImage? {
+fun ImageBitmap.toUIImage(): UIImage? { // TOCropViewController İÇİM UI IMAGE
     return try {
+        Napier.d(message ="Image picker toUIImage start", tag ="Yusuf")
+
         val skiaImage = Image.makeFromBitmap(this.asSkiaBitmap())
         val encodedData = skiaImage.encodeToData(org.jetbrains.skia.EncodedImageFormat.PNG)
             ?: return null
@@ -275,7 +282,10 @@ fun ImageBitmap.toUIImage(): UIImage? {
             NSData.create(bytes = pinned.addressOf(0), length = byteArray.size.toULong())
         }
 
-        UIImage.imageWithData(nsData)
+        val x = UIImage.imageWithData(nsData)
+        Napier.d(message ="Image picker toUIImage stop", tag ="Yusuf")
+
+        x // 3.5sn
     } catch (e: Exception) {
         null
     }

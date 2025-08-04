@@ -4,13 +4,11 @@ import androidx.lifecycle.viewModelScope
 import com.yusufteker.worthy.core.domain.getCurrentLocalDateTime
 import com.yusufteker.worthy.core.domain.model.DashboardMonthlyAmount
 import com.yusufteker.worthy.core.domain.model.Money
-import com.yusufteker.worthy.core.domain.model.MonthlyAmount
 import com.yusufteker.worthy.core.domain.model.YearMonth
-import com.yusufteker.worthy.core.domain.model.getCurrentYearMonth
+import com.yusufteker.worthy.core.domain.model.getLastMonth
 import com.yusufteker.worthy.core.domain.model.getLastMonths
 import com.yusufteker.worthy.core.domain.model.sumConvertedAmount
 import com.yusufteker.worthy.core.domain.model.sumWithCurrencyConverted
-import com.yusufteker.worthy.core.domain.model.sumWithoutCurrencyConverted
 import com.yusufteker.worthy.core.domain.service.CurrencyConverter
 import com.yusufteker.worthy.core.presentation.BaseViewModel
 import com.yusufteker.worthy.screen.dashboard.domain.DashboardRepository
@@ -66,7 +64,7 @@ class DashboardViewModel(
                 action.money.let {
 
                     // harcama currencye cevrilmis income
-                    val monthlyIncome = currencyConverter.convert(state.value.totalCurrentIncomeRecurringMoney, to = action.money.currency)
+                    val monthlyIncome = currencyConverter.convert(state.value.totalSelectedMonthIncomeRecurringMoney, to = action.money.currency)
 
                     val desirePercent = ((action.money.amount / state.value.desireBudget)*100).toDouble()
                     val  workHours =  (action.money.amount / (monthlyIncome.amount / state.value.monthlyWorkHours)).toFloat()
@@ -93,13 +91,29 @@ class DashboardViewModel(
         }
 
         is DashboardAction.OnSelectedMonthChanged -> {
-            _state.update { currentState ->
-                currentState.copy(
-                    selectedMonthYear = action.yearMonth,
+            viewModelScope.launch {
+                _state.update { currentState ->
+                    currentState.copy(
+                        selectedMonthYear = action.yearMonth,
+                        totalSelectedMonthIncomeRecurringMoney = calculateSelectedMonthIncome(action.yearMonth),
+                        incomeChangeRatio = calculateSelectedMonthIncomeChangeRatio(action.yearMonth)
+                    )
+                }
+
+                calculateBarRatios( // Todo kontrol et selectedMonthYear DEĞİŞTİKÇE OTOMATİK OLMASI LAZIM üsttekilerde öyle
+                    state.value.expenseMonthlyAmountList,
+                    state.value.incomeMonthlyAmountList,
+                    state.value.recurringIncomeMonthlyAmountList,
+                    state.value.recurringExpenseMonthlyAmountList,
+                    state.value.wishlistMonthlyAmountList,
+
                 )
+
+                //filteredMonthlyAmounts(action.yearMonth)
+
             }
 
-            filteredMonthlyAmounts(action.yearMonth)
+
         }
     }
 
@@ -130,11 +144,9 @@ class DashboardViewModel(
         _state.update {
             it.copy( // TODO : repository’den gerçek veriyi çek prefden değil
                 userName = "Yusuf",
-                //monthlyIncome = userPrefsManager.totalIncome.first().toDouble(),
                 selectedCurrency = userPrefsManager.selectedCurrency.first(),
                 monthlyWorkHours = userPrefsManager.weeklyWorkHours.first() * 4.33f,
                 desireBudget = 10000.0,
-               // monthlyExpense = 27000.0,
                 savingProgress = 0.36f,
                 isLoading = false,
             )
@@ -174,7 +186,7 @@ class DashboardViewModel(
                 )
             }
 
-            calculate(
+            calculateBarRatios(
                 expenses,
                 incomes,
                 dashboardRecurringData.incomes,
@@ -187,7 +199,7 @@ class DashboardViewModel(
     }
 
 
-    private suspend fun calculate(
+    private suspend fun calculateBarRatios(
         expenses: List<DashboardMonthlyAmount>, // LAST 6 MONTHS DATA
         incomes: List<DashboardMonthlyAmount>,
         recurringIncomes: List<DashboardMonthlyAmount>,
@@ -234,7 +246,7 @@ class DashboardViewModel(
         // Total Current RecurringMonet
         val totalCurrentRecurringMoney =  recurringIncomes.sumConvertedAmount(
         state.value.selectedCurrency,
-            getCurrentYearMonth(),
+            state.value.selectedMonthYear,
         currencyConverter
         ) ?: Money(0.0, state.value.selectedCurrency)
 
@@ -246,7 +258,7 @@ class DashboardViewModel(
                 desiresSpentFraction = normalizedRatios.get(2)?.toFloat() ?: -1f,
                 fixedExpenseFraction = normalizedRatios.get(1)?.toFloat() ?: -1f,
                 remainingFraction = normalizedRatios.get(3)?.toFloat() ?: -1f,
-                totalCurrentIncomeRecurringMoney = totalCurrentRecurringMoney,
+                totalSelectedMonthIncomeRecurringMoney = totalCurrentRecurringMoney,
                 //todo  expense ile income arasındaki farkları bakan fonk yazılcak
                 miniBarsFractions = listOf(normalizeLast6Month(recurringExpenses ),normalizeLast6Month(wishlistItems),  normalizeLast6Month(expenses ),normalizeLast6Month(emptyList())),
                 miniBarsMonths =  listOf(recurringExpenses.getLastMonths(6),wishlistItems.getLastMonths(6),expenses.getLastMonths(6),expenses.getLastMonths(6)) // TODO EXPENSE ile aynı yapıldı
@@ -258,6 +270,21 @@ class DashboardViewModel(
         // todo oranları hesaplayı ona göre ekranda yükseklik belirke
 
     }
+
+    private suspend fun calculateSelectedMonthIncome(month: YearMonth): Money{
+       return  state.value.recurringIncomeMonthlyAmountList.sumConvertedAmount(
+            state.value.selectedCurrency,
+           month,
+            currencyConverter
+        ) ?: Money(0.0, state.value.selectedCurrency)
+    }
+    private suspend fun calculateSelectedMonthIncomeChangeRatio(month: YearMonth): Double {
+        val lastMonthIncome = calculateSelectedMonthIncome(month.getLastMonth()).amount
+        val selectedMonthIncome = (calculateSelectedMonthIncome(month).amount)
+        return  (selectedMonthIncome - lastMonthIncome) / selectedMonthIncome * 100
+    }
+
+
 
     // Son 6 ayın (daha fazla veya azda verilebilir) aylık toplam tutarını 0-1f aralıgına dönüştürüp liste veriyor
     // bar chartlarda yükseklik için 0-1f aralıgında değer lazım

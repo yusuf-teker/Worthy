@@ -79,8 +79,10 @@
     <string name="chart_desires">Desires</string>
     <string name="chart_remaining">Remaining</string>
     <string name="chart_savings">Savings</string>
+    <string name="chart_expenses">Expenses</string>
 
-    <string name="chart_expenses">Expenses</string>  <!-- Yeni eklendi -->
+    <string name="no_data">No data yet</string>
+
 
     <!-- Settings -->
     <string name="label_income_sources">Fixed Incomes</string>

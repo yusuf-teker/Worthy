@@ -83,6 +83,9 @@
     <string name="chart_expenses">Harcamalar</string>  <!-- Yeni eklendi -->
     <string name="chart_savings">Birikim</string>
 
+    <string name="no_data">Henüz veri yok</string>
+
+
 
 
     <!-- Settings -->

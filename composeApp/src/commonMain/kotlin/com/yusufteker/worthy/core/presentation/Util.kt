@@ -116,3 +116,12 @@ fun getMonthName(month: Int): UiText {
         }
 
 }
+
+fun formatPercentageChange(value: Double): String {
+    val rounded = (kotlin.math.abs(value) + 0.5).toInt()
+    return when {
+        value > 0 -> "+ %$rounded"
+        value < 0 -> "- %$rounded"
+        else -> "%0"
+    }
+}
