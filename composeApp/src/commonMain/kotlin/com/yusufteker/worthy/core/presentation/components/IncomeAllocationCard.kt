@@ -36,7 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.yusufteker.worthy.core.domain.model.MonthlyAmount
+import com.yusufteker.worthy.core.domain.model.DashboardMonthlyAmount
 import com.yusufteker.worthy.core.domain.model.YearMonth
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.getMonthName
@@ -61,14 +61,15 @@ import worthy.composeapp.generated.resources.income_allocation_title
 fun IncomeAllocationCard(
     amountText: String = "$5,000",
     monthDeltaText: String = "+10%",
-    bars: List<Float>,
+    barsFractions: List<Float>,
+    miniBarsFractions: List<Float?>,
+    miniBarsMonths: List<Int>,
     modifier: Modifier = Modifier,
     colors : CardColors = CardDefaults.cardColors(
         containerColor = AppColors.transparent
     ),
     selectedChartIndex: Int? = null,
     onChartSelected: (index: Int) -> Unit,
-    last6MonthAmounts: List<MonthlyAmount>,
     selectableMonths : List<YearMonth>,
     selectedMonth : YearMonth,
     onSelectedMonthChanged: (YearMonth) -> Unit
@@ -133,20 +134,25 @@ fun IncomeAllocationCard(
             )
             Spacer(Modifier.height(24.dp))
 
-            ColumnBarChart(
-                values = bars,
-                labels = listOf(
-                    UiText.StringResourceId(Res.string.chart_fixed_expenses).asString(),
-                    UiText.StringResourceId(Res.string.chart_desires).asString(),
-                    UiText.StringResourceId(Res.string.chart_remaining).asString(),
-                    UiText.StringResourceId(Res.string.chart_expenses).asString()
-                ),
-                selectedIndex = selectedChartIndex,
-                onBarClick = {
-                    Napier.d("Chart selected: $it")
-                    onChartSelected.invoke(it)
-                }
-            )
+            val adjustedValues = adjustValuesForBarChart(barsFractions)
+
+
+                ColumnBarChart(
+                    values = adjustedValues,
+                    labels = listOf(
+                        UiText.StringResourceId(Res.string.chart_fixed_expenses).asString(),
+                        UiText.StringResourceId(Res.string.chart_desires).asString(),
+                        UiText.StringResourceId(Res.string.chart_remaining).asString(),
+                        UiText.StringResourceId(Res.string.chart_expenses).asString()
+                    ),
+                    selectedIndex = selectedChartIndex,
+                    onBarClick = {
+                        Napier.d("Chart selected: $it")
+                        onChartSelected.invoke(it)
+                    }
+                )
+
+
 
             // IncomeAllocationCard içinde
             AnimatedVisibility(
@@ -173,7 +179,10 @@ fun IncomeAllocationCard(
                         .size(AppIconSizeSmall)
                 )
                 Spacer(Modifier.width(Spacing16))
-                MiniBarChart(last6MonthAmounts)
+                MiniBarChart(
+                    values = miniBarsFractions,
+                    labels = miniBarsMonths
+                )
 
             }
 
@@ -188,14 +197,9 @@ fun IncomeAllocationCard(
 fun IncomeAllocationCardPreview(){
     Column(Modifier.background(AppColors.background)) {
         IncomeAllocationCard(
-            bars = listOf(0.25f, 0.5f, 0.75f),
+            barsFractions = listOf(0.25f, 0.5f, 0.75f),
             selectedChartIndex = 1,
             onChartSelected = {},
-            last6MonthAmounts = listOf(
-                MonthlyAmount("OCAK", 0.4f),
-                MonthlyAmount("SUBAT", 0.2f),
-                MonthlyAmount("MART", 0.3f),
-            ),
             onSelectedMonthChanged = {},
             selectableMonths = listOf(
                 YearMonth(2023, 1),
@@ -204,8 +208,11 @@ fun IncomeAllocationCardPreview(){
                 YearMonth(2023, 4),
                 YearMonth(2023, 5),
                 YearMonth(2023, 6)
+
             ),
-            selectedMonth = YearMonth(2023, 1)
+            selectedMonth = YearMonth(2023, 1),
+            miniBarsFractions = emptyList(),
+            miniBarsMonths = emptyList()
         )
     }
 }

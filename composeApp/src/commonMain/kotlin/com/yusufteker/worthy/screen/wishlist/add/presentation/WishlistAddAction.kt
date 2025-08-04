@@ -25,6 +25,8 @@ sealed interface WishlistAddAction {
 
     object OnSaveClicked : WishlistAddAction
 
+    object OnBackClick: WishlistAddAction
+
 
 
 }

@@ -1,5 +1,6 @@
 package com.yusufteker.worthy.core.domain.model
 
+import com.yusufteker.worthy.core.domain.service.CurrencyConverter
 import kotlinx.serialization.Serializable
 import kotlin.math.pow
 
@@ -39,6 +40,17 @@ data class Money(
 }
 
 
+fun List<Money>.sumWithoutCurrencyConverted(): Money{
+    return Money(this.sumOf { it.amount }, this.first().currency)
+}
+
+suspend fun List<Money>.sumWithCurrencyConverted(currencyConverter: CurrencyConverter, currency: Currency): Money{
+    if (this.isEmpty())
+        return Money(0.0, currency)
+    currencyConverter.convertAll(this, currency).sumWithoutCurrencyConverted()
+    return currencyConverter.convertAll(this, currency).sumWithoutCurrencyConverted()
+
+}
 
 fun Double.toFixedSafe(digits: Int): String {
     val multiplier = 10.0.pow(digits)

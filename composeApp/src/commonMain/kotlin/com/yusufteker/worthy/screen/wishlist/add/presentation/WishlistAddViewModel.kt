@@ -104,6 +104,10 @@ class WishlistAddViewModel(
                     categoryRepository.insert(action.wishlistCategory)
                 }
             }
+
+            WishlistAddAction.OnBackClick -> {
+                sendUiEventSafe(UiEvent.NavigateBack)
+            }
         }
     }
 

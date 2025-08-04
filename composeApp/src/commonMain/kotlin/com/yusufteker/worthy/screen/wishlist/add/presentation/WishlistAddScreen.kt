@@ -54,6 +54,7 @@ fun WishlistAddScreenRoot(
         }
     }
     val state by viewModel.state.collectAsStateWithLifecycle()
+
     WishlistAddScreen(state = state, onAction = viewModel::onAction, contentPadding = contentPadding)
 }
 
@@ -66,16 +67,19 @@ fun WishlistAddScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(contentPadding)
-            .padding(horizontal = 16.dp)
-            .verticalScroll(rememberScrollState()),
+            .verticalScroll(rememberScrollState())
+        .padding(contentPadding)
+            .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
 
         AppTopBar(
             title = UiText.StringResourceId(Res.string.add_new).asString(),
-           // onBackClick = { onAction(WishlistAddAction.OnBackClicked) }
+            onNavIconClick = { onAction(WishlistAddAction.OnBackClick) },
+            isBack = true
         )
+
+
         // 1. Görsel seçimi
         BoxWithConstraints(
             modifier = Modifier

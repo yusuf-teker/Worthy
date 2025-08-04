@@ -28,7 +28,10 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.yusufteker.worthy.core.domain.model.DashboardMonthlyAmount
 import com.yusufteker.worthy.core.domain.model.MonthlyAmount
+import com.yusufteker.worthy.core.domain.model.sumWithoutCurrencyConverted
+import com.yusufteker.worthy.core.presentation.getMonthName
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -41,6 +44,8 @@ fun ColumnBarChart(
     selectedIndex: Int?,
     onBarClick: (Int) -> Unit
 ) {
+
+
     Row(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.Bottom,
@@ -68,7 +73,7 @@ fun ColumnBarChart(
             // 🔑 Animasyonlu renk
             val barColor by animateColorAsState(
                 targetValue = if (isSelected) AppColors.primary else AppColors.surfaceVariant,
-                animationSpec = tween(                 // veya spring()
+                animationSpec = tween(
                     durationMillis = 500,
                     easing = FastOutSlowInEasing
                 ), label = "barColor"
@@ -77,16 +82,15 @@ fun ColumnBarChart(
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f).align(Alignment.Top)
                 ) {
                 Box(
                     modifier = Modifier
-                        //.width(50.dp)
                         .height(maxBarHeight) // sabit yükseklik
 
                         .clip(RoundedCornerShape(4.dp))
-                        .background(Color.Transparent), // Arka plan yok
-                    contentAlignment = Alignment.BottomCenter // 🔥 bar tabanda başlasın
+                        .background(Color.Transparent),
+                    contentAlignment = Alignment.BottomCenter
                 ) {
                     Box(
                         modifier = Modifier
@@ -100,6 +104,7 @@ fun ColumnBarChart(
                                 if (isSelected) Modifier.shadow(6.dp, RoundedCornerShape(4.dp)) else Modifier
                             )
                             .background(barColor)
+                            .align(Alignment.BottomCenter)
                     )
                 }
                 Spacer(Modifier.height(8.dp))
@@ -108,7 +113,7 @@ fun ColumnBarChart(
                     style = AppTypography.labelSmall,
                     color = AppColors.onSurfaceVariant ,
                    overflow = TextOverflow.Ellipsis,
-                   maxLines = 1 // todo yükseklik bozuluyor sonra ayarlanacak
+                   maxLines = 2 // todo yükseklik bozuluyor sonra ayarlanacak
                 )
             }
         }
@@ -116,8 +121,72 @@ fun ColumnBarChart(
 }
 
 @Composable
+fun MiniBarChart2( // todo sadece aynı currency olanların verilmeis lazım
+    values: List<Float?>, // 0f–1f oranlar
+    monthlyAmounts: List<DashboardMonthlyAmount>,
+    modifier: Modifier = Modifier,
+    barColor: Color = AppColors.secondary
+) {
+    val maxBarHeight = 60.dp
+
+    if (monthlyAmounts.isNotEmpty() && values.isNotEmpty()){
+        Row(
+            modifier = modifier,
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.Bottom
+        )
+        {
+
+            val rowHeight = maxBarHeight * monthlyAmounts.maxOf { it.amount.sumWithoutCurrencyConverted().amount  }.toInt()
+            monthlyAmounts.forEachIndexed { idx, dashboardMonthlyAmount ->
+                val total = dashboardMonthlyAmount.amount.sumWithoutCurrencyConverted()
+
+                val animatedHeight = remember { Animatable(0f) }
+
+                LaunchedEffect(Unit) {
+                    animatedHeight.animateTo(
+                        targetValue = (maxBarHeight * total.amount.toFloat()).value,
+                        animationSpec = tween(600, easing = FastOutSlowInEasing)
+                    )
+                }
+
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.padding(horizontal = 4.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .width(16.dp)
+                            .height(rowHeight)
+                            .clip(RoundedCornerShape(2.dp)),
+                        contentAlignment = Alignment.BottomCenter
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(animatedHeight.value.dp)
+                                .clip(RoundedCornerShape(2.dp))
+                                .background(barColor)
+                        )
+                    }
+
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = getMonthName(monthlyAmounts.get(idx).yearMonth.month).asString(),
+                        style = AppTypography.labelSmall,
+                        color = AppColors.onSurfaceVariant
+                    )
+                }
+            }
+        }
+    }
+
+}
+
+@Composable
 fun MiniBarChart(
-    monthlyAmounts: List<MonthlyAmount>,
+    values: List<Float?>, // 0f–1f oranlar (nullable)
+    labels: List<Int>, // Ay isimleri veya başka etiketler
     modifier: Modifier = Modifier,
     barColor: Color = AppColors.secondary
 ) {
@@ -127,18 +196,15 @@ fun MiniBarChart(
         modifier = modifier,
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.Bottom
-    )
-    {
-
-        val rowHeight = maxBarHeight * monthlyAmounts.maxOf { it.amount }
-        monthlyAmounts.forEachIndexed { idx, v ->
-
+    ) {
+        values.forEachIndexed { idx, value ->
+            val heightRatio = value?.coerceIn(0f, 1f) ?: 0f
             val animatedHeight = remember { Animatable(0f) }
 
-            LaunchedEffect(Unit) {
+            LaunchedEffect(value) {
                 animatedHeight.animateTo(
-                    targetValue = (maxBarHeight * v.amount).value,
-                    animationSpec = tween(600, easing = FastOutSlowInEasing)
+                    targetValue = (maxBarHeight * heightRatio).value,
+                    animationSpec = tween(durationMillis = 600, easing = FastOutSlowInEasing)
                 )
             }
 
@@ -149,7 +215,7 @@ fun MiniBarChart(
                 Box(
                     modifier = Modifier
                         .width(16.dp)
-                        .height(rowHeight)
+                        .height(maxBarHeight)
                         .clip(RoundedCornerShape(2.dp)),
                     contentAlignment = Alignment.BottomCenter
                 ) {
@@ -163,12 +229,26 @@ fun MiniBarChart(
                 }
 
                 Spacer(Modifier.height(4.dp))
+
                 Text(
-                    text = monthlyAmounts.get(idx).month,
+                    text = getMonthName(labels.get(idx)).asString(),
                     style = AppTypography.labelSmall,
-                    color = AppColors.onSurfaceVariant
+                    color = AppColors.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
+        }
+    }
+}
+
+
+fun adjustValuesForBarChart(values: List<Float> ): List<Float>{
+    return values.map { value ->
+        if (value > 0f){
+            (value * 2 / 10f) + 0.2f
+        }else{
+            0f
         }
     }
 }

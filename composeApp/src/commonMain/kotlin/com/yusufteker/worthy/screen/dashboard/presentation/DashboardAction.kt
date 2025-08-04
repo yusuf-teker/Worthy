@@ -1,5 +1,6 @@
 package com.yusufteker.worthy.screen.dashboard.presentation
 
+import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.YearMonth
 
 sealed interface DashboardAction {
@@ -9,7 +10,7 @@ sealed interface DashboardAction {
 
     object CloseBottomSheetClicked: DashboardAction
 
-    data class CalculateButtonClicked(val amount: Float?): DashboardAction
+    data class CalculateButtonClicked(val money: Money): DashboardAction
 
     data class OnSelectedMonthChanged(val yearMonth: YearMonth) : DashboardAction
 

@@ -102,7 +102,7 @@ class DashboardRepositoryImpl(
         currentDate: LocalDate
     ): Flow<List<DashboardMonthlyAmount>> {
 
-        return wishlistRepository.getAll()
+        return wishlistRepository.getAll() // todo şuan alınmayanları gösteriyor burada logici o ay içinde alınanlar ile değiştiricem
             .map { wishlistItems ->
                 val unpurchased = wishlistItems.filter { !it.isPurchased }
 

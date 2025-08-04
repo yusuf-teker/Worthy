@@ -44,6 +44,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.yusufteker.worthy.core.domain.model.Category
+import com.yusufteker.worthy.core.domain.model.Currency
+import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
 import com.yusufteker.worthy.core.presentation.components.CategoryIcon
@@ -53,7 +55,6 @@ import com.yusufteker.worthy.core.presentation.components.PurchaseEvaluationInfo
 import com.yusufteker.worthy.core.presentation.theme.AppBrushes.screenBackground
 import com.yusufteker.worthy.core.presentation.theme.AppDimens.Spacing16
 import com.yusufteker.worthy.core.presentation.theme.AppDimens.Spacing8
-import com.yusufteker.worthy.core.presentation.theme.Constants.currencySymbols
 import com.yusufteker.worthy.screen.dashboard.domain.EvaluationResult
 import org.koin.compose.viewmodel.koinViewModel
 import worthy.composeapp.generated.resources.Res
@@ -123,19 +124,22 @@ fun DashboardScreen(
                 // 3 – Kart
                 IncomeAllocationCard(
                     modifier = Modifier.fillMaxWidth(),
-                    amountText = "₺${state.monthlyIncome.toInt()}",
+                    amountText = state.totalCurrentIncomeRecurringMoney.formatted(),// todo + income eklenecek
                     monthDeltaText = "+10%",
-                    bars = listOf(
+                    barsFractions = listOf(
                         state.fixedExpenseFraction,
                         state.desiresSpentFraction,
-                        state.expensesFraction,
-                        1f - state.fixedExpenseFraction - state.desiresSpentFraction
+                        state.remainingFraction,
+                       state.expensesFraction
                     ),
+                    miniBarsFractions = state.selectedMiniBarsFraction,
+                    miniBarsMonths = state.selectedMiniBarsMonths,
+
+
                     selectedChartIndex = state.selectedChartIndex,
                     onChartSelected = {
                         onAction(DashboardAction.ChartSelected(it))
                     },
-                    last6MonthAmounts = state.last6MonthAmounts,
                     selectableMonths = state.selectableMonths,
                     selectedMonth = state.selectedMonthYear,
                     onSelectedMonthChanged = { yearMonth ->
@@ -177,11 +181,11 @@ fun DashboardScreen(
                 },
                 onCalculate = { amount ->
                     onAction(
-                        DashboardAction.CalculateButtonClicked(amount = amount)
+                        DashboardAction.CalculateButtonClicked(money = amount)
                     )
                 },
                 evaluationResult = state.evaluationResult,
-                currencySymbol = currencySymbols.getValue(state.selectedCurrency),
+                currency = state.selectedCurrency,
                 categories = state.categories
             )
         }
@@ -194,9 +198,9 @@ fun DashboardScreen(
 fun BottomSheetContent(
     sheetState: SheetState = rememberModalBottomSheetState(),
     onClose: () -> Unit,
-    onCalculate: (Float?) -> Unit,
+    onCalculate: (Money) -> Unit,
     evaluationResult: EvaluationResult? = null,
-    currencySymbol: String = "₺",
+    currency: Currency = Currency.TRY,
     categories: List<Category> = emptyList()
 ) {
     var amount by remember { mutableStateOf("") }
@@ -245,7 +249,7 @@ fun BottomSheetContent(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             trailingIcon = {
                 Text(
-                    text = currencySymbol,
+                    text = currency.symbol,
                     style = AppTypography.bodyLarge.copy(
                         fontWeight = FontWeight.Bold,
                         color = AppColors.primary
@@ -322,7 +326,7 @@ fun BottomSheetContent(
         PrimaryButton(
             text = UiText.StringResourceId(Res.string.bottom_sheet_button_calculate).asString(),
             onClick = {
-                onCalculate(amount.toFloatOrNull())
+                onCalculate(Money(amount.toDouble(), currency = currency))
                 /*
                 val input = amount.toFloatOrNull()
                 result = if (input != null && selectedCategory != null) {
