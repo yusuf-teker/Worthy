@@ -59,8 +59,9 @@
     <string name="bottom_sheet_select_category">Please select a category</string>
 
 
-    <string name="evaluation_income_percent">• %1$s of your income</string>
-    <string name="evaluation_desire_budget_percent">• %1$s of your "wants" budget</string>
+    <string name="evaluation_income_percent">• %1$s of your  monthly income</string>
+    <string name="evaluation_expense_income_percent">• %1$d%% of your income excluding monthly expenses</string>
+    <string name="evaluation_desire_budget_percent">• % %1$s of your "wants" budget</string>
     <string name="evaluation_work_hours">• Equivalent to %1$s hours of work</string>
     <string name="purchase_note_title">📌 This expense:</string>
     <string name="purchase_note_remaining">💰 After this expense, you’ll have %1$s%2$s left in your "wants" budget.</string>

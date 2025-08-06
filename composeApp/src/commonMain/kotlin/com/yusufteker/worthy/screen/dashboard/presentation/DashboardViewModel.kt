@@ -14,11 +14,11 @@ import com.yusufteker.worthy.core.domain.model.sumWithCurrencyConverted
 import com.yusufteker.worthy.core.domain.service.CurrencyConverter
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import com.yusufteker.worthy.core.presentation.UiEvent
+import com.yusufteker.worthy.core.presentation.components.MoneyInput3
 import com.yusufteker.worthy.core.presentation.components.adjustValuesForBarChart
 import com.yusufteker.worthy.screen.dashboard.domain.DashboardRepository
 import com.yusufteker.worthy.screen.dashboard.domain.EvaluationResult
 import com.yusufteker.worthy.screen.settings.domain.UserPrefsManager
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -69,21 +69,26 @@ class DashboardViewModel(
                 action.money.let {
 
                     // harcama currencye cevrilmis income
-                    val monthlyIncome = currencyConverter.convert(state.value.totalSelectedMonthIncomeRecurringMoney, to = action.money.currency)
+                    val monthlyIncome = currencyConverter.convert(state.value.totalAllIncomeMoney, to = action.money.currency)
+                    val monthlyExpense = currencyConverter.convert(state.value.totalAllExpenseMoney, to = action.money.currency)
                     val desireBudget = currencyConverter.convert(state.value.desireBudget, to = action.money.currency)
-
-                    val desirePercent = ((action.money.amount / desireBudget.amount)*100).toDouble()
+                    val incomeMinusExpense = monthlyIncome.amount-monthlyExpense.amount
+                    val desirePercent = ((action.money.amount / desireBudget.amount) * 100)
                     val  workHours =  (action.money.amount / (monthlyIncome.amount / state.value.monthlyWorkHours)).toFloat()
                     val   remainingDesire =  (state.value.desireBudget.amount - action.money.amount).toInt()
                     val  currencySymbol = state.value.selectedCurrency.symbol
+                    val monthlyIncomePercent = ( action.money.amount / monthlyIncome.amount) * 100
+                    val incomeMinusExpensePercent = ( action.money.amount / incomeMinusExpense) * 100
+
                     _state.update {
                         it.copy(
                             evaluationResult = EvaluationResult(
-                                incomePercent = 0.0,//incomePercent,
+                                incomePercent = monthlyIncomePercent ,//incomePercent,
                                 desirePercent = desirePercent,
                                 workHours = workHours,
                                 remainingDesire = remainingDesire,
                                 currencySymbol = currencySymbol,
+                                incomeMinusExpensePercent = incomeMinusExpensePercent
                             ),
                         )
                     }
@@ -101,8 +106,9 @@ class DashboardViewModel(
                 _state.update { currentState ->
                     currentState.copy(
                         selectedMonthYear = action.yearMonth,
-                        totalSelectedMonthIncomeRecurringMoney = calculateSelectedMonthIncome(action.yearMonth),
-                        incomeChangeRatio = calculateSelectedMonthIncomeChangeRatio(action.yearMonth)
+                        incomeChangeRatio = calculateSelectedMonthIncomeChangeRatio(action.yearMonth),
+                        totalAllIncomeMoney = calculateSelectedMonthAllIncome(action.yearMonth),
+                        totalAllExpenseMoney = calculateSelectedMonthAllExpense(action.yearMonth)
                     )
                 }
 
@@ -175,8 +181,9 @@ class DashboardViewModel(
                 dashboardRepository.getAllWishlistMonthlyAmount(
                     monthCount = 6,
                     currentDate = getCurrentLocalDateTime()
-                )
-            ) { expenses, incomes, dashboardRecurringData, wishlistItems ->
+                ),
+                dashboardRepository.getExpenseCategories()
+            ) { expenses, incomes, dashboardRecurringData, wishlistItems, categories ->
                 _state.update { currentState ->
                     currentState.copy(
                         expenseMonthlyAmountList = expenses,
@@ -184,6 +191,7 @@ class DashboardViewModel(
                         recurringIncomeMonthlyAmountList = dashboardRecurringData.incomes,
                         recurringExpenseMonthlyAmountList = dashboardRecurringData.expenses,
                         wishlistMonthlyAmountList = wishlistItems,
+                        categories = categories
                     )
                 }
 
@@ -237,8 +245,8 @@ class DashboardViewModel(
             currencyConverter
         ) ?: emptyMoney( state.value.selectedCurrency)
 
+        val totalExpense = totalExpenseMoney.amount + totalRecurringExpenseMoney.amount // + totalWishlistMoney.amount // todo wishlist money kaldırılmadı
         val totalIncome = totalIncomeMoney.amount.plus(totalRecurringIncomeMoney.amount)
-        val totalExpense = totalExpenseMoney.amount + totalRecurringExpenseMoney.amount + totalWishlistMoney.amount
 
         // Todo ratio şuan expense göre bunu belki böyle yapmayız
         val expensesRatio = (totalExpenseMoney.amount /  totalExpense)
@@ -248,31 +256,24 @@ class DashboardViewModel(
 
         val normalizedRatios = adjustValuesForBarChart(normalizeRatios(expensesRatio,recurringExpensesRatio,wishlistRatio,remainingRatio))
 
-        // Total Current RecurringMonet
-        val totalCurrentRecurringMoney =  recurringIncomes.sumConvertedAmount(
-        state.value.selectedCurrency,
-            state.value.selectedMonthYear,
-        currencyConverter
-        ) ?: emptyMoney( state.value.selectedCurrency)
 
 
+        val  totalAllIncomeMoney = Money(totalIncome, state.value.selectedCurrency)
+        val  totalAllExpenseMoney = Money(totalExpense, state.value.selectedCurrency)
 
         _state.update { currentState ->
             currentState.copy(
-                expensesFraction = normalizedRatios.get(0)?.toFloat() ?: -1f,
-                desiresSpentFraction = normalizedRatios.get(2)?.toFloat() ?: -1f,
-                fixedExpenseFraction = normalizedRatios.get(1)?.toFloat() ?: -1f,
-                remainingFraction = normalizedRatios.get(3)?.toFloat() ?: -1f,
-                totalSelectedMonthIncomeRecurringMoney = totalCurrentRecurringMoney,
-                //todo  expense ile income arasındaki farkları bakan fonk yazılcak
+                expensesFraction = normalizedRatios.get(0),
+                desiresSpentFraction = normalizedRatios.get(2),
+                fixedExpenseFraction = normalizedRatios.get(1),
+                remainingFraction = normalizedRatios.get(3),
+                totalAllIncomeMoney = totalAllIncomeMoney,
+                totalAllExpenseMoney = totalAllExpenseMoney,
                 miniBarsFractions = listOf(normalizeLast6Month(recurringExpenses ),normalizeLast6Month(wishlistItems),  normalizeLast6Month(expenses ),normalizeLast6Month(emptyList())),
                 miniBarsMonths =  listOf(recurringExpenses.getLastMonths(6),wishlistItems.getLastMonths(6),expenses.getLastMonths(6),expenses.getLastMonths(6)) // TODO EXPENSE ile aynı yapıldı
 
             )
         }
-
-
-        // todo oranları hesaplayı ona göre ekranda yükseklik belirke
 
     }
 
@@ -291,16 +292,48 @@ class DashboardViewModel(
             )
         }
     }
-    private suspend fun calculateSelectedMonthIncome(month: YearMonth): Money{
+    private suspend fun calculateSelectedMonthRecurringIncome(month: YearMonth): Money{
        return  state.value.recurringIncomeMonthlyAmountList.sumConvertedAmount(
             state.value.selectedCurrency,
            month,
             currencyConverter
         ) ?: emptyMoney( state.value.selectedCurrency)
     }
+
+    private suspend fun calculateSelectedMonthIncome(month: YearMonth): Money{
+        return  state.value.incomeMonthlyAmountList.sumConvertedAmount(
+            state.value.selectedCurrency,
+            month,
+            currencyConverter
+        ) ?: emptyMoney( state.value.selectedCurrency)
+    }
+    private suspend fun calculateSelectedMonthRecurringExpense(month: YearMonth): Money{
+        return  state.value.recurringExpenseMonthlyAmountList.sumConvertedAmount(
+            state.value.selectedCurrency,
+            month,
+            currencyConverter
+        ) ?: emptyMoney( state.value.selectedCurrency)
+    }
+
+    private suspend fun calculateSelectedMonthExpense(month: YearMonth): Money{
+        return  state.value.expenseMonthlyAmountList.sumConvertedAmount(
+            state.value.selectedCurrency,
+            month,
+            currencyConverter
+        ) ?: emptyMoney( state.value.selectedCurrency)
+    }
+
+    private suspend fun  calculateSelectedMonthAllIncome(month: YearMonth): Money{
+        return Money(calculateSelectedMonthIncome(month).amount + calculateSelectedMonthRecurringIncome(month).amount, state.value.selectedCurrency)
+    }
+
+    private suspend fun calculateSelectedMonthAllExpense(month: YearMonth): Money{
+        return Money(calculateSelectedMonthExpense(month).amount + calculateSelectedMonthRecurringExpense(month).amount, state.value.selectedCurrency)
+    }
     private suspend fun calculateSelectedMonthIncomeChangeRatio(month: YearMonth): Double {
-        val lastMonthIncome = calculateSelectedMonthIncome(month.getLastMonth()).amount
-        val selectedMonthIncome = (calculateSelectedMonthIncome(month).amount)
+        val lastMonthIncome = calculateSelectedMonthRecurringIncome(month.getLastMonth()).amount + calculateSelectedMonthIncome(month.getLastMonth()).amount
+        val selectedMonthIncome = (calculateSelectedMonthRecurringIncome(month).amount) + calculateSelectedMonthIncome(month).amount
+
         return  (selectedMonthIncome - lastMonthIncome) / selectedMonthIncome * 100
     }
 

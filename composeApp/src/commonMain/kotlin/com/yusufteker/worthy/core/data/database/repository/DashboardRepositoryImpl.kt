@@ -1,6 +1,8 @@
 package com.yusufteker.worthy.core.data.database.repository
 
 
+import com.yusufteker.worthy.core.domain.model.Category
+import com.yusufteker.worthy.core.domain.model.CategoryType
 import com.yusufteker.worthy.core.domain.model.DashboardMonthlyAmount
 import com.yusufteker.worthy.core.domain.model.Expense
 import com.yusufteker.worthy.core.domain.model.Income
@@ -25,6 +27,7 @@ class DashboardRepositoryImpl(
     private val expenseRepository: ExpenseRepository,
     private val recurringRepository: RecurringFinancialItemRepository,
     private val wishlistRepository: WishlistRepository,
+    private val categoryRepository: CategoryRepository
 ) : DashboardRepository {
 
     override fun getAllRecurringMonthlyAmount(
@@ -130,6 +133,10 @@ class DashboardRepositoryImpl(
                     )
                 }.sortedWith(compareBy({ it.yearMonth.year }, { it.yearMonth.month }))
             }
+    }
+
+    override fun getExpenseCategories(): Flow<List<Category>> {
+        return categoryRepository.getByType(CategoryType.EXPENSE)
     }
 
 

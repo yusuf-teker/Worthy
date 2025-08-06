@@ -47,6 +47,7 @@ import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Money
+import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.presentation.UiEvent
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
@@ -138,7 +139,7 @@ fun DashboardScreen(
                 // 3 – Kart
                 IncomeAllocationCard(
                     modifier = Modifier.fillMaxWidth(),
-                    amountText = state.totalSelectedMonthIncomeRecurringMoney.formatted(),// todo + income eklenecek
+                    amountText = state.totalAllIncomeMoney.formatted(),// todo + income eklenecek
                     incomeChangeRatio = state.incomeChangeRatio,
                     barsFractions = listOf(
                         state.fixedExpenseFraction,
@@ -207,7 +208,6 @@ fun DashboardScreen(
                     )
                 },
                 evaluationResult = state.evaluationResult,
-                currency = state.selectedCurrency,
                 categories = state.categories
             )
         }
@@ -222,10 +222,9 @@ fun BottomSheetContent(
     onClose: () -> Unit,
     onCalculate: (Money) -> Unit,
     evaluationResult: EvaluationResult? = null,
-    currency: Currency = Currency.TRY,
     categories: List<Category> = emptyList()
 ) {
-    var amount by remember { mutableStateOf<Money?>(null) }
+    var amount by remember { mutableStateOf<Money?>(emptyMoney()) }
     var includeTax by remember { mutableStateOf(false) }
     var selectedCategory by remember { mutableStateOf<Category?>(null) }
     var isDropdownExpanded by remember { mutableStateOf(false) }
@@ -241,8 +240,7 @@ fun BottomSheetContent(
             .fillMaxWidth()
             .padding(16.dp)
     ) {
-        Text("Harcama Hesaplayıcı", style = AppTypography.titleMedium)
-        Spacer(Modifier.height(16.dp))
+
 
         evaluationResult?.let {
             PurchaseEvaluationInfoBox(
@@ -250,6 +248,7 @@ fun BottomSheetContent(
                 desireBudgetPercent = it.desirePercent,
                 workHoursRequired = it.workHours,
                 remainingDesireBudget = it.remainingDesire,
+                incomeMinusExpensePercent = it.incomeMinusExpensePercent,
                 currencySymbol = it.currencySymbol,
                 modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
             )
@@ -323,19 +322,11 @@ fun BottomSheetContent(
 
         Spacer(Modifier.height(16.dp))
 
-        // Vergi checkbox
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Checkbox(checked = includeTax, onCheckedChange = { includeTax = it })
-            Text("Vergi dahil")
-        }
-
-        Spacer(Modifier.height(16.dp))
-
         // Hesapla butonu
         PrimaryButton(
             text = UiText.StringResourceId(Res.string.bottom_sheet_button_calculate).asString(),
             onClick = {
-                onCalculate(Money(amount?.amount?: 0.0, currency = currency))
+                onCalculate(Money(amount?.amount?: 0.0, currency = amount?.currency?: Currency.TRY))
             },
             modifier = Modifier.fillMaxWidth()
         )

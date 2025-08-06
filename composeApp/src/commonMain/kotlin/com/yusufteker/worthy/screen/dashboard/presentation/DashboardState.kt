@@ -25,7 +25,6 @@ data class DashboardState(
 
     var selectedChartIndex: Int? = null,
     var isBottomSheetOpen: Boolean = false,
-    var bottomSheetResult: String? = null,
     var evaluationResult: EvaluationResult? = null,
     var categories: List<Category> = emptyList(),
 
@@ -45,6 +44,11 @@ data class DashboardState(
 
     //Total Income
     val totalSelectedMonthIncomeRecurringMoney: Money = emptyMoney(selectedCurrency),
+    val totalSelectedMonthIncomeMoney: Money = emptyMoney(selectedCurrency),
+    val totalAllIncomeMoney: Money = emptyMoney(selectedCurrency),
+    val totalAllExpenseMoney: Money = emptyMoney(selectedCurrency),
+
+
     val incomeChangeRatio : Double = 0.0,
 
     //BAR CHART

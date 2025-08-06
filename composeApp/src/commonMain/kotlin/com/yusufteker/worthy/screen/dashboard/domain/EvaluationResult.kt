@@ -5,5 +5,6 @@ data class EvaluationResult(
     val desirePercent: Double,      // İstek bütçesinin yüzdesi
     val workHours: Float,          // Karşılık gelen çalışma süresi
     val remainingDesire: Int,    // Kalan istek bütçesi
+    val incomeMinusExpensePercent: Double, // Gelir - giderin  harcama yüzdesi
     val currencySymbol: String   // "₺" / "$" / "€" …
 )

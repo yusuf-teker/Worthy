@@ -1,6 +1,7 @@
 package com.yusufteker.worthy.screen.dashboard.domain
 
 
+import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.DashboardMonthlyAmount
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDate
@@ -27,4 +28,6 @@ interface  DashboardRepository {
         monthCount: Int,
         currentDate: LocalDate
     ): Flow<List<DashboardMonthlyAmount>>
+
+    fun getExpenseCategories(): Flow<List<Category>>
 }

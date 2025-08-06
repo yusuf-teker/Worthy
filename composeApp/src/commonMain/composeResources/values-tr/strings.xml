@@ -60,8 +60,10 @@
     <string name="bottom_sheet_select_category">Lütfen kategori seçin</string>
 
 
-    <string name="evaluation_income_percent">• Gelirinin %1$s oranında</string>
-    <string name="evaluation_desire_budget_percent">• "İstek" bütçenin %1$s kadarını oluşturuyor</string>
+    <string name="evaluation_income_percent">• Aylık Gelirinin %1$s oranında</string>
+    <string name="evaluation_expense_income_percent">• Aylık masraflar dışındaki gelirinin %%1$d'u</string>
+
+    <string name="evaluation_desire_budget_percent">• "İstek" bütçenin % %1$s kadarını oluşturuyor</string>
     <string name="evaluation_work_hours">• %1$s saatlik çalışma süresine denk geliyor</string>
     <string name="purchase_note_title">📌 Bu harcama:</string>
     <string name="purchase_note_remaining">💰 Bu harcamadan sonra "İstek" bütçende %1$s%2$s kalacak.</string>

@@ -74,7 +74,7 @@ val sharedModule = module {
     single<WishlistRepository> { WishlistRepositoryImpl(get()) }
     single<CategoryRepository> { CategoryRepositoryImpl(get()) }
     single<RecurringFinancialItemRepository> { RecurringFinancialItemRepositoryImpl(get()) }
-    single<DashboardRepository> { DashboardRepositoryImpl(get(), get(),get(),get()) }
+    single<DashboardRepository> { DashboardRepositoryImpl(get(), get(),get(),get(),get()) }
     single<CurrencyRatesCacheDataSource> { CurrencyRatesCacheDataSourceImpl() }
     single<CurrencyRatesRemoteDataSource> { CurrencyRatesRemoteDataSourceImpl() }
 
