@@ -10,10 +10,12 @@ import platform.CoreGraphics.CGRect
 import platform.darwin.NSObject
 import platform.posix.memcpy
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asComposeImageBitmap
 import androidx.compose.ui.graphics.asSkiaBitmap
 import cocoapods.TOCropViewController.*
 import io.github.aakira.napier.Napier
 import org.jetbrains.skia.Image
+import platform.CoreGraphics.*
 
 // Global callbacks
 private var mainGalleryCallback: ((ImageBitmap?) -> Unit)? = null
@@ -23,6 +25,55 @@ private var mainCameraCallback: ((ImageBitmap?) -> Unit)? = null
 actual fun rememberImagePicker(): ImagePicker {
     return remember {
         IOSImagePicker()
+    }
+}
+
+
+// NSData extension (eğer yoksa ekleyin)
+@OptIn(ExperimentalForeignApi::class)
+fun NSData.toByteArray(): ByteArray {
+    Napier.d("NSData.toByteArray called, length: ${this.length}")
+    return ByteArray(this.length.toInt()) { index ->
+        this.bytes!!.reinterpret<ByteVar>()[index]
+    }
+}
+
+@OptIn(ExperimentalForeignApi::class)
+actual suspend fun loadImageBitmapFromPath(path: String): ImageBitmap? {
+    return try {
+        // Dosya adını çıkar
+        val fileName = path.substringAfterLast("/")
+        Napier.d("Loading image: $fileName")
+
+        // Documents directory al ve yeni yolu oluştur
+        val documentsDirectory = NSFileManager.defaultManager.URLsForDirectory(
+            directory = NSDocumentDirectory,
+            inDomains = NSUserDomainMask
+        ).firstOrNull() as? NSURL ?: return null
+
+        val fileURL = documentsDirectory.URLByAppendingPathComponent(fileName) ?: return null
+        val currentPath = fileURL.path ?: return null
+
+        // Dosya var mı kontrol et
+        if (!NSFileManager.defaultManager.fileExistsAtPath(currentPath)) {
+            Napier.d("File not found: $fileName")
+            return null
+        }
+
+        // NSData oluştur
+        val nsData = NSData.dataWithContentsOfFile(currentPath) ?: return null
+
+        // ImageBitmap'e çevir
+        val byteArray = nsData.toByteArray()
+        val skiaImage = org.jetbrains.skia.Image.makeFromEncoded(byteArray) ?: return null
+        val imageBitmap = skiaImage.toComposeImageBitmap()
+
+        Napier.d("Image loaded successfully: ${imageBitmap.width}x${imageBitmap.height}")
+        imageBitmap
+
+    } catch (e: Exception) {
+        Napier.e("Error loading image: ${e.message}")
+        null
     }
 }
 
@@ -60,8 +111,7 @@ class IOSImagePicker : ImagePicker {
                     rootViewController.presentViewController(
                         cropViewController,
                         animated = true,
-                        completion = {
-                        }
+                        completion = {}
                     )
                 } else {
                     finalCallback(null)
@@ -109,7 +159,7 @@ class IOSImagePicker : ImagePicker {
     }
 
     override fun requestCameraPermission(onResult: (Boolean) -> Unit) {
-        onResult(true) // iOS otomatik permission handling
+        onResult(true)
     }
 
     override fun cropImage(
@@ -117,35 +167,34 @@ class IOSImagePicker : ImagePicker {
         aspectRatio: Float,
         onCropped: (ImageBitmap?) -> Unit
     ) {
-
+        // Basit çözüm: Sadece TOCropViewController kullan
         val uiImage = image.toUIImage()
         if (uiImage == null) {
             onCropped(null)
             return
         }
-
         presentCropViewController(uiImage, aspectRatio, onCropped)
     }
 
     internal fun handleGalleryImage(image: UIImage) {
-        val bitmap = image.toImageBitmap()
+        // Optimized conversion kullan
+        val bitmap = image.toImageBitmapOptimized() ?: image.toImageBitmap()
         mainGalleryCallback?.invoke(bitmap)
         mainGalleryCallback = null
     }
 
     internal fun handleCameraImage(image: UIImage) {
-        val bitmap = image.toImageBitmap()
+        // Optimized conversion kullan
+        val bitmap = image.toImageBitmapOptimized() ?: image.toImageBitmap()
         mainCameraCallback?.invoke(bitmap)
         mainCameraCallback = null
     }
 
     internal fun handleGalleryCancel() {
-       // mainGalleryCallback?.invoke(null)
         mainGalleryCallback = null
     }
 
     internal fun handleCameraCancel() {
-       // mainCameraCallback?.invoke(null)
         mainCameraCallback = null
     }
 
@@ -163,7 +212,6 @@ class IOSImagePicker : ImagePicker {
 }
 
 // Delegates
-
 class GalleryPickerDelegate(
     private val imagePicker: IOSImagePicker
 ) : NSObject(), UIImagePickerControllerDelegateProtocol, UINavigationControllerDelegateProtocol {
@@ -200,7 +248,7 @@ class CameraPickerDelegate(
         picker: UIImagePickerController,
         didFinishPickingMediaWithInfo: Map<Any?, *>
     ) {
-        NSOperationQueue.mainQueue.addOperationWithBlock  {
+        NSOperationQueue.mainQueue.addOperationWithBlock {
             val image = didFinishPickingMediaWithInfo[UIImagePickerControllerOriginalImage] as? UIImage
             if (image == null) {
                 picker.dismissViewControllerAnimated(true) {
@@ -232,7 +280,8 @@ class CropViewControllerDelegate(
         withRect: CValue<CGRect>,
         angle: Long
     ) {
-        val bitmap = didCropToImage.toImageBitmap()
+        // Optimized conversion kullan
+        val bitmap = didCropToImage.toImageBitmapOptimized() ?: didCropToImage.toImageBitmap()
         cropViewController.dismissViewControllerAnimated(true) {
             onResult(bitmap)
         }
@@ -249,29 +298,23 @@ class CropViewControllerDelegate(
 }
 
 // Extension functions for conversion
-
 @OptIn(ExperimentalForeignApi::class)
 fun UIImage.toImageBitmap(): ImageBitmap? {
     return try {
-
         val imageData = UIImagePNGRepresentation(this) ?: return null
         val bytes = ByteArray(imageData.length.toInt())
         memcpy(bytes.refTo(0), imageData.bytes, imageData.length)
 
         val skiaImage = Image.makeFromEncoded(bytes)
-        val x = skiaImage.toComposeImageBitmap()
-        x // 0.5 sn
-
+        skiaImage.toComposeImageBitmap()
     } catch (e: Exception) {
         null
     }
 }
 
 @OptIn(ExperimentalForeignApi::class)
-fun ImageBitmap.toUIImage(): UIImage? { // TOCropViewController İÇİM UI IMAGE
+fun ImageBitmap.toUIImage(): UIImage? {
     return try {
-        Napier.d(message ="Image picker toUIImage start", tag ="Yusuf")
-
         val skiaImage = Image.makeFromBitmap(this.asSkiaBitmap())
         val encodedData = skiaImage.encodeToData(org.jetbrains.skia.EncodedImageFormat.PNG)
             ?: return null
@@ -282,10 +325,44 @@ fun ImageBitmap.toUIImage(): UIImage? { // TOCropViewController İÇİM UI IMAGE
             NSData.create(bytes = pinned.addressOf(0), length = byteArray.size.toULong())
         }
 
-        val x = UIImage.imageWithData(nsData)
-        Napier.d(message ="Image picker toUIImage stop", tag ="Yusuf")
+        UIImage.imageWithData(nsData)
+    } catch (e: Exception) {
+        null
+    }
+}
 
-        x // 3.5sn
+// Optimized conversion - Ana performans kazancı burada
+@OptIn(ExperimentalForeignApi::class)
+fun UIImage.toImageBitmapOptimized(): ImageBitmap? {
+    return try {
+        val cgImage = this.CGImage ?: return null
+
+        val width = CGImageGetWidth(cgImage).toInt()
+        val height = CGImageGetHeight(cgImage).toInt()
+        val bytesPerRow = width * 4
+
+        val pixelData = ByteArray(height * bytesPerRow)
+
+        val colorSpace = CGColorSpaceCreateDeviceRGB()
+        val context = CGBitmapContextCreate(
+            data = pixelData.refTo(0),
+            width = width.toULong(),
+            height = height.toULong(),
+            bitsPerComponent = 8u,
+            bytesPerRow = bytesPerRow.toULong(),
+            space = colorSpace,
+            bitmapInfo = CGImageAlphaInfo.kCGImageAlphaPremultipliedLast.value
+        )
+
+        CGContextDrawImage(context, CGRectMake(0.0, 0.0, width.toDouble(), height.toDouble()), cgImage)
+
+        val skiaImageInfo = org.jetbrains.skia.ImageInfo.makeS32(width, height, org.jetbrains.skia.ColorAlphaType.PREMUL)
+        val skiaBitmap = org.jetbrains.skia.Bitmap().apply {
+            allocPixels(skiaImageInfo)
+            installPixels(pixelData)
+        }
+
+        skiaBitmap.asComposeImageBitmap()
     } catch (e: Exception) {
         null
     }

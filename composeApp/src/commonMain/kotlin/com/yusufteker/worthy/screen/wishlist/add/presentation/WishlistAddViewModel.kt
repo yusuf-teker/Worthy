@@ -3,17 +3,16 @@ package com.yusufteker.worthy.screen.wishlist.add.presentation
 import androidx.lifecycle.viewModelScope
 import com.yusufteker.worthy.core.domain.getCurrentLocalDateTime
 import com.yusufteker.worthy.core.domain.model.CategoryType
-import com.yusufteker.worthy.core.domain.model.startDate
 import com.yusufteker.worthy.core.domain.repository.CategoryRepository
 import com.yusufteker.worthy.core.domain.toEpochMillis
 import com.yusufteker.worthy.core.media.ImageSaver
 import com.yusufteker.worthy.core.media.toByteArray
-import com.yusufteker.worthy.core.presentation.BaseViewModel
+import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import com.yusufteker.worthy.core.presentation.UiEvent
 import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistRepository
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -123,11 +122,19 @@ class WishlistAddViewModel(
 
      fun saveWishlistItem() {
          viewModelScope.launch {
+            showLoading()
+             Napier.d(_state.value.isLoading.toString())
              val wishlistItem = _state.value.wishlistItem.copy(
+
                  imageUri = state.value.imageBitmap?.toByteArray()?.let { byteArray ->
                      imageSaver.saveImage(byteArray)
                  }
              )
+             Napier.d(_state.value.isLoading.toString())
+
+             hideLoading()
+             Napier.d(_state.value.isLoading.toString())
+
              wishlistRepository.insert(wishlistItem)
          }
     }
@@ -153,5 +160,21 @@ class WishlistAddViewModel(
                 }
             }
             .launchIn(viewModelScope)
+    }
+
+    suspend fun showLoading(){
+        _state.update { currentState ->
+            currentState.copy(
+                isLoading = true
+            )
+        }
+    }
+
+    suspend fun hideLoading(){
+        _state.update { currentState ->
+            currentState.copy(
+                isLoading = false
+            )
+        }
     }
 }

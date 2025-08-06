@@ -1,10 +1,11 @@
-package com.yusufteker.worthy.core.presentation
+package com.yusufteker.worthy.core.presentation.base
 
 
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yusufteker.worthy.app.navigation.Routes
+import com.yusufteker.worthy.core.presentation.UiEvent
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
@@ -12,6 +13,10 @@ import org.koin.core.component.KoinComponent
 
 import org.koin.core.component.inject
 import org.yusufteker.routealarm.core.presentation.popup.PopupManager
+import androidx.compose.runtime.State
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+
 
 open class BaseViewModel : ViewModel(), KoinComponent {
 
@@ -33,6 +38,4 @@ open class BaseViewModel : ViewModel(), KoinComponent {
     fun navigateTo(route: Routes) {
         sendUiEventSafe(UiEvent.NavigateTo(route))
     }
-
-
 }

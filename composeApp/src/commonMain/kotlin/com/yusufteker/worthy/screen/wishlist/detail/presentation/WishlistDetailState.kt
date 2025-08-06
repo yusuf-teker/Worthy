@@ -1,6 +1,8 @@
 package com.yusufteker.worthy.screen.wishlist.detail.presentation
 
+import com.yusufteker.worthy.core.presentation.base.BaseState
+
 data class WishlistDetailState(
-    val isLoading: Boolean = false,
+    override val isLoading: Boolean = false,
     val errorMessage: String? = null
-)
+): BaseState

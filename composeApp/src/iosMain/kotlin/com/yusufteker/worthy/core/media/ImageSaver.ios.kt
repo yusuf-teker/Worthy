@@ -1,5 +1,6 @@
 package com.yusufteker.worthy.core.media
 
+import androidx.compose.ui.graphics.ImageBitmap
 import kotlinx.cinterop.*
 import platform.Foundation.*
 
@@ -50,43 +51,4 @@ actual class ImageSaver {
         }
     }
 
-    // Bonus: Dosyadan okuma fonksiyonu
-    @OptIn(ExperimentalForeignApi::class)
-    suspend fun loadImage(filePath: String): ByteArray? {
-        return try {
-            val nsData = NSData.dataWithContentsOfFile(filePath)
-            if (nsData != null) {
-                ByteArray(nsData.length.toInt()) { index ->
-                    nsData.bytes?.reinterpret<ByteVar>()?.get(index) ?: 0
-                }
-            } else {
-                null
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
-    }
-
-    // Bonus: Dosya silme
-    @OptIn(ExperimentalForeignApi::class)
-    suspend fun deleteImage(filePath: String): Boolean {
-        return try {
-            val fileManager = NSFileManager.defaultManager
-            val url = NSURL.fileURLWithPath(filePath)
-            fileManager.removeItemAtURL(url, error = null)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            false
-        }
-    }
-
-    // Bonus: Dosya var mı kontrol et
-    suspend fun imageExists(filePath: String): Boolean {
-        return try {
-            NSFileManager.defaultManager.fileExistsAtPath(filePath)
-        } catch (e: Exception) {
-            false
-        }
-    }
 }

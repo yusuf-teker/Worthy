@@ -147,6 +147,9 @@ fun AppNavHost(
                         onNavigateToSettings = {
                             //navController.navigate(Routes.SettingsScreen)
                         }*/
+                        onNavigateTo = { route ->
+                            navController.navigate(route)
+                        }
                     )
                 }
 

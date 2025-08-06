@@ -3,11 +3,10 @@ package com.yusufteker.worthy.screen.wishlist.list.presentation
 import androidx.lifecycle.viewModelScope
 import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.domain.getCurrentLocalDateTime
-import com.yusufteker.worthy.core.domain.model.CategoryType
 import com.yusufteker.worthy.core.domain.repository.CategoryRepository
 import com.yusufteker.worthy.core.domain.repository.SearchHistoryRepository
 import com.yusufteker.worthy.core.domain.toEpochMillis
-import com.yusufteker.worthy.core.presentation.BaseViewModel
+import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import com.yusufteker.worthy.core.presentation.components.SearchResult
 import com.yusufteker.worthy.screen.settings.domain.UserPrefsManager
 import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistItem

@@ -1,6 +1,7 @@
 package com.yusufteker.worthy.screen.dashboard.presentation
 
 import androidx.lifecycle.viewModelScope
+import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.domain.getCurrentLocalDateTime
 import com.yusufteker.worthy.core.domain.model.DashboardMonthlyAmount
 import com.yusufteker.worthy.core.domain.model.Money
@@ -10,7 +11,9 @@ import com.yusufteker.worthy.core.domain.model.getLastMonths
 import com.yusufteker.worthy.core.domain.model.sumConvertedAmount
 import com.yusufteker.worthy.core.domain.model.sumWithCurrencyConverted
 import com.yusufteker.worthy.core.domain.service.CurrencyConverter
-import com.yusufteker.worthy.core.presentation.BaseViewModel
+import com.yusufteker.worthy.core.presentation.base.BaseViewModel
+import com.yusufteker.worthy.core.presentation.UiEvent
+import com.yusufteker.worthy.core.presentation.components.adjustValuesForBarChart
 import com.yusufteker.worthy.screen.dashboard.domain.DashboardRepository
 import com.yusufteker.worthy.screen.dashboard.domain.EvaluationResult
 import com.yusufteker.worthy.screen.settings.domain.UserPrefsManager
@@ -29,14 +32,16 @@ class DashboardViewModel(
     private val currencyConverter: CurrencyConverter
 ) : BaseViewModel() {
 
-    private val _state = MutableStateFlow(DashboardState(isLoading = true,))
+    private val _state = MutableStateFlow(DashboardState())
     val state: StateFlow<DashboardState> = _state
 
     init {
 
+        fetchDashboardData()
+
+
         observeData()
 
-        fetchDashboardData()
     }
 
     fun onAction(action: DashboardAction) = when (action) {
@@ -115,31 +120,21 @@ class DashboardViewModel(
 
 
         }
-    }
 
-    private fun filteredMonthlyAmounts(yearMonth: YearMonth) {
-
-        val filteredIncomeList = state.value.recurringIncomeMonthlyAmountList.filter {
-            it.yearMonth == yearMonth
+        is DashboardAction.AddRecurringClicked -> {
+            sendUiEventSafe(UiEvent.NavigateTo(Routes.Settings))
         }
-
-        val filteredExpenseList = state.value.recurringExpenseMonthlyAmountList.filter {
-            it.yearMonth == yearMonth
+        is DashboardAction.AddTransactionClicked -> {
+            sendUiEventSafe(UiEvent.NavigateTo(Routes.Settings))
         }
-
-        _state.update { currentState ->
-            currentState.copy(
-                filteredRecurringIncomeMonthlyAmountList = filteredIncomeList,
-                filteredRecurringExpenseMonthlyAmountList = filteredExpenseList
-            )
+        is DashboardAction.AddWishlistClicked -> {
+            sendUiEventSafe(UiEvent.NavigateTo(Routes.WishlistAdd))
         }
     }
 
     private fun fetchDashboardData() = viewModelScope.launch {
-        _state.update { it.copy(isLoading = true) }
-
-        // TODO: repository’den gerçek veriyi çek
-        delay(800)    // demo loading
+        showLoading()
+        delay(2000)
 
         _state.update {
             it.copy( // TODO : repository’den gerçek veriyi çek prefden değil
@@ -148,9 +143,9 @@ class DashboardViewModel(
                 monthlyWorkHours = userPrefsManager.weeklyWorkHours.first() * 4.33f,
                 desireBudget = 10000.0,
                 savingProgress = 0.36f,
-                isLoading = false,
             )
         }
+        hideLoading()
     }
 
 
@@ -158,6 +153,8 @@ class DashboardViewModel(
 
 
     private fun observeData(){
+        fetchDashboardData()
+
         combine(
             dashboardRepository.getAllExpenseMonthlyAmount(
                 6,
@@ -195,6 +192,7 @@ class DashboardViewModel(
             )
 
         }.launchIn(viewModelScope)
+
 
     }
 
@@ -241,7 +239,7 @@ class DashboardViewModel(
         val wishlistRatio = ( totalWishlistMoney.amount / totalExpense)
         val remainingRatio = ( totalIncome - totalExpense ) / totalExpense
 
-        val normalizedRatios = normalizeRatios(expensesRatio,recurringExpensesRatio,wishlistRatio,remainingRatio)
+        val normalizedRatios = adjustValuesForBarChart(normalizeRatios(expensesRatio,recurringExpensesRatio,wishlistRatio,remainingRatio))
 
         // Total Current RecurringMonet
         val totalCurrentRecurringMoney =  recurringIncomes.sumConvertedAmount(
@@ -271,6 +269,21 @@ class DashboardViewModel(
 
     }
 
+    suspend fun showLoading(){
+        _state.update { currentState ->
+            currentState.copy(
+                isLoading = true
+            )
+        }
+    }
+
+    suspend fun hideLoading(){
+        _state.update { currentState ->
+            currentState.copy(
+                isLoading = false
+            )
+        }
+    }
     private suspend fun calculateSelectedMonthIncome(month: YearMonth): Money{
        return  state.value.recurringIncomeMonthlyAmountList.sumConvertedAmount(
             state.value.selectedCurrency,
@@ -297,6 +310,8 @@ class DashboardViewModel(
         }
         return normalizeRatios(last6Month) // 0 - 1 ARALIGINDA
     }
+
+
 
 }
 

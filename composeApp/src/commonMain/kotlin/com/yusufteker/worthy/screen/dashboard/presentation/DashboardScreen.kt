@@ -43,10 +43,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Money
+import com.yusufteker.worthy.core.presentation.UiEvent
 import com.yusufteker.worthy.core.presentation.UiText
+import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
 import com.yusufteker.worthy.core.presentation.components.CategoryIcon
 import com.yusufteker.worthy.core.presentation.components.IncomeAllocationCard
@@ -56,6 +59,7 @@ import com.yusufteker.worthy.core.presentation.theme.AppBrushes.screenBackground
 import com.yusufteker.worthy.core.presentation.theme.AppDimens.Spacing16
 import com.yusufteker.worthy.core.presentation.theme.AppDimens.Spacing8
 import com.yusufteker.worthy.screen.dashboard.domain.EvaluationResult
+import kotlinx.coroutines.flow.collect
 import org.koin.compose.viewmodel.koinViewModel
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.bottom_sheet_button_calculate
@@ -72,9 +76,22 @@ fun DashboardScreenRoot(
     contentPadding: PaddingValues = PaddingValues(),
     onNavigateToEvaluation: () -> Unit,
     onNavigateToWishlist: () -> Unit,
+    onNavigateTo: (Routes) -> Unit,
     viewModel: DashboardViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.uiEvent.collect { event ->
+            when(event){
+                is UiEvent.NavigateTo -> {
+                    onNavigateTo (event.route)
+                }
+
+                else -> Unit
+            }
+        }
+    }
 
     DashboardScreen(
         state = state,
@@ -83,7 +100,6 @@ fun DashboardScreenRoot(
             viewModel.onAction(action)
             if (action == DashboardAction.EvaluateButtonClicked) onNavigateToEvaluation()
         },
-        onWishlistClick = onNavigateToWishlist
     )
 }
 
@@ -93,19 +109,19 @@ fun DashboardScreen(
     state: DashboardState,
     contentPadding: PaddingValues = PaddingValues(),
     onAction: (DashboardAction) -> Unit,
-    onWishlistClick: () -> Unit
 ) {
 
-
-        val sheetState = rememberModalBottomSheetState()
-
+    BaseContentWrapper(
+        state = state
+    ){
         Column(Modifier.fillMaxSize()
             .background(
                 //color = AppColors.background
                 brush = screenBackground
             )
             .padding(contentPadding)
-        ) {
+        )
+        {
 
             AppTopBar(
                 title = UiText.StringResourceId(Res.string.dashboard_overview).asString(),
@@ -115,11 +131,8 @@ fun DashboardScreen(
                 modifier = Modifier.background(AppColors.transparent)
             ) {  }
 
-            if (state.isLoading){
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-                    CircularProgressIndicator()
-                }
-            }else{
+
+
                 Spacer(Modifier.height(Spacing8))
                 // 3 – Kart
                 IncomeAllocationCard(
@@ -130,7 +143,7 @@ fun DashboardScreen(
                         state.fixedExpenseFraction,
                         state.desiresSpentFraction,
                         state.remainingFraction,
-                       state.expensesFraction
+                        state.expensesFraction
                     ),
                     miniBarsFractions = state.selectedMiniBarsFraction,
                     miniBarsMonths = state.selectedMiniBarsMonths,
@@ -145,6 +158,9 @@ fun DashboardScreen(
                     onSelectedMonthChanged = { yearMonth ->
                         onAction(DashboardAction.OnSelectedMonthChanged(yearMonth))
                     },
+                    onAddWishlistClicked = { onAction(DashboardAction.AddWishlistClicked) },
+                    onAddRecurringClicked = { onAction(DashboardAction.AddRecurringClicked) },
+                    onAddTransactionClicked = { onAction(DashboardAction.AddTransactionClicked) }
 
                 )
 
@@ -161,9 +177,14 @@ fun DashboardScreen(
                 }
                 Spacer(Modifier.height(Spacing16))
 
-            }
+
 
         }
+    }
+
+
+
+    val sheetState = rememberModalBottomSheetState()
 
 
     if (state.isBottomSheetOpen) {

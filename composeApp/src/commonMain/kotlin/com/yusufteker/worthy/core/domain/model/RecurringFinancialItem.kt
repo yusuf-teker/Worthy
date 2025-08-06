@@ -33,11 +33,16 @@ fun RecurringFinancialItem.endDate(): LocalDate? =
         null
 
 fun RecurringFinancialItem.isValidFor(year: Int, month: Int): Boolean {
-    val start = year * 100 + startMonth
-    val end = if (endYear != null && endMonth != null) endYear!! * 100 + endMonth!! else Int.MAX_VALUE
-    val current = year * 100 + month
+    val start = this.startYear * 100 + this.startMonth
 
-    return current in start..end
+    val end = if (this.endYear != null && this.endMonth != null) {
+        this.endYear!! * 100 + this.endMonth!!
+    } else { //
+        getCurrentYearMonth().let { it.year * 100 + it.month } // 🔁 Şu anki tarih
+    }
+    val given = year * 100 + month
+
+    return given in start..end
 }
 
 fun getRecentMonths(currentDate: LocalDate, count: Int): List<Pair<Int, Int>> {
@@ -96,12 +101,5 @@ val items = listOf(
         endMonth = 4,
         endYear = 2025
     )
-)
-
-val result = generateMonthlyAmounts(
-    isIncome = true,
-    items = items,
-    referenceDate = LocalDate(2025, 4, 18),
-    monthCount = 3
 )
 

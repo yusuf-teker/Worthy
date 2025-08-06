@@ -1,6 +1,6 @@
 package com.yusufteker.worthy.screen.wallet.presentation
 
-import com.yusufteker.worthy.core.presentation.BaseViewModel
+import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 

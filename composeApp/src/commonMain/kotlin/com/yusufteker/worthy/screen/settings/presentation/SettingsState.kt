@@ -4,6 +4,7 @@ import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.RecurringFinancialItem
+import com.yusufteker.worthy.core.presentation.base.BaseState
 
 data class SettingsState(
     val incomeRecurringItems: List<RecurringFinancialItem> = emptyList(),
@@ -18,6 +19,6 @@ data class SettingsState(
     val totalFixedExpenses: Double = 0.0,
     val weeklyWorkHours: Int = 40,
     val selectedCurrency: Currency = Currency.TRY,
-    val isLoading: Boolean = false,
+    override val isLoading: Boolean = false,
     val errorMessage: String? = null
-    )
+    ): BaseState

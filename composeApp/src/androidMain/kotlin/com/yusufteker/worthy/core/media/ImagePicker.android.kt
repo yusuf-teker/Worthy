@@ -84,6 +84,16 @@ actual fun rememberImagePicker(): ImagePicker {
     }
 }
 
+actual suspend fun loadImageBitmapFromPath(path: String): ImageBitmap? {
+    return try {
+        val file = File(path)
+        val bitmap = BitmapFactory.decodeFile(file.absolutePath)
+        bitmap?.asImageBitmap()
+    } catch (e: Exception) {
+        null
+    }
+}
+
 private fun loadImageFromUri(context: Context, uri: Uri): ImageBitmap? {
     return try {
         context.contentResolver.openInputStream(uri)?.use { inputStream ->

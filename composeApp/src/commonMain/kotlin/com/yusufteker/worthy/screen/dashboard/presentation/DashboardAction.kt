@@ -14,4 +14,9 @@ sealed interface DashboardAction {
 
     data class OnSelectedMonthChanged(val yearMonth: YearMonth) : DashboardAction
 
+    object  AddWishlistClicked: DashboardAction
+    object  AddRecurringClicked: DashboardAction
+    object  AddTransactionClicked: DashboardAction
+
+
 }

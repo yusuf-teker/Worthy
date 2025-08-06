@@ -21,20 +21,28 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
 import coil3.toUri
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Money
+import com.yusufteker.worthy.core.media.loadImageBitmapFromPath
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
 import com.yusufteker.worthy.core.presentation.toFormattedDate
 import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistItem
 import com.yusufteker.worthy.screen.wishlist.list.domain.priorityColor
+import io.github.aakira.napier.Napier
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -47,6 +55,8 @@ fun WishlistItemCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+
+    Napier.d("WishlistItemCard: ${item.imageUri}")
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -60,13 +70,27 @@ fun WishlistItemCard(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
 
-            Image(
-                painter = rememberAsyncImagePainter(item.imageUri?.toUri()),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(100.dp)
-                    .clip(RoundedCornerShape(8.dp))
-            )
+            var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
+
+            LaunchedEffect(item.imageUri) {
+                item.imageUri?.let { uri ->
+                    Napier.d("Loading image for URI: $uri")
+                    imageBitmap = loadImageBitmapFromPath(uri)
+                    Napier.d("ImageBitmap result: ${imageBitmap?.let { "${it.width}x${it.height}" } ?: "null"}")
+                }
+            }
+
+
+            imageBitmap?.let {
+
+                androidx.compose.foundation.Image(
+                    bitmap = it,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                )
+            }
 
             Spacer(modifier = Modifier.width(8.dp))
 

@@ -1,8 +1,6 @@
 package com.yusufteker.worthy.screen.settings.presentation
 
 import androidx.lifecycle.viewModelScope
-import com.yusufteker.worthy.core.data.service.DefaultCurrencyConverter
-import com.yusufteker.worthy.core.data.service.DummyCurrencyConverter
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Expense
 import com.yusufteker.worthy.core.domain.model.Income
@@ -13,7 +11,7 @@ import com.yusufteker.worthy.core.domain.repository.ExpenseRepository
 import com.yusufteker.worthy.core.domain.repository.IncomeRepository
 import com.yusufteker.worthy.core.domain.repository.RecurringFinancialItemRepository
 import com.yusufteker.worthy.core.domain.service.CurrencyConverter
-import com.yusufteker.worthy.core.presentation.BaseViewModel
+import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import com.yusufteker.worthy.screen.settings.domain.UserPrefsManager
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.MutableStateFlow

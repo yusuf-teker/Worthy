@@ -8,6 +8,7 @@ import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.DashboardMonthlyAmount
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.YearMonth
+import com.yusufteker.worthy.core.presentation.base.BaseState
 import com.yusufteker.worthy.screen.dashboard.domain.DashboardRecurringData
 import com.yusufteker.worthy.screen.dashboard.domain.EvaluationResult
 
@@ -17,7 +18,6 @@ data class DashboardState(
     val monthlyWorkHours: Float = 0f,
     val desireBudget: Double = 0.0,
     val savingProgress: Float = 0f,   // 0f – 1f
-    val isLoading: Boolean = false,
 
 
 
@@ -64,8 +64,10 @@ data class DashboardState(
 
     val selectedMonthYear: YearMonth = getCurrentYearMonth(),
     val selectableMonths: List<YearMonth> = getRecentYearMonths(currentMonth = getCurrentMonth(), currentYear = getCurrentYear()),
+    override val isLoading: Boolean = false
+    ): BaseState
 
-    )
+
 
 fun getSelectableMonthIndices(currentMonth: Int, count: Int = 6): List<Int> {
     return List(count + 1) { i ->

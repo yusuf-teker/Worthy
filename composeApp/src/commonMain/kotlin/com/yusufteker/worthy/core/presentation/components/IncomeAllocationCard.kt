@@ -72,7 +72,10 @@ fun IncomeAllocationCard(
     onChartSelected: (index: Int) -> Unit,
     selectableMonths : List<YearMonth>,
     selectedMonth : YearMonth,
-    onSelectedMonthChanged: (YearMonth) -> Unit
+    onSelectedMonthChanged: (YearMonth) -> Unit,
+    onAddWishlistClicked: () -> Unit = {},
+    onAddRecurringClicked: () -> Unit= {},
+    onAddTransactionClicked: () -> Unit = {}
 
 ) {
 
@@ -134,23 +137,24 @@ fun IncomeAllocationCard(
             )
             Spacer(Modifier.height(24.dp))
 
-            val adjustedValues = adjustValuesForBarChart(barsFractions)
 
-
-                ColumnBarChart(
-                    values = adjustedValues,
-                    labels = listOf(
-                        UiText.StringResourceId(Res.string.chart_fixed_expenses).asString(),
-                        UiText.StringResourceId(Res.string.chart_desires).asString(),
-                        UiText.StringResourceId(Res.string.chart_remaining).asString(),
-                        UiText.StringResourceId(Res.string.chart_expenses).asString()
-                    ),
-                    selectedIndex = selectedChartIndex,
-                    onBarClick = {
-                        Napier.d("Chart selected: $it")
-                        onChartSelected.invoke(it)
-                    }
-                )
+            ColumnBarChart(
+                values = barsFractions,
+                labels = listOf(
+                    UiText.StringResourceId(Res.string.chart_fixed_expenses).asString(),
+                    UiText.StringResourceId(Res.string.chart_desires).asString(),
+                    UiText.StringResourceId(Res.string.chart_remaining).asString(),
+                    UiText.StringResourceId(Res.string.chart_expenses).asString()
+                ),
+                selectedIndex = selectedChartIndex,
+                onBarClick = {
+                    Napier.d("Chart selected: $it")
+                    onChartSelected.invoke(it)
+                },
+                onAddWishlistClicked = {onAddWishlistClicked.invoke()} ,
+                onAddRecurringClicked = { onAddRecurringClicked.invoke()},
+                onAddTransactionClicked = {onAddTransactionClicked.invoke()}
+            )
 
 
 

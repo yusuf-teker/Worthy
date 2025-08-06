@@ -74,6 +74,12 @@
     <string name="income_allocation_title">Income Allocation</string>
     <string name="income_allocation_this_month">This Month %1$s</string>
 
+    <string name="add_wish">Wish</string>
+    <string name="add_recurring_item">Recurring Income/Expense</string>
+    <string name="add_transaction">Income/Expense</string>
+
+
+
     <!-- Bar labels -->
     <string name="chart_fixed_expenses">Fixed Expenses</string>
     <string name="chart_desires">Desires</string>

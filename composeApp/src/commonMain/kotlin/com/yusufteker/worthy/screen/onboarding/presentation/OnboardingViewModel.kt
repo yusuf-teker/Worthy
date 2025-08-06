@@ -1,7 +1,7 @@
 package com.yusufteker.worthy.screen.onboarding.presentation
 
 import androidx.lifecycle.viewModelScope
-import com.yusufteker.worthy.core.presentation.BaseViewModel
+import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import com.yusufteker.worthy.screen.onboarding.domain.OnboardingManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

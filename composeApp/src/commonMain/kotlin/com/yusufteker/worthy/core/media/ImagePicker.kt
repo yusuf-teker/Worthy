@@ -8,6 +8,9 @@ import androidx.compose.ui.graphics.ImageBitmap
 @Composable
 expect fun rememberImagePicker(): ImagePicker
 
+expect suspend fun loadImageBitmapFromPath(path: String): ImageBitmap?
+
+
 /**
  * Platform-specific image picker interface
  */
