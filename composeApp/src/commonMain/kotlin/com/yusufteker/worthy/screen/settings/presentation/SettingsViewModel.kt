@@ -5,6 +5,7 @@ import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Expense
 import com.yusufteker.worthy.core.domain.model.Income
 import com.yusufteker.worthy.core.domain.model.Money
+import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.domain.model.startDate
 import com.yusufteker.worthy.core.domain.repository.CategoryRepository
 import com.yusufteker.worthy.core.domain.repository.ExpenseRepository
@@ -175,7 +176,7 @@ class SettingsViewModel(
 
     private fun observeUserPreferences() {
         combine(
-            userPrefsManager.budgetMoney,
+            userPrefsManager.desireBudget,
             userPrefsManager.weeklyWorkHours,
             userPrefsManager.selectedCurrency
         ) {  budgetAmount, weeklyWorkHours, selectedCurrency ->
@@ -183,7 +184,7 @@ class SettingsViewModel(
                 currentState.copy(
                     budgetAmount =
                         currencyConverter.convert(
-                            budgetAmount ?: Money(0.0, Currency.TRY),
+                            budgetAmount ?: emptyMoney(),
                             to = selectedCurrency
                         ),
                     weeklyWorkHours = weeklyWorkHours,

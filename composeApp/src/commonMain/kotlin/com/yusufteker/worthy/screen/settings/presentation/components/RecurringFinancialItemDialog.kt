@@ -29,6 +29,7 @@ import com.yusufteker.worthy.core.domain.getCurrentYear
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.RecurringFinancialItem
+import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.domain.model.endDate
 import com.yusufteker.worthy.core.domain.model.startDate
 import com.yusufteker.worthy.core.presentation.UiText
@@ -206,7 +207,7 @@ fun RecurringItemRow(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("${item.amount.formatted()}")
+                Text("${item.amount?.formatted()}")
                 Row(modifier = Modifier.weight(1f), horizontalArrangement = Arrangement.End) {
                     IconButton(onClick = { onEdit(item) }) {
                         Icon(Icons.Default.Edit, contentDescription = null)
@@ -228,7 +229,7 @@ fun RecurringItemAddDialog(
 ) {
     var name by remember { mutableStateOf( "") }
     var nameError by remember { mutableStateOf<UiText?>(null) }
-    var amount by remember { mutableStateOf<Money>( Money(0.0, Currency.TRY)) }
+    var amount by remember { mutableStateOf<Money?>(emptyMoney()) }
     var amountError by remember { mutableStateOf<UiText?>(null) }
     var isIncome by remember { mutableStateOf( true) }
     var needType by remember { mutableStateOf( ExpenseNeedType.NONE) }
@@ -338,7 +339,7 @@ fun RecurringItemAddDialog(
                     id = 0,
                     groupId = createTimestampId(),
                     name = name,
-                    amount = amount,
+                    amount = amount ?: emptyMoney(),
                     isIncome = isIncome,
                     needType = needType,
                     scheduledDay = scheduledDay,
@@ -349,7 +350,7 @@ fun RecurringItemAddDialog(
                 var isValid = false
                 if (item.name.isBlank()) {
                     nameError = UiText.StringResourceId(Res.string.expense_name)
-                } else if (item.amount.amount <= 0) {
+                } else if ((item.amount?.amount ?: emptyMoney().amount) <= 0) {
                     amountError = UiText.StringResourceId(Res.string.amount_must_be_greater_than_zero)
                 } else {
                     isValid = true
@@ -734,7 +735,7 @@ fun ExistingRecurringItemCard(
             MoneyInput(
                 money = item.amount,
                 onValueChange = { newAmount ->
-                    onUpdate(item.copy(amount = newAmount))
+                    onUpdate(item.copy(amount = newAmount?: emptyMoney()))
                 },
                 modifier = Modifier.fillMaxWidth()
 
@@ -782,7 +783,7 @@ fun ExistingRecurringItemCard(
 @Composable
     fun NewRecurringItemInput(
     amount: Money?,
-    onAmountChange: (Money) -> Unit,
+    onAmountChange: (Money?) -> Unit,
     startMonth: Int?,
     onStartMonthChange: (Int) -> Unit,
     startYear: Int?,

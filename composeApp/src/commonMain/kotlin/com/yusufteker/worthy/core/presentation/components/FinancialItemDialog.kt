@@ -20,6 +20,7 @@ import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Expense
 import com.yusufteker.worthy.core.domain.model.Income
 import com.yusufteker.worthy.core.domain.model.Money
+import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
@@ -193,7 +194,7 @@ private fun AddItemDialog(
 
                 MoneyInput(
                     label = amountLabel,
-                    money = amount ?: Money(0.0, Currency.TRY),
+                    money = amount ?: emptyMoney(),
                     onValueChange = { amount = it },
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -240,7 +241,7 @@ private fun EditItemDialog(
     isExpenseDialog: Boolean = false
 ) {
     var name by remember { mutableStateOf(item.name) }
-    var amount by remember { mutableStateOf<Money>(item.amount) }
+    var amount by remember { mutableStateOf<Money?>(item.amount) }
     var isFixed by remember { mutableStateOf(item.isFixed) }
     var scheduledDay by remember { mutableStateOf<Int?>(item.scheduledDay) }
 
@@ -271,7 +272,7 @@ private fun EditItemDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    val amountFloat = amount.amount
+                    val amountFloat = amount?.amount ?: 0.0
                     amount?.let {
                         if (name.isNotBlank() && amountFloat > 0 ) {
                             onSave(
@@ -301,7 +302,7 @@ private fun EditItemDialog(
 data class ItemForDialog(
     val id: Int,
     val name: String,
-    val amount: Money = Money(0.0, Currency.TRY),
+    val amount: Money = emptyMoney( Currency.TRY),
     val currency: String = currencySymbols.values.first(),
     val isFixed: Boolean = false,
     val scheduledDay: Int?,

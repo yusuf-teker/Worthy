@@ -53,6 +53,7 @@ import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
 import com.yusufteker.worthy.core.presentation.components.CategoryIcon
 import com.yusufteker.worthy.core.presentation.components.IncomeAllocationCard
+import com.yusufteker.worthy.core.presentation.components.MoneyInput
 import com.yusufteker.worthy.core.presentation.components.PrimaryButton
 import com.yusufteker.worthy.core.presentation.components.PurchaseEvaluationInfoBox
 import com.yusufteker.worthy.core.presentation.theme.AppBrushes.screenBackground
@@ -224,7 +225,7 @@ fun BottomSheetContent(
     currency: Currency = Currency.TRY,
     categories: List<Category> = emptyList()
 ) {
-    var amount by remember { mutableStateOf("") }
+    var amount by remember { mutableStateOf<Money?>(null) }
     var includeTax by remember { mutableStateOf(false) }
     var selectedCategory by remember { mutableStateOf<Category?>(null) }
     var isDropdownExpanded by remember { mutableStateOf(false) }
@@ -256,28 +257,15 @@ fun BottomSheetContent(
 
         }
 
-        // Fiyat girişi
-        OutlinedTextField(
-            value = amount,
+
+
+        MoneyInput(
+            money = amount,
             onValueChange = { newValue ->
-                // Sadece sayı ve nokta girişine izin ver
-                if (newValue.isEmpty() || newValue.matches(Regex("^\\d*\\.?\\d*$"))) {
-                    amount = newValue
-                }
+                amount = newValue
             },
-            label = { Text(UiText.StringResourceId(Res.string.bottom_sheet_label_amount).asString()) },
             modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-            trailingIcon = {
-                Text(
-                    text = currency.symbol,
-                    style = AppTypography.bodyLarge.copy(
-                        fontWeight = FontWeight.Bold,
-                        color = AppColors.primary
-                    ),
-                    modifier = Modifier.padding(end = 8.dp)
-                )
-            }
+
         )
 
         Spacer(Modifier.height(16.dp))
@@ -347,21 +335,7 @@ fun BottomSheetContent(
         PrimaryButton(
             text = UiText.StringResourceId(Res.string.bottom_sheet_button_calculate).asString(),
             onClick = {
-                onCalculate(Money(amount.toDouble(), currency = currency))
-                /*
-                val input = amount.toFloatOrNull()
-                result = if (input != null && selectedCategory != null) {
-                    val calculated = if (includeTax) input * 1.2f else input
-                    UiText.StringResourceId(
-                        id = Res.string.bottom_sheet_result,
-                        args = arrayOf(calculated, selectedCategory!!.name)
-                    )
-                } else if (input == null) {
-                    UiText.StringResourceId(Res.string.bottom_sheet_invalid_input)
-                } else {
-                    UiText.StringResourceId(Res.string.bottom_sheet_select_category)
-                }*/
-
+                onCalculate(Money(amount?.amount?: 0.0, currency = currency))
             },
             modifier = Modifier.fillMaxWidth()
         )

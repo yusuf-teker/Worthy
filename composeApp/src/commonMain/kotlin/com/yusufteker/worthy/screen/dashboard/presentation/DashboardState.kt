@@ -8,6 +8,7 @@ import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.DashboardMonthlyAmount
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.YearMonth
+import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.presentation.base.BaseState
 import com.yusufteker.worthy.screen.dashboard.domain.DashboardRecurringData
 import com.yusufteker.worthy.screen.dashboard.domain.EvaluationResult
@@ -16,7 +17,7 @@ data class DashboardState(
     val userName: String = "",
     val selectedCurrency: Currency = Currency.TRY,
     val monthlyWorkHours: Float = 0f,
-    val desireBudget: Double = 0.0,
+    val desireBudget: Money = emptyMoney( selectedCurrency),
     val savingProgress: Float = 0f,   // 0f – 1f
 
 
@@ -43,7 +44,7 @@ data class DashboardState(
 
 
     //Total Income
-    val totalSelectedMonthIncomeRecurringMoney: Money = Money(0.0, selectedCurrency),
+    val totalSelectedMonthIncomeRecurringMoney: Money = emptyMoney(selectedCurrency),
     val incomeChangeRatio : Double = 0.0,
 
     //BAR CHART

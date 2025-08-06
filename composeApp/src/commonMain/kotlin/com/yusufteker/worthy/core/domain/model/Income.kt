@@ -3,7 +3,7 @@ package com.yusufteker.worthy.core.domain.model
 data class Income(
     val id: Int = 0,
     val name: String,
-    val amount: Money = Money(0.0, Currency.TRY),
+    val amount: Money = emptyMoney(),
     val categoryId: Int?,
     val scheduledDay: Int? = null,
     val isFixed: Boolean = false,

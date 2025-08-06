@@ -5,6 +5,7 @@ import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.defaultCategories
+import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.theme.AppColors.priorityColors
 import org.jetbrains.compose.resources.StringResource
@@ -18,7 +19,7 @@ import worthy.composeapp.generated.resources.suggestion_vacation
 data class WishlistItem(
     val id: Int = 0,
     val name: String = "",
-    val price: Money = Money(0.0, Currency.TRY),
+    val price: Money = emptyMoney(),
     val category: Category? = null,
     val priority: Int = 0,
     val isPurchased: Boolean = false,

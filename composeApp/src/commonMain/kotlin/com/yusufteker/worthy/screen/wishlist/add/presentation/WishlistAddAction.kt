@@ -15,7 +15,7 @@ sealed interface WishlistAddAction {
 
     data class OnNewCategoryCreated(val wishlistCategory: Category) : WishlistAddAction
 
-    data class OnPriceChanged(val price: Money) : WishlistAddAction
+    data class OnPriceChanged(val price: Money?) : WishlistAddAction
 
     data class OnNameChanged(val name: String) : WishlistAddAction
 

@@ -4,6 +4,7 @@ import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.RecurringFinancialItem
+import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.presentation.base.BaseState
 
 data class SettingsState(
@@ -12,7 +13,7 @@ data class SettingsState(
     val uniqueExpenseRecurringItems: List<RecurringFinancialItem> = emptyList(),
     val expenseRecurringItems: List<RecurringFinancialItem> = emptyList(),
     val categories: List<Category> = emptyList(),
-    val budgetAmount: Money = Money(0.0, Currency.TRY),
+    val budgetAmount: Money = emptyMoney(),
     val convertedBudgetAmount: Double = 0.0,
     val savingsAmount: Double = 0.0,
     val totalFixedIncome: Double = 0.0,

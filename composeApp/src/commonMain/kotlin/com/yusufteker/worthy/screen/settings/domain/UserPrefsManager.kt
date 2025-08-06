@@ -3,7 +3,6 @@ package com.yusufteker.worthy.screen.settings.domain
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.IOException
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.emptyPreferences
@@ -97,7 +96,7 @@ class UserPrefsManager(private val dataStore: DataStore<Preferences>) {
         }
     }
 
-    val budgetMoney: Flow<Money?> = dataStore.data.map { prefs ->
+    val desireBudget: Flow<Money?> = dataStore.data.map { prefs ->
         prefs[BUDGET_AMOUNT]?.let { json ->
             try {
                 Json.decodeFromString<Money>(json)

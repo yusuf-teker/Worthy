@@ -3,6 +3,7 @@ package com.yusufteker.worthy.screen.wishlist.add.presentation
 import androidx.lifecycle.viewModelScope
 import com.yusufteker.worthy.core.domain.getCurrentLocalDateTime
 import com.yusufteker.worthy.core.domain.model.CategoryType
+import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.domain.repository.CategoryRepository
 import com.yusufteker.worthy.core.domain.toEpochMillis
 import com.yusufteker.worthy.core.media.ImageSaver
@@ -71,7 +72,7 @@ class WishlistAddViewModel(
             is WishlistAddAction.OnPriceChanged ->  {
                 _state.value = _state.value.copy(
                     wishlistItem = _state.value.wishlistItem.copy(
-                        price = action.price
+                        price = action.price ?: emptyMoney()
                     )
                 )
             }

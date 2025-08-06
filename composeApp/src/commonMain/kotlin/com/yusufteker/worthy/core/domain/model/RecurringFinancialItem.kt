@@ -12,7 +12,7 @@ data class RecurringFinancialItem(
     val id: Int = 0,
     val groupId: String,
     val name: String,
-    val amount: Money,
+    val amount: Money = emptyMoney(),
     val isIncome: Boolean,
     val needType: ExpenseNeedType = ExpenseNeedType.NONE,
     val scheduledDay: Int? = 1,
@@ -75,7 +75,7 @@ fun generateMonthlyAmounts(
         val validItems = items.filter { it.isValidFor(year, month)  && (if (isIncome != null) it.isIncome == isIncome  else true)}
         DashboardMonthlyAmount(
             yearMonth = YearMonth(year = year, month = month),
-            amount = validItems.map { it.amount }
+            amount = validItems.map { it.amount?: emptyMoney() }
         )
     }
 }

@@ -6,7 +6,7 @@ import kotlin.math.pow
 
 @Serializable
 data class Money(
-    val amount: Double,
+    val amount: Double = 0.0,
     val currency: Currency
 ) {
     fun formatted(): String {
@@ -39,6 +39,8 @@ data class Money(
     }
 }
 
+fun emptyMoney(currency: Currency = Currency.TRY) = Money(0.0, currency)
+
 
 fun List<Money>.sumWithoutCurrencyConverted(): Money{
     return Money(this.sumOf { it.amount }, this.first().currency)
@@ -46,7 +48,7 @@ fun List<Money>.sumWithoutCurrencyConverted(): Money{
 
 suspend fun List<Money>.sumWithCurrencyConverted(currencyConverter: CurrencyConverter, currency: Currency): Money{
     if (this.isEmpty())
-        return Money(0.0, currency)
+        return emptyMoney( currency)
     currencyConverter.convertAll(this, currency).sumWithoutCurrencyConverted()
     return currencyConverter.convertAll(this, currency).sumWithoutCurrencyConverted()
 

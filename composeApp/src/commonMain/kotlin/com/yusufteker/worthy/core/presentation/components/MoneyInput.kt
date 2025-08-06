@@ -24,6 +24,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Money
+import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
@@ -32,8 +33,8 @@ import worthy.composeapp.generated.resources.amount
 
 @Composable
 fun MoneyInput(
-    money: Money = Money(0.0, Currency.TRY),
-    onValueChange: (Money) -> Unit,
+    money: Money? = emptyMoney(),
+    onValueChange: (Money?) -> Unit,
     modifier: Modifier = Modifier,
     label: UiText = UiText.StringResourceId(Res.string.amount),
     isError: Boolean = false,
@@ -42,10 +43,10 @@ fun MoneyInput(
     var expanded by remember { mutableStateOf(false) }
 
     OutlinedTextField(
-        value = if (money.amount == 0.0) "" else money.amount.toString(),
+        value = if (money?.amount == 0.0) "" else money?.amount.toString(),
         onValueChange = {
             val newAmount = it.toDoubleOrNull() ?: 0.0
-            onValueChange(money.copy(amount = newAmount))
+            onValueChange(money?.copy(amount = newAmount))
         },
         label = { Text(label.asString()) },
         isError = isError,
@@ -57,7 +58,7 @@ fun MoneyInput(
                     onClick = { expanded = true },
                     contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
                 ) {
-                    Text(money.currency.symbol)
+                    money?.currency?.symbol?.let { Text(it) }
                 }
 
                 DropdownMenu(
@@ -69,7 +70,7 @@ fun MoneyInput(
                             text = { Text("${currency.symbol} ") },
                             onClick = {
                                 expanded = false
-                                onValueChange(money.copy(currency = currency))
+                                onValueChange(money?.copy(currency = currency))
                             }
                         )
                     }
@@ -92,7 +93,7 @@ fun MoneyInput(
 
 @Composable
 fun MoneyInput3(
-    money: Money = Money(0.0, Currency.TRY),
+    money: Money = emptyMoney(),
     onValueChange: (Money) -> Unit,
     modifier: Modifier = Modifier,
     isError: Boolean = false,

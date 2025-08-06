@@ -6,6 +6,7 @@ import com.yusufteker.worthy.core.domain.getCurrentLocalDateTime
 import com.yusufteker.worthy.core.domain.model.DashboardMonthlyAmount
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.YearMonth
+import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.domain.model.getLastMonth
 import com.yusufteker.worthy.core.domain.model.getLastMonths
 import com.yusufteker.worthy.core.domain.model.sumConvertedAmount
@@ -37,7 +38,6 @@ class DashboardViewModel(
 
     init {
 
-        fetchDashboardData()
 
 
         observeData()
@@ -70,10 +70,11 @@ class DashboardViewModel(
 
                     // harcama currencye cevrilmis income
                     val monthlyIncome = currencyConverter.convert(state.value.totalSelectedMonthIncomeRecurringMoney, to = action.money.currency)
+                    val desireBudget = currencyConverter.convert(state.value.desireBudget, to = action.money.currency)
 
-                    val desirePercent = ((action.money.amount / state.value.desireBudget)*100).toDouble()
+                    val desirePercent = ((action.money.amount / desireBudget.amount)*100).toDouble()
                     val  workHours =  (action.money.amount / (monthlyIncome.amount / state.value.monthlyWorkHours)).toFloat()
-                    val   remainingDesire =  (state.value.desireBudget - action.money.amount).toInt()
+                    val   remainingDesire =  (state.value.desireBudget.amount - action.money.amount).toInt()
                     val  currencySymbol = state.value.selectedCurrency.symbol
                     _state.update {
                         it.copy(
@@ -133,19 +134,9 @@ class DashboardViewModel(
     }
 
     private fun fetchDashboardData() = viewModelScope.launch {
-        showLoading()
-        delay(2000)
 
-        _state.update {
-            it.copy( // TODO : repository’den gerçek veriyi çek prefden değil
-                userName = "Yusuf",
-                selectedCurrency = userPrefsManager.selectedCurrency.first(),
-                monthlyWorkHours = userPrefsManager.weeklyWorkHours.first() * 4.33f,
-                desireBudget = 10000.0,
-                savingProgress = 0.36f,
-            )
-        }
-        hideLoading()
+
+
     }
 
 
@@ -153,47 +144,63 @@ class DashboardViewModel(
 
 
     private fun observeData(){
-        fetchDashboardData()
 
-        combine(
-            dashboardRepository.getAllExpenseMonthlyAmount(
-                6,
-                getCurrentLocalDateTime()
-            ),
-            dashboardRepository.getAllIncomeMonthlyAmount(
-                6,
-                getCurrentLocalDateTime()
-            ),
-            dashboardRepository.getAllRecurringMonthlyAmount(
-                monthCount = 6,
-                currentDate =  getCurrentLocalDateTime()
-            ),
-            dashboardRepository.getAllWishlistMonthlyAmount(
-                monthCount = 6,
-                currentDate = getCurrentLocalDateTime()
-            )
-        ) {  expenses, incomes, dashboardRecurringData, wishlistItems  ->
-            _state.update { currentState ->
-                currentState.copy(
-                    expenseMonthlyAmountList = expenses,
-                    incomeMonthlyAmountList = incomes,
-                    recurringIncomeMonthlyAmountList = dashboardRecurringData.incomes,
-                    recurringExpenseMonthlyAmountList = dashboardRecurringData.expenses,
-                    wishlistMonthlyAmountList = wishlistItems,
+        viewModelScope.launch {
+            showLoading()
+            _state.update {
+                it.copy(
+                    // TODO : repository’den gerçek veriyi çek prefden değil
+                    userName = "Yusuf",
+                    selectedCurrency = userPrefsManager.selectedCurrency.first(),
+                    monthlyWorkHours = userPrefsManager.weeklyWorkHours.first() * 4.33f,
+                    desireBudget = userPrefsManager.desireBudget.first() ?: emptyMoney( userPrefsManager.selectedCurrency.first()),
+                    savingProgress = 0.36f,
                 )
             }
 
-            calculateBarRatios(
-                expenses,
-                incomes,
-                dashboardRecurringData.incomes,
-                dashboardRecurringData.expenses,
-                wishlistItems
-            )
 
-        }.launchIn(viewModelScope)
+            combine(
+                dashboardRepository.getAllExpenseMonthlyAmount(
+                    6,
+                    getCurrentLocalDateTime()
+                ),
+                dashboardRepository.getAllIncomeMonthlyAmount(
+                    6,
+                    getCurrentLocalDateTime()
+                ),
+                dashboardRepository.getAllRecurringMonthlyAmount(
+                    monthCount = 6,
+                    currentDate = getCurrentLocalDateTime()
+                ),
+                dashboardRepository.getAllWishlistMonthlyAmount(
+                    monthCount = 6,
+                    currentDate = getCurrentLocalDateTime()
+                )
+            ) { expenses, incomes, dashboardRecurringData, wishlistItems ->
+                _state.update { currentState ->
+                    currentState.copy(
+                        expenseMonthlyAmountList = expenses,
+                        incomeMonthlyAmountList = incomes,
+                        recurringIncomeMonthlyAmountList = dashboardRecurringData.incomes,
+                        recurringExpenseMonthlyAmountList = dashboardRecurringData.expenses,
+                        wishlistMonthlyAmountList = wishlistItems,
+                    )
+                }
+
+                calculateBarRatios(
+                    expenses,
+                    incomes,
+                    dashboardRecurringData.incomes,
+                    dashboardRecurringData.expenses,
+                    wishlistItems
+                )
+
+                hideLoading()
 
 
+            }.launchIn(viewModelScope)
+
+        }
     }
 
 
@@ -208,27 +215,27 @@ class DashboardViewModel(
             state.value.selectedCurrency,
             state.value.selectedMonthYear,
             currencyConverter
-        ) ?: Money(0.0, state.value.selectedCurrency)
+        ) ?: emptyMoney( state.value.selectedCurrency)
         val totalIncomeMoney =  incomes.sumConvertedAmount(
             state.value.selectedCurrency,
             state.value.selectedMonthYear,
             currencyConverter
-        ) ?: Money(0.0, state.value.selectedCurrency)
+        ) ?: emptyMoney(state.value.selectedCurrency)
         val totalRecurringIncomeMoney = recurringIncomes.sumConvertedAmount(
             state.value.selectedCurrency,
             state.value.selectedMonthYear,
             currencyConverter
-        ) ?: Money(0.0, state.value.selectedCurrency)
+        ) ?: emptyMoney(state.value.selectedCurrency)
         val totalRecurringExpenseMoney = recurringExpenses.sumConvertedAmount(
             state.value.selectedCurrency,
             state.value.selectedMonthYear,
             currencyConverter
-        ) ?: Money(0.0, state.value.selectedCurrency)
+        ) ?: emptyMoney(state.value.selectedCurrency)
         val totalWishlistMoney = wishlistItems.sumConvertedAmount(
             state.value.selectedCurrency,
             state.value.selectedMonthYear,
             currencyConverter
-        ) ?: Money(0.0, state.value.selectedCurrency)
+        ) ?: emptyMoney( state.value.selectedCurrency)
 
         val totalIncome = totalIncomeMoney.amount.plus(totalRecurringIncomeMoney.amount)
         val totalExpense = totalExpenseMoney.amount + totalRecurringExpenseMoney.amount + totalWishlistMoney.amount
@@ -246,7 +253,7 @@ class DashboardViewModel(
         state.value.selectedCurrency,
             state.value.selectedMonthYear,
         currencyConverter
-        ) ?: Money(0.0, state.value.selectedCurrency)
+        ) ?: emptyMoney( state.value.selectedCurrency)
 
 
 
@@ -289,7 +296,7 @@ class DashboardViewModel(
             state.value.selectedCurrency,
            month,
             currencyConverter
-        ) ?: Money(0.0, state.value.selectedCurrency)
+        ) ?: emptyMoney( state.value.selectedCurrency)
     }
     private suspend fun calculateSelectedMonthIncomeChangeRatio(month: YearMonth): Double {
         val lastMonthIncome = calculateSelectedMonthIncome(month.getLastMonth()).amount
