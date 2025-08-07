@@ -7,6 +7,7 @@ import com.yusufteker.worthy.core.data.database.repository.CategoryRepositoryImp
 import com.yusufteker.worthy.core.data.database.repository.DashboardRepositoryImpl
 import com.yusufteker.worthy.core.data.database.repository.ExpenseRepositoryImpl
 import com.yusufteker.worthy.core.data.database.repository.IncomeRepositoryImpl
+import com.yusufteker.worthy.core.data.database.repository.OnboardingRepositoryImpl
 import com.yusufteker.worthy.core.data.database.repository.RecurringFinancialItemRepositoryImpl
 import com.yusufteker.worthy.core.data.database.repository.SearchHistoryRepositoryImpl
 import com.yusufteker.worthy.core.data.service.DefaultCurrencyConverter
@@ -27,6 +28,7 @@ import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import com.yusufteker.worthy.screen.dashboard.domain.DashboardRepository
 import com.yusufteker.worthy.screen.dashboard.presentation.DashboardViewModel
 import com.yusufteker.worthy.screen.onboarding.domain.OnboardingManager
+import com.yusufteker.worthy.screen.onboarding.domain.OnboardingRepository
 import com.yusufteker.worthy.screen.onboarding.presentation.OnboardingViewModel
 import com.yusufteker.worthy.screen.settings.domain.UserPrefsManager
 import com.yusufteker.worthy.screen.settings.presentation.SettingsViewModel
@@ -68,7 +70,7 @@ val sharedModule = module {
     // Repository implementasyonlarını bind et
     single<CurrencyRatesRepository> { CurrencyRatesRepositoryImpl(get(), get()) }
     single<CurrencyConverter> { DefaultCurrencyConverter(get()) }
-
+    single<OnboardingRepository> { OnboardingRepositoryImpl(get(), get(), get()) }
     single<ExpenseRepository> { ExpenseRepositoryImpl(get()) }
     single<IncomeRepository> { IncomeRepositoryImpl(get()) }
     single<WishlistRepository> { WishlistRepositoryImpl(get()) }

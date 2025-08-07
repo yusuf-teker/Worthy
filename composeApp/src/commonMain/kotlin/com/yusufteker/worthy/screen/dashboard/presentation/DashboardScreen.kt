@@ -41,8 +41,6 @@ import worthy.composeapp.generated.resources.dashboard_overview
 @Composable
 fun DashboardScreenRoot(
     contentPadding: PaddingValues = PaddingValues(),
-    onNavigateToEvaluation: () -> Unit,
-    onNavigateToWishlist: () -> Unit,
     onNavigateTo: (Routes) -> Unit,
     viewModel: DashboardViewModel = koinViewModel()
 ) {
@@ -65,7 +63,6 @@ fun DashboardScreenRoot(
         contentPadding = contentPadding,
         onAction = { action ->
             viewModel.onAction(action)
-            if (action == DashboardAction.EvaluateButtonClicked) onNavigateToEvaluation()
         },
     )
 }

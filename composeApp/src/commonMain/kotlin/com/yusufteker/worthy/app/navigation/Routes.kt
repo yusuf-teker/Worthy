@@ -14,12 +14,17 @@ sealed class Routes {
     @Serializable
     data object UserSetup : Routes()
 
+
+    @Serializable
+    data object MainGraph : Routes()
+
     @Serializable
     data object Dashboard : Routes()
 
-    @Serializable
-    data class ItemEvaluation(val productName: String = "", val price: Double = 0.0) : Routes()
 
+
+    @Serializable
+    data object WishlistGraph : Routes()
     @Serializable
     data object Wishlist : Routes()
 
@@ -37,10 +42,6 @@ sealed class Routes {
     @Serializable
     data object Settings : Routes()
 
-    @Serializable
-    data object MainGraph : Routes()
 
-    @Serializable
-    data object WishlistGraph : Routes()
 
 }

@@ -238,12 +238,18 @@
 
     <!-- ONBOARDING FORM-->
 
+    <string name="onboarding_q0_welcome">Hi there! 👋\nTo assist you better, may I know your name?</string>
     <string name="onboarding_q1_title">Do you have regular monthly salary?</string>
     <string name="onboarding_q2_title">How much do you want to allocate for monthly discretionary spending?</string>
     <string name="onboarding_q3_title">Do you have regular monthly expenses?</string>
     <string name="onboarding_q4_title">Do you have a savings goal?</string>
     <string name="onboarding_q5_title">What do you care most about before buying a product?</string>
     <string name="onboarding_q6_title">How can this app help you better?</string>
+
+    <string name="error_invalid_salary">Lütfen geçerli bir maaş giriniz.</string>
+    <string name="error_invalid_spending_limit">Lütfen geçerli bir harcama limiti giriniz.</string>
+    <string name="error_invalid_savings_goal">Lütfen geçerli bir birikim hedefi giriniz.</string>
+
 
     <string name="choice_price">Price</string>
     <string name="choice_quality">Quality</string>
@@ -257,6 +263,10 @@
     <string name="goal_simple_use">Simple and easy to use</string>
     <string name="goal_savings">Saving Goal</string>
     <string name= "label_salary">Salary</string>
+
+    <string name="hint_enter_name">Enter your name</string>
+    <string name="error_empty_name">Please enter your name.</string>
+    <string name="error_invalid_name">Please enter more than 2 character.</string>
 
 
 

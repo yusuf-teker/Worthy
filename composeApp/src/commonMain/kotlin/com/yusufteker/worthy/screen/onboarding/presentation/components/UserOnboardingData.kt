@@ -4,8 +4,11 @@ import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.emptyMoney
 
 data class UserOnboardingData(
+    val name: String = "",
     val monthlySalary: Money? = emptyMoney(),
     val hasMonthlySalary: Boolean = false,
+    val salaryString: String = "",
+    val wantSpendingLimit: Boolean = false,
     val spendingLimit: Money? =  emptyMoney(),
     val hasFixedExpenses: Boolean = false,
     val hasSavingsGoal: Boolean = false,

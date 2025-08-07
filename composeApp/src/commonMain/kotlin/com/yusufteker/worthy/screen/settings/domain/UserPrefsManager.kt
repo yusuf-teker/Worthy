@@ -24,12 +24,17 @@ class UserPrefsManager(private val dataStore: DataStore<Preferences>) {
     }
 
     private companion object {
+
+        val USER_NAME = stringPreferencesKey("user_name")
         val INCOME_ITEMS = stringPreferencesKey("income_items")
         val EXPENSE_ITEMS = stringPreferencesKey("expense_items")
         val BUDGET_AMOUNT = stringPreferencesKey("budget_amount")
         val WEEKLY_WORK_HOURS = intPreferencesKey("weekly_work_hours")
 
         val CURRENCY = stringPreferencesKey("currency")
+
+        val SPENDING_LIMIT = stringPreferencesKey("spending_limit")
+        val SAVING_GOAL = stringPreferencesKey("saving_goal")
     }
 
     /* ******** Flows ******** */
@@ -120,9 +125,47 @@ class UserPrefsManager(private val dataStore: DataStore<Preferences>) {
     }
 
 
+    suspend fun setSpendingLimit(money: Money) {
+        val jsonString = Json.encodeToString(money)
+        dataStore.edit { prefs ->
+            prefs[SPENDING_LIMIT] = jsonString
+        }
+    }
 
-    val totalIncome: Flow<Double> = incomeItems.map { items ->
-        items.sumOf { it.amount }
+    suspend fun setSavingGoal(money: Money) {
+        val jsonString = Json.encodeToString(money)
+        dataStore.edit { prefs ->
+            prefs[SAVING_GOAL] = jsonString
+        }
+    }
+
+    val spendingLimit: Flow<Money?> = dataStore.data.map { prefs ->
+        prefs[SPENDING_LIMIT]?.let { jsonString ->
+            try {
+                Json.decodeFromString<Money>(jsonString)
+            } catch (e: Exception) {
+                null
+            }
+        }
+    }
+
+    val savingGoal: Flow<Money?> = dataStore.data.map { prefs ->
+        prefs[SAVING_GOAL]?.let { jsonString ->
+            try {
+                Json.decodeFromString<Money>(jsonString)
+            } catch (e: Exception) {
+                null
+            }
+        }
+    }
+
+    suspend fun setUserName(name: String) {
+        dataStore.edit { prefs ->
+            prefs[USER_NAME] = name
+        }
+    }
+    val userName: Flow<String?> = dataStore.data.map { prefs ->
+        prefs[USER_NAME]
     }
 
 }

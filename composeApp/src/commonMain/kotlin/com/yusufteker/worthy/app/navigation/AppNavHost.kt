@@ -135,18 +135,6 @@ fun AppNavHost(
 
                     DashboardScreenRoot(
                         contentPadding = innerPadding,
-                        onNavigateToEvaluation = {
-                            //navController.navigate(Routes.ItemEvaluationScreen())
-                        },
-                        onNavigateToWishlist = {
-                            //navController.navigate(Routes.WishlistScreen)
-                        },/*
-                        onNavigateToTrends = {
-                            //navController.navigate(Routes.TrendsScreen)
-                        },
-                        onNavigateToSettings = {
-                            //navController.navigate(Routes.SettingsScreen)
-                        }*/
                         onNavigateTo = { route ->
                             navController.navigate(route)
                         }
@@ -183,7 +171,7 @@ fun AppNavHost(
                         )
                     }
 
-                    composable<Routes.WishlistDetail> {
+                    composable<Routes.WishlistDetail> { // Todo Wishlist Detay ekranı eklenecek
                         val args = it.toRoute<Routes.WishlistDetail>()
                         val wishlistId = args.id
                         WishlistDetailScreenRoot(
