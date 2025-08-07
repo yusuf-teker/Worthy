@@ -14,6 +14,7 @@ import com.yusufteker.worthy.core.domain.model.sumWithCurrencyConverted
 import com.yusufteker.worthy.core.domain.service.CurrencyConverter
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import com.yusufteker.worthy.core.presentation.UiEvent
+import com.yusufteker.worthy.core.presentation.UiEvent.*
 import com.yusufteker.worthy.core.presentation.components.MoneyInput3
 import com.yusufteker.worthy.core.presentation.components.adjustValuesForBarChart
 import com.yusufteker.worthy.screen.dashboard.domain.DashboardRepository
@@ -45,9 +46,13 @@ class DashboardViewModel(
     }
 
     fun onAction(action: DashboardAction) = when (action) {
-        DashboardAction.Refresh -> fetchDashboardData()
+
         DashboardAction.EvaluateButtonClicked -> {
-            _state.update { it.copy(isBottomSheetOpen = true) }
+            _state.update {
+                it.updateBottomSheet { copy(evaluationResult = null) }.copy(
+                    isBottomSheetOpen = true
+                )
+            }
         }
         is DashboardAction.ChartSelected -> {
             _state.update {
@@ -59,13 +64,14 @@ class DashboardViewModel(
             }
         }
 
-        DashboardAction.CloseBottomSheetClicked -> {
+        is DashboardAction.CloseBottomSheetClicked -> {
             _state.update { it.copy(isBottomSheetOpen = false) }
         }
 
         is DashboardAction.CalculateButtonClicked -> {
 
             viewModelScope.launch {
+                _state.update { it.updateBottomSheet { copy(isCalculating = true) } }
                 action.money.let {
 
                     // harcama currencye cevrilmis income
@@ -81,16 +87,19 @@ class DashboardViewModel(
                     val incomeMinusExpensePercent = ( action.money.amount / incomeMinusExpense) * 100
 
                     _state.update {
-                        it.copy(
-                            evaluationResult = EvaluationResult(
-                                incomePercent = monthlyIncomePercent ,//incomePercent,
-                                desirePercent = desirePercent,
-                                workHours = workHours,
-                                remainingDesire = remainingDesire,
-                                currencySymbol = currencySymbol,
-                                incomeMinusExpensePercent = incomeMinusExpensePercent
-                            ),
-                        )
+                        it.updateBottomSheet {
+                            copy(
+                                evaluationResult = EvaluationResult(
+                                    incomePercent = monthlyIncomePercent ,//incomePercent,
+                                    desirePercent = desirePercent,
+                                    workHours = workHours,
+                                    remainingDesire = remainingDesire,
+                                    currencySymbol = currencySymbol,
+                                    incomeMinusExpensePercent = incomeMinusExpensePercent,
+                                ),
+                                isCalculating = false
+                            )
+                        }
                     }
                 }
             }
@@ -112,7 +121,7 @@ class DashboardViewModel(
                     )
                 }
 
-                calculateBarRatios( // Todo kontrol et selectedMonthYear DEĞİŞTİKÇE OTOMATİK OLMASI LAZIM üsttekilerde öyle
+                calculateBarRatios(
                     state.value.expenseMonthlyAmountList,
                     state.value.incomeMonthlyAmountList,
                     state.value.recurringIncomeMonthlyAmountList,
@@ -121,33 +130,32 @@ class DashboardViewModel(
 
                 )
 
-                //filteredMonthlyAmounts(action.yearMonth)
-
             }
 
 
         }
 
         is DashboardAction.AddRecurringClicked -> {
-            sendUiEventSafe(UiEvent.NavigateTo(Routes.Settings))
+            sendUiEventSafe(NavigateTo(Routes.Settings))
         }
         is DashboardAction.AddTransactionClicked -> {
-            sendUiEventSafe(UiEvent.NavigateTo(Routes.Settings))
+            sendUiEventSafe(NavigateTo(Routes.Settings))
         }
         is DashboardAction.AddWishlistClicked -> {
-            sendUiEventSafe(UiEvent.NavigateTo(Routes.WishlistAdd))
+            sendUiEventSafe(NavigateTo(Routes.WishlistAdd))
+        }
+
+        is DashboardAction.PurchaseButtonClicked -> {
+            viewModelScope.launch {
+                _state.update { it.updateBottomSheet { copy(isPurchasing = true) } }
+                dashboardRepository.addPurchase(action.expense)
+                _state.update { it.updateBottomSheet { copy(isPurchasing = false) }.copy(
+                    isBottomSheetOpen = false
+                ) }
+            }
+
         }
     }
-
-    private fun fetchDashboardData() = viewModelScope.launch {
-
-
-
-    }
-
-
-
-
 
     private fun observeData(){
 
@@ -191,8 +199,7 @@ class DashboardViewModel(
                         recurringIncomeMonthlyAmountList = dashboardRecurringData.incomes,
                         recurringExpenseMonthlyAmountList = dashboardRecurringData.expenses,
                         wishlistMonthlyAmountList = wishlistItems,
-                        categories = categories
-                    )
+                    ).updateBottomSheet { copy(categories = categories) }
                 }
 
                 calculateBarRatios(

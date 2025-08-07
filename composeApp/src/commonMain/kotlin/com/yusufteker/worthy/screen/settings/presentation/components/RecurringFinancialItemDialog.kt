@@ -10,7 +10,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -20,7 +19,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.yusufteker.worthy.core.data.database.entities.ExpenseNeedType
 import com.yusufteker.worthy.core.domain.createTimestampId
@@ -34,6 +32,7 @@ import com.yusufteker.worthy.core.domain.model.endDate
 import com.yusufteker.worthy.core.domain.model.startDate
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.components.DateSelector
+import com.yusufteker.worthy.core.presentation.components.DropdownMenuSelector
 import com.yusufteker.worthy.core.presentation.components.MoneyInput
 import com.yusufteker.worthy.core.presentation.components.SwipeToDeleteWrapper
 import com.yusufteker.worthy.core.presentation.theme.AppColors
@@ -53,7 +52,6 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.add_expense
 import worthy.composeapp.generated.resources.add_income
-import worthy.composeapp.generated.resources.amount
 import worthy.composeapp.generated.resources.amount_must_be_greater_than_zero
 import worthy.composeapp.generated.resources.cancel
 import worthy.composeapp.generated.resources.close
@@ -399,7 +397,7 @@ fun RecurringFinancialItemDialogPreview() {
             name = "Elektrik",
             amount = Money(200.0, currency = Currency.TRY),
             isIncome = false,
-            needType = ExpenseNeedType.WANT,
+            needType = ExpenseNeedType.DESIRE,
             scheduledDay = 10,
             startMonth = 1,
             startYear = 2023,
@@ -828,13 +826,13 @@ fun ExistingRecurringItemCard(
         Spacer(Modifier.height(8.dp))
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            _root_ide_package_.com.yusufteker.worthy.core.presentation.components.DropdownMenuSelector(
+            DropdownMenuSelector(
                 months,
                 startMonth,
                 isNullable = false,
                 onSelected = onStartMonthChange
             )
-            _root_ide_package_.com.yusufteker.worthy.core.presentation.components.DropdownMenuSelector(
+            DropdownMenuSelector(
                 years,
                 startYear,
                 isNullable = false,

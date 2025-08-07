@@ -26,6 +26,7 @@
 
     <!-- Genel -->
     <string name="common_back">Geri</string>
+    <string name="common_next">İleri</string>
     <string name="common_menu">Menü</string>
     <string name="get_started">Hadi başlayalım.</string>
     <string name="save">Kaydet</string>
@@ -54,10 +55,13 @@
     <!-- Dashboard Bottom Sheet -->
     <string name="bottom_sheet_label_amount">Tutar</string>
     <string name="bottom_sheet_label_category">Kategori</string>
+    <string name="bottom_sheet_label_name">İsim</string>
     <string name="bottom_sheet_button_calculate">Hesapla</string>
+    <string name="bottom_sheet_button_purchase">Satın Al</string>
     <string name="bottom_sheet_result">Sonuç: %1$.2f ₺ (%2$s)</string>
     <string name="bottom_sheet_invalid_input">Geçersiz tutar</string>
     <string name="bottom_sheet_select_category">Lütfen kategori seçin</string>
+    <string name="bottom_sheet_error_category_required">Kategori seçilmelidir.</string>
 
 
     <string name="evaluation_income_percent">• Aylık Gelirinin %1$s oranında</string>
@@ -224,5 +228,30 @@
     <string name="month_october">Ekim</string>
     <string name="month_november">Kasım</string>
     <string name="month_december">Aralık</string>
+
+
+    <!-- ONBOARDING FORM-->
+
+    <string name="onboarding_q1_title">Aylık düzenli maaşınız var mı?</string>
+    <string name="onboarding_q2_title">Aylık istek harcamalarına ne kadar ayırmak istiyorsun?</string>
+    <string name="onboarding_q3_title">Her ay düzenli yaptığın sabit harcamaların var mı?</string>
+    <string name="onboarding_q4_title">Bir birikim hedefin var mı?</string>
+    <string name="onboarding_q5_title">Bir ürün satın almadan önce en çok neye dikkat edersin?</string>
+    <string name="onboarding_q6_title">Bu uygulama sana nasıl yardımcı olursa seni mutlu eder?</string>
+
+    <string name="choice_price">Fiyat</string>
+    <string name="choice_quality">Kalite</string>
+    <string name="choice_necessity">Gereklilik</string>
+    <string name="choice_budget_impact">Aylık bütçeye etkisi</string>
+
+    <string name="goal_limit_spending">Harcamalarıma sınır koymak</string>
+    <string name="goal_save_more">Daha fazla birikim yapmak</string>
+    <string name="goal_conscious_spending">Bilinçli harcama alışkanlığı kazanmak</string>
+    <string name="goal_decision_support">Satın alma kararlarında destek almak</string>
+    <string name="goal_simple_use">Sade ve kolay kullanım</string>
+    <string name="goal_savings">Birikim Hedefi</string>
+    <string name= "label_salary">Maaş</string>
+
+
 
 </resources>

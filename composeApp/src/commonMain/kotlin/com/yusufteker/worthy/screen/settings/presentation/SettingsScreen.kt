@@ -244,8 +244,6 @@ fun SettingsScreen(
             onAddNew = {
                 onAction(SettingsAction.OnAddNewRecurringItem(it))
             },
-            //currencyCode = state.selectedCurrency,
-            //isExpenseDialog = true
         )
     }
 }

@@ -12,11 +12,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 
 @Composable
-fun DropdownMenuSelector(
-    options: List<Int>,
-    selected: Int?,
+fun <T>DropdownMenuSelector(
+    options: List<T>,
+    selected: T?,
     isNullable: Boolean = false,
-    onSelected: (Int) -> Unit
+    onSelected: (T) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -31,7 +31,7 @@ fun DropdownMenuSelector(
                         Text("Yok")
                     },
                     onClick = {
-                        onSelected(-1)
+                        //onSelected(-1)
                         expanded = false
                     })
             }

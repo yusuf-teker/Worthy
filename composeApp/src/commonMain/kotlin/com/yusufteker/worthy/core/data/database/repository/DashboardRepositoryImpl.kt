@@ -1,6 +1,8 @@
 package com.yusufteker.worthy.core.data.database.repository
 
 
+import com.yusufteker.worthy.core.data.database.entities.ExpenseNeedType
+import com.yusufteker.worthy.core.domain.getCurrentLocalDateTime
 import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.CategoryType
 import com.yusufteker.worthy.core.domain.model.DashboardMonthlyAmount
@@ -137,6 +139,12 @@ class DashboardRepositoryImpl(
 
     override fun getExpenseCategories(): Flow<List<Category>> {
         return categoryRepository.getByType(CategoryType.EXPENSE)
+    }
+
+    override suspend fun addPurchase(
+        expense: Expense
+    ) {
+        expenseRepository.insert(expense)
     }
 
 

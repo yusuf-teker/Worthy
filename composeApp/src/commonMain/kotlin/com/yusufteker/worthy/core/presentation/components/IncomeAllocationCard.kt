@@ -58,7 +58,7 @@ import worthy.composeapp.generated.resources.income_allocation_this_month
 import worthy.composeapp.generated.resources.income_allocation_title
 
 @Composable
-fun IncomeAllocationCard(
+fun DashboardOverviewCard(
     amountText: String = "$5,000",
     incomeChangeRatio: Double = 0.0,
     barsFractions: List<Float>,
@@ -200,7 +200,7 @@ fun IncomeAllocationCard(
 @Composable
 fun IncomeAllocationCardPreview(){
     Column(Modifier.background(AppColors.background)) {
-        IncomeAllocationCard(
+        DashboardOverviewCard(
             barsFractions = listOf(0.25f, 0.5f, 0.75f),
             selectedChartIndex = 1,
             onChartSelected = {},

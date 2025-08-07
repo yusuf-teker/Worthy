@@ -44,6 +44,7 @@ fun MoneyInput(
 
     OutlinedTextField(
         value = if (money?.amount == 0.0) "" else money?.amount.toString(),
+        placeholder = { Text(label.asString()) },
         onValueChange = {
             val newAmount = it.toDoubleOrNull() ?: 0.0
             onValueChange(money?.copy(amount = newAmount))

@@ -1,5 +1,9 @@
 package com.yusufteker.worthy.screen.onboarding.presentation
 
+import com.yusufteker.worthy.core.domain.model.RecurringFinancialItem
+import com.yusufteker.worthy.screen.onboarding.presentation.components.UserOnboardingData
+
 sealed interface OnboardingAction {
-    object OnGetStartedClicked : OnboardingAction
+    data class OnGetStartedClicked(val userData: UserOnboardingData) : OnboardingAction
+
 }

@@ -17,11 +17,13 @@ class OnboardingViewModel(
 
     fun onAction(action: OnboardingAction){
         when(action){
-            OnboardingAction.OnGetStartedClicked -> {
+            is OnboardingAction.OnGetStartedClicked -> {
                 viewModelScope.launch {
+                    action.userData // todo kaydet
                     onboardingManager.setOnboardingCompleted(true)
                 }
             }
+
         }
 
 

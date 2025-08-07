@@ -1,5 +1,7 @@
 package com.yusufteker.worthy.core.presentation.theme
 
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -105,6 +107,24 @@ object AppColors {
 
     // >>>>>>> Static Color  <<<<<<<<
     val transparent: Color @Composable get() = Color.Transparent
+
+    val primaryButtonColors: ButtonColors
+    @Composable
+    get() = ButtonDefaults.buttonColors(
+        containerColor = AppColors.primary,
+        contentColor   = AppColors.onPrimary,
+        disabledContainerColor = AppColors.primary.copy(alpha = 0.3f),
+        disabledContentColor   = AppColors.onPrimary.copy(alpha = 0.3f)
+    )
+
+    val secondaryButtonColors: ButtonColors
+        @Composable
+        get() = ButtonDefaults.buttonColors(
+            containerColor = AppColors.secondary,
+            contentColor   = AppColors.onSecondary,
+            disabledContainerColor = AppColors.secondary.copy(alpha = 0.3f),
+            disabledContentColor   = AppColors.onSecondary.copy(alpha = 0.3f)
+        )
 
 }
 

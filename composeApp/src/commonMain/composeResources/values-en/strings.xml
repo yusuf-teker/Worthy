@@ -26,6 +26,8 @@
 
     <!-- Genel -->
     <string name="common_back">Back</string>
+    <string name="common_next">Next</string>
+
     <string name="common_menu">Menu</string>
     <string name="get_started">Get started.</string>
     <string name="save">Save</string>
@@ -54,9 +56,14 @@
     <!-- Dashboard Bottom Sheet -->
     <string name="bottom_sheet_label_amount">Amount</string>
     <string name="bottom_sheet_label_category">Category</string>
+    <string name="bottom_sheet_label_name">Name</string>
+
     <string name="bottom_sheet_button_calculate">Calculate</string>
+    <string name="bottom_sheet_button_purchase">Purchase</string>
+
     <string name="bottom_sheet_invalid_input">Invalid amount</string>
     <string name="bottom_sheet_select_category">Please select a category</string>
+    <string name="bottom_sheet_error_category_required">Category is required.</string>
 
 
     <string name="evaluation_income_percent">• %1$s of your  monthly income</string>
@@ -227,6 +234,31 @@
     <string name="month_october">October</string>
     <string name="month_november">November</string>
     <string name="month_december">December</string>
+
+
+    <!-- ONBOARDING FORM-->
+
+    <string name="onboarding_q1_title">Do you have regular monthly salary?</string>
+    <string name="onboarding_q2_title">How much do you want to allocate for monthly discretionary spending?</string>
+    <string name="onboarding_q3_title">Do you have regular monthly expenses?</string>
+    <string name="onboarding_q4_title">Do you have a savings goal?</string>
+    <string name="onboarding_q5_title">What do you care most about before buying a product?</string>
+    <string name="onboarding_q6_title">How can this app help you better?</string>
+
+    <string name="choice_price">Price</string>
+    <string name="choice_quality">Quality</string>
+    <string name="choice_necessity">Necessity</string>
+    <string name="choice_budget_impact">Impact on monthly budget</string>
+
+    <string name="goal_limit_spending">Limit my spending</string>
+    <string name="goal_save_more">Save more</string>
+    <string name="goal_conscious_spending">Gain conscious spending habits</string>
+    <string name="goal_decision_support">Get help in purchase decisions</string>
+    <string name="goal_simple_use">Simple and easy to use</string>
+    <string name="goal_savings">Saving Goal</string>
+    <string name= "label_salary">Salary</string>
+
+
 
 
 </resources>

@@ -12,6 +12,7 @@ import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.presentation.base.BaseState
 import com.yusufteker.worthy.screen.dashboard.domain.DashboardRecurringData
 import com.yusufteker.worthy.screen.dashboard.domain.EvaluationResult
+import com.yusufteker.worthy.screen.dashboard.presentation.components.BottomSheetUiState
 
 data class DashboardState(
     val userName: String = "",
@@ -22,11 +23,11 @@ data class DashboardState(
 
 
 
-
     var selectedChartIndex: Int? = null,
+
+    //Bottom Sheet
     var isBottomSheetOpen: Boolean = false,
-    var evaluationResult: EvaluationResult? = null,
-    var categories: List<Category> = emptyList(),
+    var bottomSheetUiState: BottomSheetUiState = BottomSheetUiState(),
 
 
 
@@ -101,4 +102,8 @@ fun getRecentYearMonths(
 
     return result
 
+}
+
+fun DashboardState.updateBottomSheet(update: BottomSheetUiState.() -> BottomSheetUiState): DashboardState {
+    return copy(bottomSheetUiState = bottomSheetUiState.update())
 }

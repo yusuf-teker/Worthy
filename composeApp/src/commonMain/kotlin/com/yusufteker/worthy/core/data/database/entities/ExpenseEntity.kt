@@ -28,4 +28,4 @@ data class ExpenseEntity(
     val note: String? = null
 )
 
-enum class ExpenseNeedType { NEED, WANT, NONE }
+enum class ExpenseNeedType { NEED, DESIRE, NONE }
