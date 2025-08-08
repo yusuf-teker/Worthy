@@ -42,6 +42,7 @@ class OnboardingViewModel(
                             )
                             onboardingRepository.addSpendingLimit(it.spendingLimit)
                             onboardingRepository.addSavingsGoal(it.savingGoalMoney)
+                            onboardingRepository.addWeeklyWorkHours(it.weeklyWorkHours)
 
                         }
                     }

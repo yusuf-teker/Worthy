@@ -234,6 +234,7 @@
 
     <string name="onboarding_q0_welcome">Merhaba! 👋\nSana daha iyi yardımcı olabilmemiz için önce adını öğrenebilir miyiz?</string>
     <string name="onboarding_q1_title">Aylık düzenli maaşınız var mı?</string>
+    <string name="onboarding_q1_2_title">Haftada kaç saat çalışıyorsun?</string>
     <string name="onboarding_q2_title">Aylık istek harcamalarına ne kadar ayırmak istiyorsun?</string>
     <string name="onboarding_q3_title">Her ay düzenli yaptığın sabit harcamaların var mı?</string>
     <string name="onboarding_q4_title">Bir birikim hedefin var mı?</string>
@@ -244,6 +245,7 @@
     <string name="error_invalid_savings_goal">Lütfen geçerli bir birikim hedefi giriniz.</string>
     <string name="error_empty_name">Lütfen adınızı giriniz.</string>
     <string name="error_invalid_name">Lütfen 2 karakterden fazla giriniz.</string>
+    <string name="error_invalid_weekly_workhour">Çalışma saati 0'dan küçük olamaz</string>
 
 
     <string name="choice_price">Fiyat</string>

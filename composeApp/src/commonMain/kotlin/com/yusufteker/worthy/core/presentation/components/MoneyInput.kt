@@ -2,6 +2,7 @@ package com.yusufteker.worthy.core.presentation.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -42,105 +43,55 @@ fun MoneyInput(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    OutlinedTextField(
-        value = if (money?.amount == 0.0) "" else money?.amount.toString(),
-        placeholder = { Text(label.asString()) },
-        onValueChange = {
-            val newAmount = it.toDoubleOrNull() ?: 0.0
-            onValueChange(money?.copy(amount = newAmount))
-        },
-        label = { Text(label.asString()) },
-        isError = isError,
-        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-        modifier = modifier.fillMaxWidth(),
-        trailingIcon = {
-            Box {
-                TextButton(
-                    onClick = { expanded = true },
-                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
-                ) {
-                    money?.currency?.symbol?.let { Text(it) }
-                }
-
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
-                    Currency.entries.forEach { currency ->
-                        DropdownMenuItem(
-                            text = { Text("${currency.symbol} ") },
-                            onClick = {
-                                expanded = false
-                                onValueChange(money?.copy(currency = currency))
-                            }
-                        )
-                    }
-                }
-            }
-        },
-        singleLine = true
-    )
-
-    // Hata mesajı
-    if (isError && errorMessage != null) {
-        Text(
-            text = errorMessage.asString(),
-            color = AppColors.error,
-            style = AppTypography.bodySmall,
-            modifier = Modifier.padding(start = 16.dp, top = 4.dp)
-        )
-    }
-}
-
-@Composable
-fun MoneyInput3(
-    money: Money = emptyMoney(),
-    onValueChange: (Money) -> Unit,
-    modifier: Modifier = Modifier,
-    isError: Boolean = false,
-    errorMessage: UiText? = null // todo kullanılacak
-) {
-    var expanded by remember { mutableStateOf(false) }
-    val currencies = Currency.entries
-    val selectedCurrency = money.currency
-
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
+    Column(modifier = modifier) {
         OutlinedTextField(
-            value = money.amount.toString(),
+            value = if (money?.amount == 0.0) "" else money?.amount.toString(),
+            placeholder = { Text(label.asString()) },
             onValueChange = {
                 val newAmount = it.toDoubleOrNull() ?: 0.0
-                onValueChange(money.copy(amount = newAmount))
+                onValueChange(money?.copy(amount = newAmount))
             },
-            label = { Text(UiText.StringResourceId( Res.string.amount).asString()) },
+            label = { Text(label.asString()) },
+            isError = isError,
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-            modifier = Modifier.weight(1f)
+            modifier = modifier.fillMaxWidth(),
+            trailingIcon = {
+                Box {
+                    TextButton(
+                        onClick = { expanded = true },
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+                    ) {
+                        money?.currency?.symbol?.let { Text(it) }
+                    }
+
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        Currency.entries.forEach { currency ->
+                            DropdownMenuItem(
+                                text = { Text("${currency.symbol} ") },
+                                onClick = {
+                                    expanded = false
+                                    onValueChange(money?.copy(currency = currency))
+                                }
+                            )
+                        }
+                    }
+                }
+            },
+            singleLine = true
         )
 
-        Box {
-            OutlinedButton(
-                onClick = { expanded = true },
-                modifier = Modifier.align(Alignment.Center)
-            ) {
-                Text(selectedCurrency.symbol)
-            }
-
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                currencies.forEach { currency ->
-                    DropdownMenuItem(
-                        text = { Text("${currency.symbol}") },
-                        onClick = {
-                            expanded = false
-                            onValueChange(money.copy(currency = currency))
-                        }
-                    )
-                }
-            }
+        // Hata mesajı
+        if (isError && errorMessage != null) {
+            Text(
+                text = errorMessage.asString(),
+                color = AppColors.error,
+                style = AppTypography.bodySmall,
+                modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+            )
         }
     }
+
 }

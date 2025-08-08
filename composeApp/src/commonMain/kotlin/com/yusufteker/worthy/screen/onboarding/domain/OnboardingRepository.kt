@@ -15,6 +15,8 @@ interface  OnboardingRepository {
 
     suspend fun addMonthlySalary(monthlySalary: RecurringFinancialItem?)
 
+    suspend fun addWeeklyWorkHours(weeklyWorkHours: Int)
+
     suspend fun addSavingsGoal(savingsGoal: Money?)
 
     suspend fun addBuyingPriorities(buyingPriorities: List<String>?)

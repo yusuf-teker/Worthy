@@ -28,7 +28,10 @@ class OnboardingRepositoryImpl(
         monthlySalary?.let {
             recurringRepository.add(it)
         }
+    }
 
+    override suspend fun addWeeklyWorkHours(weeklyWorkHours: Int) {
+        userPrefsManager.setWeeklyWorkHours(weeklyWorkHours)
     }
 
     override suspend fun addSavingsGoal(savingsGoal: Money?) {

@@ -240,15 +240,19 @@
 
     <string name="onboarding_q0_welcome">Hi there! 👋\nTo assist you better, may I know your name?</string>
     <string name="onboarding_q1_title">Do you have regular monthly salary?</string>
+    <string name="onboarding_q1_2_title">How many hours do you work weekly?</string>
+
     <string name="onboarding_q2_title">How much do you want to allocate for monthly discretionary spending?</string>
     <string name="onboarding_q3_title">Do you have regular monthly expenses?</string>
     <string name="onboarding_q4_title">Do you have a savings goal?</string>
     <string name="onboarding_q5_title">What do you care most about before buying a product?</string>
     <string name="onboarding_q6_title">How can this app help you better?</string>
 
-    <string name="error_invalid_salary">Lütfen geçerli bir maaş giriniz.</string>
-    <string name="error_invalid_spending_limit">Lütfen geçerli bir harcama limiti giriniz.</string>
-    <string name="error_invalid_savings_goal">Lütfen geçerli bir birikim hedefi giriniz.</string>
+    <string name="error_invalid_salary">Please enter a valid salary.</string>
+    <string name="error_invalid_spending_limit">Please enter a valid spending limit.</string>
+    <string name="error_invalid_savings_goal">Please enter a valid savings goal.</string>
+    <string name="error_invalid_weekly_workhour">Workhour cannot be less than 0</string>
+
 
 
     <string name="choice_price">Price</string>
