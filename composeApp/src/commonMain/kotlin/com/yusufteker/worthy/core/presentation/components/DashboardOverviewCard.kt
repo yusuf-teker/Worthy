@@ -54,7 +54,7 @@ import worthy.composeapp.generated.resources.chart_expenses
 import worthy.composeapp.generated.resources.chart_fixed_expenses
 import worthy.composeapp.generated.resources.chart_remaining
 import worthy.composeapp.generated.resources.history
-import worthy.composeapp.generated.resources.income_allocation_this_month
+import worthy.composeapp.generated.resources.income_allocation_compare_to_last_month
 import worthy.composeapp.generated.resources.income_allocation_title
 
 @Composable
@@ -131,7 +131,7 @@ fun DashboardOverviewCard(
             )
             Spacer(Modifier.height(4.dp))
             Text(
-                text = UiText.StringResourceId(Res.string.income_allocation_this_month,arrayOf(formatPercentageChange(incomeChangeRatio))).asString(),
+                text = UiText.StringResourceId(Res.string.income_allocation_compare_to_last_month,arrayOf(formatPercentageChange(incomeChangeRatio))).asString(),
                 style = AppTypography.bodyMedium,
                 color = if (incomeChangeRatio > 0) AppColors.savingsGreen else AppColors.error
             )

@@ -3,6 +3,7 @@ package com.yusufteker.worthy.screen.wishlist.list.presentation
 import androidx.lifecycle.viewModelScope
 import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.domain.getCurrentLocalDateTime
+import com.yusufteker.worthy.core.domain.model.Expense
 import com.yusufteker.worthy.core.domain.repository.CategoryRepository
 import com.yusufteker.worthy.core.domain.repository.SearchHistoryRepository
 import com.yusufteker.worthy.core.domain.toEpochMillis
@@ -20,8 +21,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class WishlistViewModel(
-    private val categoryRepository: CategoryRepository,
-    private val userPrefsManager: UserPrefsManager,
     private val wishlistRepository: WishlistRepository,
     private val searchHistoryRepository: SearchHistoryRepository
 ) : BaseViewModel() {
@@ -87,9 +86,26 @@ class WishlistViewModel(
             is WishlistAction.OnIsItemPurchasedChange -> {
                 viewModelScope.launch {
                     wishlistRepository.updateIsPurchased(
-                        itemId = action.itemId,
+                        itemId = action.item.id,
                         isPurchased = action.isPurchased,
                         purchasedTime = if (action.isPurchased) getCurrentLocalDateTime().toEpochMillis() else null)
+
+                   val expense =  Expense(
+                        id = action.item.id,
+                        name = action.item.name,
+                        amount = action.item.price,
+                        categoryId = action.item.category?.id,
+                        date = action.item.addedDate,
+                        note = action.item.note
+                    )
+
+                    if (action.isPurchased) {
+                        wishlistRepository.saveExpense(expense)
+                    }else{
+                        wishlistRepository.deleteExpense(expense)
+                    }
+
+
                 }
             }
         }

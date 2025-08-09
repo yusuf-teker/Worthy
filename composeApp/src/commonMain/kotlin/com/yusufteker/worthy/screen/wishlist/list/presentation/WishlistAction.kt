@@ -1,5 +1,7 @@
 package com.yusufteker.worthy.screen.wishlist.list.presentation
 
+import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistItem
+
 sealed interface WishlistAction {
 
 
@@ -8,7 +10,7 @@ sealed interface WishlistAction {
     data class OnItemDelete(val itemId: Int) : WishlistAction
 
     data class OnIsItemPurchasedChange (
-        val itemId: Int,
+        val item: WishlistItem,
         val isPurchased: Boolean
     ) : WishlistAction
     object OnSearch : WishlistAction

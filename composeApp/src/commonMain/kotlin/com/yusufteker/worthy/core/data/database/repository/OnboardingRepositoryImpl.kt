@@ -21,7 +21,9 @@ class OnboardingRepositoryImpl(
     override suspend fun addSpendingLimit(spendingLimit: Money?) {
         spendingLimit?.let {
             userPrefsManager.setSpendingLimit(it)
+            userPrefsManager.setBudgetMoney(it)
         }
+
     }
 
     override suspend fun addMonthlySalary(monthlySalary: RecurringFinancialItem?) {

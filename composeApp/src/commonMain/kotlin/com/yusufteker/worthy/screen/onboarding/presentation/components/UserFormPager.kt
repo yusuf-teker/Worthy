@@ -274,12 +274,15 @@ fun UserFormPager(
 
         Spacer(Modifier.height(16.dp))
 
+        val focusManager = LocalFocusManager.current
 // Navigation Buttons
         Row(
-            Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
+            Modifier.fillMaxWidth()  .imePadding()
+                .navigationBarsPadding() , horizontalArrangement = Arrangement.SpaceBetween
         ) {
             if (pagerState.currentPage > 0) {
                 Button(onClick = {
+                    focusManager.clearFocus()
                     coroutineScope.launch {
                         validationErrors = UserOnboardingValidationErrors()
                         pagerState.animateScrollToPage(pagerState.currentPage - 1)
@@ -297,6 +300,7 @@ fun UserFormPager(
                     validationErrors = result
                     val hasNoErrors = result == UserOnboardingValidationErrors()
                     if (hasNoErrors) {
+                        focusManager.clearFocus()
                         coroutineScope.launch {
                             pagerState.animateScrollToPage(pagerState.currentPage + 1)
                         }

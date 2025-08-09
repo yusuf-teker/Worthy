@@ -1,5 +1,6 @@
 package com.yusufteker.worthy.screen.wishlist.list.domain
 
+import com.yusufteker.worthy.core.domain.model.Expense
 import kotlinx.coroutines.flow.Flow
 
 interface WishlistRepository {
@@ -14,5 +15,9 @@ interface WishlistRepository {
     suspend fun updateIsPurchased(itemId: Int, isPurchased: Boolean, purchasedTime: Long?)
 
     fun searchWithCategory(query: String): Flow<List<WishlistItem>>
+
+    suspend fun saveExpense(expense: Expense)
+    suspend fun deleteExpense(expense: Expense)
+
 
 }

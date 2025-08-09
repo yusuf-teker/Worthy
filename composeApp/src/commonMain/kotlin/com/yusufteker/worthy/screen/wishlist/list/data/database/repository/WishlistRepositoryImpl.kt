@@ -2,6 +2,8 @@ package com.yusufteker.worthy.screen.wishlist.list.data.database.repository
 
 import com.yusufteker.worthy.core.data.database.mappers.toDomain
 import com.yusufteker.worthy.core.data.database.mappers.toEntity
+import com.yusufteker.worthy.core.domain.model.Expense
+import com.yusufteker.worthy.core.domain.repository.ExpenseRepository
 import com.yusufteker.worthy.screen.wishlist.list.data.database.model.WishlistItemDao
 import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistItem
 import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistRepository
@@ -10,7 +12,8 @@ import kotlinx.coroutines.flow.map
 
 // data/repository/WishlistRepositoryImpl.kt
 class WishlistRepositoryImpl(
-    private val itemDao: WishlistItemDao
+    private val itemDao: WishlistItemDao,
+    private val expenseRepository: ExpenseRepository
 ) : WishlistRepository {
 
     override fun getAll(): Flow<List<WishlistItem>> =
@@ -49,5 +52,13 @@ class WishlistRepositoryImpl(
         itemDao.searchWithCategory("%$query%").map { list ->
             list.map { it.toDomain() }
         }
+
+    override suspend fun saveExpense(expense: Expense) {
+        expenseRepository.insert(expense)
+    }
+
+    override suspend fun deleteExpense(expense: Expense) {
+        expenseRepository.delete(expense)
+    }
 
 }

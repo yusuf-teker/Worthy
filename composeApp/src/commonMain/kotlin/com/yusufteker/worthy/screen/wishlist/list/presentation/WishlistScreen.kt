@@ -127,7 +127,7 @@ fun WishlistScreen(
                         WishlistItemCard(
                             item = item,
                             onCheckedChange = {
-                                onAction(WishlistAction.OnIsItemPurchasedChange(item.id, it))
+                                onAction(WishlistAction.OnIsItemPurchasedChange(item, it))
                             },
                             onClick = {
                                 //onAction(WishlistAction.OnItemClick(item.id))

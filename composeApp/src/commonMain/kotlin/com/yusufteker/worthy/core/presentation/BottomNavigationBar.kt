@@ -56,15 +56,15 @@ fun BottomNavigationBar(
             route = Routes.Trends
         ),
         BottomNavItem(
-            "Add",
+            "AddTransaction",
             painter = rememberVectorPainter(Icons.Filled.Add),
-            route = Routes.Trends
+            route = Routes.AddTransaction
         ),
-        BottomNavItem(
+        /*BottomNavItem(
             "Wallet",
             painter = painterResource(Res.drawable.bottom_icon_wallet),
             route = Routes.Wallet
-        ),
+        ),*/
         BottomNavItem(
             "WishlistGraph",
             painter = painterResource(Res.drawable.bottom_icon_wishlist),

@@ -1,6 +1,8 @@
     package com.yusufteker.worthy.screen.onboarding.presentation
 
     import androidx.compose.foundation.background
+    import androidx.compose.foundation.clickable
+    import androidx.compose.foundation.interaction.MutableInteractionSource
     import androidx.compose.foundation.layout.Box
     import androidx.compose.foundation.layout.PaddingValues
     import androidx.compose.foundation.layout.fillMaxSize
@@ -8,8 +10,10 @@
     import androidx.compose.runtime.Composable
     import androidx.compose.runtime.LaunchedEffect
     import androidx.compose.runtime.getValue
+    import androidx.compose.runtime.remember
     import androidx.compose.ui.Alignment
     import androidx.compose.ui.Modifier
+    import androidx.compose.ui.platform.LocalFocusManager
     import androidx.lifecycle.compose.collectAsStateWithLifecycle
     import com.yusufteker.worthy.core.presentation.theme.AppColors
     import com.yusufteker.worthy.core.presentation.theme.AppDimens.ScreenPadding
@@ -48,20 +52,21 @@
         onAction: (OnboardingAction) -> Unit,
         contentPadding: PaddingValues = PaddingValues()
     ) {
+        val focusManager = LocalFocusManager.current
 
-        Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize().background(
+
+        Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize() .clickable(
+            indication = null,
+            interactionSource = remember { MutableInteractionSource() }
+        ) {
+            focusManager.clearFocus()
+        }.background(
             AppColors.background
         ).padding(ScreenPadding)){
 
             UserFormPager(
                 onGetStarted = { onAction(OnboardingAction.OnGetStartedClicked(it)) }
             )
-            /*Text("Onboarding Screen", color = AppColors.onBackground)
-            AppButton(
-                text = UiText.StringResourceId(id = Res.string.get_started).asString(),
 
-                onClick = { onAction(OnboardingAction.OnGetStartedClicked) },
-                modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth().padding(  16.dp)
-            )*/
         }
     }

@@ -80,7 +80,7 @@
 
     <!-- Dashboard – Income Allocation Card -->
     <string name="income_allocation_title">Gelir Dağılımı</string>
-    <string name="income_allocation_this_month">Bu Ay %1$s</string>
+    <string name="income_allocation_compare_to_last_month">Geçen aya göre %1$s</string>
 
     <string name="add_wish">İstek</string>
     <string name="add_recurring_item">Sabit Gelir/Gider</string>

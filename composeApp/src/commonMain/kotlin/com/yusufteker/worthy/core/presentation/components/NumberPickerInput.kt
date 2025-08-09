@@ -1,9 +1,12 @@
 package com.yusufteker.worthy.core.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -57,9 +60,11 @@ fun NumberPickerInput(
             scrollState.scrollTo(selectedIndex * dropdownItemHeight / 4)
         }
     }
+
+
     Column(modifier) {
 
-        Box {
+        Box{
 
             OutlinedTextField(
                 value = textFieldValue,
@@ -69,9 +74,9 @@ fun NumberPickerInput(
                         if (num in range) onValueChange(num)
                     }
                 },
+                modifier = modifier,
                 isError = errorMessage != null,
                 label = {Text(text = label) },
-                modifier = modifier,
                 singleLine = true,
                 readOnly = !isEnabled,
                 trailingIcon = {
@@ -85,8 +90,15 @@ fun NumberPickerInput(
                         )
                     }
                 },
-
             )
+            Box(
+                Modifier.fillMaxWidth().height(64.dp)
+                    .clickable{
+                        expanded = !expanded
+                    }
+            ){
+
+            }
 
             // ▸ Dropdown menü
             DropdownMenu(

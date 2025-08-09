@@ -29,6 +29,7 @@ import androidx.navigation.toRoute
 import com.yusufteker.worthy.core.presentation.BottomNavigationBar
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppDimens.ScreenPadding
+import com.yusufteker.worthy.screen.addtransaction.presentation.AddTransactionScreenRoot
 import com.yusufteker.worthy.screen.dashboard.presentation.DashboardScreenRoot
 import com.yusufteker.worthy.screen.onboarding.domain.OnboardingManager
 import com.yusufteker.worthy.screen.onboarding.presentation.OnboardingScreenRoot
@@ -58,6 +59,7 @@ fun AppNavHost(
         Routes.Wishlist.toString(),
         Routes.Trends .toString(),
         Routes.Settings.toString(),
+        Routes.AddTransaction.toString(),
     )
 
     LaunchedEffect(currentRoute) {
@@ -84,9 +86,7 @@ fun AppNavHost(
 
 
     Scaffold(
-        modifier = Modifier.background(AppColors.background).padding(horizontal = ScreenPadding)
-        ,
-
+        modifier = Modifier.background(AppColors.background).padding(horizontal = ScreenPadding),
         bottomBar = {
             if (showBottomBar) {
                 BottomNavigationBar(
@@ -178,6 +178,12 @@ fun AppNavHost(
                             contentPadding = innerPadding,
                         )
                     }
+                }
+
+                composable<Routes.AddTransaction>{
+                    AddTransactionScreenRoot(
+                        contentPadding = innerPadding,
+                    )
                 }
                 composable<Routes.Wallet> {
                     WalletScreenRoot(

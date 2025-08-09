@@ -80,7 +80,7 @@
 
     <!-- Dashboard – Income Allocation Card -->
     <string name="income_allocation_title">Income Allocation</string>
-    <string name="income_allocation_this_month">This Month %1$s</string>
+    <string name="income_allocation_compare_to_last_month">Compare to last month %1$s</string>
 
     <string name="add_wish">Wish</string>
     <string name="add_recurring_item">Recurring Income/Expense</string>

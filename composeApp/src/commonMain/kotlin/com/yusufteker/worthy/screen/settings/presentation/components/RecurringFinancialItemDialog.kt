@@ -158,7 +158,8 @@ fun RecurringFinancialItemDialog(
             onAdd = { item ->
                     onAddNew(item.copy(isIncome = isIncome))
                     showAddDialog = false
-            }
+            },
+            isIncome = isIncome
         )
     }
 
@@ -223,13 +224,14 @@ fun RecurringItemRow(
 @Composable
 fun RecurringItemAddDialog(
     onDismiss: () -> Unit,
-    onAdd: (RecurringFinancialItem) -> Unit
+    onAdd: (RecurringFinancialItem) -> Unit,
+    isIncome: Boolean
 ) {
     var name by remember { mutableStateOf( "") }
     var nameError by remember { mutableStateOf<UiText?>(null) }
     var amount by remember { mutableStateOf<Money?>(emptyMoney()) }
     var amountError by remember { mutableStateOf<UiText?>(null) }
-    var isIncome by remember { mutableStateOf( true) }
+    var isIncome by remember { mutableStateOf<Boolean>( isIncome) }
     var needType by remember { mutableStateOf( ExpenseNeedType.NONE) }
     var scheduledDay by remember { mutableStateOf<Int?>(null) }
 

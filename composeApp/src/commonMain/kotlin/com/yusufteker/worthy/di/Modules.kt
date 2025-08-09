@@ -25,6 +25,7 @@ import com.yusufteker.worthy.core.domain.service.datasource.CurrencyRatesCacheDa
 import com.yusufteker.worthy.core.domain.service.datasource.CurrencyRatesRemoteDataSource
 import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistRepository
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
+import com.yusufteker.worthy.screen.addtransaction.presentation.AddTransactionViewModel
 import com.yusufteker.worthy.screen.dashboard.domain.DashboardRepository
 import com.yusufteker.worthy.screen.dashboard.presentation.DashboardViewModel
 import com.yusufteker.worthy.screen.onboarding.domain.OnboardingManager
@@ -73,7 +74,7 @@ val sharedModule = module {
     single<OnboardingRepository> { OnboardingRepositoryImpl(get(), get(), get()) }
     single<ExpenseRepository> { ExpenseRepositoryImpl(get()) }
     single<IncomeRepository> { IncomeRepositoryImpl(get()) }
-    single<WishlistRepository> { WishlistRepositoryImpl(get()) }
+    single<WishlistRepository> { WishlistRepositoryImpl(get(),get()) }
     single<CategoryRepository> { CategoryRepositoryImpl(get()) }
     single<RecurringFinancialItemRepository> { RecurringFinancialItemRepositoryImpl(get()) }
     single<DashboardRepository> { DashboardRepositoryImpl(get(), get(),get(),get(),get()) }
@@ -86,6 +87,7 @@ val sharedModule = module {
     viewModel { BaseViewModel() }
     viewModel { DashboardViewModel(get(),get(), get()) }
     viewModel { SettingsViewModel(get(),get(),get(),get(), get(), get() )}
-    viewModel { WishlistViewModel(get(), get(), get(), get()) }
+    viewModel { WishlistViewModel(get(), get()) }
     viewModel { WishlistAddViewModel(get(),get(),get()) }
+    viewModel { AddTransactionViewModel(get(), get()) }
 }

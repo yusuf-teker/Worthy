@@ -36,6 +36,10 @@ sealed class Routes {
 
     @Serializable
     data object Wallet : Routes()
+
+    @Serializable
+    data object AddTransaction: Routes()
+
     @Serializable
     data object Trends : Routes()
 
