@@ -1,14 +1,18 @@
 package com.yusufteker.worthy.screen.dashboard.presentation.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -48,6 +52,8 @@ import com.yusufteker.worthy.core.presentation.components.CategoryIcon
 import com.yusufteker.worthy.core.presentation.components.MoneyInput
 import com.yusufteker.worthy.core.presentation.components.PurchaseEvaluationInfoBox
 import com.yusufteker.worthy.core.presentation.theme.AppColors.secondaryButtonColors
+import com.yusufteker.worthy.core.presentation.util.hideKeyboard
+import io.github.aakira.napier.Napier
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.bottom_sheet_button_calculate
 import worthy.composeapp.generated.resources.bottom_sheet_button_purchase
@@ -75,23 +81,28 @@ fun BottomSheetContent(
     var amountError by remember { mutableStateOf<UiText?>(null) }
     var categoryError by remember { mutableStateOf<UiText?>(null) }
     var nameError by remember { mutableStateOf<UiText?>(null) }
-    val amountFocusRequester = remember { FocusRequester() }
 
 
     LaunchedEffect(bottomSheetUiState.evaluationResult != null, bottomSheetUiState.selectedCategory){
+        Napier.d("bottom sheet is open ${bottomSheetUiState.evaluationResult})")
+
         sheetState.expand()
     }
-    LaunchedEffect(Unit){
-        amountFocusRequester.requestFocus()
-
-    }
 
 
 
+    val scrollState = rememberScrollState()
+    val focusManager = LocalFocusManager.current
     Column(
         Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
+            .fillMaxWidth() .clickable(
+                indication = null, // Ripple olmasın
+                interactionSource = remember { MutableInteractionSource() }
+            ) {
+                focusManager.clearFocus()
+                hideKeyboard()
+            }
+            .padding(16.dp).verticalScroll(scrollState)
     ) {
 
 
@@ -116,7 +127,7 @@ fun BottomSheetContent(
             onValueChange = { newValue ->
                 amount = newValue
             },
-            modifier = Modifier.fillMaxWidth().focusRequester(amountFocusRequester),
+            modifier = Modifier.fillMaxWidth(),
             isError = amountError != null,
             errorMessage = amountError
         )

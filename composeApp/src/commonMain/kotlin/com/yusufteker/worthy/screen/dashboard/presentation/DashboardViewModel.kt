@@ -15,6 +15,7 @@ import com.yusufteker.worthy.core.domain.service.CurrencyConverter
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import com.yusufteker.worthy.core.presentation.UiEvent.*
 import com.yusufteker.worthy.core.presentation.components.adjustValuesForBarChart
+import com.yusufteker.worthy.core.presentation.util.hideKeyboard
 import com.yusufteker.worthy.screen.dashboard.domain.DashboardRepository
 import com.yusufteker.worthy.screen.dashboard.domain.EvaluationResult
 import com.yusufteker.worthy.screen.settings.domain.UserPrefsManager
@@ -100,6 +101,8 @@ class DashboardViewModel(
                         }
                     }
                 }
+
+                hideKeyboard()
             }
 
 

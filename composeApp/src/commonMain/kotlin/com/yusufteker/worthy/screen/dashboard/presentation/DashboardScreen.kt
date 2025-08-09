@@ -11,6 +11,10 @@ import androidx.compose.ui.Modifier
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
@@ -148,23 +152,25 @@ fun DashboardScreen(
 
 
 
-    val sheetState = rememberModalBottomSheetState()
 
 
     LaunchedEffect(state.isBottomSheetOpen){
         Napier.d("bottom sheet is open ${state.isBottomSheetOpen}")
     }
-
+    val bottomSheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
     if (state.isBottomSheetOpen) {
         ModalBottomSheet(
             onDismissRequest = { onAction(DashboardAction.CloseBottomSheetClicked) },
-            sheetState = sheetState,
+            sheetState = bottomSheetState,
             containerColor = AppColors.surface,
             tonalElevation = 6.dp,
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+            contentWindowInsets = {  WindowInsets.ime}
         ) {
             BottomSheetContent(
-                sheetState = sheetState,
+                sheetState = bottomSheetState,
                 onClose = {
                     onAction(DashboardAction.CloseBottomSheetClicked)
                 },
