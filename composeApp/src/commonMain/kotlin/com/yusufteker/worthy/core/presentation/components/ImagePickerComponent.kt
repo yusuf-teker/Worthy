@@ -15,22 +15,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.yusufteker.worthy.core.media.PlatformImage
 import com.yusufteker.worthy.core.media.rememberImagePicker
 import com.yusufteker.worthy.core.media.rememberPermissionChecker
+import com.yusufteker.worthy.core.media.toImageBitmap
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.camera
 import worthy.composeapp.generated.resources.gallery
-import worthy.composeapp.generated.resources.history
 import worthy.composeapp.generated.resources.image_picker_camera
 import worthy.composeapp.generated.resources.image_picker_camera_unavailable
 import worthy.composeapp.generated.resources.image_picker_gallery
@@ -41,8 +40,8 @@ import worthy.composeapp.generated.resources.image_picker_title
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ImagePickerComponent(
-    selectedImage: ImageBitmap?,
-    onImageSelected: (ImageBitmap) -> Unit,
+    selectedImage: PlatformImage?,
+    onImageSelected: (PlatformImage) -> Unit,
     placeholder: UiText = UiText.StringResourceId(Res.string.image_picker_placeholder),
     modifier: Modifier = Modifier,
     imageSize: Dp = 200.dp,
@@ -76,7 +75,7 @@ fun ImagePickerComponent(
     ) {
         if (selectedImage != null) {
             Image(
-                bitmap = selectedImage,
+                bitmap = selectedImage.toImageBitmap(),
                 contentDescription = UiText.StringResourceId(Res.string.image_picker_selected_image_desc).asString(),
                 modifier = Modifier.fillMaxSize().aspectRatio(1f),
                 contentScale = ContentScale.Crop,

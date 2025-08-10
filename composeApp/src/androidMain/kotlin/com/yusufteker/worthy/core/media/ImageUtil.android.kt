@@ -18,3 +18,7 @@ actual fun ImageBitmap.toByteArray(
         it.toByteArray()
     }
 }
+
+actual fun PlatformImage.toByteArray(format: ImageFormat): ByteArray {
+    return this.bitmap.toByteArray()
+}

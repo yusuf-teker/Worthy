@@ -39,11 +39,11 @@ actual fun rememberPermissionChecker(): PermissionChecker {
 }
 
 // Global callbacks for launchers
-var galleryCallback: ((ImageBitmap?) -> Unit)? = null
-var cameraCallback: ((ImageBitmap?) -> Unit)? = null
+var galleryCallback: ((PlatformImage?) -> Unit)? = null
+var cameraCallback: ((PlatformImage?) -> Unit)? = null
 var permissionCallback: ((Boolean) -> Unit)? = null
 
-var cropCallback: ((ImageBitmap?) -> Unit)? = null
+var cropCallback: ((PlatformImage?) -> Unit)? = null
 
 var currentPhotoUri: Uri? = null
 

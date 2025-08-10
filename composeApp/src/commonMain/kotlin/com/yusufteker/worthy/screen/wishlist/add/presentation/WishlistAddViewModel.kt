@@ -39,7 +39,7 @@ class WishlistAddViewModel(
             is WishlistAddAction.OnImageSelected -> {
 
                 _state.value = _state.value.copy(
-                    imageBitmap = action.bitmap
+                    imageBitmap = action.platformImage
                 )
             }
 

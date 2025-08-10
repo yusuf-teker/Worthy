@@ -11,3 +11,4 @@ expect enum class ImageFormat {
  * Converts [ImageBitmap] to image with desired [format] and returns its bytes.
  * */
 expect fun ImageBitmap.toByteArray(format: ImageFormat = ImageFormat.PNG) : ByteArray
+expect fun PlatformImage.toByteArray(format: ImageFormat = ImageFormat.PNG): ByteArray

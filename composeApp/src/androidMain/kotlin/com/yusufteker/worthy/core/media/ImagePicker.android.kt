@@ -32,7 +32,7 @@ actual fun rememberImagePicker(): ImagePicker {
         contract = ActivityResultContracts.PickVisualMedia()
     ) { uri: Uri? ->
         val bitmap = uri?.let { loadImageFromUri(context, it) }
-        galleryCallback?.invoke(bitmap)
+        galleryCallback?.invoke(PlatformImage(bitmap!!))
         galleryCallback = null
     }
 
@@ -44,7 +44,7 @@ actual fun rememberImagePicker(): ImagePicker {
         val bitmap = if (success) {
             currentPhotoUri?.let { loadImageFromUri(context, it) }
         } else null
-        cameraCallback?.invoke(bitmap)
+        cameraCallback?.invoke(PlatformImage(bitmap!!))
         cameraCallback = null
     }
 
@@ -58,7 +58,7 @@ actual fun rememberImagePicker(): ImagePicker {
             val uri = UCrop.getOutput(result.data!!)
             val bitmap = uri?.let { loadImageFromUri(context, it) }
             //callback imagepicker da cropImage çalıştığında  tanımlanıyor
-            cropCallback?.invoke(bitmap)
+            cropCallback?.invoke(PlatformImage(bitmap!!))
         } else {
             cropCallback?.invoke(null)
         }
@@ -114,7 +114,7 @@ class AndroidImagePicker(
     private val cropLauncher: ActivityResultLauncher<Intent>,
 ) : ImagePicker {
 
-    override fun pickFromGallery(onResult: (ImageBitmap?) -> Unit) {
+    override fun pickFromGallery(onResult: (PlatformImage?) -> Unit) {
         galleryCallback = onResult
 
         // PickVisualMedia kullan - izin gerekmez
@@ -125,7 +125,7 @@ class AndroidImagePicker(
         visualMediaLauncher.launch(request)
     }
 
-    override fun pickFromCamera(onResult: (ImageBitmap?) -> Unit) {
+    override fun pickFromCamera(onResult: (PlatformImage?) -> Unit) {
         cameraCallback = onResult
 
         if (!isCameraAvailable()) {
@@ -167,11 +167,11 @@ class AndroidImagePicker(
         }
     }
 
-    override fun cropImage(image: ImageBitmap, aspectRatio: Float, onCropped: (ImageBitmap?) -> Unit) {
+    override fun cropImage(image: PlatformImage, aspectRatio: Float, onCropped: (PlatformImage?) -> Unit) {
         cropCallback = onCropped // önce call back setliyoruz.
 
         // ImageBitmap → Bitmap → File
-        val bitmap = image.toAndroidBitmap()
+        val bitmap = image.bitmap.toAndroidBitmap()
         val inputFile = File(context.cacheDir, "crop_input_${System.currentTimeMillis()}.jpg")
         val outputFile = File(context.cacheDir, "crop_output_${System.currentTimeMillis()}.jpg")
 
@@ -218,3 +218,7 @@ class AndroidImagePicker(
 
 
 }
+
+actual class PlatformImage(val bitmap: ImageBitmap)
+
+actual fun PlatformImage.toImageBitmap(): ImageBitmap = this.bitmap

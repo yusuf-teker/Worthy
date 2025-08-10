@@ -18,8 +18,8 @@ import org.jetbrains.skia.Image
 import platform.CoreGraphics.*
 
 // Global callbacks
-private var mainGalleryCallback: ((ImageBitmap?) -> Unit)? = null
-private var mainCameraCallback: ((ImageBitmap?) -> Unit)? = null
+private var mainGalleryCallback: ((PlatformImage?) -> Unit)? = null
+private var mainCameraCallback: ((PlatformImage?) -> Unit)? = null
 
 @Composable
 actual fun rememberImagePicker(): ImagePicker {
@@ -32,10 +32,11 @@ actual fun rememberImagePicker(): ImagePicker {
 // NSData extension (eğer yoksa ekleyin)
 @OptIn(ExperimentalForeignApi::class)
 fun NSData.toByteArray(): ByteArray {
-    Napier.d("NSData.toByteArray called, length: ${this.length}")
-    return ByteArray(this.length.toInt()) { index ->
-        this.bytes!!.reinterpret<ByteVar>()[index]
+    val bytes = ByteArray(this.length.toInt())
+    memScoped {
+        memcpy(bytes.refTo(0), this@toByteArray.bytes, this@toByteArray.length)
     }
+    return bytes
 }
 
 @OptIn(ExperimentalForeignApi::class)
@@ -83,7 +84,7 @@ class IOSImagePicker : ImagePicker {
     private var cropDelegate: CropViewControllerDelegate? = null
 
     @OptIn(ExperimentalForeignApi::class)
-    private fun presentCropViewController(image: UIImage, aspectRatio: Float, finalCallback: (ImageBitmap?) -> Unit) {
+    private fun presentCropViewController(image: UIImage, aspectRatio: Float, finalCallback: (PlatformImage?) -> Unit) {
 
         NSOperationQueue.mainQueue.addOperationWithBlock {
             try {
@@ -122,7 +123,7 @@ class IOSImagePicker : ImagePicker {
         }
     }
 
-    override fun pickFromGallery(onResult: (ImageBitmap?) -> Unit) {
+    override fun pickFromGallery(onResult: (PlatformImage?) -> Unit) {
         mainGalleryCallback = onResult
 
         val picker = UIImagePickerController()
@@ -133,7 +134,7 @@ class IOSImagePicker : ImagePicker {
         getCurrentViewController()?.presentViewController(picker, true, null)
     }
 
-    override fun pickFromCamera(onResult: (ImageBitmap?) -> Unit) {
+    override fun pickFromCamera(onResult: (PlatformImage?) -> Unit) {
         mainCameraCallback = onResult
 
         if (!isCameraAvailable()) {
@@ -163,12 +164,12 @@ class IOSImagePicker : ImagePicker {
     }
 
     override fun cropImage(
-        image: ImageBitmap,
+        image: PlatformImage,
         aspectRatio: Float,
-        onCropped: (ImageBitmap?) -> Unit
+        onCropped: (PlatformImage?) -> Unit
     ) {
         // Basit çözüm: Sadece TOCropViewController kullan
-        val uiImage = image.toUIImage()
+        val uiImage = image.uiImage
         if (uiImage == null) {
             onCropped(null)
             return
@@ -178,15 +179,14 @@ class IOSImagePicker : ImagePicker {
 
     internal fun handleGalleryImage(image: UIImage) {
         // Optimized conversion kullan
-        val bitmap = image.toImageBitmapOptimized() ?: image.toImageBitmap()
-        mainGalleryCallback?.invoke(bitmap)
+        //val bitmap = image.toImageBitmap()
+        mainGalleryCallback?.invoke(PlatformImage(image))
         mainGalleryCallback = null
     }
 
     internal fun handleCameraImage(image: UIImage) {
-        // Optimized conversion kullan
-        val bitmap = image.toImageBitmapOptimized() ?: image.toImageBitmap()
-        mainCameraCallback?.invoke(bitmap)
+        //val bitmap = image.toImageBitmap()
+        mainCameraCallback?.invoke(PlatformImage(image))
         mainCameraCallback = null
     }
 
@@ -271,7 +271,7 @@ class CameraPickerDelegate(
 
 @OptIn(ExperimentalForeignApi::class)
 class CropViewControllerDelegate(
-    private val onResult: (ImageBitmap?) -> Unit
+    private val onResult: (PlatformImage?) -> Unit
 ) : NSObject(), TOCropViewControllerDelegateProtocol {
 
     override fun cropViewController(
@@ -281,9 +281,9 @@ class CropViewControllerDelegate(
         angle: Long
     ) {
         // Optimized conversion kullan
-        val bitmap = didCropToImage.toImageBitmapOptimized() ?: didCropToImage.toImageBitmap()
+        //val bitmap = didCropToImage.toImageBitmapOptimized() ?: didCropToImage.toImageBitmap()
         cropViewController.dismissViewControllerAnimated(true) {
-            onResult(bitmap)
+            onResult(PlatformImage(didCropToImage))
         }
     }
 
@@ -331,39 +331,10 @@ fun ImageBitmap.toUIImage(): UIImage? {
     }
 }
 
-// Optimized conversion - Ana performans kazancı burada
-@OptIn(ExperimentalForeignApi::class)
-fun UIImage.toImageBitmapOptimized(): ImageBitmap? {
-    return try {
-        val cgImage = this.CGImage ?: return null
+actual class PlatformImage(val uiImage: UIImage)
 
-        val width = CGImageGetWidth(cgImage).toInt()
-        val height = CGImageGetHeight(cgImage).toInt()
-        val bytesPerRow = width * 4
-
-        val pixelData = ByteArray(height * bytesPerRow)
-
-        val colorSpace = CGColorSpaceCreateDeviceRGB()
-        val context = CGBitmapContextCreate(
-            data = pixelData.refTo(0),
-            width = width.toULong(),
-            height = height.toULong(),
-            bitsPerComponent = 8u,
-            bytesPerRow = bytesPerRow.toULong(),
-            space = colorSpace,
-            bitmapInfo = CGImageAlphaInfo.kCGImageAlphaPremultipliedLast.value
-        )
-
-        CGContextDrawImage(context, CGRectMake(0.0, 0.0, width.toDouble(), height.toDouble()), cgImage)
-
-        val skiaImageInfo = org.jetbrains.skia.ImageInfo.makeS32(width, height, org.jetbrains.skia.ColorAlphaType.PREMUL)
-        val skiaBitmap = org.jetbrains.skia.Bitmap().apply {
-            allocPixels(skiaImageInfo)
-            installPixels(pixelData)
-        }
-
-        skiaBitmap.asComposeImageBitmap()
-    } catch (e: Exception) {
-        null
-    }
+actual fun PlatformImage.toImageBitmap(): ImageBitmap {
+    Napier.d("Converting UIImage to ImageBitmap")
+    // UIKit UIImage -> Compose ImageBitmap dönüşümü için
+    return uiImage.toImageBitmap()!! // Burada iOS için extension yazman gerekebilir
 }
