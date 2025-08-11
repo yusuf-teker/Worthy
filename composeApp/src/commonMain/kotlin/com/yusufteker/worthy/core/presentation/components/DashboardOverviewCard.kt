@@ -36,7 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.yusufteker.worthy.core.domain.model.YearMonth
+import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.formatPercentageChange
 import com.yusufteker.worthy.core.presentation.getMonthName
@@ -70,9 +70,9 @@ fun DashboardOverviewCard(
     ),
     selectedChartIndex: Int? = null,
     onChartSelected: (index: Int) -> Unit,
-    selectableMonths : List<YearMonth>,
-    selectedMonth : YearMonth,
-    onSelectedMonthChanged: (YearMonth) -> Unit,
+    selectableMonths : List<AppDate>,
+    selectedMonth : AppDate,
+    onSelectedMonthChanged: (AppDate) -> Unit,
     onAddWishlistClicked: () -> Unit = {},
     onAddRecurringClicked: () -> Unit= {},
     onAddTransactionClicked: () -> Unit = {}
@@ -206,15 +206,15 @@ fun IncomeAllocationCardPreview(){
             onChartSelected = {},
             onSelectedMonthChanged = {},
             selectableMonths = listOf(
-                YearMonth(2023, 1),
-                YearMonth(2023, 2),
-                YearMonth(2023, 3),
-                YearMonth(2023, 4),
-                YearMonth(2023, 5),
-                YearMonth(2023, 6)
+                AppDate(2023, 1),
+                AppDate(2023, 2),
+                AppDate(2023, 3),
+                AppDate(2023, 4),
+                AppDate(2023, 5),
+                AppDate(2023, 6)
 
             ),
-            selectedMonth = YearMonth(2023, 1),
+            selectedMonth = AppDate(2023, 1),
             miniBarsFractions = emptyList(),
             miniBarsMonths = emptyList()
         )

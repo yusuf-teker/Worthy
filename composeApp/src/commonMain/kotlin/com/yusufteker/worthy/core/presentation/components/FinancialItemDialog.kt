@@ -315,7 +315,6 @@ fun List<ItemForDialog>.toExpenses(): List<Expense> = map {
         amount = it.amount,
         isFixed = it.isFixed,
         categoryId = null,
-        scheduledDay = it.scheduledDay,
         date = Clock.System.now().toEpochMilliseconds(),
         needType = it.needType,
     )
@@ -328,7 +327,6 @@ fun List<ItemForDialog>.toIncomes(): List<Income> = map {
         name = it.name,
         amount = it.amount,
         isFixed = it.isFixed,
-        scheduledDay = it.scheduledDay,
         categoryId = null,
         date = Clock.System.now().toEpochMilliseconds(),
         note = null,

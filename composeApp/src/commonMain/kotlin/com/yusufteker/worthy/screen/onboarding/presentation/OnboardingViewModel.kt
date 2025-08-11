@@ -5,6 +5,7 @@ import com.yusufteker.worthy.core.domain.createTimestampId
 import com.yusufteker.worthy.core.domain.getCurrentMonth
 import com.yusufteker.worthy.core.domain.getCurrentYear
 import com.yusufteker.worthy.core.domain.model.RecurringFinancialItem
+import com.yusufteker.worthy.core.domain.model.currentAppDate
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import com.yusufteker.worthy.screen.onboarding.domain.OnboardingManager
 import com.yusufteker.worthy.screen.onboarding.domain.OnboardingRepository
@@ -33,10 +34,8 @@ class OnboardingViewModel(
                                     name = it.salaryString,
                                     isIncome = true,
                                     amount = it.monthlySalary!!,
-                                    startMonth = getCurrentMonth(),
-                                    startYear = getCurrentYear(),
-                                    endMonth = null,
-                                    endYear = null,
+                                    startDate = currentAppDate(),
+                                    endDate = null,
                                     groupId = createTimestampId(),
                                 )
                             )

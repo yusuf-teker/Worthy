@@ -3,6 +3,7 @@ package com.yusufteker.worthy.core.data.database.repository
 import com.yusufteker.worthy.core.data.database.model.RecurringFinancialItemDao
 import com.yusufteker.worthy.core.data.database.mappers.toDomain
 import com.yusufteker.worthy.core.data.database.mappers.toEntity
+import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.core.domain.model.RecurringFinancialItem
 import com.yusufteker.worthy.core.domain.repository.RecurringFinancialItemRepository
 import kotlinx.coroutines.flow.Flow
@@ -29,8 +30,10 @@ class RecurringFinancialItemRepositoryImpl(
     override fun getAll() =
         dao.getAll().map { list -> list.map { it.toDomain() } }
 
-    override fun getForMonth(isIncome: Boolean, month: Int, year: Int): Flow<List<RecurringFinancialItem>> {
-        return dao.getItemsForMonth(isIncome, month, year).map { list ->
+    override fun getForMonth(isIncome: Boolean, date: AppDate): Flow<List<RecurringFinancialItem>> {
+        val targetDate = date.year * 100 + date.month
+
+        return dao.getItemsForMonth(isIncome, targetDate).map { list ->
             list.map { it.toDomain() }
         }
     }

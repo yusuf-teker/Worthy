@@ -8,7 +8,6 @@ data class Expense(
     val amount: Money,
     val categoryId: Int?,
     val needType: ExpenseNeedType = ExpenseNeedType.NEED,
-    val scheduledDay: Int? = null,
     val isFixed: Boolean = false,
     val date: Long,
     val note: String? = null

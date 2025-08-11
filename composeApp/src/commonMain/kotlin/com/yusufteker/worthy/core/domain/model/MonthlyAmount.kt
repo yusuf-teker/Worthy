@@ -1,8 +1,6 @@
 package com.yusufteker.worthy.core.domain.model
 
 import com.yusufteker.worthy.core.domain.service.CurrencyConverter
-import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistItem
-import worthy.composeapp.generated.resources.Res
 
 data class MonthlyAmount(
     val month: String,
@@ -10,17 +8,17 @@ data class MonthlyAmount(
 )
 
 data class DashboardMonthlyAmount(
-    val yearMonth: YearMonth,
+    val appDate: AppDate,
     val amount: List<Money>
 )
 
 suspend fun List<DashboardMonthlyAmount>.sumConvertedAmount(
     selectedCurrency: Currency,
-    selectedMonthYear: YearMonth,
+    selectedMonthYear: AppDate,
     currencyConverter: CurrencyConverter
 
 ): Money? {
-    val targetMonthlyAmount = this.find { it.yearMonth == selectedMonthYear }
+    val targetMonthlyAmount = this.find { it.appDate == selectedMonthYear }
 
     val totalMoney = targetMonthlyAmount?.amount?.let {
         currencyConverter.convertAll(it, selectedCurrency)
@@ -34,13 +32,13 @@ suspend fun List<DashboardMonthlyAmount>.sumConvertedAmount(
 
 fun List<DashboardMonthlyAmount>.getCurrent(): DashboardMonthlyAmount?{
     return this.find {
-        it.yearMonth == getCurrentYearMonth()
+        it.appDate == currentAppDate()
     }
 }
 
 fun List<DashboardMonthlyAmount>.getLastMonths(monthCount: Int = 6): List<Int> {
     return this.map {
-        it.yearMonth.month
+        it.appDate.month
     }
 }
 

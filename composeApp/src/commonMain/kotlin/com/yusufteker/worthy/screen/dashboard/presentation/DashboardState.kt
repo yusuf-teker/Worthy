@@ -2,16 +2,14 @@ package com.yusufteker.worthy.screen.dashboard.presentation
 
 import com.yusufteker.worthy.core.domain.getCurrentMonth
 import com.yusufteker.worthy.core.domain.getCurrentYear
-import com.yusufteker.worthy.core.domain.getCurrentYearMonth
-import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.DashboardMonthlyAmount
 import com.yusufteker.worthy.core.domain.model.Money
-import com.yusufteker.worthy.core.domain.model.YearMonth
+import com.yusufteker.worthy.core.domain.model.AppDate
+import com.yusufteker.worthy.core.domain.model.currentAppDate
 import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.presentation.base.BaseState
 import com.yusufteker.worthy.screen.dashboard.domain.DashboardRecurringData
-import com.yusufteker.worthy.screen.dashboard.domain.EvaluationResult
 import com.yusufteker.worthy.screen.dashboard.presentation.components.BottomSheetUiState
 
 data class DashboardState(
@@ -68,8 +66,8 @@ data class DashboardState(
     val wishlistMonthlyAmountList: List<DashboardMonthlyAmount> = emptyList(),
     val filteredWishlistMonthlyAmountList: List<DashboardMonthlyAmount> = emptyList(),
 
-    val selectedMonthYear: YearMonth = getCurrentYearMonth(),
-    val selectableMonths: List<YearMonth> = getRecentYearMonths(currentMonth = getCurrentMonth(), currentYear = getCurrentYear()),
+    val selectedMonthYear: AppDate = currentAppDate(),
+    val selectableMonths: List<AppDate> = getRecentYearMonths(currentMonth = getCurrentMonth(), currentYear = getCurrentYear()),
     override val isLoading: Boolean = false
     ): BaseState
 
@@ -85,13 +83,13 @@ fun getRecentYearMonths(
     currentYear: Int,
     currentMonth: Int,
     count: Int = 6
-): List<YearMonth> {
-    val result = mutableListOf<YearMonth>()
+): List<AppDate> {
+    val result = mutableListOf<AppDate>()
     var year = currentYear
     var month = currentMonth
 
     repeat(count + 1) {
-        result.add(YearMonth(year = year, month = month))
+        result.add(AppDate(year = year, month = month))
         month -= 1
         if (month == 0) {
             month = 12

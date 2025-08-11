@@ -167,7 +167,7 @@ class AndroidImagePicker(
         }
     }
 
-    override fun cropImage(image: PlatformImage, aspectRatio: Float, onCropped: (PlatformImage?) -> Unit) {
+    override fun cropImage(image: PlatformImage, aspectRatio: AspectRatio, onCropped: (PlatformImage?) -> Unit) {
         cropCallback = onCropped // önce call back setliyoruz.
 
         // ImageBitmap → Bitmap → File
@@ -187,7 +187,7 @@ class AndroidImagePicker(
         val outputUri = Uri.fromFile(outputFile)
 
         val uCrop = UCrop.of(inputUri, outputUri)
-            .withAspectRatio(aspectRatio, 1f)
+            .withAspectRatio(aspectRatio.widthRatio, aspectRatio.heightRatio)
             .withMaxResultSize(1080, 1080)
 
         // Ucrop başlıyor arka planda uCropActivity açılıyor

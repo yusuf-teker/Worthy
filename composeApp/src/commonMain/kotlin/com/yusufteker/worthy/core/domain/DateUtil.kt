@@ -1,6 +1,5 @@
 package com.yusufteker.worthy.core.domain
 
-import com.yusufteker.worthy.core.domain.model.YearMonth
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
@@ -27,9 +26,6 @@ fun getCurrentMonth(): Int {
     return Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).month.number
 }
 
-fun getCurrentYearMonth(): YearMonth {
-    return YearMonth(getCurrentYear(), getCurrentMonth())
-}
 @OptIn(ExperimentalTime::class)
 fun createTimestampId(): String {
     val timestamp = Clock.System.now().toEpochMilliseconds()

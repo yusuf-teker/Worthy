@@ -1,9 +1,8 @@
 package com.yusufteker.worthy.screen.dashboard.presentation
 
-import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.Expense
 import com.yusufteker.worthy.core.domain.model.Money
-import com.yusufteker.worthy.core.domain.model.YearMonth
+import com.yusufteker.worthy.core.domain.model.AppDate
 
 sealed interface DashboardAction {
 
@@ -16,7 +15,7 @@ sealed interface DashboardAction {
 
     data class PurchaseButtonClicked(val expense: Expense): DashboardAction
 
-    data class OnSelectedMonthChanged(val yearMonth: YearMonth) : DashboardAction
+    data class OnSelectedMonthChanged(val appDate: AppDate) : DashboardAction
 
     object  AddWishlistClicked: DashboardAction
     object  AddRecurringClicked: DashboardAction

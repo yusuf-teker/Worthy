@@ -19,6 +19,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.yusufteker.worthy.core.media.AspectRatio
 import com.yusufteker.worthy.core.media.PlatformImage
 import com.yusufteker.worthy.core.media.rememberImagePicker
 import com.yusufteker.worthy.core.media.rememberPermissionChecker
@@ -46,7 +47,7 @@ fun ImagePickerComponent(
     modifier: Modifier = Modifier,
     imageSize: Dp = 200.dp,
     enabled: Boolean = true,
-    cropAspectRatio: Float? = 1f
+    cropAspectRatio: AspectRatio = AspectRatio.SQUARE
 
 ) {
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -149,7 +150,7 @@ fun ImagePickerComponent(
 
                             imagePicker.pickFromGallery { bitmap ->
                                 bitmap?.let {
-                                    imagePicker.cropImage(it) { cropped ->
+                                    imagePicker.cropImage(it, aspectRatio = cropAspectRatio) { cropped ->
 
                                         cropped?.let { onImageSelected(it) }
                                     }

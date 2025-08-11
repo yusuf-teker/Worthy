@@ -16,29 +16,27 @@ data class RecurringFinancialItem(
     val isIncome: Boolean,
     val needType: ExpenseNeedType = ExpenseNeedType.NONE,
     val scheduledDay: Int? = 1,
-    val startMonth: Int,
-    val startYear: Int,
-    val endMonth: Int? = null,
-    val endYear: Int? = null,
+    val startDate: AppDate,
+    val endDate: AppDate? = null,
 )
 
 
 fun RecurringFinancialItem.startDate(): LocalDate =
-    LocalDate(year = startYear, month = startMonth, day = 1)
+    LocalDate(year = startDate.year, month = startDate.month, day = 1)
 
 fun RecurringFinancialItem.endDate(): LocalDate? =
-    if (endMonth != null && endYear != null)
-        LocalDate(year = endYear, month = endMonth, day = 1)
+    if (endDate?.month != null && endDate.month != null)
+        LocalDate(year = endDate.year, month = endDate.month, day = 1)
     else
         null
 
 fun RecurringFinancialItem.isValidFor(year: Int, month: Int): Boolean {
-    val start = this.startYear * 100 + this.startMonth
+    val start = this.startDate.year * 100 + this.startDate.month
 
-    val end = if (this.endYear != null && this.endMonth != null) {
-        this.endYear!! * 100 + this.endMonth!!
+    val end = if (this.endDate?.year != null && this.endDate.month != null) {
+        this.endDate.year * 100 + this.endDate.month!!
     } else { //
-        getCurrentYearMonth().let { it.year * 100 + it.month } // 🔁 Şu anki tarih
+        currentAppDate().let { it.year * 100 + it.month } // 🔁 Şu anki tarih
     }
     val given = year * 100 + month
 
@@ -74,7 +72,7 @@ fun generateMonthlyAmounts(
     return months.map { (year, month) ->
         val validItems = items.filter { it.isValidFor(year, month)  && (if (isIncome != null) it.isIncome == isIncome  else true)}
         DashboardMonthlyAmount(
-            yearMonth = YearMonth(year = year, month = month),
+            appDate = AppDate(year = year, month = month),
             amount = validItems.map { it.amount?: emptyMoney() }
         )
     }
@@ -87,8 +85,7 @@ val items = listOf(
         name = "Maaş",
         amount = Money(10000.0, Currency.TRY    ),
         isIncome = true,
-        startMonth = 1,
-        startYear = 2024
+        startDate  = AppDate(2023, 1),
     ),
     RecurringFinancialItem(
         id = 2,
@@ -96,10 +93,8 @@ val items = listOf(
         name = "Kira",
         amount = Money(3000.0, Currency.TRY),
         isIncome = false,
-        startMonth = 2,
-        startYear = 2025,
-        endMonth = 4,
-        endYear = 2025
+
+        startDate  = AppDate(2023, 1),
     )
 )
 

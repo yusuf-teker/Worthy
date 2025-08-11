@@ -5,7 +5,7 @@ import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.domain.getCurrentLocalDateTime
 import com.yusufteker.worthy.core.domain.model.DashboardMonthlyAmount
 import com.yusufteker.worthy.core.domain.model.Money
-import com.yusufteker.worthy.core.domain.model.YearMonth
+import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.domain.model.getLastMonth
 import com.yusufteker.worthy.core.domain.model.getLastMonths
@@ -115,10 +115,10 @@ class DashboardViewModel(
             viewModelScope.launch {
                 _state.update { currentState ->
                     currentState.copy(
-                        selectedMonthYear = action.yearMonth,
-                        incomeChangeRatio = calculateSelectedMonthIncomeChangeRatio(action.yearMonth),
-                        totalAllIncomeMoney = calculateSelectedMonthAllIncome(action.yearMonth),
-                        totalAllExpenseMoney = calculateSelectedMonthAllExpense(action.yearMonth)
+                        selectedMonthYear = action.appDate,
+                        incomeChangeRatio = calculateSelectedMonthIncomeChangeRatio(action.appDate),
+                        totalAllIncomeMoney = calculateSelectedMonthAllIncome(action.appDate),
+                        totalAllExpenseMoney = calculateSelectedMonthAllExpense(action.appDate)
                     )
                 }
 
@@ -300,7 +300,7 @@ class DashboardViewModel(
             )
         }
     }
-    private suspend fun calculateSelectedMonthRecurringIncome(month: YearMonth): Money{
+    private suspend fun calculateSelectedMonthRecurringIncome(month: AppDate): Money{
        return  state.value.recurringIncomeMonthlyAmountList.sumConvertedAmount(
             state.value.selectedCurrency,
            month,
@@ -308,14 +308,14 @@ class DashboardViewModel(
         ) ?: emptyMoney( state.value.selectedCurrency)
     }
 
-    private suspend fun calculateSelectedMonthIncome(month: YearMonth): Money{
+    private suspend fun calculateSelectedMonthIncome(month: AppDate): Money{
         return  state.value.incomeMonthlyAmountList.sumConvertedAmount(
             state.value.selectedCurrency,
             month,
             currencyConverter
         ) ?: emptyMoney( state.value.selectedCurrency)
     }
-    private suspend fun calculateSelectedMonthRecurringExpense(month: YearMonth): Money{
+    private suspend fun calculateSelectedMonthRecurringExpense(month: AppDate): Money{
         return  state.value.recurringExpenseMonthlyAmountList.sumConvertedAmount(
             state.value.selectedCurrency,
             month,
@@ -323,7 +323,7 @@ class DashboardViewModel(
         ) ?: emptyMoney( state.value.selectedCurrency)
     }
 
-    private suspend fun calculateSelectedMonthExpense(month: YearMonth): Money{
+    private suspend fun calculateSelectedMonthExpense(month: AppDate): Money{
         return  state.value.expenseMonthlyAmountList.sumConvertedAmount(
             state.value.selectedCurrency,
             month,
@@ -331,14 +331,14 @@ class DashboardViewModel(
         ) ?: emptyMoney( state.value.selectedCurrency)
     }
 
-    private suspend fun  calculateSelectedMonthAllIncome(month: YearMonth): Money{
+    private suspend fun  calculateSelectedMonthAllIncome(month: AppDate): Money{
         return Money(calculateSelectedMonthIncome(month).amount + calculateSelectedMonthRecurringIncome(month).amount, state.value.selectedCurrency)
     }
 
-    private suspend fun calculateSelectedMonthAllExpense(month: YearMonth): Money{
+    private suspend fun calculateSelectedMonthAllExpense(month: AppDate): Money{
         return Money(calculateSelectedMonthExpense(month).amount + calculateSelectedMonthRecurringExpense(month).amount, state.value.selectedCurrency)
     }
-    private suspend fun calculateSelectedMonthIncomeChangeRatio(month: YearMonth): Double {
+    private suspend fun calculateSelectedMonthIncomeChangeRatio(month: AppDate): Double {
         val lastMonthIncome = calculateSelectedMonthRecurringIncome(month.getLastMonth()).amount + calculateSelectedMonthIncome(month.getLastMonth()).amount
         val selectedMonthIncome = (calculateSelectedMonthRecurringIncome(month).amount) + calculateSelectedMonthIncome(month).amount
 

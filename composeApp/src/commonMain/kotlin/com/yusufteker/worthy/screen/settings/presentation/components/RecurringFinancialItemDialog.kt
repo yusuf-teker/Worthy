@@ -24,14 +24,18 @@ import com.yusufteker.worthy.core.data.database.entities.ExpenseNeedType
 import com.yusufteker.worthy.core.domain.createTimestampId
 import com.yusufteker.worthy.core.domain.getCurrentMonth
 import com.yusufteker.worthy.core.domain.getCurrentYear
+import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.RecurringFinancialItem
+import com.yusufteker.worthy.core.domain.model.currentAppDate
 import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.domain.model.endDate
+import com.yusufteker.worthy.core.domain.model.setMonth
 import com.yusufteker.worthy.core.domain.model.startDate
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.components.DateSelector
+import com.yusufteker.worthy.core.presentation.components.DayOfMonthSelector
 import com.yusufteker.worthy.core.presentation.components.DropdownMenuSelector
 import com.yusufteker.worthy.core.presentation.components.MoneyInput
 import com.yusufteker.worthy.core.presentation.components.SwipeToDeleteWrapper
@@ -107,7 +111,7 @@ fun RecurringFinancialItemDialog(
                     val latestVersions = versions
                         .groupBy { it.groupId } // Aynı name içinde, groupId'ye göre grupla
                         .mapNotNull { (_, groupItems) ->
-                            groupItems.maxByOrNull { it.startYear * 100 + it.startMonth }
+                            groupItems.maxByOrNull { it.startDate.year * 100 + it.startDate.month }
                         }
                     val id = latestVersions.firstOrNull()?.groupId ?: return@items
                     val isVisible = visibleItemIds[id] ?: true
@@ -200,7 +204,7 @@ fun RecurringItemRow(
 ) {
     Column(Modifier.padding(vertical = 8.dp)) {
         Text(name, style = MaterialTheme.typography.titleMedium)
-        versions.sortedByDescending { it.startYear * 100 + it.startMonth }.forEach { item ->
+        versions.sortedByDescending { it.startDate.year * 100 + it.startDate.month }.forEach { item ->
             Row(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -235,8 +239,8 @@ fun RecurringItemAddDialog(
     var needType by remember { mutableStateOf( ExpenseNeedType.NONE) }
     var scheduledDay by remember { mutableStateOf<Int?>(null) }
 
-    var startMonth by remember { mutableStateOf( getCurrentMonth()) }
-    var startYear by remember { mutableStateOf( getCurrentYear()) }
+    var startDate by remember { mutableStateOf<AppDate>(currentAppDate()) }
+
 
     val months = (1..12).toList()
     val years = (getCurrentYear() - 5..getCurrentYear() + 5).toList()
@@ -312,7 +316,7 @@ fun RecurringItemAddDialog(
 
 
 
-                _root_ide_package_.com.yusufteker.worthy.core.presentation.components.DayOfMonthSelector(
+                DayOfMonthSelector(
                     selectedDay = scheduledDay,
                     onDayChange = { scheduledDay = it }
                 )
@@ -320,11 +324,11 @@ fun RecurringItemAddDialog(
 
                 // Başlangıç ve Bitiş Tarihleri
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    _root_ide_package_.com.yusufteker.worthy.core.presentation.components.DateSelector(
-                        month = startMonth,
-                        onMonthChanged = { startMonth = it },
-                        year = startYear,
-                        onYearChanged = { startYear = it },
+                    DateSelector(
+                        month = startDate.month,
+                        onMonthChanged = {startDate =  startDate.copy(month = it) },
+                        year = startDate.year,
+                        onYearChanged = {startDate = startDate.copy(year = it) },
                         months = months,
                         years = years
 
@@ -343,8 +347,7 @@ fun RecurringItemAddDialog(
                     isIncome = isIncome,
                     needType = needType,
                     scheduledDay = scheduledDay,
-                    startMonth = startMonth,
-                    startYear = startYear,
+                    startDate = startDate,
                 )
 
                 var isValid = false
@@ -388,10 +391,9 @@ fun RecurringFinancialItemDialogPreview() {
             isIncome = false,
             needType = ExpenseNeedType.NEED,
             scheduledDay = 5,
-            startMonth = 1,
-            startYear = 2023,
-            endMonth = null,
-            endYear = null
+            startDate = AppDate(2023, 1),
+            endDate = null
+
         ),
         RecurringFinancialItem(
             id = 2,
@@ -401,10 +403,9 @@ fun RecurringFinancialItemDialogPreview() {
             isIncome = false,
             needType = ExpenseNeedType.DESIRE,
             scheduledDay = 10,
-            startMonth = 1,
-            startYear = 2023,
-            endMonth = null,
-            endYear = null
+            startDate = AppDate(2023, 1),
+
+            endDate = null
         )
     )
 
@@ -434,11 +435,8 @@ fun RecurringItemGroupEditDialog(
 
     // Temporary item (her zaman gösterilir)
     var tempAmount by remember { mutableStateOf<Money?>(null) }
-    var tempStartMonth by remember { mutableStateOf<Int>(getCurrentMonth()) }
-    var tempStartYear by remember { mutableStateOf<Int>(getCurrentYear()) }
-    var tempEndMonth by remember { mutableStateOf<Int?>(null) }
-    var tempEndYear by remember { mutableStateOf<Int?>(null) }
-
+    var tempStartDate by remember { mutableStateOf<AppDate>(currentAppDate()) }
+    var tempEndDate by remember { mutableStateOf<AppDate?>(null) }
     var validationErrors by remember { mutableStateOf<Pair<Int, UiText>?>(null) }
 
 
@@ -483,12 +481,13 @@ fun RecurringItemGroupEditDialog(
                             tempAmount = it
                             errorMessageNew = null
                                          },
-                        startMonth = tempStartMonth,
-                        onStartMonthChange = { tempStartMonth = it
+                        startMonth = tempStartDate.month,
+                        onStartMonthChange = {
+                            tempStartDate = tempStartDate.copy( month = it)
                             errorMessageNew = null
                         },
-                        startYear = tempStartYear,
-                        onStartYearChange = { tempStartYear = it
+                        startYear = tempStartDate.year,
+                        onStartYearChange = { tempStartDate = tempStartDate.copy(year = it)
                             errorMessageNew = null
                         },
                         months = months,
@@ -498,12 +497,10 @@ fun RecurringItemGroupEditDialog(
                                 id = 0,
                                 name = name,
                                 amount = Money(amount = tempAmount?.amount ?: 0.0, currency = Currency.TRY),
-                                startMonth = tempStartMonth,
-                                startYear = tempStartYear,
-                                endMonth = tempEndMonth,
-                                endYear = tempEndYear,
+                                endDate = tempEndDate,
                                 groupId = initialItems.firstOrNull()?.groupId ?: createTimestampId(),
-                                isIncome = initialItems.firstOrNull()?.isIncome ?: true
+                                isIncome = initialItems.firstOrNull()?.isIncome ?: true,
+                                startDate =tempStartDate
                             )
 
                             val tempItems = initialItems.toMutableList()
@@ -525,7 +522,7 @@ fun RecurringItemGroupEditDialog(
 
                 // 4. Existing Items
                 items(
-                    items = initialItems.sortedByDescending { it.startYear * 100 + it.startMonth },
+                    items = initialItems.sortedByDescending { it.startDate.year * 100 + it.startDate.month },
                     key = { it.id }
                 ) { item ->
 
@@ -566,22 +563,18 @@ fun RecurringItemGroupEditDialog(
                         id = 0,
                         name = name,
                         amount = amount,
-                        startMonth = tempStartMonth,
-                        startYear = tempStartYear,
-                        endMonth = tempEndMonth,
-                        endYear = tempEndYear,
+                        endDate = tempEndDate,
                         groupId = initialItems.firstOrNull()?.groupId ?: createTimestampId(),
-                        isIncome = initialItems.firstOrNull()?.isIncome ?: true
+                        isIncome = initialItems.firstOrNull()?.isIncome ?: true,
+                        startDate = tempStartDate
                     )
                     tempItems.add(newItem)
                     //items.add(newItem)
 
                     // Temp alanlar resetleniyor
                     tempAmount = null
-                    tempStartMonth = getCurrentMonth()
-                    tempStartYear = getCurrentYear()
-                    tempEndMonth = null
-                    tempEndYear = null
+                    tempStartDate = currentAppDate()
+                    tempEndDate = null
                 }
 
                 val updatedItems = tempItems.map { it.copy(name = name) }
@@ -701,7 +694,7 @@ fun hasDateConflict(items: List<RecurringFinancialItem>): Pair<Int, UiText>?  {
                 )
             )
         }
-        if (item.endMonth == null && item.endYear != null || item.endMonth != null && item.endYear == null) {
+        if (item.endDate?.month == null && item.endDate?.year != null || item.endDate?.month != null && item.endDate?.year == null) {
             return Pair(
                 item.id , UiText.StringResourceId(
                     id = Res.string.missing_month_or_year
@@ -745,10 +738,22 @@ fun ExistingRecurringItemCard(
             Row {
                 DateSelector(
                     title = "Baş. Tar.",
-                    month = item.startMonth,
-                    onMonthChanged = { onUpdate(item.copy(startMonth = it)) },
-                    year = item.startYear,
-                    onYearChanged = { onUpdate(item.copy(startYear = it)) },
+                    month = item.startDate.month,
+                    onMonthChanged = {
+                        onUpdate(
+                            item.copy(
+                                startDate = item.startDate.copy(month = it)
+                            )
+                        )
+                    },
+                    year = item.startDate.year,
+                    onYearChanged = {
+                        onUpdate(
+                            item.copy(
+                                startDate = item.startDate.copy(year = it)
+                            )
+                        )
+                                    },
                     months = months,
                     years = years
                 )
@@ -757,10 +762,18 @@ fun ExistingRecurringItemCard(
             Row {
                 DateSelector(
                     title = "Bit. Tar.",
-                    month = item.endMonth,
-                    onMonthChanged = { onUpdate(item.copy(endMonth = it)) },
-                    year = item.endYear,
-                    onYearChanged = { onUpdate(item.copy(endYear = it)) },
+                    month = item.endDate?.month,
+                    onMonthChanged = {
+                        onUpdate(
+                            item.copy(
+                                endDate = item.endDate?.copy(month = it),
+                            )
+                        )
+                    },
+                    year = item.endDate?.year,
+                    onYearChanged = { onUpdate(item.copy(
+                                endDate = item.endDate?.copy(year = it)
+                    )) },
                     months = months,
                     years = years
                 )
@@ -879,8 +892,7 @@ fun adjustOpenEndedRecurringItems(items: List<RecurringFinancialItem>): List<Rec
             val next = sorted[index + 1]
             val adjustedEndDate = next.startDate().minus(DatePeriod(months = 1))
             current.copy(
-                endMonth = adjustedEndDate.month.number,
-                endYear = adjustedEndDate.year
+                endDate = AppDate(month = adjustedEndDate.month.number, year = adjustedEndDate.year, day = current.endDate?.day),
             )
         } else {
             current

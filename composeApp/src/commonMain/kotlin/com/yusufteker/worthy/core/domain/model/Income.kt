@@ -5,7 +5,6 @@ data class Income(
     val name: String,
     val amount: Money = emptyMoney(),
     val categoryId: Int?,
-    val scheduledDay: Int? = null,
     val isFixed: Boolean = false,
     val date: Long,
     val note: String? = null
