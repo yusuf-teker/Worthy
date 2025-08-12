@@ -31,7 +31,6 @@ import com.yusufteker.worthy.core.domain.model.RecurringFinancialItem
 import com.yusufteker.worthy.core.domain.model.currentAppDate
 import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.domain.model.endDate
-import com.yusufteker.worthy.core.domain.model.setMonth
 import com.yusufteker.worthy.core.domain.model.startDate
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.components.DateSelector
@@ -67,6 +66,7 @@ import worthy.composeapp.generated.resources.incomes
 import worthy.composeapp.generated.resources.missing_month_or_year
 import worthy.composeapp.generated.resources.new_amount
 import worthy.composeapp.generated.resources.save
+import worthy.composeapp.generated.resources.start_date
 import worthy.composeapp.generated.resources.start_date_after_end_date
 import worthy.composeapp.generated.resources.start_date_must_be_before
 import worthy.composeapp.generated.resources.start_dates_cannot_be_same
@@ -737,7 +737,7 @@ fun ExistingRecurringItemCard(
 
             Row {
                 DateSelector(
-                    title = "Baş. Tar.",
+                    title = UiText.StringResourceId(id = Res.string.start_date).asString(),
                     month = item.startDate.month,
                     onMonthChanged = {
                         onUpdate(

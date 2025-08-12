@@ -42,7 +42,7 @@ class SearchHistoryRepositoryImpl(
             } else {
                 try {
                     json.decodeFromString<List<String>>(jsonString)
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     emptyList()
                 }
             }

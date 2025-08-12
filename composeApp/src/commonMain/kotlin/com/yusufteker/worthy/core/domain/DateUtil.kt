@@ -37,7 +37,10 @@ fun createTimestampId(): String {
 fun getCurrentLocalDateTime(): kotlinx.datetime.LocalDate {
     return  Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
 }
-
+@OptIn(ExperimentalTime::class)
+fun getCurrentEpochMillis(): Long {
+    return Clock.System.now().toEpochMilliseconds();
+}
 @OptIn(ExperimentalTime::class)
 fun getCurrentYear(): Int {
     return Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year

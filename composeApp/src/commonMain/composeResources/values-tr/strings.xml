@@ -44,6 +44,8 @@
     <string name="expense_name">Gider Adı</string>
     <string name ="incomes">Gelirler</string>
     <string name ="expenses">Giderler</string>
+    <string name="no_selected">Seçilmedi</string>
+
 
     <!-- Dashboard -->
     <string name="dashboard_overview">Genel Bakış</string>
@@ -119,6 +121,8 @@
     <string name="last_day">Son gün</string>
     <string name="day_of_month">Gün</string>
     <string name="day_input_hint">Gün (1–28)</string>
+    <string name="start_date">Baş. Tar.</string>
+
 
     <string name="update">Güncelle</string>
     <string name="amount_must_be_greater_than_zero">Tutar 0'dan büyük olmalı.</string>

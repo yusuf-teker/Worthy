@@ -6,24 +6,27 @@
     import androidx.room.RoomDatabaseConstructor
     import androidx.room.TypeConverters
     import com.yusufteker.worthy.core.data.database.converters.RoomTypeConverters
+    import com.yusufteker.worthy.core.data.database.entities.CardEntity
     import com.yusufteker.worthy.core.data.database.model.CategoryDao
-    import com.yusufteker.worthy.core.data.database.model.ExpenseDao
     import com.yusufteker.worthy.core.data.database.model.IncomeDao
     import com.yusufteker.worthy.core.data.database.entities.CategoryEntity
-    import com.yusufteker.worthy.core.data.database.entities.ExpenseEntity
     import com.yusufteker.worthy.core.data.database.entities.IncomeEntity
     import com.yusufteker.worthy.core.data.database.entities.RecurringFinancialItemEntity
+    import com.yusufteker.worthy.core.data.database.entities.TransactionEntity
+    import com.yusufteker.worthy.core.data.database.model.CardDao
     import com.yusufteker.worthy.screen.wishlist.list.data.database.entities.WishlistItemEntity
     import com.yusufteker.worthy.core.data.database.model.RecurringFinancialItemDao
+    import com.yusufteker.worthy.core.data.database.model.TransactionDao
     import com.yusufteker.worthy.screen.wishlist.list.data.database.model.WishlistItemDao
 
     @Database(
         entities = [
-            ExpenseEntity::class,
             IncomeEntity::class,
             WishlistItemEntity::class,
             CategoryEntity::class,
             RecurringFinancialItemEntity::class,
+            TransactionEntity::class,
+            CardEntity::class
 
 
         ],
@@ -34,13 +37,16 @@
     @ConstructedBy(WorthyDatabaseConstructor::class)
     abstract class WorthyDatabase : RoomDatabase() {
 
-        abstract val expenseDao: ExpenseDao
         abstract val incomeDao: IncomeDao
         abstract val categoryDao: CategoryDao
 
         abstract val wishlistItemDao: WishlistItemDao
 
         abstract val recurringFinancialItemDao: RecurringFinancialItemDao
+
+        abstract val transactionDao: TransactionDao
+
+        abstract val cardDao: CardDao
 
         companion object {
             const val DATABASE_NAME = "app_database"

@@ -2,18 +2,17 @@ package com.yusufteker.worthy.screen.wishlist.list.data.database.repository
 
 import com.yusufteker.worthy.core.data.database.mappers.toDomain
 import com.yusufteker.worthy.core.data.database.mappers.toEntity
-import com.yusufteker.worthy.core.domain.model.Expense
-import com.yusufteker.worthy.core.domain.repository.ExpenseRepository
+import com.yusufteker.worthy.core.domain.model.Transaction
+import com.yusufteker.worthy.core.domain.repository.TransactionRepository
 import com.yusufteker.worthy.screen.wishlist.list.data.database.model.WishlistItemDao
 import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistItem
 import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-// data/repository/WishlistRepositoryImpl.kt
 class WishlistRepositoryImpl(
     private val itemDao: WishlistItemDao,
-    private val expenseRepository: ExpenseRepository
+    private val transactionRepository: TransactionRepository
 ) : WishlistRepository {
 
     override fun getAll(): Flow<List<WishlistItem>> =
@@ -53,12 +52,12 @@ class WishlistRepositoryImpl(
             list.map { it.toDomain() }
         }
 
-    override suspend fun saveExpense(expense: Expense) {
-        expenseRepository.insert(expense)
+    override suspend fun saveExpense(expense: Transaction) {
+        transactionRepository.insert(expense)
     }
 
-    override suspend fun deleteExpense(expense: Expense) {
-        expenseRepository.delete(expense)
+    override suspend fun deleteExpense(expense: Transaction) {
+        transactionRepository.delete(expense)
     }
 
 }

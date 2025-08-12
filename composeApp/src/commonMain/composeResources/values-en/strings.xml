@@ -45,6 +45,8 @@
     <string name="expense_name">Expense Name</string>
     <string name ="incomes">Incomes</string>
     <string name ="expenses">Expenses</string>
+    <string name="no_selected">No selected</string>
+
 
     <!-- Dashboard -->
     <string name="dashboard_overview">Overview</string>
@@ -114,6 +116,8 @@
     <string name="add_new">Add New</string>
     <string name="amount_with_currency">%1$s%2$s</string>
     <string name="title_settings">Budget &amp; Settings</string>
+    <string name="start_date">Start Date</string>
+
 
     <string name="last_day">Last day</string>
     <string name="day_of_month">Day</string>

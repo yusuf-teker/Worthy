@@ -2,14 +2,13 @@ package com.yusufteker.worthy.screen.wishlist.list.presentation
 
 import androidx.lifecycle.viewModelScope
 import com.yusufteker.worthy.app.navigation.Routes
+import com.yusufteker.worthy.core.data.database.mappers.toExpenseTransaction
+import com.yusufteker.worthy.core.domain.getCurrentEpochMillis
 import com.yusufteker.worthy.core.domain.getCurrentLocalDateTime
-import com.yusufteker.worthy.core.domain.model.Expense
-import com.yusufteker.worthy.core.domain.repository.CategoryRepository
 import com.yusufteker.worthy.core.domain.repository.SearchHistoryRepository
 import com.yusufteker.worthy.core.domain.toEpochMillis
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import com.yusufteker.worthy.core.presentation.components.SearchResult
-import com.yusufteker.worthy.screen.settings.domain.UserPrefsManager
 import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistItem
 import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistRepository
 import io.github.aakira.napier.Napier
@@ -85,25 +84,28 @@ class WishlistViewModel(
 
             is WishlistAction.OnIsItemPurchasedChange -> {
                 viewModelScope.launch {
+                    val isPurchase = action.isPurchased
+                    val purchasedDate = if (isPurchase) getCurrentEpochMillis() else null
                     wishlistRepository.updateIsPurchased(
                         itemId = action.item.id,
-                        isPurchased = action.isPurchased,
-                        purchasedTime = if (action.isPurchased) getCurrentLocalDateTime().toEpochMillis() else null)
-
-                   val expense =  Expense(
-                        id = action.item.id,
-                        name = action.item.name,
-                        amount = action.item.price,
-                        categoryId = action.item.category?.id,
-                        date = action.item.addedDate,
-                        note = action.item.note
+                        isPurchased = isPurchase,
+                        purchasedTime = purchasedDate
                     )
 
-                    if (action.isPurchased) {
-                        wishlistRepository.saveExpense(expense)
+
+
+                    val transaction = wishlistRepository.getById(action.item.id)?.toExpenseTransaction()
+
+                    if (transaction != null){
+                        if (isPurchase) {
+                            wishlistRepository.saveExpense(transaction)
+                        }else{
+                            wishlistRepository.deleteExpense(transaction)
+                        }
                     }else{
-                        wishlistRepository.deleteExpense(expense)
+                        //handleERROR
                     }
+
 
 
                 }

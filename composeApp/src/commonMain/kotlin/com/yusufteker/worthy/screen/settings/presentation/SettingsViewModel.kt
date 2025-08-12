@@ -2,14 +2,10 @@ package com.yusufteker.worthy.screen.settings.presentation
 
 import androidx.lifecycle.viewModelScope
 import com.yusufteker.worthy.core.domain.model.Currency
-import com.yusufteker.worthy.core.domain.model.Expense
-import com.yusufteker.worthy.core.domain.model.Income
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.domain.model.startDate
 import com.yusufteker.worthy.core.domain.repository.CategoryRepository
-import com.yusufteker.worthy.core.domain.repository.ExpenseRepository
-import com.yusufteker.worthy.core.domain.repository.IncomeRepository
 import com.yusufteker.worthy.core.domain.repository.RecurringFinancialItemRepository
 import com.yusufteker.worthy.core.domain.service.CurrencyConverter
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
@@ -26,11 +22,9 @@ import kotlin.collections.component2
 
 class SettingsViewModel(
     private val userPrefsManager: UserPrefsManager,
-    private val incomeRepository: IncomeRepository,
-    private val expenseRepository: ExpenseRepository,
     private val categoryRepository: CategoryRepository,
     private val recurringRepository: RecurringFinancialItemRepository,
-    private val currencyConverter: CurrencyConverter
+    private val currencyConverter: CurrencyConverter,
 ) : BaseViewModel() {
 
 
@@ -125,9 +119,7 @@ class SettingsViewModel(
     private fun  calculateSavings(){
         viewModelScope.launch {
             _state.update { currentState ->
-                val savings = state.value.totalFixedIncome
-                    - state.value.totalFixedExpenses
-                    - currencyConverter.convert(money = state.value.budgetAmount, to = state.value.selectedCurrency).amount
+                val savings = state.value.totalFixedIncome - state.value.totalFixedExpenses - currencyConverter.convert(money = state.value.budgetAmount, to = state.value.selectedCurrency).amount
                 currentState.copy(
                     savingsAmount = savings
                 )
@@ -209,14 +201,6 @@ class SettingsViewModel(
                 calculateSavings()
             }
 
-            is SettingsAction.OnSaveExpenseItems -> {
-
-                saveExpenseItems(action.items)
-
-            }
-            is SettingsAction.OnSaveIncomeItems -> {
-                saveIncomeItems(action.items)
-            }
 
             is SettingsAction.OnWeeklyWorkHoursChange -> {
 
@@ -312,41 +296,6 @@ class SettingsViewModel(
         }
     }
 
-
-    private fun saveExpenseItems(updatedFixedExpenses: List<Expense>) {
-        viewModelScope.launch {
-            try {
-                val currentFixed = expenseRepository.getFixed()
-                val newIds = updatedFixedExpenses.map { it.id }.toSet()
-
-                val toDelete = currentFixed.filter { it.id !in newIds }
-
-                val toInsertOrUpdate = updatedFixedExpenses
-
-                expenseRepository.deleteAll(toDelete)
-                expenseRepository.insertAll(toInsertOrUpdate)
-            } catch (e: Exception) {
-                handleError(e)
-            }
-        }
-    }
-
-    private fun saveIncomeItems(updatedFixedIncomes: List<Income>) {
-        viewModelScope.launch {
-            try {
-                val currentFixed = incomeRepository.getFixed()
-                val newIds = updatedFixedIncomes.map { it.id }.toSet()
-
-                val toDelete = currentFixed.filter { it.id !in newIds }
-                val toInsertOrUpdate = updatedFixedIncomes
-
-                incomeRepository.deleteAll(toDelete)
-                incomeRepository.insertAll(toInsertOrUpdate)
-            } catch (e: Exception) {
-                handleError(e)
-            }
-        }
-    }
     private fun handleError(error: Exception) {
     }
 }

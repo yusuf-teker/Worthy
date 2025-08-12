@@ -10,6 +10,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.yusufteker.worthy.core.presentation.UiText
+import worthy.composeapp.generated.resources.Res
+import worthy.composeapp.generated.resources.no_selected
 
 @Composable
 fun <T>DropdownMenuSelector(
@@ -22,13 +25,13 @@ fun <T>DropdownMenuSelector(
 
     Box {
         OutlinedButton(onClick = { expanded = true }) {
-            Text(text = selected?.toString() ?: "Yok")
+            Text(text = selected?.toString() ?: UiText.StringResourceId(id = Res.string.no_selected).asString())
         }
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             if (isNullable) {
                 DropdownMenuItem(
                     text = {
-                        Text("Yok")
+                        Text(UiText.StringResourceId(id = Res.string.no_selected).asString())
                     },
                     onClick = {
                         //onSelected(-1)

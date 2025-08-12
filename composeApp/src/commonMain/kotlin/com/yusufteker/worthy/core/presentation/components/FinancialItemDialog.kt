@@ -13,9 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.yusufteker.worthy.core.data.database.entities.ExpenseNeedType
 import com.yusufteker.worthy.core.domain.model.Currency
-import com.yusufteker.worthy.core.domain.model.Expense
 import com.yusufteker.worthy.core.domain.model.Income
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.emptyMoney
@@ -29,7 +27,7 @@ import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.*
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
-
+/*
 @OptIn(ExperimentalTime::class)
 @Composable
 fun FinancialItemDialog(
@@ -296,7 +294,7 @@ private fun EditItemDialog(
         }
     )
 }
-
+/*
 data class ItemForDialog(
     val id: Int,
     val name: String,
@@ -305,8 +303,8 @@ data class ItemForDialog(
     val isFixed: Boolean = false,
     val scheduledDay: Int?,
     val needType: ExpenseNeedType = ExpenseNeedType.NONE,
-)
-
+)*/
+/*
 @OptIn(ExperimentalTime::class)
 fun List<ItemForDialog>.toExpenses(): List<Expense> = map {
     Expense(
@@ -315,10 +313,10 @@ fun List<ItemForDialog>.toExpenses(): List<Expense> = map {
         amount = it.amount,
         isFixed = it.isFixed,
         categoryId = null,
-        date = Clock.System.now().toEpochMilliseconds(),
+        transactionDate = Clock.System.now().toEpochMilliseconds(),
         needType = it.needType,
     )
-}
+}*/
 
 @OptIn(ExperimentalTime::class)
 fun List<ItemForDialog>.toIncomes(): List<Income> = map {
@@ -347,4 +345,4 @@ fun FinancialItemDialogPreview() {
         onDismiss = {},
         onSave = {}
     )
-}
+}*/

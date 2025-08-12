@@ -236,7 +236,7 @@ fun MiniBarChart(
         verticalAlignment = Alignment.Bottom
     ) {
 
-        if (values.isNotEmpty()){
+        if (values.isNotEmpty() && !values.all { it == 0f }){
             values.forEachIndexed { idx, value ->
                 val heightRatio = value?.coerceIn(0f, 1f) ?: 0f
                 val animatedHeight = remember { Animatable(0f) }

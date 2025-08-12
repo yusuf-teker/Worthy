@@ -7,6 +7,9 @@ import com.yusufteker.worthy.core.domain.model.Money
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
+enum class ExpenseNeedType { NEED, DESIRE, NONE }
+
+
 @Entity(tableName = "recurring_financial_item")
 data class RecurringFinancialItemEntity @OptIn(ExperimentalTime::class) constructor(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,

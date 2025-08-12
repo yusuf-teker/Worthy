@@ -4,10 +4,11 @@ package com.yusufteker.worthy.core.data.database.repository
 import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.CategoryType
 import com.yusufteker.worthy.core.domain.model.DashboardMonthlyAmount
-import com.yusufteker.worthy.core.domain.model.Expense
 import com.yusufteker.worthy.core.domain.model.Income
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.AppDate
+import com.yusufteker.worthy.core.domain.model.Transaction
+import com.yusufteker.worthy.core.domain.model.TransactionType
 import com.yusufteker.worthy.core.domain.model.generateMonthlyAmounts
 import com.yusufteker.worthy.core.domain.repository.*
 import com.yusufteker.worthy.core.domain.toEpochMillis
@@ -24,10 +25,10 @@ import kotlinx.datetime.number
 
 class DashboardRepositoryImpl(
     private val incomeRepository: IncomeRepository,
-    private val expenseRepository: ExpenseRepository,
     private val recurringRepository: RecurringFinancialItemRepository,
     private val wishlistRepository: WishlistRepository,
-    private val categoryRepository: CategoryRepository
+    private val categoryRepository: CategoryRepository,
+    private val transactionRepository: TransactionRepository
 ) : DashboardRepository {
 
     override fun getAllRecurringMonthlyAmount(
@@ -86,10 +87,14 @@ class DashboardRepositoryImpl(
             .minus(monthCount.toLong(), DateTimeUnit.MONTH)
 
         val firstDayOfStartMonth = LocalDate(startDate.year, startDate.month.number, 1)
-        return expenseRepository.getExpensesSince(firstDayOfStartMonth)
-            .map { expenses ->
-                val grouped: Map<AppDate, List<Expense>> = expenses.groupBy { expense ->
-                    AppDate(year = expense.date.toLocalDate().year,  month= expense.date.toLocalDate().month.number)
+        return transactionRepository.getTransactionsSince(firstDayOfStartMonth)
+            .map { transactions ->
+                val expenses = transactions.filter { it.transactionType == TransactionType.EXPENSE }
+
+
+                val grouped: Map<AppDate, List<Transaction>> = expenses.groupBy { tx ->
+                    val localDate = tx.transactionDate.toLocalDate()
+                    AppDate(year = localDate.year, month = localDate.month.number)
                 }
                 grouped.map { (yearMonth, expenseList) ->
                     DashboardMonthlyAmount(
@@ -140,9 +145,9 @@ class DashboardRepositoryImpl(
     }
 
     override suspend fun addPurchase(
-        expense: Expense
+        expense: Transaction
     ) {
-        expenseRepository.insert(expense)
+        transactionRepository.insert(expense)
     }
 
 

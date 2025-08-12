@@ -6,6 +6,7 @@ import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.core.domain.model.CategoryType
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Money
+import com.yusufteker.worthy.core.domain.model.TransactionType
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -18,12 +19,13 @@ class RoomTypeConverters {
     @TypeConverter
     fun toInstant(millis: Long): Instant = Instant.Companion.fromEpochMilliseconds(millis)
 
+    /*
     @TypeConverter
     fun fromExpenseNeedType(value: ExpenseNeedType): String = value.name
 
     @TypeConverter
     fun toExpenseNeedType(value: String): ExpenseNeedType = ExpenseNeedType.valueOf(value)
-
+*/
     @TypeConverter
     fun fromCategoryType(value: CategoryType): String = value.name
 
@@ -53,5 +55,16 @@ class RoomTypeConverters {
         return value?.let { AppDate(year = it / 100, month = it % 100) }
     }
 
+
+
+    @TypeConverter
+    fun fromTransactionType(value: TransactionType): String {
+        return value.name
+    }
+
+    @TypeConverter
+    fun toTransactionType(value: String): TransactionType {
+        return TransactionType.valueOf(value)
+    }
 
 }

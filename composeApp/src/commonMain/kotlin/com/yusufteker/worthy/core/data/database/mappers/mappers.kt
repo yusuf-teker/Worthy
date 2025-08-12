@@ -1,41 +1,25 @@
 package com.yusufteker.worthy.core.data.database.mappers
 
+import com.yusufteker.worthy.core.data.database.entities.CardEntity
 import com.yusufteker.worthy.core.data.database.entities.CategoryEntity
-import com.yusufteker.worthy.core.data.database.entities.ExpenseEntity
 import com.yusufteker.worthy.core.data.database.entities.IncomeEntity
 import com.yusufteker.worthy.core.data.database.entities.RecurringFinancialItemEntity
+import com.yusufteker.worthy.core.data.database.entities.TransactionEntity
+import com.yusufteker.worthy.core.domain.getCurrentEpochMillis
+import com.yusufteker.worthy.core.domain.getCurrentLocalDateTime
+import com.yusufteker.worthy.core.domain.model.Card
 import com.yusufteker.worthy.screen.wishlist.list.data.database.entities.WishlistItemEntity
 import com.yusufteker.worthy.core.domain.model.Category
-import com.yusufteker.worthy.core.domain.model.Expense
 import com.yusufteker.worthy.core.domain.model.Income
 import com.yusufteker.worthy.core.domain.model.RecurringFinancialItem
+import com.yusufteker.worthy.core.domain.model.Transaction
+import com.yusufteker.worthy.core.domain.model.TransactionType
 import com.yusufteker.worthy.screen.wishlist.list.data.database.relation.WishlistWithCategory
 import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistItem
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
-// Expense
-fun ExpenseEntity.toDomain() = Expense(
-    id = id,
-    name = name,
-    amount = amount,
-    categoryId = categoryId,
-    needType = needType,
-    isFixed = isFixed,
-    date = date,
-    note = note
-)
 
-fun Expense.toEntity() = ExpenseEntity(
-    id = id,
-    name = name,
-    amount = amount,
-    categoryId = categoryId,
-    needType = needType,
-    isFixed = isFixed,
-    date = date,
-    note = note
-)
 
 // Income
 fun IncomeEntity.toDomain() = Income(
@@ -92,6 +76,7 @@ fun WishlistItemEntity.toDomain(category: Category?): WishlistItem {
 
 @OptIn(ExperimentalTime::class)
 fun WishlistItem.toEntity(): WishlistItemEntity {
+    val newItem = addedDate <= 0L
     return WishlistItemEntity(
         id = id,
         name = name,
@@ -99,7 +84,8 @@ fun WishlistItem.toEntity(): WishlistItemEntity {
         categoryId = category?.id,
         priority = priority,
         isPurchased = isPurchased,
-        addedDate = if (addedDate <= 0L) Clock.System.now().epochSeconds else addedDate,
+        purchasedDate = purchasedDate,
+        addedDate = if (newItem) Clock.System.now().epochSeconds else addedDate,
         note = note,
         imageUri = imageUri
     )
@@ -157,3 +143,75 @@ fun RecurringFinancialItem.toEntity(): RecurringFinancialItemEntity = RecurringF
     startDate = startDate,
     endDate = endDate,
 )
+
+
+
+fun CardEntity.toDomain(): Card = Card(
+    id = id,
+    cardHolderName = cardHolderName,
+    cardNumber = encryptedCardNumber,
+    expiryMonth = expiryMonth,
+    expiryYear = expiryYear,
+    cvv = encryptedCvv,
+    nickname = nickname,
+    issuer = issuer,
+    note = note
+)
+
+fun Card.toEntity(): CardEntity = CardEntity(
+    id = id,
+    cardHolderName = cardHolderName,
+    encryptedCardNumber = cardNumber,
+    expiryMonth = expiryMonth,
+    expiryYear = expiryYear,
+    encryptedCvv = cvv,
+    nickname = nickname,
+    issuer = issuer,
+    note = note
+)
+
+// Entity -> Domain
+fun TransactionEntity.toDomain(): Transaction {
+    return Transaction(
+        id = this.id,
+        name = this.name,
+        amount = this.amount,
+        transactionType = this.transactionType,
+        categoryId = this.categoryId,
+        cardId = this.cardId,
+        transactionDate = this.transactionDate,
+        relatedTransactionId = this.relatedTransactionId,
+        installmentCount = this.installmentCount,
+        installmentStartDate = this.installmentStartDate
+    )
+}
+
+// Domain -> Entity
+fun Transaction.toEntity(): TransactionEntity {
+    return TransactionEntity(
+        id = this.id,
+        name = this.name,
+        amount = this.amount,
+        transactionType = this.transactionType,
+        categoryId = this.categoryId,
+        cardId = this.cardId,
+        transactionDate = this.transactionDate,
+        relatedTransactionId = this.relatedTransactionId,
+        installmentCount = this.installmentCount,
+        installmentStartDate = this.installmentStartDate
+    )
+}
+fun WishlistItem.toExpenseTransaction(): Transaction {
+    return Transaction(
+        id = this.id,
+        name = this.name,
+        amount = this.price,
+        transactionType = TransactionType.EXPENSE,
+        categoryId = this.category?.id,
+        cardId = null, //todo satın alırken card eklenebilir sonra param ile maplerim
+        transactionDate = this.purchasedDate ?: getCurrentEpochMillis(),
+        relatedTransactionId = null,
+        installmentCount = null,
+        installmentStartDate = null
+    )
+}

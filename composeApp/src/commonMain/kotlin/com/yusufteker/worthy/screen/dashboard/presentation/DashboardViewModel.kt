@@ -9,6 +9,7 @@ import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.domain.model.getLastMonth
 import com.yusufteker.worthy.core.domain.model.getLastMonths
+import com.yusufteker.worthy.core.domain.model.getLastSixMonths
 import com.yusufteker.worthy.core.domain.model.sumConvertedAmount
 import com.yusufteker.worthy.core.domain.model.sumWithCurrencyConverted
 import com.yusufteker.worthy.core.domain.service.CurrencyConverter
@@ -57,7 +58,7 @@ class DashboardViewModel(
             _state.update {
                 it.copy(
                     selectedChartIndex = if (state.value.selectedChartIndex != action.index) action.index else null,
-                    selectedMiniBarsFraction = state.value.miniBarsFractions.get(action.index),
+                    selectedMiniBarsFraction = state.value.miniBarsFractions.get(action.index),// neden 3ün ilk elemeanı 1 diğerleri sıfı
                     selectedMiniBarsMonths = state.value.miniBarsMonths.get(action.index)
                 )
             }
@@ -269,6 +270,7 @@ class DashboardViewModel(
         val  totalAllIncomeMoney = Money(totalIncome, state.value.selectedCurrency)
         val  totalAllExpenseMoney = Money(totalExpense, state.value.selectedCurrency)
 
+        val last6Months = getLastSixMonths()
         _state.update { currentState ->
             currentState.copy(
                 expensesFraction = normalizedRatios.get(0),
@@ -277,8 +279,8 @@ class DashboardViewModel(
                 remainingFraction = normalizedRatios.get(3),
                 totalAllIncomeMoney = totalAllIncomeMoney,
                 totalAllExpenseMoney = totalAllExpenseMoney,
-                miniBarsFractions = listOf(normalizeLast6Month(recurringExpenses ),normalizeLast6Month(wishlistItems),  normalizeLast6Month(expenses ),normalizeLast6Month(emptyList())),
-                miniBarsMonths =  listOf(recurringExpenses.getLastMonths(6),wishlistItems.getLastMonths(6),expenses.getLastMonths(6),expenses.getLastMonths(6)) // TODO EXPENSE ile aynı yapıldı
+                miniBarsFractions = listOf(normalizeLast6Month(recurringExpenses ),normalizeLast6Month(wishlistItems),normalizeLast6Month(emptyList()),normalizeLast6Month(expenses )),
+                miniBarsMonths =  List(4) { last6Months }// todo napcam bilmiyorum her türlü 6 ayı ver
 
             )
         }
@@ -351,12 +353,16 @@ class DashboardViewModel(
     // bar chartlarda yükseklik için 0-1f aralıgında değer lazım
     suspend fun normalizeLast6Month(list : List<DashboardMonthlyAmount>): List<Float?>{
         if (list.isEmpty())
-            return emptyList()
-        val last6Month = list.map { dashboardMonthlyAmount ->
-            // Total money for each month with selected currency
-            dashboardMonthlyAmount.amount.sumWithCurrencyConverted(currencyConverter, state.value.selectedCurrency).amount
+            return listOf(0f,0f,0f,0f,0f,0f)
+        val last6Months = getLastSixMonths() // veya LocalDate.now().monthValue
+
+        val monthlyValues = last6Months.map { month ->
+            val item = list.find { it.appDate.month == month }
+            item?.amount
+                ?.sumWithCurrencyConverted(currencyConverter, state.value.selectedCurrency)
+                ?.amount ?: 0.0
         }
-        return normalizeRatios(last6Month) // 0 - 1 ARALIGINDA
+        return normalizeRatios(monthlyValues) // 0 - 1 ARALIGINDA
     }
 
 

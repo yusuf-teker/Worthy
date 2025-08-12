@@ -1,7 +1,6 @@
     package com.yusufteker.worthy.core.domain.model
 
     import com.yusufteker.worthy.core.domain.getCurrentMonth
-    import com.yusufteker.worthy.core.domain.getCurrentYear
     import kotlinx.datetime.LocalDate
     import kotlinx.datetime.TimeZone
     import kotlinx.datetime.number
@@ -50,8 +49,9 @@
 
     }
 
-    fun AppDate.setMonth(newMonth: Int): AppDate{
-        return this.copy(
-            month = month
-        )
+    fun getLastSixMonths(): List<Int> {
+        return (0 until 6).map { offset ->
+            val month = (getCurrentMonth() - 5 + offset)
+            if (month <= 0) month + 12 else month
+        }
     }
