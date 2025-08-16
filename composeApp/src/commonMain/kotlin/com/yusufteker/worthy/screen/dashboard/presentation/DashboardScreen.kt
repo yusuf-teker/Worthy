@@ -12,9 +12,8 @@ import com.yusufteker.worthy.core.presentation.theme.AppColors
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
@@ -29,7 +28,7 @@ import com.yusufteker.worthy.core.presentation.UiEvent
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
-import com.yusufteker.worthy.core.presentation.components.DashboardOverviewCard
+import com.yusufteker.worthy.screen.dashboard.presentation.components.DashboardOverviewCard
 import com.yusufteker.worthy.core.presentation.components.AppButton
 import com.yusufteker.worthy.core.presentation.theme.AppBrushes.screenBackground
 import com.yusufteker.worthy.core.presentation.theme.AppDimens.Spacing16
@@ -140,7 +139,7 @@ fun DashboardScreen(
                     AppButton(
                         text = UiText.StringResourceId(Res.string.dashboard_evaluate_purchase).asString(),
                         onClick = { onAction(DashboardAction.EvaluateButtonClicked) },
-                        modifier = Modifier
+                        textModifier = Modifier.widthIn(max = 80.dp)
                     )
                 }
                 Spacer(Modifier.height(Spacing16))

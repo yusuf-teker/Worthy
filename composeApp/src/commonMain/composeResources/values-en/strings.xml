@@ -278,5 +278,8 @@
 
 
 
+    <string name="installment_count_label">Installment Count</string>
+    <string name="card_selector_label">Card</string>
+
 
 </resources>

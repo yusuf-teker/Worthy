@@ -2,7 +2,6 @@ package com.yusufteker.worthy.core.data.database.mappers
 
 import com.yusufteker.worthy.core.data.database.entities.CardEntity
 import com.yusufteker.worthy.core.data.database.entities.CategoryEntity
-import com.yusufteker.worthy.core.data.database.entities.IncomeEntity
 import com.yusufteker.worthy.core.data.database.entities.RecurringFinancialItemEntity
 import com.yusufteker.worthy.core.data.database.entities.TransactionEntity
 import com.yusufteker.worthy.core.domain.getCurrentEpochMillis
@@ -10,7 +9,6 @@ import com.yusufteker.worthy.core.domain.getCurrentLocalDateTime
 import com.yusufteker.worthy.core.domain.model.Card
 import com.yusufteker.worthy.screen.wishlist.list.data.database.entities.WishlistItemEntity
 import com.yusufteker.worthy.core.domain.model.Category
-import com.yusufteker.worthy.core.domain.model.Income
 import com.yusufteker.worthy.core.domain.model.RecurringFinancialItem
 import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.TransactionType
@@ -21,26 +19,7 @@ import kotlin.time.ExperimentalTime
 
 
 
-// Income
-fun IncomeEntity.toDomain() = Income(
-    id = id,
-    name = name,
-    amount = amount,
-    categoryId = categoryId,
-    isFixed = isFixed,
-    date = date,
-    note = note
-)
 
-fun Income.toEntity() = IncomeEntity(
-    id = id,
-    name = name,
-    amount = amount,
-    categoryId = categoryId,
-    isFixed = isFixed,
-    date = date,
-    note = note
-)
 
 // WishlistItem
 // data/mapper/WishlistMapper.kt

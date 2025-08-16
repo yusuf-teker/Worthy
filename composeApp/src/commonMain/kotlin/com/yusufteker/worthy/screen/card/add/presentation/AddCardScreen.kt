@@ -1,4 +1,4 @@
-package com.yusufteker.worthy.screen.addtransaction.presentation
+package com.yusufteker.worthy.screen.card.add.presentation
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
@@ -8,18 +8,18 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun AddTransactionScreenRoot(
-    viewModel: AddTransactionViewModel = koinViewModel(),
+fun AddCardScreenRoot(
+    viewModel: AddCardViewModel = koinViewModel(),
     contentPadding: PaddingValues = PaddingValues()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    AddTransactionScreen(state = state, onAction = viewModel::onAction, contentPadding = contentPadding)
+    AddCardScreen(state = state, onAction = viewModel::onAction, contentPadding = contentPadding)
 }
 
 @Composable
-fun AddTransactionScreen(
-    state: AddTransactionState,
-    onAction: (action: AddTransactionAction) -> Unit,
+fun AddCardScreen(
+    state: AddCardState,
+    onAction: (action: AddCardAction) -> Unit,
     contentPadding: PaddingValues = PaddingValues()
 ) {
     Column(
@@ -29,8 +29,5 @@ fun AddTransactionScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         // TODO
-
-
-
     }
 }

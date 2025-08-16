@@ -3,7 +3,7 @@
 import java.io.File
 
 
-val screenName = "AddTransaction"//args.getOrNull(0) ?: error("Ekran adı girilmedi")
+val screenName = "TransactionList"//args.getOrNull(0) ?: error("Ekran adı girilmedi")
 val packageName = screenName.lowercase()
 val baseDir = File("composeApp/src/commonMain/kotlin/com/yusufteker/worthy/screen/$packageName/presentation")
 

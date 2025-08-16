@@ -16,7 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.yusufteker.worthy.app.navigation.Routes
+import com.yusufteker.worthy.core.domain.model.CategoryType
 import com.yusufteker.worthy.core.presentation.UiEvent
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
@@ -24,7 +24,7 @@ import com.yusufteker.worthy.core.presentation.components.AppTopBar
 import com.yusufteker.worthy.core.presentation.components.ImagePickerComponent
 import com.yusufteker.worthy.core.presentation.components.MoneyInput
 import com.yusufteker.worthy.screen.wishlist.add.presentation.components.PriorityChooser
-import com.yusufteker.worthy.screen.wishlist.add.presentation.components.WishlistCategoryDropdown
+import com.yusufteker.worthy.core.presentation.components.CategorySelector
 import org.koin.compose.viewmodel.koinViewModel
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.add_new
@@ -121,7 +121,7 @@ fun WishlistAddScreen(
             )
 
             // 4. Kategori
-            WishlistCategoryDropdown(
+            CategorySelector(
                 categories = state.wishlistCategories,
                 selectedCategory = state.wishlistItem.category ?: state.wishlistCategories.firstOrNull(),
                 onCategorySelected = {
@@ -129,7 +129,8 @@ fun WishlistAddScreen(
                 },
                 onNewCategoryCreated = {
                     onAction(WishlistAddAction.OnNewCategoryCreated(it))
-                }
+                },
+                categoryType = CategoryType.WISHLIST,
             )
 
             // 5. Öncelik (1-5)

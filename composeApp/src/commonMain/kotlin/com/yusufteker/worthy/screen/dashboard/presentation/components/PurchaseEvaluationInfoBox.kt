@@ -1,4 +1,4 @@
-package com.yusufteker.worthy.core.presentation.components
+package com.yusufteker.worthy.screen.dashboard.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

@@ -66,6 +66,7 @@ napier-logging = { module = "io.github.aakira:napier", version.ref = "napier-log
 compose-material-icons-core = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "compose" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 uCrop = { module = "com.github.yalantis:ucrop", version.ref = "uCrop" }
+
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }

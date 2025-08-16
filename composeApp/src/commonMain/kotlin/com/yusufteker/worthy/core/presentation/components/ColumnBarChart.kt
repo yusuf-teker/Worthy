@@ -37,6 +37,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.yusufteker.worthy.core.presentation.UiText
@@ -138,7 +139,9 @@ fun ColumnBarChart(
                             style = AppTypography.labelSmall,
                             color = AppColors.onSurfaceVariant,
                             overflow = TextOverflow.Ellipsis,
-                            maxLines = 2
+                            maxLines = 2,
+                            textAlign = TextAlign.Center
+
                         )
                     }
                 }
@@ -271,7 +274,7 @@ fun MiniBarChart(
                     Spacer(Modifier.height(4.dp))
 
                     Text(
-                        text = getMonthName(labels.get(idx)).asString(),
+                        text = getMonthName(labels[idx]).asString(),
                         style = AppTypography.labelSmall,
                         color = AppColors.onSurfaceVariant,
                         maxLines = 1,

@@ -45,7 +45,6 @@ import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.components.AppButton
 import com.yusufteker.worthy.core.presentation.components.CategoryIcon
 import com.yusufteker.worthy.core.presentation.components.MoneyInput
-import com.yusufteker.worthy.core.presentation.components.PurchaseEvaluationInfoBox
 import com.yusufteker.worthy.core.presentation.theme.AppColors.secondaryButtonColors
 import com.yusufteker.worthy.core.presentation.util.hideKeyboard
 import io.github.aakira.napier.Napier

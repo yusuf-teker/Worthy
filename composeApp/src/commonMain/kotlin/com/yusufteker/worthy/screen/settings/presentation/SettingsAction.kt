@@ -1,10 +1,8 @@
 package com.yusufteker.worthy.screen.settings.presentation
 
 import com.yusufteker.worthy.core.domain.model.Currency
-import com.yusufteker.worthy.core.domain.model.Income
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.RecurringFinancialItem
-import com.yusufteker.worthy.core.domain.model.Transaction
 
 sealed interface SettingsAction {
     data class OnBudgetValueChange(val newBudget: Money) : SettingsAction

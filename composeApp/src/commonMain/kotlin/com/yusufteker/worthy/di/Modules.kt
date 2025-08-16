@@ -5,7 +5,6 @@ import com.yusufteker.worthy.core.data.database.db.DatabaseFactory
 import com.yusufteker.worthy.core.data.database.db.WorthyDatabase
 import com.yusufteker.worthy.core.data.database.repository.CategoryRepositoryImpl
 import com.yusufteker.worthy.core.data.database.repository.DashboardRepositoryImpl
-import com.yusufteker.worthy.core.data.database.repository.IncomeRepositoryImpl
 import com.yusufteker.worthy.core.data.database.repository.OnboardingRepositoryImpl
 import com.yusufteker.worthy.core.data.database.repository.RecurringFinancialItemRepositoryImpl
 import com.yusufteker.worthy.core.data.database.repository.SearchHistoryRepositoryImpl
@@ -16,7 +15,6 @@ import com.yusufteker.worthy.core.data.service.datasource.CurrencyRatesRemoteDat
 import com.yusufteker.worthy.core.data.service.repository.CurrencyRatesRepositoryImpl
 import com.yusufteker.worthy.core.domain.repository.CategoryRepository
 import com.yusufteker.worthy.core.domain.repository.CurrencyRatesRepository
-import com.yusufteker.worthy.core.domain.repository.IncomeRepository
 import com.yusufteker.worthy.core.domain.repository.RecurringFinancialItemRepository
 import com.yusufteker.worthy.core.domain.repository.SearchHistoryRepository
 import com.yusufteker.worthy.core.domain.repository.TransactionRepository
@@ -63,7 +61,6 @@ val sharedModule = module {
 
     // DAO'ları veritabanından çek
     single { get<WorthyDatabase>().transactionDao }
-    single { get<WorthyDatabase>().incomeDao }
     single { get<WorthyDatabase>().wishlistItemDao }
     single { get<WorthyDatabase>().categoryDao }
     single { get<WorthyDatabase>().recurringFinancialItemDao }
@@ -72,12 +69,11 @@ val sharedModule = module {
     single<CurrencyRatesRepository> { CurrencyRatesRepositoryImpl(get(), get()) }
     single<CurrencyConverter> { DefaultCurrencyConverter(get()) }
     single<OnboardingRepository> { OnboardingRepositoryImpl(get(), get(), get()) }
-    single<IncomeRepository> { IncomeRepositoryImpl(get()) }
     single<TransactionRepository> { TransactionRepositoryImpl(get()) }
     single<WishlistRepository> { WishlistRepositoryImpl(get(),get()) }
     single<CategoryRepository> { CategoryRepositoryImpl(get()) }
     single<RecurringFinancialItemRepository> { RecurringFinancialItemRepositoryImpl(get()) }
-    single<DashboardRepository> { DashboardRepositoryImpl(get(), get(),get(),get(),get()) }
+    single<DashboardRepository> { DashboardRepositoryImpl(get(), get(),get(),get()) }
     single<CurrencyRatesCacheDataSource> { CurrencyRatesCacheDataSourceImpl() }
     single<CurrencyRatesRemoteDataSource> { CurrencyRatesRemoteDataSourceImpl() }
 

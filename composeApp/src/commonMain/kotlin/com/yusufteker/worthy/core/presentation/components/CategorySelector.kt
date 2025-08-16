@@ -1,4 +1,4 @@
-package com.yusufteker.worthy.screen.wishlist.add.presentation.components
+package com.yusufteker.worthy.core.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,9 +32,7 @@ import androidx.compose.ui.unit.sp
 import com.yusufteker.worthy.core.domain.model.CategoryType
 import com.yusufteker.worthy.core.domain.model.emojiOptions
 import com.yusufteker.worthy.core.domain.model.getNameResource
-import com.yusufteker.worthy.core.domain.model.getResourceByKey
 import com.yusufteker.worthy.core.presentation.UiText
-import com.yusufteker.worthy.core.presentation.components.CategoryIcon
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.add_new_category
@@ -47,12 +45,13 @@ import worthy.composeapp.generated.resources.create_new_category_title
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WishlistCategoryDropdown(
+fun CategorySelector(
     categories: List<Category>,
     selectedCategory: Category?,
     modifier: Modifier = Modifier,
     onCategorySelected: (Category) -> Unit,
-    onNewCategoryCreated: (Category) -> Unit
+    onNewCategoryCreated: (Category) -> Unit,
+    categoryType: CategoryType
 ) {
     var expanded by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
@@ -72,11 +71,11 @@ fun WishlistCategoryDropdown(
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
             },
-            leadingIcon = {
-                selectedCategory?.let {
+            leadingIcon = if (selectedCategory != null) {
+                {
                     CategoryIcon(selectedCategory.icon)
                 }
-            },
+            }else null,
             modifier = Modifier
                 .menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true)
             .fillMaxWidth()
@@ -171,7 +170,7 @@ fun WishlistCategoryDropdown(
                         val newCategory = Category(
                             name = newCategoryName,
                             icon = selectedEmoji,
-                            type = CategoryType.WISHLIST
+                            type = categoryType
                         )
                         onNewCategoryCreated(newCategory)
                         onCategorySelected(newCategory)

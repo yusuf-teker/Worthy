@@ -8,9 +8,7 @@
     import com.yusufteker.worthy.core.data.database.converters.RoomTypeConverters
     import com.yusufteker.worthy.core.data.database.entities.CardEntity
     import com.yusufteker.worthy.core.data.database.model.CategoryDao
-    import com.yusufteker.worthy.core.data.database.model.IncomeDao
     import com.yusufteker.worthy.core.data.database.entities.CategoryEntity
-    import com.yusufteker.worthy.core.data.database.entities.IncomeEntity
     import com.yusufteker.worthy.core.data.database.entities.RecurringFinancialItemEntity
     import com.yusufteker.worthy.core.data.database.entities.TransactionEntity
     import com.yusufteker.worthy.core.data.database.model.CardDao
@@ -21,7 +19,6 @@
 
     @Database(
         entities = [
-            IncomeEntity::class,
             WishlistItemEntity::class,
             CategoryEntity::class,
             RecurringFinancialItemEntity::class,
@@ -37,7 +34,6 @@
     @ConstructedBy(WorthyDatabaseConstructor::class)
     abstract class WorthyDatabase : RoomDatabase() {
 
-        abstract val incomeDao: IncomeDao
         abstract val categoryDao: CategoryDao
 
         abstract val wishlistItemDao: WishlistItemDao

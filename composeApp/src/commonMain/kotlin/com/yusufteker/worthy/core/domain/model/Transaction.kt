@@ -2,9 +2,9 @@ package com.yusufteker.worthy.core.domain.model
 
 
 enum class TransactionType {
-    INCOME,     // Gelir
-    EXPENSE,    // Gider
-    REFUND,     // İade
+    INCOME,
+    EXPENSE,
+    REFUND,
 }
 
 data class Transaction(

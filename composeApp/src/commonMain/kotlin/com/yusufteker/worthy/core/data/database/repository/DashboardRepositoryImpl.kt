@@ -4,7 +4,6 @@ package com.yusufteker.worthy.core.data.database.repository
 import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.CategoryType
 import com.yusufteker.worthy.core.domain.model.DashboardMonthlyAmount
-import com.yusufteker.worthy.core.domain.model.Income
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.core.domain.model.Transaction
@@ -24,7 +23,6 @@ import kotlinx.datetime.number
 
 
 class DashboardRepositoryImpl(
-    private val incomeRepository: IncomeRepository,
     private val recurringRepository: RecurringFinancialItemRepository,
     private val wishlistRepository: WishlistRepository,
     private val categoryRepository: CategoryRepository,
@@ -65,11 +63,16 @@ class DashboardRepositoryImpl(
             .minus(monthCount.toLong(), DateTimeUnit.MONTH)
 
         val firstDayOfStartMonth = LocalDate(startDate.year, startDate.month.number, 1)
-        return incomeRepository.getIncomesSince(firstDayOfStartMonth)
-            .map { incomes ->
-                val grouped: Map<AppDate, List<Income>> = incomes.groupBy { income ->
-                    AppDate(year = income.date.toLocalDate().year,  month= income.date.toLocalDate().month.number)
+
+        return transactionRepository.getTransactionsSince(firstDayOfStartMonth)
+            .map { transactions ->
+                val incomes = transactions.filter { it.transactionType == TransactionType.INCOME }
+
+                val grouped: Map<AppDate, List<Transaction>> = incomes.groupBy { tx ->
+                    val localDate = tx.transactionDate.toLocalDate()
+                    AppDate(year = localDate.year, month = localDate.month.number)
                 }
+
                 grouped.map { (yearMonth, incomeList) ->
                     DashboardMonthlyAmount(
                         appDate = yearMonth,
@@ -78,7 +81,6 @@ class DashboardRepositoryImpl(
                 }.sortedWith(compareBy({ it.appDate.year }, { it.appDate.month }))
             }
     }
-
     override fun getAllExpenseMonthlyAmount(
         monthCount: Int,
         currentDate: LocalDate

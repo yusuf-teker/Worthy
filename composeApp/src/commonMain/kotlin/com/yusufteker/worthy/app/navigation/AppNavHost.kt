@@ -11,8 +11,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -34,6 +36,7 @@ import com.yusufteker.worthy.screen.dashboard.presentation.DashboardScreenRoot
 import com.yusufteker.worthy.screen.onboarding.domain.OnboardingManager
 import com.yusufteker.worthy.screen.onboarding.presentation.OnboardingScreenRoot
 import com.yusufteker.worthy.screen.settings.presentation.SettingsScreenRoot
+import com.yusufteker.worthy.screen.transaction.add.presentation.components.AddFabMenu
 import com.yusufteker.worthy.screen.wallet.presentation.WalletScreenRoot
 import com.yusufteker.worthy.screen.wishlist.add.presentation.WishlistAddScreenRoot
 import com.yusufteker.worthy.screen.wishlist.detail.presentation.WishlistDetailScreenRoot
@@ -61,6 +64,8 @@ fun AppNavHost(
         Routes.Settings.toString(),
         Routes.AddTransaction.toString(),
     )
+
+    var showAddFabMenu by remember { mutableStateOf(false) }
 
     LaunchedEffect(currentRoute) {
         currentRoute?.let { route ->
@@ -93,7 +98,10 @@ fun AppNavHost(
                     modifier = Modifier.padding(bottom = bottomPadding),
                     currentRoute = currentRoute ?: "",
                     onItemSelected = { route ->
-                        if (route.toString() != currentRoute) {
+                        if (route.toString().substringBefore("(") == Routes.AddTransaction.NAME){
+                            showAddFabMenu = !showAddFabMenu
+                        }
+                        else if (route.toString() != currentRoute) {
                             navController.navigate(route) {
                                 popUpTo(Routes.Dashboard.toString()) { saveState = true }
                                 launchSingleTop = true
@@ -105,97 +113,122 @@ fun AppNavHost(
             }
         }
     ) { innerPadding ->
-        NavHost(navController = navController, startDestination = startDestination) {
 
-            // Onboarding Graph
-            navigation<Routes.OnboardingGraph>(
-                startDestination = Routes.Onboarding
-            ) {
+        Box(modifier = Modifier.fillMaxSize()) {
 
-                composable<Routes.Onboarding> {
+            NavHost(navController = navController, startDestination = startDestination) {
 
-                    OnboardingScreenRoot(
-                        onGetStarted = {
-                            navController.navigate(Routes.MainGraph) {
-                                popUpTo(Routes.OnboardingGraph) { inclusive = true }
-                                launchSingleTop = true
+                // Onboarding Graph
+                navigation<Routes.OnboardingGraph>(
+                    startDestination = Routes.Onboarding
+                ) {
+
+                    composable<Routes.Onboarding> {
+
+                        OnboardingScreenRoot(
+                            onGetStarted = {
+                                navController.navigate(Routes.MainGraph) {
+                                    popUpTo(Routes.OnboardingGraph) { inclusive = true }
+                                    launchSingleTop = true
+                                }
+
+                            },
+                        )
+                    }
+                }
+
+                // Main Graph (Ana ekran ve yönlendirmeler)
+                navigation<Routes.MainGraph>(
+                    startDestination = Routes.Dashboard
+                ) {
+
+                    composable<Routes.Dashboard> {
+
+                        DashboardScreenRoot(
+                            contentPadding = innerPadding,
+                            onNavigateTo = { route ->
+                                navController.navigate(route)
                             }
+                        )
+                    }
 
-                        },
-                    )
+
+                    navigation<Routes.WishlistGraph>(
+                        startDestination = Routes.Wishlist
+                    ){
+                        composable<Routes.Wishlist> { entry ->
+
+                            WishlistScreenRoot(
+                                contentPadding = innerPadding,
+                                navigateToWishlistAdd = {
+                                    navController.navigate(Routes.WishlistAdd)
+                                },
+                                navigateBack = {
+                                    navController.popBackStack()
+                                },
+                                navigateToWishlistDetail = { wishlistId ->
+                                    navController.navigate(Routes.WishlistDetail(wishlistId))
+                                }
+                            )
+
+
+                        }
+                        composable<Routes.WishlistAdd> {
+                            WishlistAddScreenRoot(
+                                contentPadding = innerPadding,
+                                navigateBack = {
+                                    navController.popBackStack()
+                                }
+                            )
+                        }
+
+                        composable<Routes.WishlistDetail> { // Todo Wishlist Detay ekranı eklenecek
+                            val args = it.toRoute<Routes.WishlistDetail>()
+                            val wishlistId = args.id
+                            WishlistDetailScreenRoot(
+                                contentPadding = innerPadding,
+                            )
+                        }
+                    }
+
+                    composable<Routes.AddTransaction>{
+                        val args = it.toRoute<Routes.AddTransaction>()
+                        val isIncomeByDefault = args.isIncome
+                        AddTransactionScreenRoot(
+                            isIncomeByDefault = isIncomeByDefault,
+                            contentPadding = innerPadding,
+                        )
+                    }
+                    composable<Routes.Wallet> {
+                        WalletScreenRoot(
+                            contentPadding = innerPadding,
+                        )
+                    }
+
+
+                    composable<Routes.Settings> {
+                        SettingsScreenRoot(
+                            contentPadding = innerPadding,
+                        )
+                    }
                 }
             }
-
-            // Main Graph (Ana ekran ve yönlendirmeler)
-            navigation<Routes.MainGraph>(
-                startDestination = Routes.Dashboard
-            ) {
-
-                composable<Routes.Dashboard> {
-
-                    DashboardScreenRoot(
-                        contentPadding = innerPadding,
-                        onNavigateTo = { route ->
-                            navController.navigate(route)
-                        }
-                    )
-                }
-
-
-                navigation<Routes.WishlistGraph>(
-                    startDestination = Routes.Wishlist
-                ){
-                    composable<Routes.Wishlist> { entry ->
-
-                        WishlistScreenRoot(
-                            contentPadding = innerPadding,
-                            navigateToWishlistAdd = {
-                                navController.navigate(Routes.WishlistAdd)
-                            },
-                            navigateBack = {
-                                navController.popBackStack()
-                            },
-                            navigateToWishlistDetail = { wishlistId ->
-                                navController.navigate(Routes.WishlistDetail(wishlistId))
-                            }
-                        )
-
-
+            AddFabMenu(
+                showMenu = showAddFabMenu,
+                modifier = Modifier.padding(innerPadding).align(Alignment.BottomCenter)
+            ) { fabItem ->
+                showAddFabMenu = false
+                when(fabItem.label){
+                    "Expense" -> {
+                        navController.navigate(Routes.AddTransaction(false))
                     }
-                    composable<Routes.WishlistAdd> {
-                        WishlistAddScreenRoot(
-                            contentPadding = innerPadding,
-                            navigateBack = {
-                                navController.popBackStack()
-                            }
-                        )
+                    "Income" -> {
+                        navController.navigate(Routes.AddTransaction(true))
                     }
-
-                    composable<Routes.WishlistDetail> { // Todo Wishlist Detay ekranı eklenecek
-                        val args = it.toRoute<Routes.WishlistDetail>()
-                        val wishlistId = args.id
-                        WishlistDetailScreenRoot(
-                            contentPadding = innerPadding,
-                        )
+                    "Card" -> {
+                        navController.navigate(Routes.AddTransaction)
                     }
-                }
-
-                composable<Routes.AddTransaction>{
-                    AddTransactionScreenRoot(
-                        contentPadding = innerPadding,
-                    )
-                }
-                composable<Routes.Wallet> {
-                    WalletScreenRoot(
-                        contentPadding = innerPadding,
-                    )
-                }
-
-
-                composable<Routes.Settings> {
-                    SettingsScreenRoot(
-                        contentPadding = innerPadding,
-                    )
+                    else -> {showAddFabMenu = false}
                 }
             }
         }

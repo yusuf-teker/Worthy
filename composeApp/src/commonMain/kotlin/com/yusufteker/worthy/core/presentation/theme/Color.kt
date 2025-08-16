@@ -95,6 +95,9 @@ object AppColors {
             background
         )
 
+    val icon_red = Color(0xFFFF5722)
+    val icon_green = Color(0xFF4CAF50)
+
     val priorityColors = listOf(
         Color(0xFF4CAF50), // Yeşil
         Color(0xFF8BC34A), // Açık yeşil

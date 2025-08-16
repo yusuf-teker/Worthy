@@ -254,14 +254,17 @@ class DashboardViewModel(
             currencyConverter
         ) ?: emptyMoney( state.value.selectedCurrency)
 
-        val totalExpense = totalExpenseMoney.amount + totalRecurringExpenseMoney.amount // + totalWishlistMoney.amount // todo wishlist money kaldırılmadı
+        var totalExpense = totalExpenseMoney.amount + totalRecurringExpenseMoney.amount // + totalWishlistMoney.amount // todo wishlist money kaldırılmadı
         val totalIncome = totalIncomeMoney.amount.plus(totalRecurringIncomeMoney.amount)
 
+        if (totalExpense<= 0 ){
+            totalExpense = 1.0;
+        }
         // Todo ratio şuan expense göre bunu belki böyle yapmayız
-        val expensesRatio = (totalExpenseMoney.amount /  totalExpense)
-        val recurringExpensesRatio = (totalRecurringExpenseMoney.amount / totalExpense)
-        val wishlistRatio = ( totalWishlistMoney.amount / totalExpense)
-        val remainingRatio = ( totalIncome - totalExpense ) / totalExpense
+        val recurringExpensesRatio = (totalRecurringExpenseMoney.amount / totalExpense) // fixedExpenses
+        val wishlistRatio = ( totalWishlistMoney.amount / totalExpense) // Desires
+        val remainingRatio = ( totalIncome - totalExpense ) / totalExpense // Remaining
+        val expensesRatio = (totalExpenseMoney.amount /  totalExpense) // Expenses
 
         val normalizedRatios = adjustValuesForBarChart(normalizeRatios(expensesRatio,recurringExpensesRatio,wishlistRatio,remainingRatio))
 
@@ -274,8 +277,8 @@ class DashboardViewModel(
         _state.update { currentState ->
             currentState.copy(
                 expensesFraction = normalizedRatios.get(0),
-                desiresSpentFraction = normalizedRatios.get(2),
                 fixedExpenseFraction = normalizedRatios.get(1),
+                desiresSpentFraction = normalizedRatios.get(2),
                 remainingFraction = normalizedRatios.get(3),
                 totalAllIncomeMoney = totalAllIncomeMoney,
                 totalAllExpenseMoney = totalAllExpenseMoney,

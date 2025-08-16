@@ -126,7 +126,7 @@ fun SearchBar(
         }
     }
 }
-
+/*
 @Composable
 fun ExpandingSearchBar(
     text: String,
@@ -223,7 +223,7 @@ fun ExpandingSearchBar(
             }
         }
     }
-}
+}*/
 
 
 @Preview

@@ -38,7 +38,12 @@ sealed class Routes {
     data object Wallet : Routes()
 
     @Serializable
-    data object AddTransaction: Routes()
+    data class AddTransaction(val isIncome: Boolean): Routes(){
+        override fun toString() = NAME
+        companion object {
+            const val NAME = "AddTransaction"
+        }
+    }
 
     @Serializable
     data object Trends : Routes()

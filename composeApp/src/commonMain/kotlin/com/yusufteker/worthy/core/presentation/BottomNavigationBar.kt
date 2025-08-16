@@ -17,7 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -31,10 +31,10 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.dp
 import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.presentation.theme.AppColors
+import com.yusufteker.worthy.core.presentation.theme.Constants.bottomNavItemIconSize
 import org.jetbrains.compose.resources.painterResource
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.bottom_icon_graph
-import worthy.composeapp.generated.resources.bottom_icon_wallet
 import worthy.composeapp.generated.resources.bottom_icon_wishlist
 
 
@@ -58,7 +58,7 @@ fun BottomNavigationBar(
         BottomNavItem(
             "AddTransaction",
             painter = rememberVectorPainter(Icons.Filled.Add),
-            route = Routes.AddTransaction
+            route = Routes.AddTransaction(false)
         ),
         /*BottomNavItem(
             "Wallet",
@@ -72,7 +72,7 @@ fun BottomNavigationBar(
         ),
         BottomNavItem(
             "Settings",
-            painter = rememberVectorPainter(Icons.Filled.Settings),
+            painter = rememberVectorPainter(Icons.Filled.Person),
             route = Routes.Settings
         )
     )
@@ -146,7 +146,7 @@ fun NavItem(
             painter = item.painter,
             contentDescription = item.label,
             tint = iconColor,
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier.size(bottomNavItemIconSize)
         )
     }
 }

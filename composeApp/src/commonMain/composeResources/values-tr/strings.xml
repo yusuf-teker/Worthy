@@ -268,4 +268,8 @@
     <string name="hint_enter_name">Adınızı giriniz</string>
 
 
+    <string name="installment_count_label">Taksit Sayısı</string>
+    <string name="card_selector_label">Kart</string>
+
+
 </resources>

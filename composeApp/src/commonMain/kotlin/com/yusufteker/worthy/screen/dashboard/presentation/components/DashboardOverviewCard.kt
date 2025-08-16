@@ -1,4 +1,4 @@
-package com.yusufteker.worthy.core.presentation.components
+package com.yusufteker.worthy.screen.dashboard.presentation.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -38,6 +38,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.core.presentation.UiText
+import com.yusufteker.worthy.core.presentation.components.ColumnBarChart
+import com.yusufteker.worthy.core.presentation.components.MiniBarChart
 import com.yusufteker.worthy.core.presentation.formatPercentageChange
 import com.yusufteker.worthy.core.presentation.getMonthName
 import com.yusufteker.worthy.core.presentation.theme.AppColors
@@ -151,9 +153,9 @@ fun DashboardOverviewCard(
                     Napier.d("Chart selected: $it")
                     onChartSelected.invoke(it)
                 },
-                onAddWishlistClicked = {onAddWishlistClicked.invoke()} ,
-                onAddRecurringClicked = { onAddRecurringClicked.invoke()},
-                onAddTransactionClicked = {onAddTransactionClicked.invoke()}
+                onAddWishlistClicked = { onAddWishlistClicked.invoke() },
+                onAddRecurringClicked = { onAddRecurringClicked.invoke() },
+                onAddTransactionClicked = { onAddTransactionClicked.invoke() }
             )
 
 

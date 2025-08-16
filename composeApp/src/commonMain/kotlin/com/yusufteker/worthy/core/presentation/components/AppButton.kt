@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.yusufteker.worthy.core.presentation.theme.AppColors.primaryButtonColors
@@ -23,12 +24,13 @@ fun AppButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     loading: Boolean = false,
-    height: Dp = 56.dp,
     shape: Shape = RoundedCornerShape(AppDimens.RadiusM),
     textStyle: TextStyle = AppTypography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
     leadingIcon: (@Composable (() -> Unit))? = null,
     trailingIcon: (@Composable (() -> Unit))? = null,
-    colors: ButtonColors = primaryButtonColors
+    colors: ButtonColors = primaryButtonColors,
+    textModifier: Modifier = Modifier // yeni parametre
+
 ) {
     Button(
         onClick = onClick,
@@ -36,7 +38,7 @@ fun AppButton(
         shape = shape,
         colors = colors,
         modifier = modifier
-            .height(height)
+            //.height(height)
     ) {
         if (loading) {
             androidx.compose.material3.CircularProgressIndicator(
@@ -53,8 +55,11 @@ fun AppButton(
             }
 
             Text(
+                modifier = textModifier,//.padding(4.dp),
                 text = text,
-                style = textStyle
+                style = textStyle,
+                softWrap = true,
+                maxLines = 2,
             )
 
             if (trailingIcon != null) {
