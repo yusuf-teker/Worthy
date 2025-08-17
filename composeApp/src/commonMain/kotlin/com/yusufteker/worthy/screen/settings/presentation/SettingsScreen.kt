@@ -26,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
 import com.yusufteker.worthy.screen.settings.presentation.components.BudgetSlider
@@ -38,7 +37,6 @@ import com.yusufteker.worthy.screen.settings.presentation.components.RecurringFi
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
 import com.yusufteker.worthy.core.presentation.theme.Constants.WEEKLY_MAX_HOURS
-import com.yusufteker.worthy.core.presentation.theme.Constants.currencySymbols
 import com.yusufteker.worthy.core.presentation.toFormattedWithThousandsSeparator
 import org.koin.compose.viewmodel.koinViewModel
 import worthy.composeapp.generated.resources.Res
@@ -49,7 +47,7 @@ import worthy.composeapp.generated.resources.label_fixed_expenses
 import worthy.composeapp.generated.resources.label_income_sources
 import worthy.composeapp.generated.resources.label_savings
 import worthy.composeapp.generated.resources.label_weekly_work_hours
-import worthy.composeapp.generated.resources.title_settings
+import worthy.composeapp.generated.resources.screen_title_settings
 
 @Composable
 fun SettingsScreenRoot(
@@ -90,10 +88,9 @@ fun SettingsScreen(
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         AppTopBar(
-            title = UiText.StringResourceId(Res.string.title_settings).asString(),
+            title = UiText.StringResourceId(Res.string.screen_title_settings).asString(),
             onNavIconClick = {},
             isBack = false,
-            isAlignCenter = false,
             modifier = Modifier.background(AppColors.transparent)
         ) {  }
 

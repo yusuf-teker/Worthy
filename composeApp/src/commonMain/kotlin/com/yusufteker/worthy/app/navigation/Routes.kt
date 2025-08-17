@@ -45,6 +45,10 @@ sealed class Routes {
         }
     }
 
+
+    @Serializable
+    data object AddCard : Routes()
+
     @Serializable
     data object Trends : Routes()
 

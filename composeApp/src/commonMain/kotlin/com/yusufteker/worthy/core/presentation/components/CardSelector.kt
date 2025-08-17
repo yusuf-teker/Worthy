@@ -17,16 +17,17 @@ import androidx.compose.ui.unit.dp
 import com.yusufteker.worthy.core.domain.model.Card
 import com.yusufteker.worthy.core.presentation.UiText
 import worthy.composeapp.generated.resources.Res
-import worthy.composeapp.generated.resources.add_new_category
-import worthy.composeapp.generated.resources.category_label
+import worthy.composeapp.generated.resources.add_new_card
+import worthy.composeapp.generated.resources.card_selector_label
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CardSelector(
-    cards: List<Card>,
+    cards: List<Card>?,
     selectedCard: Card? = null,
     modifier: Modifier = Modifier,
     onCardSelected: (Card) -> Unit,
+    onAddNewCard: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -39,7 +40,7 @@ fun CardSelector(
             value = selectedCard?.nickname ?: "",
             onValueChange = {},
             readOnly = true,
-            label = { Text(UiText.StringResourceId(Res.string.category_label).asString()) },
+            label = { Text(UiText.StringResourceId(Res.string.card_selector_label).asString()) },
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
             },
@@ -53,7 +54,7 @@ fun CardSelector(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-            cards.forEach { card ->
+            cards?.forEach { card ->
                 DropdownMenuItem(
                     text = {
                         Text(
@@ -75,7 +76,7 @@ fun CardSelector(
             DropdownMenuItem(
                 text = {
                     Text(
-                        text = UiText.StringResourceId(Res.string.add_new_category).asString(),
+                        text = UiText.StringResourceId(Res.string.add_new_card).asString(),
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.primary
                     )

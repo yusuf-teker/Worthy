@@ -1,6 +1,8 @@
 package com.yusufteker.worthy.screen.addtransaction.presentation
 
+import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.domain.repository.TransactionRepository
+import com.yusufteker.worthy.core.presentation.UiEvent
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -72,6 +74,9 @@ class AddTransactionViewModel(
 
                     }
                     TransactionFormAction.SaveClicked -> {}
+                    TransactionFormAction.AddNewCardClicked -> {
+                       // sendUiEventSafe(UiEvent.NavigateTo(Routes.AddCard))
+                    }
                 }
 
             }
@@ -87,7 +92,7 @@ class AddTransactionViewModel(
                     is TransactionFormAction.CardSelected -> {
                         _state.value = _state.value.copy(
                             incomeForm = _state.value.incomeForm.copy(
-                                cardId = action.action.cardId
+                                selectedCard = action.action.card
                             )
                         )
                     }
@@ -128,7 +133,14 @@ class AddTransactionViewModel(
                         )
                     }
                     TransactionFormAction.SaveClicked -> {}
+                    TransactionFormAction.AddNewCardClicked -> {
+
+                    }
                 }
+            }
+
+            AddTransactionAction.OnBackClick -> {
+                sendUiEventSafe(UiEvent.NavigateBack)
             }
         }
     }

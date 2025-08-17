@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -20,6 +19,7 @@ import com.yusufteker.worthy.core.domain.model.CategoryType
 import com.yusufteker.worthy.core.presentation.UiEvent
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
+import com.yusufteker.worthy.core.presentation.components.AppButton
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
 import com.yusufteker.worthy.core.presentation.components.ImagePickerComponent
 import com.yusufteker.worthy.core.presentation.components.MoneyInput
@@ -62,111 +62,115 @@ fun WishlistAddScreen(
     state: WishlistAddState,
     onAction: (action: WishlistAddAction) -> Unit,
     contentPadding: PaddingValues = PaddingValues()
-) {
+)
+{
 
-    BaseContentWrapper(
-        state = state
-    ){
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(contentPadding)
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+        BaseContentWrapper(
+            state = state
         )
         {
+            Column(  Modifier.fillMaxSize().padding(contentPadding).padding(horizontal = 16.dp)) {
+                Column(
+                    modifier = Modifier
+                        .verticalScroll(rememberScrollState())
 
-            AppTopBar(
-                title = UiText.StringResourceId(Res.string.add_new).asString(),
-                onNavIconClick = { onAction(WishlistAddAction.OnBackClick) },
-                isBack = true
-            )
+                        .weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                )
+                {
+
+                    AppTopBar(
+                        title = UiText.StringResourceId(Res.string.add_new).asString(),
+                        onNavIconClick = { onAction(WishlistAddAction.OnBackClick) },
+                        isBack = true
+                    )
 
 
-            // 1. Görsel seçimi
-            BoxWithConstraints(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Color.LightGray)
-            ) {
-                val size = minOf(maxWidth, maxHeight)
+                    // 1. Görsel seçimi
+                    BoxWithConstraints(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(1f)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color.LightGray)
+                    ) {
+                        val size = minOf(maxWidth, maxHeight)
 
-                ImagePickerComponent(
-                    selectedImage = state.imageBitmap,
-                    onImageSelected = { onAction(WishlistAddAction.OnImageSelected(it)) },
-                    modifier = Modifier.size(size)
+                        ImagePickerComponent(
+                            selectedImage = state.imageBitmap,
+                            onImageSelected = { onAction(WishlistAddAction.OnImageSelected(it)) },
+                            modifier = Modifier.size(size)
+                        )
+                    }
+
+                    // 2. Ürün Adı
+                    OutlinedTextField(
+                        value = state.wishlistItem.name,
+                        onValueChange = { onAction(WishlistAddAction.OnNameChanged(it)) },
+                        label = { Text(UiText.StringResourceId(Res.string.wishlist_label_product_name).asString()) },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    // 3. Fiyat
+
+                    MoneyInput(
+                        money = state.wishlistItem.price,
+                        onValueChange = { onAction(WishlistAddAction.OnPriceChanged(it)) },
+                        modifier = Modifier.fillMaxWidth(),
+                        label = UiText.StringResourceId(Res.string.wishlist_label_price, arrayOf(state.wishlistItem.price.currency.symbol)),
+                        //isError = state.isPriceError,
+                        //errorMessage = state.priceErrorMessage
+                    )
+
+                    // 4. Kategori
+                    CategorySelector(
+                        categories = state.wishlistCategories,
+                        selectedCategory = state.wishlistItem.category ?: state.wishlistCategories.firstOrNull(),
+                        onCategorySelected = {
+                            onAction(WishlistAddAction.OnCategorySelected(it))
+                        },
+                        onNewCategoryCreated = {
+                            onAction(WishlistAddAction.OnNewCategoryCreated(it))
+                        },
+                        categoryType = CategoryType.WISHLIST,
+                    )
+
+                    // 5. Öncelik (1-5)
+                    PriorityChooser(
+                        value = state.wishlistItem.priority,
+                        onValueChange = { onAction(WishlistAddAction.OnPriorityChanged(it)) }
+                    )
+
+                    // 6. Not
+                    OutlinedTextField(
+                        value = state.wishlistItem.note ?: "",
+                        onValueChange = { onAction(WishlistAddAction.OnNoteChanged(it)) },
+                        label = { Text(UiText.StringResourceId(Res.string.wishlist_label_note_optional).asString()) },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    // 7. Satın alındı mı?
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Checkbox(
+                            checked = state.wishlistItem.isPurchased,
+                            onCheckedChange = { onAction(WishlistAddAction.OnPurchasedChanged(it)) }
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(UiText.StringResourceId(Res.string.wishlist_checkbox_purchased).asString())
+                    }
+
+
+                }
+                AppButton(
+                    text = UiText.StringResourceId(Res.string.wishlist_button_save).asString(),
+                    onClick = { onAction(WishlistAddAction.OnSaveClicked) },
+                    modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
                 )
             }
 
-            // 2. Ürün Adı
-            OutlinedTextField(
-                value = state.wishlistItem.name,
-                onValueChange = { onAction(WishlistAddAction.OnNameChanged(it)) },
-                label = { Text(UiText.StringResourceId(Res.string.wishlist_label_product_name).asString()) },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            // 3. Fiyat
-
-            MoneyInput(
-                money = state.wishlistItem.price,
-                onValueChange = { onAction(WishlistAddAction.OnPriceChanged(it)) },
-                modifier = Modifier.fillMaxWidth(),
-                label = UiText.StringResourceId(Res.string.wishlist_label_price, arrayOf(state.wishlistItem.price.currency.symbol)),
-                //isError = state.isPriceError,
-                //errorMessage = state.priceErrorMessage
-            )
-
-            // 4. Kategori
-            CategorySelector(
-                categories = state.wishlistCategories,
-                selectedCategory = state.wishlistItem.category ?: state.wishlistCategories.firstOrNull(),
-                onCategorySelected = {
-                    onAction(WishlistAddAction.OnCategorySelected(it))
-                },
-                onNewCategoryCreated = {
-                    onAction(WishlistAddAction.OnNewCategoryCreated(it))
-                },
-                categoryType = CategoryType.WISHLIST,
-            )
-
-            // 5. Öncelik (1-5)
-            PriorityChooser(
-                value = state.wishlistItem.priority,
-                onValueChange = { onAction(WishlistAddAction.OnPriorityChanged(it)) }
-            )
-
-            // 6. Not
-            OutlinedTextField(
-                value = state.wishlistItem.note ?: "",
-                onValueChange = { onAction(WishlistAddAction.OnNoteChanged(it)) },
-                label = { Text(UiText.StringResourceId(Res.string.wishlist_label_note_optional).asString()) },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            // 7. Satın alındı mı?
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Checkbox(
-                    checked = state.wishlistItem.isPurchased,
-                    onCheckedChange = { onAction(WishlistAddAction.OnPurchasedChanged(it)) }
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(UiText.StringResourceId(Res.string.wishlist_checkbox_purchased).asString())
-            }
-
-            // 8. Kaydet Butonu
-            Button(
-                onClick = { onAction(WishlistAddAction.OnSaveClicked) },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(UiText.StringResourceId(Res.string.wishlist_button_save).asString())
-            }
         }
-    }
+
 
 }

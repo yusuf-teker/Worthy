@@ -102,6 +102,7 @@ fun AppNavHost(
                             showAddFabMenu = !showAddFabMenu
                         }
                         else if (route.toString() != currentRoute) {
+                            showAddFabMenu = false
                             navController.navigate(route) {
                                 popUpTo(Routes.Dashboard.toString()) { saveState = true }
                                 launchSingleTop = true
@@ -197,6 +198,12 @@ fun AppNavHost(
                         AddTransactionScreenRoot(
                             isIncomeByDefault = isIncomeByDefault,
                             contentPadding = innerPadding,
+                            navigateBack = {
+                                navController.popBackStack()
+                            },
+                            navigateToAddCardScreen = {
+                                navController.navigate(Routes.AddCard)
+                            }
                         )
                     }
                     composable<Routes.Wallet> {

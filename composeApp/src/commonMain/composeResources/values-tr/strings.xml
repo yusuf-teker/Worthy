@@ -45,6 +45,8 @@
     <string name ="incomes">Gelirler</string>
     <string name ="expenses">Giderler</string>
     <string name="no_selected">Seçilmedi</string>
+    <string name="note">Note</string>
+
 
 
     <!-- Dashboard -->
@@ -116,7 +118,7 @@
     <string name="label_amount">Tutar (%1$s)</string>
     <string name="add_new">Yeni Ekle</string>
     <string name="amount_with_currency">%1$d%2$s</string>
-    <string name="title_settings">Bütçe ve Ayarlar</string>
+    <string name="screen_title_settings">Bütçe ve Ayarlar</string>
 
     <string name="last_day">Son gün</string>
     <string name="day_of_month">Gün</string>
@@ -267,9 +269,11 @@
 
     <string name="hint_enter_name">Adınızı giriniz</string>
 
-
+    <!-- ADD TRANSACTION-->
     <string name="installment_count_label">Taksit Sayısı</string>
     <string name="card_selector_label">Kart</string>
+    <string name="screen_title_new_transaction">Yeni İşlem</string>
+    <string name="add_new_card">➕ Yeni Kart Ekle</string>
 
 
 </resources>

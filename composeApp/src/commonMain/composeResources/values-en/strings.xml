@@ -46,6 +46,7 @@
     <string name ="incomes">Incomes</string>
     <string name ="expenses">Expenses</string>
     <string name="no_selected">No selected</string>
+    <string name="note">Note</string>
 
 
     <!-- Dashboard -->
@@ -115,7 +116,7 @@
     <string name="label_amount">Amount (%1$s)</string> <!-- %1$s => currency symbol -->
     <string name="add_new">Add New</string>
     <string name="amount_with_currency">%1$s%2$s</string>
-    <string name="title_settings">Budget &amp; Settings</string>
+    <string name="screen_title_settings">Budget &amp; Settings</string>
     <string name="start_date">Start Date</string>
 
 
@@ -277,9 +278,11 @@
     <string name="error_invalid_name">Please enter more than 2 character.</string>
 
 
-
+    <!-- ADD TRANSACTION-->
     <string name="installment_count_label">Installment Count</string>
     <string name="card_selector_label">Card</string>
+    <string name="screen_title_new_transaction">New Transaction</string>
+    <string name="add_new_card">➕ Add New Card</string>
 
 
 </resources>

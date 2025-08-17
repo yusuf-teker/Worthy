@@ -21,12 +21,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.yusufteker.worthy.core.domain.getCurrentEpochMillis
+import com.yusufteker.worthy.core.domain.model.Card
 import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.CategoryType
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.components.AppButton
+import com.yusufteker.worthy.core.presentation.components.CardSelector
 import com.yusufteker.worthy.core.presentation.components.CategorySelector
 import com.yusufteker.worthy.core.presentation.components.WheelDatePicker
 import com.yusufteker.worthy.core.presentation.components.MoneyInput
@@ -38,6 +40,7 @@ import kotlinx.datetime.todayIn
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.add
 import worthy.composeapp.generated.resources.installment_count_label
+import worthy.composeapp.generated.resources.note
 import worthy.composeapp.generated.resources.wishlist_label_product_name
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -49,9 +52,10 @@ data class AddTransactionFormState(
     val selectedCategory: Category? = null,
     val transactionDate: Long = getCurrentEpochMillis(),
     val note: String = "",
-    val cardId: Int? = null,              // Seçilen kart
-    val installmentCount: Int = 0,    // Expense taksit sayısı
-    val installmentStartDate: Long = getCurrentEpochMillis() // Taksit başlangıç tarihi
+    val selectedCard: Card? = null,
+    val cards: List<Card>? = null,
+    val installmentCount: Int = 0,
+    val installmentStartDate: Long = getCurrentEpochMillis()
 )
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
@@ -64,10 +68,11 @@ fun AddTransactionForm(
     onCategoryChange: (Category) -> Unit,
     onTransactionDateChange: (Long) -> Unit,
     onNoteChange: (String) -> Unit,
-    onCardSelected: (cardId: Int) -> Unit,
+    onCardSelected: (card: Card) -> Unit = {},
     onInstallmentCountChange: (Int) -> Unit = {},
     onInstallmentStartDateChange: (Long) -> Unit= {},
     onNewCategoryCreated: (Category) -> Unit,
+    onAddNewCardClicked: () -> Unit = {},
 
     onSaveClick: () -> Unit
 ) {
@@ -163,6 +168,18 @@ fun AddTransactionForm(
 
             }
 
+            CardSelector(
+                cards = state.cards,
+                selectedCard = state.selectedCard,
+                onCardSelected = {
+                    onCardSelected(it)
+                },
+                modifier = Modifier.fillMaxWidth(),
+                onAddNewCard = {
+                    onAddNewCardClicked.invoke()
+                }
+            )
+
 
         }
 
@@ -171,7 +188,7 @@ fun AddTransactionForm(
         OutlinedTextField(
             value = state.note,
             onValueChange = onNoteChange,
-            label = { Text("Note") },
+            label = { Text(UiText.StringResourceId(Res.string.note).asString()) },
             modifier = Modifier.fillMaxWidth()
         )
 

@@ -32,48 +32,40 @@ fun AppTopBar(
     title: String,
     onNavIconClick: (() -> Unit)? = null,
     isBack: Boolean = false,
-    isAlignCenter: Boolean = false,
     actions: @Composable RowScope.() -> Unit = {},
 ) {
-
     Box(
         modifier = modifier
             .fillMaxWidth()
             .height(AppTopBarHeight)
-        ,
-        contentAlignment = Alignment.CenterStart
     ) {
-        Row(
-            modifier = Modifier.fillMaxSize(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            if (onNavIconClick != null) {
-                Icon(
-                    imageVector = if (isBack) Icons.AutoMirrored.Filled.ArrowBack else Icons.Default.Menu,
-                    contentDescription = if (isBack) "Back" else "Menu",
-                    tint = AppColors.onBackground,
-                    modifier = Modifier
-                        .size(AppIconSizeSmall)
-                        .clickable { onNavIconClick() }
-                )
-                Spacer(modifier = Modifier.width(Spacing16))
-            }
+        // Title her zaman ortada
+        Text(
+            text = title,
+            style = AppTypography.titleLarge,
+            color = AppColors.onBackground,
+            modifier = Modifier.align(Alignment.Center),
+            textAlign = TextAlign.Center
+        )
 
-
-
-            Text(
-                text = title,
-                style = AppTypography.titleLarge,
-                color = AppColors.onBackground,
-                modifier = Modifier.weight(1f).align(Alignment.CenterVertically),
-                textAlign = if(isAlignCenter) TextAlign.Center else TextAlign.Start
-            )
-
-            Row(
-                modifier = Modifier,
-                verticalAlignment = Alignment.CenterVertically,
-                content = actions
+        // Sol ikon
+        if (onNavIconClick != null) {
+            Icon(
+                imageVector = if (isBack) Icons.AutoMirrored.Filled.ArrowBack else Icons.Default.Menu,
+                contentDescription = if (isBack) "Back" else "Menu",
+                tint = AppColors.onBackground,
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .size(AppIconSizeSmall)
+                    .clickable { onNavIconClick() }
             )
         }
+
+        // Sağdaki aksiyonlar
+        Row(
+            modifier = Modifier.align(Alignment.CenterEnd),
+            verticalAlignment = Alignment.CenterVertically,
+            content = actions
+        )
     }
 }
