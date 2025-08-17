@@ -32,6 +32,7 @@ import com.yusufteker.worthy.core.presentation.BottomNavigationBar
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppDimens.ScreenPadding
 import com.yusufteker.worthy.screen.addtransaction.presentation.AddTransactionScreenRoot
+import com.yusufteker.worthy.screen.card.add.presentation.AddCardScreenRoot
 import com.yusufteker.worthy.screen.dashboard.presentation.DashboardScreenRoot
 import com.yusufteker.worthy.screen.onboarding.domain.OnboardingManager
 import com.yusufteker.worthy.screen.onboarding.presentation.OnboardingScreenRoot
@@ -206,6 +207,13 @@ fun AppNavHost(
                             }
                         )
                     }
+
+                    composable<Routes.AddCard> {
+                        AddCardScreenRoot(
+                            contentPadding = innerPadding,
+                        )
+                    }
+
                     composable<Routes.Wallet> {
                         WalletScreenRoot(
                             contentPadding = innerPadding,

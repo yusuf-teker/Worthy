@@ -23,6 +23,7 @@ sealed interface TransactionFormAction {
     data class CardSelected(val card: Card) : TransactionFormAction
 
     object AddNewCardClicked : TransactionFormAction
+    data class IsCardPaymentChanged(val isCardPayment: Boolean) : TransactionFormAction
     data class InstallmentCountChanged(val count: Int) : TransactionFormAction
     data class InstallmentStartDateChanged(val date: Long) : TransactionFormAction
     object SaveClicked : TransactionFormAction

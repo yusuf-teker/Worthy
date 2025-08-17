@@ -83,6 +83,7 @@ fun CardSelector(
                 },
                 onClick = {
                     expanded = false
+                    onAddNewCard.invoke()
                 }
             )
         }

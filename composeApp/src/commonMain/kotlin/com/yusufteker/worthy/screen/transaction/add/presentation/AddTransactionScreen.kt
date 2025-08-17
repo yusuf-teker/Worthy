@@ -120,7 +120,7 @@ fun AddTransactionScreen(
                 AddTransactionForm(
                     state = state.expenseForm,
                     isExpense = true,
-
+                    isCardPayment = state.expenseForm.isCardPayment,
                     onNameChange = {
                         onAction(AddTransactionAction.ExpenseFormAction(TransactionFormAction.NameChanged(it)))
                     },
@@ -157,7 +157,10 @@ fun AddTransactionScreen(
                     },
 
                     onAddNewCardClicked = {
-                        onAction(AddTransactionAction.IncomeFormAction(TransactionFormAction.AddNewCardClicked))
+                        onAction(AddTransactionAction.ExpenseFormAction(TransactionFormAction.AddNewCardClicked))
+                    },
+                    onIsCardPaymentChanged = {
+                        onAction(AddTransactionAction.ExpenseFormAction(TransactionFormAction.IsCardPaymentChanged(it)))
                     },
                     onSaveClick = {
                         onAction(AddTransactionAction.ExpenseFormAction(TransactionFormAction.SaveClicked))

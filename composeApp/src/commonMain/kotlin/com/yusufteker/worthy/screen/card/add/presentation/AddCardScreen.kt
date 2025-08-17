@@ -5,6 +5,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -22,12 +23,18 @@ fun AddCardScreen(
     onAction: (action: AddCardAction) -> Unit,
     contentPadding: PaddingValues = PaddingValues()
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(contentPadding),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        // TODO
+
+    BaseContentWrapper(
+        state = state
+    ){
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(contentPadding),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // TODO
+        }
     }
+
 }

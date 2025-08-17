@@ -73,9 +73,18 @@ class AddTransactionViewModel(
                         )
 
                     }
-                    TransactionFormAction.SaveClicked -> {}
-                    TransactionFormAction.AddNewCardClicked -> {
-                       // sendUiEventSafe(UiEvent.NavigateTo(Routes.AddCard))
+                    is TransactionFormAction.SaveClicked -> {}
+                    is TransactionFormAction.AddNewCardClicked -> {
+                        sendUiEventSafe(UiEvent.NavigateTo(Routes.AddCard))
+                    }
+
+                    is TransactionFormAction.IsCardPaymentChanged -> {
+                        _state.value = _state.value.copy(
+                            expenseForm = _state.value.expenseForm.copy(
+                                isCardPayment = action.action.isCardPayment
+                            )
+                        )
+
                     }
                 }
 
@@ -134,6 +143,10 @@ class AddTransactionViewModel(
                     }
                     TransactionFormAction.SaveClicked -> {}
                     TransactionFormAction.AddNewCardClicked -> {
+
+                    }
+
+                    is TransactionFormAction.IsCardPaymentChanged -> {
 
                     }
                 }

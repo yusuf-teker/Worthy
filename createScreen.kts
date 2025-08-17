@@ -20,9 +20,9 @@ val files = listOf(
         package com.yusufteker.worthy.screen.$packageName.presentation
 
         data class ${screenName}State(
-            val isLoading: Boolean = false,
+            override val isLoading: Boolean = false,
             val errorMessage: String? = null
-        )
+        ): BaseState
     """.trimIndent(),
 
     "$screenName" + "ViewModel.kt" to """
@@ -71,14 +71,19 @@ val files = listOf(
             onAction: (action: ${screenName}Action) -> Unit,
             contentPadding: PaddingValues = PaddingValues()
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(contentPadding),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                // TODO
+            BaseContentWrapper(
+                state = state
+            ){
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(contentPadding),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    // TODO
+                }
             }
+           
         }
     """.trimIndent()
 )
