@@ -15,8 +15,6 @@ sealed interface SettingsAction {
     data class OnUpdateRecurringItems(val items: List<RecurringFinancialItem>) : SettingsAction
     data class OnAddNewRecurringItem(val item: RecurringFinancialItem) : SettingsAction
 
-    data class OnDeleteGroupRecurringItem(val groupId: String ) : SettingsAction
-
-
+    data class OnDeleteGroupRecurringItem(val groupId: String) : SettingsAction
 
 }

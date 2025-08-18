@@ -10,7 +10,7 @@ data class AddTransactionState(
     val expenseForm: AddTransactionFormState = AddTransactionFormState(),
     val incomeForm: AddTransactionFormState = AddTransactionFormState()
 
-): BaseState{
+) : BaseState {
     override fun copyWithLoading(isLoading: Boolean) = copy(isLoading = isLoading)
 
 }

@@ -9,28 +9,22 @@ import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.TransactionType
 
 @Entity(
-    tableName = "transactions",
-    foreignKeys = [
-        ForeignKey(
-            entity = TransactionEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["relatedTransactionId"],
-            onDelete = ForeignKey.SET_NULL
-        ),
-        ForeignKey(
-            entity = CardEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["cardId"],
-            onDelete = ForeignKey.SET_NULL
-        ),
-        ForeignKey(
-            entity = CategoryEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["categoryId"],
-            onDelete = ForeignKey.SET_NULL
-        )
-    ],
-    indices = [Index("relatedTransactionId"), Index("cardId"), Index("categoryId")]
+    tableName = "transactions", foreignKeys = [ForeignKey(
+        entity = TransactionEntity::class,
+        parentColumns = ["id"],
+        childColumns = ["relatedTransactionId"],
+        onDelete = ForeignKey.SET_NULL
+    ), ForeignKey(
+        entity = CardEntity::class,
+        parentColumns = ["id"],
+        childColumns = ["cardId"],
+        onDelete = ForeignKey.SET_NULL
+    ), ForeignKey(
+        entity = CategoryEntity::class,
+        parentColumns = ["id"],
+        childColumns = ["categoryId"],
+        onDelete = ForeignKey.SET_NULL
+    )], indices = [Index("relatedTransactionId"), Index("cardId"), Index("categoryId")]
 )
 data class TransactionEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,

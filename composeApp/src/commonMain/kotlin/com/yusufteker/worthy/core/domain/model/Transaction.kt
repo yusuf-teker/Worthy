@@ -1,10 +1,7 @@
 package com.yusufteker.worthy.core.domain.model
 
-
 enum class TransactionType {
-    INCOME,
-    EXPENSE,
-    REFUND,
+    INCOME, EXPENSE, REFUND,
 }
 
 data class Transaction(

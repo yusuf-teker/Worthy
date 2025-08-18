@@ -29,16 +29,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
-import com.yusufteker.worthy.screen.settings.presentation.components.BudgetSlider
 import com.yusufteker.worthy.core.presentation.components.CurrencyPicker
-import com.yusufteker.worthy.screen.settings.presentation.components.FinancialWidget
 import com.yusufteker.worthy.core.presentation.components.NumberPickerInput
 import com.yusufteker.worthy.core.presentation.components.PieChart
-import com.yusufteker.worthy.screen.settings.presentation.components.RecurringFinancialItemDialog
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
 import com.yusufteker.worthy.core.presentation.theme.Constants.WEEKLY_MAX_HOURS
 import com.yusufteker.worthy.core.presentation.toFormattedWithThousandsSeparator
+import com.yusufteker.worthy.screen.settings.presentation.components.BudgetSlider
+import com.yusufteker.worthy.screen.settings.presentation.components.FinancialWidget
+import com.yusufteker.worthy.screen.settings.presentation.components.RecurringFinancialItemDialog
 import org.koin.compose.viewmodel.koinViewModel
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.hour_singular
@@ -52,8 +52,8 @@ import worthy.composeapp.generated.resources.screen_title_settings
 
 @Composable
 fun SettingsScreenRoot(
-    viewModel:SettingsViewModel = koinViewModel(),
-    contentPadding : PaddingValues = PaddingValues(),
+    viewModel: SettingsViewModel = koinViewModel(),
+    contentPadding: PaddingValues = PaddingValues(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -99,58 +99,73 @@ fun SettingsScreen(
             onNavIconClick = {},
             isBack = false,
             modifier = Modifier.background(AppColors.transparent)
-        ) {  }
+        ) { }
 
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
             // PIE CHART
             PieChart(
-                values = listOf(state.totalFixedExpenses, state.budgetAmount.amount, state.savingsAmount),
-                colors = listOf(AppColors.fixedExpenseGray, AppColors.budgetBlue, AppColors.savingsGreen),
+                values = listOf(
+                    state.totalFixedExpenses,
+                    state.budgetAmount.amount,
+                    state.savingsAmount
+                ),
+                colors = listOf(
+                    AppColors.fixedExpenseGray,
+                    AppColors.budgetBlue,
+                    AppColors.savingsGreen
+                ),
                 modifier = Modifier
                     .size(120.dp)
             )
 
 
-        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
 
+                // BUDGET SLIDER
+                BudgetSlider(
+                    modifier = Modifier.fillMaxWidth(),
+                    budgetAmount = state.budgetAmount,
+                    totalIncome = state.totalFixedIncome,
+                    totalFixedExpenses = state.totalFixedExpenses,
+                    selectedCurrency = state.selectedCurrency.symbol,
+                    onBudgetChange = { v ->
+                        onAction(
+                            SettingsAction.OnBudgetValueChange(
+                                state.budgetAmount.copy(
+                                    amount = v.coerceIn(
+                                        0.0,
+                                        (state.totalFixedIncome - state.totalFixedExpenses).coerceAtLeast(
+                                            0.0
+                                        )
+                                    )
+                                )
+                            )
 
-            // BUDGET SLIDER
-            BudgetSlider(
-                modifier = Modifier.fillMaxWidth(),
-                budgetAmount = state.budgetAmount,
-                totalIncome = state.totalFixedIncome,
-                totalFixedExpenses = state.totalFixedExpenses,
-                selectedCurrency = state.selectedCurrency.symbol,
-                onBudgetChange = { v ->
-                    onAction(SettingsAction.OnBudgetValueChange(
-                        state.budgetAmount.copy(
-                            amount = v.coerceIn(0.0, (state.totalFixedIncome - state.totalFixedExpenses).coerceAtLeast(0.0)))
                         )
+                    },
+                )
+                // INCOME WIDGET
+                FinancialWidget(
+                    title = UiText.StringResourceId(Res.string.label_income_sources).asString(),
+                    totalAmount = state.totalFixedIncome,
+                    color = AppColors.primary,
+                    onClick = { showIncomeDialog = true },
+                    currencySymbol = state.selectedCurrency.symbol
+                )
 
-                    )
-                },
-            )
-            // INCOME WIDGET
-            FinancialWidget(
-                title = UiText.StringResourceId(Res.string.label_income_sources).asString(),
-                totalAmount = state.totalFixedIncome,
-                color = AppColors.primary,
-                onClick = { showIncomeDialog = true },
-                currencySymbol = state.selectedCurrency.symbol
-            )
-
-            // FIXED EXPENSES WIDGET
-            FinancialWidget(
-                title = UiText.StringResourceId(Res.string.label_fixed_expenses).asString(),
-                totalAmount = state.totalFixedExpenses,
-                color = AppColors.primary,
-                onClick = { showFixedExpenseDialog = true },
-                currencySymbol = state.selectedCurrency.symbol
-            )
+                // FIXED EXPENSES WIDGET
+                FinancialWidget(
+                    title = UiText.StringResourceId(Res.string.label_fixed_expenses).asString(),
+                    totalAmount = state.totalFixedExpenses,
+                    color = AppColors.primary,
+                    onClick = { showFixedExpenseDialog = true },
+                    currencySymbol = state.selectedCurrency.symbol
+                )
+            }
         }
-        }
-
-
 
         // SUMMARY
         FlowRow(
@@ -158,9 +173,24 @@ fun SettingsScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
-            ReadOnlyRow( UiText.StringResourceId(Res.string.label_fixed_expenses).asString(), state.totalFixedExpenses,  AppColors.fixedExpenseGray,  state.selectedCurrency.symbol)
-            ReadOnlyRow( UiText.StringResourceId(Res.string.label_budget).asString(), state.budgetAmount.amount, AppColors.budgetBlue, state.selectedCurrency.symbol)
-            ReadOnlyRow( UiText.StringResourceId(Res.string.label_savings).asString(), state.savingsAmount, AppColors.savingsGreen, state.selectedCurrency.symbol)
+            ReadOnlyRow(
+                UiText.StringResourceId(Res.string.label_fixed_expenses).asString(),
+                state.totalFixedExpenses,
+                AppColors.fixedExpenseGray,
+                state.selectedCurrency.symbol
+            )
+            ReadOnlyRow(
+                UiText.StringResourceId(Res.string.label_budget).asString(),
+                state.budgetAmount.amount,
+                AppColors.budgetBlue,
+                state.selectedCurrency.symbol
+            )
+            ReadOnlyRow(
+                UiText.StringResourceId(Res.string.label_savings).asString(),
+                state.savingsAmount,
+                AppColors.savingsGreen,
+                state.selectedCurrency.symbol
+            )
         }
 
 
@@ -171,7 +201,7 @@ fun SettingsScreen(
             NumberPickerInput(
                 label = UiText.StringResourceId(Res.string.label_weekly_work_hours).asString(),
                 value = state.weeklyWorkHours,
-                range = 0..WEEKLY_MAX_HOURS    ,
+                range = 0..WEEKLY_MAX_HOURS,
                 step = 1,
                 onValueChange = { onAction(SettingsAction.OnWeeklyWorkHoursChange(it)) },
                 format = { hours ->
@@ -194,7 +224,7 @@ fun SettingsScreen(
 
     // INCOME DIALOG
 
-    if (showIncomeDialog){
+    if (showIncomeDialog) {
 
         RecurringFinancialItemDialog(
 
@@ -203,7 +233,7 @@ fun SettingsScreen(
             isIncome = true,
             onDismiss = {
                 showIncomeDialog = false
-                        },
+            },
             onClose = {
                 showIncomeDialog = false
             },
@@ -226,13 +256,13 @@ fun SettingsScreen(
 
     // FIXED EXPENSES DIALOG
 
-    if (showFixedExpenseDialog){
+    if (showFixedExpenseDialog) {
         RecurringFinancialItemDialog(
 
             title = UiText.StringResourceId(Res.string.label_fixed_expenses).asString(),
             items = state.expenseRecurringItems,
             isIncome = false,
-            onDismiss = {  showFixedExpenseDialog = false },
+            onDismiss = { showFixedExpenseDialog = false },
             onClose = {
                 showFixedExpenseDialog = false
             },
@@ -252,7 +282,6 @@ fun SettingsScreen(
     }
 }
 
-
 @Composable
 private fun ReadOnlyRow(label: String, amount: Double, color: Color, currencySymbol: String = "₺") {
     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -262,6 +291,9 @@ private fun ReadOnlyRow(label: String, amount: Double, color: Color, currencySym
                 .background(color, CircleShape)
         )
         Spacer(Modifier.width(8.dp))
-        Text("$label: ${amount.toFormattedWithThousandsSeparator()} $currencySymbol", style = AppTypography.bodyMedium)
+        Text(
+            "$label: ${amount.toFormattedWithThousandsSeparator()} $currencySymbol",
+            style = AppTypography.bodyMedium
+        )
     }
 }

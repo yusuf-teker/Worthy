@@ -6,8 +6,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 
-
-
 /**
  * Menü FAB'ın durumunu tutan state sınıfı.
  * Collapsed → Kapalı
@@ -23,6 +21,5 @@ class MenuFabState {
 fun rememberMenuFabState() = remember { MenuFabState() }
 
 enum class MenuFabStateEnum {
-    Collapsed,
-    Expanded
+    Collapsed, Expanded
 }

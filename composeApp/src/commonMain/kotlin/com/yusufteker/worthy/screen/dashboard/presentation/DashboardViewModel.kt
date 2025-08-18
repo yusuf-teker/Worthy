@@ -3,26 +3,22 @@ package com.yusufteker.worthy.screen.dashboard.presentation
 import androidx.lifecycle.viewModelScope
 import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.domain.getCurrentLocalDateTime
+import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.core.domain.model.DashboardMonthlyAmount
 import com.yusufteker.worthy.core.domain.model.Money
-import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.domain.model.getLastMonth
-import com.yusufteker.worthy.core.domain.model.getLastMonths
 import com.yusufteker.worthy.core.domain.model.getLastSixMonths
 import com.yusufteker.worthy.core.domain.model.sumConvertedAmount
 import com.yusufteker.worthy.core.domain.model.sumWithCurrencyConverted
 import com.yusufteker.worthy.core.domain.service.CurrencyConverter
+import com.yusufteker.worthy.core.presentation.UiEvent.NavigateTo
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
-import com.yusufteker.worthy.core.presentation.UiEvent.*
 import com.yusufteker.worthy.core.presentation.components.adjustValuesForBarChart
 import com.yusufteker.worthy.core.presentation.util.hideKeyboard
 import com.yusufteker.worthy.screen.dashboard.domain.DashboardRepository
 import com.yusufteker.worthy.screen.dashboard.domain.EvaluationResult
 import com.yusufteker.worthy.screen.settings.domain.UserPrefsManager
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
@@ -48,6 +44,7 @@ class DashboardViewModel(
                 )
             }
         }
+
         is DashboardAction.ChartSelected -> {
             _state.update {
                 it.copy(
@@ -64,28 +61,39 @@ class DashboardViewModel(
 
         is DashboardAction.CalculateButtonClicked -> {
 
-            launchWithLoading{
+            launchWithLoading {
 
                 _state.update { it.updateBottomSheet { copy(isCalculating = true) } }
                 action.money.let {
 
                     // harcama currencye cevrilmis income
-                    val monthlyIncome = currencyConverter.convert(state.value.totalAllIncomeMoney, to = action.money.currency)
-                    val monthlyExpense = currencyConverter.convert(state.value.totalAllExpenseMoney, to = action.money.currency)
-                    val desireBudget = currencyConverter.convert(state.value.desireBudget, to = action.money.currency)
-                    val incomeMinusExpense = monthlyIncome.amount-monthlyExpense.amount
+                    val monthlyIncome = currencyConverter.convert(
+                        state.value.totalAllIncomeMoney,
+                        to = action.money.currency
+                    )
+                    val monthlyExpense = currencyConverter.convert(
+                        state.value.totalAllExpenseMoney,
+                        to = action.money.currency
+                    )
+                    val desireBudget = currencyConverter.convert(
+                        state.value.desireBudget,
+                        to = action.money.currency
+                    )
+                    val incomeMinusExpense = monthlyIncome.amount - monthlyExpense.amount
                     val desirePercent = ((action.money.amount / desireBudget.amount) * 100)
-                    val  workHours =  (action.money.amount / (monthlyIncome.amount / state.value.monthlyWorkHours)).toFloat()
-                    val   remainingDesire =  (state.value.desireBudget.amount - action.money.amount).toInt()
-                    val  currencySymbol = state.value.selectedCurrency.symbol
-                    val monthlyIncomePercent = ( action.money.amount / monthlyIncome.amount) * 100
-                    val incomeMinusExpensePercent = ( action.money.amount / incomeMinusExpense) * 100
+                    val workHours =
+                        (action.money.amount / (monthlyIncome.amount / state.value.monthlyWorkHours)).toFloat()
+                    val remainingDesire =
+                        (state.value.desireBudget.amount - action.money.amount).toInt()
+                    val currencySymbol = state.value.selectedCurrency.symbol
+                    val monthlyIncomePercent = (action.money.amount / monthlyIncome.amount) * 100
+                    val incomeMinusExpensePercent = (action.money.amount / incomeMinusExpense) * 100
 
                     _state.update {
                         it.updateBottomSheet {
                             copy(
                                 evaluationResult = EvaluationResult(
-                                    incomePercent = monthlyIncomePercent ,//incomePercent,
+                                    incomePercent = monthlyIncomePercent,//incomePercent,
                                     desirePercent = desirePercent,
                                     workHours = workHours,
                                     remainingDesire = remainingDesire,
@@ -100,10 +108,6 @@ class DashboardViewModel(
 
                 hideKeyboard()
             }
-
-
-
-
 
         }
 
@@ -125,19 +129,20 @@ class DashboardViewModel(
                     state.value.recurringExpenseMonthlyAmountList,
                     state.value.wishlistMonthlyAmountList,
 
-                )
+                    )
 
             }
-
 
         }
 
         is DashboardAction.AddRecurringClicked -> {
             sendUiEventSafe(NavigateTo(Routes.Settings))
         }
+
         is DashboardAction.AddTransactionClicked -> {
             sendUiEventSafe(NavigateTo(Routes.Settings))
         }
+
         is DashboardAction.AddWishlistClicked -> {
             sendUiEventSafe(NavigateTo(Routes.WishlistAdd))
         }
@@ -146,77 +151,76 @@ class DashboardViewModel(
             viewModelScope.launch {
                 _state.update { it.updateBottomSheet { copy(isPurchasing = true) } }
                 dashboardRepository.addPurchase(action.expense)
-                _state.update { it.updateBottomSheet { copy(isPurchasing = false) }.copy(
-                    isBottomSheetOpen = false
-                ) }
+                _state.update {
+                    it.updateBottomSheet { copy(isPurchasing = false) }.copy(
+                        isBottomSheetOpen = false
+                    )
+                }
             }
 
         }
     }
 
-    private fun observeData(){
+    private fun observeData() {
 
         launchWithLoading {
 
-                delay(2000)
-                _state.update {
-                    it.copy(
-                        // TODO : repository’den gerçek veriyi çek prefden değil
-                        userName = "Yusuf",
-                        selectedCurrency = userPrefsManager.selectedCurrency.first(),
-                        monthlyWorkHours = userPrefsManager.weeklyWorkHours.first() * 4.33f,
-                        desireBudget = userPrefsManager.desireBudget.first() ?: emptyMoney( userPrefsManager.selectedCurrency.first()),
-                        savingProgress = 0.36f,
-                    )
-                }
-
-
-                combine(
-                    dashboardRepository.getAllExpenseMonthlyAmount(
-                        6,
-                        getCurrentLocalDateTime()
+            _state.update {
+                it.copy(
+                    // TODO : repository’den gerçek veriyi çek prefden değil
+                    userName = "Yusuf",
+                    selectedCurrency = userPrefsManager.selectedCurrency.first(),
+                    monthlyWorkHours = userPrefsManager.weeklyWorkHours.first() * 4.33f,
+                    desireBudget = userPrefsManager.desireBudget.first() ?: emptyMoney(
+                        userPrefsManager.selectedCurrency.first()
                     ),
-                    dashboardRepository.getAllIncomeMonthlyAmount(
-                        6,
-                        getCurrentLocalDateTime()
-                    ),
-                    dashboardRepository.getAllRecurringMonthlyAmount(
-                        monthCount = 6,
-                        currentDate = getCurrentLocalDateTime()
-                    ),
-                    dashboardRepository.getAllWishlistMonthlyAmount(
-                        monthCount = 6,
-                        currentDate = getCurrentLocalDateTime()
-                    ),
-                    dashboardRepository.getExpenseCategories()
-                ) { expenses, incomes, dashboardRecurringData, wishlistItems, categories ->
-                    _state.update { currentState ->
-                        currentState.copy(
-                            expenseMonthlyAmountList = expenses,
-                            incomeMonthlyAmountList = incomes,
-                            recurringIncomeMonthlyAmountList = dashboardRecurringData.incomes,
-                            recurringExpenseMonthlyAmountList = dashboardRecurringData.expenses,
-                            wishlistMonthlyAmountList = wishlistItems,
-                        ).updateBottomSheet { copy(categories = categories) }
-                    }
-
-                    calculateBarRatios(
-                        expenses,
-                        incomes,
-                        dashboardRecurringData.incomes,
-                        dashboardRecurringData.expenses,
-                        wishlistItems
-                    )
-
-
-
-                }.launchIn(viewModelScope)
-
+                    savingProgress = 0.36f,
+                )
             }
 
 
-    }
+            combine(
+                dashboardRepository.getAllExpenseMonthlyAmount(
+                    6,
+                    getCurrentLocalDateTime()
+                ),
+                dashboardRepository.getAllIncomeMonthlyAmount(
+                    6,
+                    getCurrentLocalDateTime()
+                ),
+                dashboardRepository.getAllRecurringMonthlyAmount(
+                    monthCount = 6,
+                    currentDate = getCurrentLocalDateTime()
+                ),
+                dashboardRepository.getAllWishlistMonthlyAmount(
+                    monthCount = 6,
+                    currentDate = getCurrentLocalDateTime()
+                ),
+                dashboardRepository.getExpenseCategories()
+            ) { expenses, incomes, dashboardRecurringData, wishlistItems, categories ->
+                _state.update { currentState ->
+                    currentState.copy(
+                        expenseMonthlyAmountList = expenses,
+                        incomeMonthlyAmountList = incomes,
+                        recurringIncomeMonthlyAmountList = dashboardRecurringData.incomes,
+                        recurringExpenseMonthlyAmountList = dashboardRecurringData.expenses,
+                        wishlistMonthlyAmountList = wishlistItems,
+                    ).updateBottomSheet { copy(categories = categories) }
+                }
 
+                calculateBarRatios(
+                    expenses,
+                    incomes,
+                    dashboardRecurringData.incomes,
+                    dashboardRecurringData.expenses,
+                    wishlistItems
+                )
+
+            }.launchIn(viewModelScope)
+
+        }
+
+    }
 
     private suspend fun calculateBarRatios(
         expenses: List<DashboardMonthlyAmount>, // LAST 6 MONTHS DATA
@@ -225,12 +229,12 @@ class DashboardViewModel(
         recurringExpenses: List<DashboardMonthlyAmount>,
         wishlistItems: List<DashboardMonthlyAmount>
     ) {
-       val totalExpenseMoney=  expenses.sumConvertedAmount( // Seçili ayın Toplam Gideri
+        val totalExpenseMoney = expenses.sumConvertedAmount( // Seçili ayın Toplam Gideri
             state.value.selectedCurrency,
             state.value.selectedMonthYear,
             currencyConverter
-        ) ?: emptyMoney( state.value.selectedCurrency)
-        val totalIncomeMoney =  incomes.sumConvertedAmount(
+        ) ?: emptyMoney(state.value.selectedCurrency)
+        val totalIncomeMoney = incomes.sumConvertedAmount(
             state.value.selectedCurrency,
             state.value.selectedMonthYear,
             currencyConverter
@@ -249,26 +253,33 @@ class DashboardViewModel(
             state.value.selectedCurrency,
             state.value.selectedMonthYear,
             currencyConverter
-        ) ?: emptyMoney( state.value.selectedCurrency)
+        ) ?: emptyMoney(state.value.selectedCurrency)
 
-        var totalExpense = totalExpenseMoney.amount + totalRecurringExpenseMoney.amount // + totalWishlistMoney.amount // todo wishlist money kaldırılmadı
+        var totalExpense =
+            totalExpenseMoney.amount + totalRecurringExpenseMoney.amount // + totalWishlistMoney.amount // todo wishlist money kaldırılmadı
         val totalIncome = totalIncomeMoney.amount.plus(totalRecurringIncomeMoney.amount)
 
-        if (totalExpense<= 0 ){
-            totalExpense = 1.0;
+        if (totalExpense <= 0) {
+            totalExpense = 1.0
         }
         // Todo ratio şuan expense göre bunu belki böyle yapmayız
-        val recurringExpensesRatio = (totalRecurringExpenseMoney.amount / totalExpense) // fixedExpenses
-        val wishlistRatio = ( totalWishlistMoney.amount / totalExpense) // Desires
-        val remainingRatio = ( totalIncome - totalExpense ) / totalExpense // Remaining
-        val expensesRatio = (totalExpenseMoney.amount /  totalExpense) // Expenses
+        val recurringExpensesRatio =
+            (totalRecurringExpenseMoney.amount / totalExpense) // fixedExpenses
+        val wishlistRatio = (totalWishlistMoney.amount / totalExpense) // Desires
+        val remainingRatio = (totalIncome - totalExpense) / totalExpense // Remaining
+        val expensesRatio = (totalExpenseMoney.amount / totalExpense) // Expenses
 
-        val normalizedRatios = adjustValuesForBarChart(normalizeRatios(expensesRatio,recurringExpensesRatio,wishlistRatio,remainingRatio))
+        val normalizedRatios = adjustValuesForBarChart(
+            normalizeRatios(
+                expensesRatio,
+                recurringExpensesRatio,
+                wishlistRatio,
+                remainingRatio
+            )
+        )
 
-
-
-        val  totalAllIncomeMoney = Money(totalIncome, state.value.selectedCurrency)
-        val  totalAllExpenseMoney = Money(totalExpense, state.value.selectedCurrency)
+        val totalAllIncomeMoney = Money(totalIncome, state.value.selectedCurrency)
+        val totalAllExpenseMoney = Money(totalExpense, state.value.selectedCurrency)
 
         val last6Months = getLastSixMonths()
         _state.update { currentState ->
@@ -279,15 +290,20 @@ class DashboardViewModel(
                 remainingFraction = normalizedRatios.get(3),
                 totalAllIncomeMoney = totalAllIncomeMoney,
                 totalAllExpenseMoney = totalAllExpenseMoney,
-                miniBarsFractions = listOf(normalizeLast6Month(recurringExpenses ),normalizeLast6Month(wishlistItems),normalizeLast6Month(emptyList()),normalizeLast6Month(expenses )),
-                miniBarsMonths =  List(4) { last6Months }// todo napcam bilmiyorum her türlü 6 ayı ver
+                miniBarsFractions = listOf(
+                    normalizeLast6Month(recurringExpenses),
+                    normalizeLast6Month(wishlistItems),
+                    normalizeLast6Month(emptyList()),
+                    normalizeLast6Month(expenses)
+                ),
+                miniBarsMonths = List(4) { last6Months }// todo napcam bilmiyorum her türlü 6 ayı ver
 
             )
         }
 
     }
 
-    suspend fun showLoading(){
+    suspend fun showLoading() {
         _state.update { currentState ->
             currentState.copy(
                 isLoading = true
@@ -295,65 +311,80 @@ class DashboardViewModel(
         }
     }
 
-    suspend fun hideLoading(){
+    suspend fun hideLoading() {
         _state.update { currentState ->
             currentState.copy(
                 isLoading = false
             )
         }
     }
-    private suspend fun calculateSelectedMonthRecurringIncome(month: AppDate): Money{
-       return  state.value.recurringIncomeMonthlyAmountList.sumConvertedAmount(
-            state.value.selectedCurrency,
-           month,
-            currencyConverter
-        ) ?: emptyMoney( state.value.selectedCurrency)
-    }
 
-    private suspend fun calculateSelectedMonthIncome(month: AppDate): Money{
-        return  state.value.incomeMonthlyAmountList.sumConvertedAmount(
+    private suspend fun calculateSelectedMonthRecurringIncome(month: AppDate): Money {
+        return state.value.recurringIncomeMonthlyAmountList.sumConvertedAmount(
             state.value.selectedCurrency,
             month,
             currencyConverter
-        ) ?: emptyMoney( state.value.selectedCurrency)
+        ) ?: emptyMoney(state.value.selectedCurrency)
     }
-    private suspend fun calculateSelectedMonthRecurringExpense(month: AppDate): Money{
-        return  state.value.recurringExpenseMonthlyAmountList.sumConvertedAmount(
+
+    private suspend fun calculateSelectedMonthIncome(month: AppDate): Money {
+        return state.value.incomeMonthlyAmountList.sumConvertedAmount(
             state.value.selectedCurrency,
             month,
             currencyConverter
-        ) ?: emptyMoney( state.value.selectedCurrency)
+        ) ?: emptyMoney(state.value.selectedCurrency)
     }
 
-    private suspend fun calculateSelectedMonthExpense(month: AppDate): Money{
-        return  state.value.expenseMonthlyAmountList.sumConvertedAmount(
+    private suspend fun calculateSelectedMonthRecurringExpense(month: AppDate): Money {
+        return state.value.recurringExpenseMonthlyAmountList.sumConvertedAmount(
             state.value.selectedCurrency,
             month,
             currencyConverter
-        ) ?: emptyMoney( state.value.selectedCurrency)
+        ) ?: emptyMoney(state.value.selectedCurrency)
     }
 
-    private suspend fun  calculateSelectedMonthAllIncome(month: AppDate): Money{
-        return Money(calculateSelectedMonthIncome(month).amount + calculateSelectedMonthRecurringIncome(month).amount, state.value.selectedCurrency)
+    private suspend fun calculateSelectedMonthExpense(month: AppDate): Money {
+        return state.value.expenseMonthlyAmountList.sumConvertedAmount(
+            state.value.selectedCurrency,
+            month,
+            currencyConverter
+        ) ?: emptyMoney(state.value.selectedCurrency)
     }
 
-    private suspend fun calculateSelectedMonthAllExpense(month: AppDate): Money{
-        return Money(calculateSelectedMonthExpense(month).amount + calculateSelectedMonthRecurringExpense(month).amount, state.value.selectedCurrency)
+    private suspend fun calculateSelectedMonthAllIncome(month: AppDate): Money {
+        return Money(
+            calculateSelectedMonthIncome(month).amount + calculateSelectedMonthRecurringIncome(
+                month
+            ).amount, state.value.selectedCurrency
+        )
     }
+
+    private suspend fun calculateSelectedMonthAllExpense(month: AppDate): Money {
+        return Money(
+            calculateSelectedMonthExpense(month).amount + calculateSelectedMonthRecurringExpense(
+                month
+            ).amount, state.value.selectedCurrency
+        )
+    }
+
     private suspend fun calculateSelectedMonthIncomeChangeRatio(month: AppDate): Double {
-        val lastMonthIncome = calculateSelectedMonthRecurringIncome(month.getLastMonth()).amount + calculateSelectedMonthIncome(month.getLastMonth()).amount
-        val selectedMonthIncome = (calculateSelectedMonthRecurringIncome(month).amount) + calculateSelectedMonthIncome(month).amount
+        val lastMonthIncome =
+            calculateSelectedMonthRecurringIncome(month.getLastMonth()).amount + calculateSelectedMonthIncome(
+                month.getLastMonth()
+            ).amount
+        val selectedMonthIncome =
+            (calculateSelectedMonthRecurringIncome(month).amount) + calculateSelectedMonthIncome(
+                month
+            ).amount
 
-        return  (selectedMonthIncome - lastMonthIncome) / selectedMonthIncome * 100
+        return (selectedMonthIncome - lastMonthIncome) / selectedMonthIncome * 100
     }
-
-
 
     // Son 6 ayın (daha fazla veya azda verilebilir) aylık toplam tutarını 0-1f aralıgına dönüştürüp liste veriyor
     // bar chartlarda yükseklik için 0-1f aralıgında değer lazım
-    suspend fun normalizeLast6Month(list : List<DashboardMonthlyAmount>): List<Float?>{
+    suspend fun normalizeLast6Month(list: List<DashboardMonthlyAmount>): List<Float?> {
         if (list.isEmpty())
-            return listOf(0f,0f,0f,0f,0f,0f)
+            return listOf(0f, 0f, 0f, 0f, 0f, 0f)
         val last6Months = getLastSixMonths() // veya LocalDate.now().monthValue
 
         val monthlyValues = last6Months.map { month ->
@@ -364,8 +395,6 @@ class DashboardViewModel(
         }
         return normalizeRatios(monthlyValues) // 0 - 1 ARALIGINDA
     }
-
-
 
 }
 
@@ -379,16 +408,16 @@ fun normalizeRatios(vararg ratios: Double): List<Double?> {
         List(ratios.size) { 0.0 }
     } else {
         ratios.map {
-            if (it > 0.0 ){
+            if (it > 0.0) {
                 it / max
-            }else{
+            } else {
                 null
             }
         }
     }
 }
 
-fun normalizeRatios( ratios: List<Double>): List<Float?> {
+fun normalizeRatios(ratios: List<Double>): List<Float?> {
     if (ratios.isEmpty())
         return emptyList()
 
@@ -400,9 +429,9 @@ fun normalizeRatios( ratios: List<Double>): List<Float?> {
         List(ratios.size) { 0f }
     } else {
         ratios.map {
-            if (it > 0.0 ){
+            if (it > 0.0) {
                 (it / max).toFloat()
-            }else{
+            } else {
                 null
             }
         }

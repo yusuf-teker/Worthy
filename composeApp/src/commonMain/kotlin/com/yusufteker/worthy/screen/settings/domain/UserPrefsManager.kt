@@ -4,16 +4,16 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.core.IOException
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Money
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.catch
-import kotlinx.serialization.json.Json
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.SerializationException
+import kotlinx.serialization.json.Json
 
 class UserPrefsManager(private val dataStore: DataStore<Preferences>) {
 
@@ -59,8 +59,6 @@ class UserPrefsManager(private val dataStore: DataStore<Preferences>) {
             }
         }
 
-
-
     /** HAFTALIK ÇALIŞMA SAATİ */
     val weeklyWorkHours: Flow<Int> = dataStore.data
         .catch { exception ->
@@ -88,11 +86,6 @@ class UserPrefsManager(private val dataStore: DataStore<Preferences>) {
             Currency.entries.find { it.name == savedCode } ?: Currency.TRY
         }
 
-
-
-
-
-
     /** BÜTÇE */
     suspend fun setBudgetMoney(money: Money) {
         val json = Json.encodeToString(money)
@@ -111,7 +104,6 @@ class UserPrefsManager(private val dataStore: DataStore<Preferences>) {
         }
     }
 
-
     suspend fun setWeeklyWorkHours(hours: Int) {
         dataStore.edit { prefs ->
             prefs[WEEKLY_WORK_HOURS] = hours
@@ -123,7 +115,6 @@ class UserPrefsManager(private val dataStore: DataStore<Preferences>) {
             prefs[CURRENCY] = currency.name
         }
     }
-
 
     suspend fun setSpendingLimit(money: Money) {
         val jsonString = Json.encodeToString(money)
@@ -164,6 +155,7 @@ class UserPrefsManager(private val dataStore: DataStore<Preferences>) {
             prefs[USER_NAME] = name
         }
     }
+
     val userName: Flow<String?> = dataStore.data.map { prefs ->
         prefs[USER_NAME]
     }

@@ -33,10 +33,9 @@ import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.components.AppButton
 import com.yusufteker.worthy.core.presentation.components.CardSelector
 import com.yusufteker.worthy.core.presentation.components.CategorySelector
-import com.yusufteker.worthy.core.presentation.components.WheelDatePicker
 import com.yusufteker.worthy.core.presentation.components.MoneyInput
 import com.yusufteker.worthy.core.presentation.components.NumberPickerInput
-
+import com.yusufteker.worthy.core.presentation.components.WheelDatePicker
 import com.yusufteker.worthy.core.presentation.theme.Constants.MAX_INSTALLMENT_COUNT
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
@@ -57,7 +56,7 @@ data class AddTransactionFormState(
     val transactionDate: Long = getCurrentEpochMillis(),
     val note: String = "",
     val selectedCard: Card? = null,
-    val isCardPayment : Boolean = false,
+    val isCardPayment: Boolean = false,
     val cards: List<Card>? = null,
     val installmentCount: Int = 0,
     val installmentStartDate: Long = getCurrentEpochMillis()
@@ -76,11 +75,10 @@ fun AddTransactionForm(
     onNoteChange: (String) -> Unit,
     onCardSelected: (card: Card) -> Unit = {},
     onInstallmentCountChange: (Int) -> Unit = {},
-    onInstallmentStartDateChange: (Long) -> Unit= {},
+    onInstallmentStartDateChange: (Long) -> Unit = {},
     onNewCategoryCreated: (Category) -> Unit,
     onAddNewCardClicked: () -> Unit = {},
     onIsCardPaymentChanged: (Boolean) -> Unit = {},
-
 
     onSaveClick: () -> Unit
 ) {
@@ -96,17 +94,21 @@ fun AddTransactionForm(
             onValueChange = {
                 onNameChange.invoke(it)
             },
-            label = { Text(UiText.StringResourceId(Res.string.wishlist_label_product_name).asString()) },
+            label = {
+                Text(
+                    UiText.StringResourceId(Res.string.wishlist_label_product_name).asString()
+                )
+            },
             modifier = Modifier.fillMaxWidth()
         )
         // 2 AMOUNT
         MoneyInput(
-            money = state.money?: emptyMoney(),
-            onValueChange ={
+            money = state.money ?: emptyMoney(),
+            onValueChange = {
                 onAmountChange(it!!)
             },
 
-        )
+            )
         // 3 CATEGORY
         CategorySelector(
             categories = state.categories,
@@ -138,11 +140,11 @@ fun AddTransactionForm(
             label = "weightAnim"
         )
 
-        if (isExpense){
+        if (isExpense) {
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth().clickable{
+                modifier = Modifier.fillMaxWidth().clickable {
                     onIsCardPaymentChanged(!isCardPayment)
 
                 }
@@ -165,7 +167,8 @@ fun AddTransactionForm(
                         Box(Modifier.weight(1f)) {
                             NumberPickerInput(
 
-                                label = UiText.StringResourceId(Res.string.installment_count_label).asString(),
+                                label = UiText.StringResourceId(Res.string.installment_count_label)
+                                    .asString(),
                                 value = state.installmentCount,
                                 range = 0..MAX_INSTALLMENT_COUNT,
                                 step = 1,
@@ -178,10 +181,10 @@ fun AddTransactionForm(
                             )
                         }
 
-                        if (targetWeight > 0f){
+                        if (targetWeight > 0f) {
                             Spacer(Modifier.width(16.dp))
 
-                            Box(Modifier.weight(targetWeight)){
+                            Box(Modifier.weight(targetWeight)) {
                                 WheelDatePicker(
                                     initialDate = currentDate,
                                     onDateSelected = { epochSeconds ->
@@ -209,8 +212,6 @@ fun AddTransactionForm(
                 }
 
             }
-
-
 
         }
 

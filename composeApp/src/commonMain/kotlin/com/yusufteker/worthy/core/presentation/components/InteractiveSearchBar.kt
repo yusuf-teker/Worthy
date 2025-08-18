@@ -6,7 +6,16 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,8 +23,17 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,16 +61,14 @@ import worthy.composeapp.generated.resources.search_hint
 import worthy.composeapp.generated.resources.search_history_label
 
 data class SearchResult(
-    val id: Int,
-    val title: String,
-    val description: String
+    val id: Int, val title: String, val description: String
 )
 
 @Composable
 fun InteractiveSearchBar(
     modifier: Modifier = Modifier,
     query: String = "",
-    onSearchQueryChange: (String) ->  Unit =  {},
+    onSearchQueryChange: (String) -> Unit = {},
     searchResult: List<SearchResult> = emptyList(),
     searchHistory: List<String> = emptyList(),
     searchSuggestions: List<String> = emptyList(),
@@ -90,34 +106,26 @@ fun InteractiveSearchBar(
     }
 
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .animateContentSize()
+        modifier = modifier.fillMaxWidth().animateContentSize()
     ) {
         // Ana arama barı
         Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = horizontalPadding)
-                .clip(RoundedCornerShape(cornerRadius))
-                .background(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = horizontalPadding)
+                .clip(RoundedCornerShape(cornerRadius)).background(
                     if (!isFocused) AppColors.surface
                     else Color.Transparent
                 )
         ) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                       // horizontal = if (!isFocused) 16.dp else 0.dp,
-                        vertical = 12.dp
-                    ),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth().padding(
+                    // horizontal = if (!isFocused) 16.dp else 0.dp,
+                    vertical = 12.dp
+                ), verticalAlignment = Alignment.CenterVertically
             ) {
                 // Arama ikonu
                 Icon(
                     imageVector = Icons.Default.Search,
-                    contentDescription =  UiText.StringResourceId(Res.string.search_hint).asString(),
+                    contentDescription = UiText.StringResourceId(Res.string.search_hint).asString(),
                     tint = if (!isFocused) AppColors.primary
                     else AppColors.onSurfaceVariant,
                     modifier = Modifier.size(24.dp)
@@ -128,33 +136,27 @@ fun InteractiveSearchBar(
                 // Text field
                 BasicTextField(
                     value = query,
-                    onValueChange = {onSearchQueryChange(it) },
-                    modifier = Modifier
-                        .weight(1f)
-                        .focusRequester(focusRequester)
+                    onValueChange = { onSearchQueryChange(it) },
+                    modifier = Modifier.weight(1f).focusRequester(focusRequester)
                         .onFocusChanged { focusState ->
                             isFocused = focusState.isFocused
                         },
                     textStyle = TextStyle(
-                        fontSize = 16.sp,
-                        color = AppColors.onSurface
+                        fontSize = 16.sp, color = AppColors.onSurface
                     ),
                     singleLine = true,
                     decorationBox = { innerTextField ->
                         if (query.isEmpty()) {
                             Text(
-                                text = placeholder,
-                                style = TextStyle(
-                                    fontSize = 16.sp,
-                                    color = AppColors.onSurfaceVariant
+                                text = placeholder, style = TextStyle(
+                                    fontSize = 16.sp, color = AppColors.onSurfaceVariant
                                 )
                             )
                         }
                         innerTextField()
-                    }
-                )
+                    })
 
-                if (isFocused){
+                if (isFocused) {
                     Spacer(modifier = Modifier.width(8.dp))
                     IconButton(
                         onClick = {
@@ -162,12 +164,13 @@ fun InteractiveSearchBar(
                                 onSearchQueryChange("")
                                 focusManager.clearFocus()
                             }
-                        },
-                        modifier = Modifier.size(24.dp)
+                        }, modifier = Modifier.size(24.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Clear,
-                            contentDescription = if (query.isNotEmpty())  UiText.StringResourceId(Res.string.clear_search).asString() else UiText.StringResourceId(Res.string.close).asString(),
+                            contentDescription = if (query.isNotEmpty()) UiText.StringResourceId(Res.string.clear_search)
+                                .asString() else UiText.StringResourceId(Res.string.close)
+                                .asString(),
                             tint = AppColors.onSurfaceVariant
                         )
                     }
@@ -179,9 +182,7 @@ fun InteractiveSearchBar(
         // Alt çizgi (focus değilken)
         if (isFocused) {
             HorizontalDivider(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                 thickness = 1.dp,
                 color = AppColors.outline
             )
@@ -192,58 +193,50 @@ fun InteractiveSearchBar(
             Spacer(modifier = Modifier.height(8.dp))
 
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
                     //.heightIn(max = 300.dp)
-                    .fillMaxHeight()
-                    .pointerInput(Unit) {
+                    .fillMaxHeight().pointerInput(Unit) {
                         detectTapGestures(onTap = {
                             focusManager.clearFocus()
                             isFocused = false
                         })
-                    }
-            ) {
+                    }) {
                 if (query.isEmpty() && searchHistory.isNotEmpty()) {
                     // Geçmiş aramalar //TODO kaldırılabilir
                     item {
                         Text(
-                            text =  UiText.StringResourceId(Res.string.search_history_label).asString(),
+                            text = UiText.StringResourceId(Res.string.search_history_label)
+                                .asString(),
                             style = AppTypography.labelMedium,
                             color = AppColors.onSurfaceVariant,
                             modifier = Modifier.padding(horizontal = 0.dp, vertical = 8.dp)
                         )
                     }
 
-                    if (searchHistory.size > 4){
+                    if (searchHistory.size > 4) {
                         items(searchHistory.take(5)) { historyItem ->
                             SearchSuggestion(
-                                text = historyItem,
-                                onClick = {
+                                text = historyItem, onClick = {
                                     onSearchQueryChange(historyItem)
                                     onHistoryItemClick(historyItem)
-                                },
-                                isHistory = true
+                                }, isHistory = true
 
                             )
                         }
-                    }else{
+                    } else {
                         items(searchHistory) { historyItem ->
                             SearchSuggestion(
-                                text = historyItem,
-                                onClick = {
+                                text = historyItem, onClick = {
                                     onSearchQueryChange(historyItem)
                                     //onHistoryItemClick(historyItem)
-                                },
-                                isHistory = true
+                                }, isHistory = true
                             )
                         }
-                        items(searchSuggestions ){ suggestion ->
+                        items(searchSuggestions) { suggestion ->
                             SearchSuggestion(
-                                text = suggestion,
-                                onClick = {
+                                text = suggestion, onClick = {
                                     onSearchQueryChange(suggestion)
-                                }
-                            )
+                                })
                         }
                     }
 
@@ -252,14 +245,11 @@ fun InteractiveSearchBar(
                     if (isSearching) {
                         item {
                             Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
+                                modifier = Modifier.fillMaxWidth().padding(16.dp),
                                 contentAlignment = Alignment.Center
                             ) {
                                 CircularProgressIndicator(
-                                    modifier = Modifier.size(24.dp),
-                                    strokeWidth = 2.dp
+                                    modifier = Modifier.size(24.dp), strokeWidth = 2.dp
                                 )
                             }
                         }
@@ -267,7 +257,8 @@ fun InteractiveSearchBar(
                         if (searchResult.isEmpty()) {
                             item {
                                 Text(
-                                    text =  UiText.StringResourceId(Res.string.no_results).asString(),
+                                    text = UiText.StringResourceId(Res.string.no_results)
+                                        .asString(),
                                     style = AppTypography.bodyMedium,
                                     color = AppColors.onSurfaceVariant,
                                     modifier = Modifier.padding(16.dp)
@@ -276,12 +267,10 @@ fun InteractiveSearchBar(
                         } else {
                             items(searchResult) { result ->
                                 SearchResultItem(
-                                    result = result,
-                                    onClick = {
+                                    result = result, onClick = {
                                         onSearchQueryChange(result.title)
                                         focusManager.clearFocus()
-                                    }
-                                )
+                                    })
                             }
                         }
                     }
@@ -293,25 +282,19 @@ fun InteractiveSearchBar(
 
 @Composable
 private fun SearchSuggestion(
-    text: String,
-    onClick: () -> Unit,
-    isHistory: Boolean = false
+    text: String, onClick: () -> Unit, isHistory: Boolean = false
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(horizontal = 0.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        if (isHistory){
+    Row(modifier = Modifier.fillMaxWidth().clickable { onClick() }
+        .padding(horizontal = 0.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically) {
+        if (isHistory) {
             Icon(
                 painter = painterResource(Res.drawable.history),
                 contentDescription = null,
                 modifier = Modifier.size(20.dp),
                 tint = AppColors.onSurfaceVariant
             )
-        }else{
+        } else {
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = null,
@@ -324,24 +307,17 @@ private fun SearchSuggestion(
         Spacer(modifier = Modifier.width(12.dp))
 
         Text(
-            text = text,
-            style = AppTypography.bodyMedium,
-            color = AppColors.onSurface
+            text = text, style = AppTypography.bodyMedium, color = AppColors.onSurface
         )
     }
 }
 
 @Composable
 private fun SearchResultItem(
-    result: SearchResult,
-    onClick: () -> Unit
+    result: SearchResult, onClick: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(horizontal = 16.dp, vertical = 12.dp)
-    ) {
+    Column(modifier = Modifier.fillMaxWidth().clickable { onClick() }
+        .padding(horizontal = 16.dp, vertical = 12.dp)) {
         Text(
             text = result.title,
             style = AppTypography.bodyLarge,

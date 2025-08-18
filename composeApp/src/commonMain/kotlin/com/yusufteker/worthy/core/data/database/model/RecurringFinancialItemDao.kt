@@ -28,18 +28,20 @@ interface RecurringFinancialItemDao {
     @Query("SELECT * FROM recurring_financial_item ORDER BY startDate")
     fun getAll(): Flow<List<RecurringFinancialItemEntity>>
 
-    @Query("""
+    @Query(
+        """
         SELECT * FROM recurring_financial_item
         WHERE isIncome = :isIncome
           AND startDate <= :targetDate
           AND (endDate IS NULL OR endDate >= :targetDate)
-    """)
-    fun getItemsForMonth(isIncome: Boolean, targetDate: Int): Flow<List<RecurringFinancialItemEntity>>
-
+    """
+    )
+    fun getItemsForMonth(
+        isIncome: Boolean, targetDate: Int
+    ): Flow<List<RecurringFinancialItemEntity>>
 
     @Query("DELETE FROM recurring_financial_item WHERE groupId = :groupId")
     suspend fun deleteByGroupId(groupId: String)
-
 
     @Query("SELECT * FROM recurring_financial_item WHERE groupId = :groupId")
     suspend fun getByGroupIdRaw(groupId: String): List<RecurringFinancialItemEntity>
@@ -50,10 +52,7 @@ interface RecurringFinancialItemDao {
     @Upsert
     suspend fun upsertAll(items: List<RecurringFinancialItemEntity>)
 
-
     @Query("SELECT * FROM recurring_financial_item WHERE groupId = :groupId ORDER BY startDate")
     fun getByGroupId(groupId: String): Flow<List<RecurringFinancialItemEntity>>
-
-
 
 }

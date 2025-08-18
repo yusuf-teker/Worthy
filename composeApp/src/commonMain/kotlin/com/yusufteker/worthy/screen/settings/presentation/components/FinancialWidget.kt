@@ -26,7 +26,7 @@ import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.amount_with_currency
 
 @Composable
- fun FinancialWidget(
+fun FinancialWidget(
     title: String,
     totalAmount: Double,
     color: Color,
@@ -56,7 +56,10 @@ import worthy.composeapp.generated.resources.amount_with_currency
                     fontWeight = FontWeight.Medium
                 )
                 Text(
-                    text = UiText.StringResourceId(id = Res.string.amount_with_currency, arrayOf(totalAmount.toFormattedWithThousandsSeparator(), currencySymbol)).asString(),
+                    text = UiText.StringResourceId(
+                        id = Res.string.amount_with_currency,
+                        arrayOf(totalAmount.toFormattedWithThousandsSeparator(), currencySymbol)
+                    ).asString(),
                     style = AppTypography.bodyMedium,
                     color = color,
                     fontWeight = FontWeight.Bold

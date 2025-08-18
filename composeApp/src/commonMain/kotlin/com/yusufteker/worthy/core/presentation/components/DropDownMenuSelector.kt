@@ -15,7 +15,7 @@ import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.no_selected
 
 @Composable
-fun <T>DropdownMenuSelector(
+fun <T> DropdownMenuSelector(
     options: List<T>,
     selected: T?,
     isNullable: Boolean = false,
@@ -25,7 +25,10 @@ fun <T>DropdownMenuSelector(
 
     Box {
         OutlinedButton(onClick = { expanded = true }) {
-            Text(text = selected?.toString() ?: UiText.StringResourceId(id = Res.string.no_selected).asString())
+            Text(
+                text = selected?.toString() ?: UiText.StringResourceId(id = Res.string.no_selected)
+                    .asString()
+            )
         }
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             if (isNullable) {

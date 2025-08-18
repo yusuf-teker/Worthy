@@ -23,8 +23,7 @@ import worthy.composeapp.generated.resources.last_day
 
 @Composable
 fun DayOfMonthSelector(
-    selectedDay: Int?,
-    onDayChange: (Int?) -> Unit
+    selectedDay: Int?, onDayChange: (Int?) -> Unit
 ) {
     var text by remember { mutableStateOf(selectedDay?.toString() ?: "") }
     var isLastDay by remember { mutableStateOf(selectedDay == null) }
@@ -48,8 +47,18 @@ fun DayOfMonthSelector(
                     onDayChange(null)
                 }
             },
-            label = { Text(UiText.StringResourceId(if (isLastDay) Res.string.last_day else Res.string.day_input_hint).asString())  },
-                placeholder = { Text(UiText.StringResourceId(if (isLastDay) Res.string.last_day else Res.string.day_of_month).asString()) },
+            label = {
+                Text(
+                    UiText.StringResourceId(if (isLastDay) Res.string.last_day else Res.string.day_input_hint)
+                        .asString()
+                )
+            },
+            placeholder = {
+                Text(
+                    UiText.StringResourceId(if (isLastDay) Res.string.last_day else Res.string.day_of_month)
+                        .asString()
+                )
+            },
             modifier = Modifier.weight(1f),
             enabled = !isLastDay,
             singleLine = true,
@@ -62,16 +71,14 @@ fun DayOfMonthSelector(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Checkbox(
-                checked = isLastDay,
-                onCheckedChange = { checked ->
+                checked = isLastDay, onCheckedChange = { checked ->
                     isLastDay = checked
                     if (checked) {
                         text = ""
                         onDayChange(null) // null = ayın son günü
                     }
-                }
-            )
-            Text(UiText.StringResourceId( Res.string.last_day ).asString())
+                })
+            Text(UiText.StringResourceId(Res.string.last_day).asString())
         }
     }
 }

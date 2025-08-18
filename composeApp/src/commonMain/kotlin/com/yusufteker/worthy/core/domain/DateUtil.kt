@@ -10,7 +10,6 @@ import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
-
 @OptIn(ExperimentalTime::class)
 fun LocalDate.toEpochMillis(timeZone: TimeZone = TimeZone.currentSystemDefault()): Long {
     val localDateTime = this.atStartOfDayIn(timeZone)
@@ -21,6 +20,7 @@ fun LocalDate.toEpochMillis(timeZone: TimeZone = TimeZone.currentSystemDefault()
 fun Long.toLocalDate(timeZone: TimeZone = TimeZone.currentSystemDefault()): LocalDate {
     return Instant.fromEpochMilliseconds(this).toLocalDateTime(timeZone).date
 }
+
 @OptIn(ExperimentalTime::class)
 fun getCurrentMonth(): Int {
     return Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).month.number
@@ -35,12 +35,14 @@ fun createTimestampId(): String {
 
 @OptIn(ExperimentalTime::class)
 fun getCurrentLocalDateTime(): kotlinx.datetime.LocalDate {
-    return  Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+    return Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
 }
+
 @OptIn(ExperimentalTime::class)
 fun getCurrentEpochMillis(): Long {
     return Clock.System.now().toEpochMilliseconds();
 }
+
 @OptIn(ExperimentalTime::class)
 fun getCurrentYear(): Int {
     return Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year

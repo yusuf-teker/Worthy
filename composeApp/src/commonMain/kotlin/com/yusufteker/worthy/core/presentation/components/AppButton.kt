@@ -1,6 +1,8 @@
 package com.yusufteker.worthy.core.presentation.components
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -10,8 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.yusufteker.worthy.core.presentation.theme.AppColors.primaryButtonColors
 import com.yusufteker.worthy.core.presentation.theme.AppDimens
@@ -34,16 +34,15 @@ fun AppButton(
 ) {
     Button(
         onClick = onClick,
-        enabled  = enabled && !loading,
+        enabled = enabled && !loading,
         shape = shape,
         colors = colors,
         modifier = modifier
-            //.height(height)
+        //.height(height)
     ) {
         if (loading) {
             androidx.compose.material3.CircularProgressIndicator(
-                modifier = Modifier
-                    .size(20.dp),
+                modifier = Modifier.size(20.dp),
                 strokeWidth = 2.dp,
                 color = colors.disabledContentColor
 

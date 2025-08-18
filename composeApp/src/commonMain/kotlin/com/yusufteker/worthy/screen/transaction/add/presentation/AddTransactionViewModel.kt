@@ -4,8 +4,6 @@ import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.domain.repository.TransactionRepository
 import com.yusufteker.worthy.core.presentation.UiEvent
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 
 class AddTransactionViewModel(
     private val transactionRepository: TransactionRepository,
@@ -35,6 +33,7 @@ class AddTransactionViewModel(
                             )
                         )
                     }
+
                     is TransactionFormAction.DateChanged -> {
                         _state.value = _state.value.copy(
                             expenseForm = _state.value.expenseForm.copy(
@@ -42,6 +41,7 @@ class AddTransactionViewModel(
                             )
                         )
                     }
+
                     is TransactionFormAction.InstallmentCountChanged -> {
                         _state.value = _state.value.copy(
                             expenseForm = _state.value.expenseForm.copy(
@@ -49,6 +49,7 @@ class AddTransactionViewModel(
                             )
                         )
                     }
+
                     is TransactionFormAction.InstallmentStartDateChanged -> {
                         _state.value = _state.value.copy(
                             expenseForm = _state.value.expenseForm.copy(
@@ -56,6 +57,7 @@ class AddTransactionViewModel(
                             )
                         )
                     }
+
                     is TransactionFormAction.MoneyChanged -> {
                         _state.value = _state.value.copy(
                             expenseForm = _state.value.expenseForm.copy(
@@ -63,6 +65,7 @@ class AddTransactionViewModel(
                             )
                         )
                     }
+
                     is TransactionFormAction.NoteChanged -> {
                         _state.value = _state.value.copy(
                             expenseForm = _state.value.expenseForm.copy(
@@ -71,6 +74,7 @@ class AddTransactionViewModel(
                         )
 
                     }
+
                     is TransactionFormAction.SaveClicked -> {}
                     is TransactionFormAction.AddNewCardClicked -> {
                         sendUiEventSafe(UiEvent.NavigateTo(Routes.AddCard))
@@ -87,6 +91,7 @@ class AddTransactionViewModel(
                 }
 
             }
+
             is AddTransactionAction.IncomeFormAction -> {
                 when (action.action) {
                     is TransactionFormAction.NameChanged -> {
@@ -96,6 +101,7 @@ class AddTransactionViewModel(
                             )
                         )
                     }
+
                     is TransactionFormAction.CardSelected -> {
                         _state.value = _state.value.copy(
                             incomeForm = _state.value.incomeForm.copy(
@@ -103,6 +109,7 @@ class AddTransactionViewModel(
                             )
                         )
                     }
+
                     is TransactionFormAction.CategoryChanged -> {
                         _state.value = _state.value.copy(
                             incomeForm = _state.value.incomeForm.copy(
@@ -110,6 +117,7 @@ class AddTransactionViewModel(
                             )
                         )
                     }
+
                     is TransactionFormAction.DateChanged -> {
                         _state.value = _state.value.copy(
                             incomeForm = _state.value.incomeForm.copy(
@@ -117,6 +125,7 @@ class AddTransactionViewModel(
                             )
                         )
                     }
+
                     is TransactionFormAction.MoneyChanged -> {
                         _state.value = _state.value.copy(
                             incomeForm = _state.value.incomeForm.copy(
@@ -124,6 +133,7 @@ class AddTransactionViewModel(
                             )
                         )
                     }
+
                     is TransactionFormAction.NoteChanged -> {}
                     is TransactionFormAction.InstallmentCountChanged -> {
                         _state.value = _state.value.copy(
@@ -132,6 +142,7 @@ class AddTransactionViewModel(
                             )
                         )
                     }
+
                     is TransactionFormAction.InstallmentStartDateChanged -> {
                         _state.value = _state.value.copy(
                             incomeForm = _state.value.incomeForm.copy(
@@ -139,6 +150,7 @@ class AddTransactionViewModel(
                             )
                         )
                     }
+
                     TransactionFormAction.SaveClicked -> {}
                     TransactionFormAction.AddNewCardClicked -> {
 

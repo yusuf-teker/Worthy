@@ -24,7 +24,11 @@ val files = listOf(
         data class ${screenName}State(
             override val isLoading: Boolean = false,
             val errorMessage: String? = null
-        ): BaseState
+        ): BaseState{
+            override fun copyWithLoading(isLoading: Boolean): BaseState {
+            return this.copy(isLoading = isLoading)
+        }
+}
     """.trimIndent(),
 
     "$screenName" + "ViewModel.kt" to """
@@ -34,9 +38,7 @@ val files = listOf(
         import kotlinx.coroutines.flow.MutableStateFlow
         import kotlinx.coroutines.flow.StateFlow
 
-        class ${screenName}ViewModel : BaseViewModel() {
-            private val _state = MutableStateFlow(${screenName}State())
-            val state: StateFlow<${screenName}State> = _state
+        class ${screenName}ViewModel : BaseViewModel<${screenName}State>(${screenName}State()) {
 
             fun onAction(action: ${screenName}Action) {
                 when (action) {
@@ -51,13 +53,20 @@ val files = listOf(
     "$screenName" + "Screen.kt" to """
     package com.yusufteker.worthy.screen.$packageName.presentation
 
+    
     import androidx.compose.foundation.layout.*
+    import androidx.compose.material3.Scaffold
     import androidx.compose.runtime.*
     import androidx.compose.ui.Modifier
     import androidx.compose.ui.unit.dp
     import androidx.lifecycle.compose.collectAsStateWithLifecycle
+    import com.yusufteker.worthy.core.presentation.UiText
     import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
+    import com.yusufteker.worthy.core.presentation.components.AppTopBar
     import org.koin.compose.viewmodel.koinViewModel
+    import worthy.composeapp.generated.resources.Res
+    import worthy.composeapp.generated.resources.add_new_card
+
 
     @Composable
     fun ${screenName}ScreenRoot(

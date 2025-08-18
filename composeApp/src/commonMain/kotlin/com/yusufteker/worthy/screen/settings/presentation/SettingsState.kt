@@ -22,7 +22,7 @@ data class SettingsState(
     val selectedCurrency: Currency = Currency.TRY,
     override val isLoading: Boolean = false,
     val errorMessage: String? = null
-    ): BaseState{
-        override fun copyWithLoading(isLoading: Boolean) = copy(isLoading = isLoading)
+) : BaseState {
+    override fun copyWithLoading(isLoading: Boolean) = copy(isLoading = isLoading)
 
-    }
+}

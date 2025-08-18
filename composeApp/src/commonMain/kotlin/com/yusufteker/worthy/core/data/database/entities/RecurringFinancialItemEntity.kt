@@ -9,12 +9,10 @@ import kotlin.time.ExperimentalTime
 
 enum class ExpenseNeedType { NEED, DESIRE, NONE }
 
-
 @Entity(tableName = "recurring_financial_item")
 data class RecurringFinancialItemEntity @OptIn(ExperimentalTime::class) constructor(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val groupId: String,
-
     val name: String,
     val amount: Money,
     val isIncome: Boolean, // true: income, false: expense

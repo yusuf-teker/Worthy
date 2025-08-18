@@ -14,18 +14,18 @@ data class UserOnboardingData(
     val weeklyWorkHours: Int = 0,
 
     val wantSpendingLimit: Boolean = false,
-    val spendingLimit: Money? =  emptyMoney(),
+    val spendingLimit: Money? = emptyMoney(),
 
     val hasFixedExpenses: Boolean = false,
     val hasSavingsGoal: Boolean = false,
 
-    val savingGoalMoney: Money? =  emptyMoney(),
+    val savingGoalMoney: Money? = emptyMoney(),
     val buyingPrioritys: List<String> = emptyList(),
     val appHelpGoals: List<String> = emptyList(),
 
     val validationErrors: UserOnboardingValidationErrors = UserOnboardingValidationErrors()
 
-    )
+)
 
 data class UserOnboardingValidationErrors(
     val nameError: UiText? = null,
@@ -35,7 +35,7 @@ data class UserOnboardingValidationErrors(
     val weeklyHourError: UiText? = null,
 )
 
-fun UserOnboardingValidationErrors.isAynError():Boolean{
+fun UserOnboardingValidationErrors.isAynError(): Boolean {
     return nameError != null || salaryError != null || spendingLimitError != null || savingsGoalError != null || weeklyHourError != null
 
 }

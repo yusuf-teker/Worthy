@@ -13,5 +13,4 @@ data class Card(
     val statementDay: Int? = null
 )
 
-
 enum class CardBrand { Visa, Mastercard, Amex, Troy, Unknown }

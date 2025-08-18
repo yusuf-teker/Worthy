@@ -2,24 +2,15 @@ package com.yusufteker.worthy.core.media
 
 import android.Manifest
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
-import com.yalantis.ucrop.UCrop
-import com.yalantis.ucrop.model.AspectRatio
-import java.io.File
-import java.io.FileOutputStream
-import java.nio.ByteBuffer
 
 @Composable
 actual fun rememberPermissionChecker(): PermissionChecker {
@@ -55,8 +46,7 @@ actual open class PermissionChecker(
 
     actual fun hasCameraPermission(): Boolean {
         return ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.CAMERA
+            context, Manifest.permission.CAMERA
         ) == PackageManager.PERMISSION_GRANTED
     }
 
@@ -71,8 +61,7 @@ actual open class PermissionChecker(
 }
 
 class AndroidPermissionChecker(
-    context: Context,
-    permissionLauncher: androidx.activity.result.ActivityResultLauncher<String>
+    context: Context, permissionLauncher: androidx.activity.result.ActivityResultLauncher<String>
 ) : PermissionChecker(context, permissionLauncher)
 
 
@@ -81,9 +70,6 @@ fun ImageBitmap.toAndroidBitmap(): android.graphics.Bitmap {
     this.readPixels(intArray, startX = 0, startY = 0, width = this.width, height = this.height)
 
     return android.graphics.Bitmap.createBitmap(
-        intArray,
-        this.width,
-        this.height,
-        android.graphics.Bitmap.Config.ARGB_8888
+        intArray, this.width, this.height, android.graphics.Bitmap.Config.ARGB_8888
     )
 }

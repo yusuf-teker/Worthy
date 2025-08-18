@@ -12,19 +12,15 @@ sealed class Routes {
     data object Onboarding : Routes()
 
     @Serializable
-    data object UserSetup : Routes()
-
-
-    @Serializable
     data object MainGraph : Routes()
 
     @Serializable
     data object Dashboard : Routes()
 
 
-
     @Serializable
     data object WishlistGraph : Routes()
+
     @Serializable
     data object Wishlist : Routes()
 
@@ -38,8 +34,9 @@ sealed class Routes {
     data object Wallet : Routes()
 
     @Serializable
-    data class AddTransaction(val isIncome: Boolean): Routes(){
+    data class AddTransaction(val isIncome: Boolean) : Routes() {
         override fun toString() = NAME
+
         companion object {
             const val NAME = "AddTransaction"
         }
@@ -54,7 +51,6 @@ sealed class Routes {
 
     @Serializable
     data object Settings : Routes()
-
 
 
 }

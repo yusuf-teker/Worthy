@@ -1,31 +1,13 @@
 package com.yusufteker.worthy.core.data.database.converters
 
 import androidx.room.TypeConverter
-import com.yusufteker.worthy.core.data.database.entities.ExpenseNeedType
 import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.core.domain.model.CategoryType
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.TransactionType
-import kotlin.time.ExperimentalTime
-import kotlin.time.Instant
 
 class RoomTypeConverters {
-    @OptIn(ExperimentalTime::class)
-    @TypeConverter
-    fun fromInstant(instant: Instant): Long = instant.toEpochMilliseconds()
-
-    @OptIn(ExperimentalTime::class)
-    @TypeConverter
-    fun toInstant(millis: Long): Instant = Instant.Companion.fromEpochMilliseconds(millis)
-
-    /*
-    @TypeConverter
-    fun fromExpenseNeedType(value: ExpenseNeedType): String = value.name
-
-    @TypeConverter
-    fun toExpenseNeedType(value: String): ExpenseNeedType = ExpenseNeedType.valueOf(value)
-*/
     @TypeConverter
     fun fromCategoryType(value: CategoryType): String = value.name
 
@@ -45,6 +27,7 @@ class RoomTypeConverters {
         val amount = parts.getOrNull(1)?.toDoubleOrNull() ?: 0.0
         return Money(amount = amount, currency = currency)
     }
+
     @TypeConverter
     fun fromAppDate(date: AppDate?): Int? {
         return date?.let { it.year * 100 + it.month }
@@ -54,7 +37,6 @@ class RoomTypeConverters {
     fun toAppDate(value: Int?): AppDate? {
         return value?.let { AppDate(year = it / 100, month = it % 100) }
     }
-
 
 
     @TypeConverter

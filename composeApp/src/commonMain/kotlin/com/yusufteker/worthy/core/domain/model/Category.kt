@@ -36,7 +36,6 @@ import worthy.composeapp.generated.resources.category_transport
 import worthy.composeapp.generated.resources.category_travel
 import kotlin.time.ExperimentalTime
 
-
 data class Category @OptIn(ExperimentalTime::class) constructor(
     val id: Int = 0,
     val name: String,
@@ -48,11 +47,8 @@ data class Category @OptIn(ExperimentalTime::class) constructor(
     val colorHex: String? = null,
 )
 
-
 enum class CategoryType {
-    INCOME,
-    EXPENSE,
-    WISHLIST
+    INCOME, EXPENSE, WISHLIST
 }
 
 @Composable
@@ -89,9 +85,11 @@ fun getResourceByKey(key: String): StringResource {
         "category_travel" -> {
             Res.string.category_travel
         }
+
         else -> Res.string.category_other_expense
     }
 }
+
 @Composable
 fun Category.getNameResource(): String {
     return if (nameResourceKey != null && nameResourceKey.isNotEmpty()) {
@@ -110,112 +108,98 @@ val defaultCategories = listOf(
         type = CategoryType.EXPENSE,
         nameResourceKey = "category_shopping",
         userCreated = false
-    ),
-    Category(
+    ), Category(
         id = 2,
         name = "Yiyecek",
         icon = "🍔",
         type = CategoryType.EXPENSE,
         nameResourceKey = "category_food",
         userCreated = false
-    ),
-    Category(
+    ), Category(
         id = 3,
         name = "Ulaşım",
         icon = "🚗",
         type = CategoryType.EXPENSE,
         nameResourceKey = "category_transport",
         userCreated = false
-    ),
-    Category(
+    ), Category(
         id = 4,
         name = "Eğlence",
         icon = "🎮",
         type = CategoryType.EXPENSE,
         nameResourceKey = "category_entertainment",
         userCreated = false
-    ),
-    Category(
+    ), Category(
         id = 5,
         name = "Sağlık",
         icon = "💊",
         type = CategoryType.EXPENSE,
         nameResourceKey = "category_health",
         userCreated = false
-    ),
-    Category(
+    ), Category(
         id = 6,
         name = "Kira",
         icon = "🏠",
         type = CategoryType.EXPENSE,
         nameResourceKey = "category_rent",
         userCreated = false
-    ),
-    Category(
+    ), Category(
         id = 7,
         name = "Faturalar",
         icon = "💡",
         type = CategoryType.EXPENSE,
         nameResourceKey = "category_bills",
         userCreated = false
-    ),
-    Category(
+    ), Category(
         id = 8,
         name = "Abonelikler",
         icon = "📺",
         type = CategoryType.EXPENSE,
         nameResourceKey = "category_subscriptions",
         userCreated = false
-    ),
-    Category(
+    ), Category(
         id = 9,
         name = "Kredi Kartı",
         icon = "💳",
         type = CategoryType.EXPENSE,
         nameResourceKey = "category_credit_card",
         userCreated = false
-    ),
-    Category(
+    ), Category(
         id = 10,
         name = "Çocuk",
         icon = "🧸",
         type = CategoryType.EXPENSE,
         nameResourceKey = "category_children",
         userCreated = false
-    ),
-    Category(
+    ), Category(
         id = 11,
         name = "Evcil Hayvan",
         icon = "🐶",
         type = CategoryType.EXPENSE,
         nameResourceKey = "category_pet",
         userCreated = false
-    ),
-    Category(
+    ), Category(
         id = 12,
         name = "Hediye",
         icon = "🎁",
         type = CategoryType.EXPENSE,
         nameResourceKey = "category_gift",
         userCreated = false
-    ),
-    Category(
+    ), Category(
         id = 13,
         name = "Kıyafet",
         icon = "👗",
         type = CategoryType.EXPENSE,
         nameResourceKey = "category_clothing",
         userCreated = false
-    ),
-    Category(
+    ), Category(
         id = 14,
         name = "Kafe/Restoran",
         icon = "🍽️",
         type = CategoryType.EXPENSE,
         nameResourceKey = "category_dining",
         userCreated = false
-    ),
-    Category(
+    ), Category(
         id = 15,
         name = "Diğer",
         icon = "❓",
@@ -232,72 +216,63 @@ val defaultCategories = listOf(
         type = CategoryType.INCOME,
         nameResourceKey = "category_salary",
         userCreated = false
-    ),
-    Category(
+    ), Category(
         id = 17,
         name = "Prim",
         icon = "📈",
         type = CategoryType.INCOME,
         nameResourceKey = "category_bonus",
         userCreated = false
-    ),
-    Category(
+    ), Category(
         id = 18,
         name = "Bonus",
         icon = "🏅",
         type = CategoryType.INCOME,
         nameResourceKey = "category_bonus",
         userCreated = false
-    ),
-    Category(
+    ), Category(
         id = 19,
         name = "İkramiye",
         icon = "🎉",
         type = CategoryType.INCOME,
         nameResourceKey = "category_reward",
         userCreated = false
-    ),
-    Category(
+    ), Category(
         id = 20,
         name = "Kira Geliri",
         icon = "🏢",
         type = CategoryType.INCOME,
         nameResourceKey = "category_rental_income",
         userCreated = false
-    ),
-    Category(
+    ), Category(
         id = 21,
         name = "Yatırım",
         icon = "📊",
         type = CategoryType.INCOME,
         nameResourceKey = "category_investment",
         userCreated = false
-    ),
-    Category(
+    ), Category(
         id = 22,
         name = "Birikim Faizi",
         icon = "💵",
         type = CategoryType.INCOME,
         nameResourceKey = "category_saving_interest",
         userCreated = false
-    ),
-    Category(
+    ), Category(
         id = 23,
         name = "Serbest Çalışma",
         icon = "💻",
         type = CategoryType.INCOME,
         nameResourceKey = "category_freelance",
         userCreated = false
-    ),
-    Category(
+    ), Category(
         id = 24,
         name = "Satış Geliri",
         icon = "🛒",
         type = CategoryType.INCOME,
         nameResourceKey = "category_sales_income",
         userCreated = false
-    ),
-    Category(
+    ), Category(
         id = 25,
         name = "Diğer",
         icon = "❓",
@@ -314,32 +289,28 @@ val defaultCategories = listOf(
         type = CategoryType.WISHLIST,
         nameResourceKey = "category_technology",
         userCreated = false
-    ),
-    Category(
+    ), Category(
         id = 27,
         name = "Moda",
         icon = "🕶️",
         type = CategoryType.WISHLIST,
         nameResourceKey = "category_fashion",
         userCreated = false
-    ),
-    Category(
+    ), Category(
         id = 28,
         name = "Kitap",
         icon = "📚",
         type = CategoryType.WISHLIST,
         nameResourceKey = "category_books",
         userCreated = false
-    ),
-    Category(
+    ), Category(
         id = 29,
         name = "Mobilya",
         icon = "🪑",
         type = CategoryType.WISHLIST,
         nameResourceKey = "category_furniture",
         userCreated = false
-    ),
-    Category(
+    ), Category(
         id = 30,
         name = "Seyahat",
         icon = "✈️",
@@ -348,8 +319,6 @@ val defaultCategories = listOf(
         userCreated = false
     )
 )
-
-
 
 val emojiOptions = listOf(
     // Genel

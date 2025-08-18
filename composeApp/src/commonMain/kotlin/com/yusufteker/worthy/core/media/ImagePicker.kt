@@ -3,8 +3,6 @@ package com.yusufteker.worthy.core.media
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.ImageBitmap
 
-
-
 @Composable
 expect fun rememberImagePicker(): ImagePicker
 
@@ -42,14 +40,16 @@ interface ImagePicker {
      */
     fun requestCameraPermission(onResult: (Boolean) -> Unit)
 
-    fun cropImage(image: PlatformImage,aspectRatio: AspectRatio = AspectRatio.SQUARE, onCropped: (PlatformImage?) -> Unit)
+    fun cropImage(
+        image: PlatformImage,
+        aspectRatio: AspectRatio = AspectRatio.SQUARE,
+        onCropped: (PlatformImage?) -> Unit
+    )
 
 }
+
 enum class AspectRatio(val widthRatio: Float, val heightRatio: Float) {
-    SQUARE(1f, 1f),
-    RATIO_16x9(16f, 9f),
-    RATIO_4x3(4f, 3f),
-    RATIO_3x2(3f, 2f);
+    SQUARE(1f, 1f), RATIO_16x9(16f, 9f), RATIO_4x3(4f, 3f), RATIO_3x2(3f, 2f);
 
     fun toFloat(): Float = widthRatio.toFloat() / heightRatio
 }

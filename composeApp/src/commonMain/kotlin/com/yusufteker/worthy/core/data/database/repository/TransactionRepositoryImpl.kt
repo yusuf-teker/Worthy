@@ -1,13 +1,12 @@
 package com.yusufteker.worthy.core.data.database.repository
 
-import com.yusufteker.worthy.core.domain.model.TransactionType
-import com.yusufteker.worthy.core.domain.toEpochMillis
-
-import com.yusufteker.worthy.core.data.database.model.TransactionDao
 import com.yusufteker.worthy.core.data.database.mappers.toDomain
 import com.yusufteker.worthy.core.data.database.mappers.toEntity
+import com.yusufteker.worthy.core.data.database.model.TransactionDao
 import com.yusufteker.worthy.core.domain.model.Transaction
+import com.yusufteker.worthy.core.domain.model.TransactionType
 import com.yusufteker.worthy.core.domain.repository.TransactionRepository
+import com.yusufteker.worthy.core.domain.toEpochMillis
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDate
@@ -58,10 +57,12 @@ class TransactionRepositoryImpl(
 
     override fun getTransactionsSince(startDate: LocalDate): Flow<List<Transaction>> {
         val startMillis = startDate.toEpochMillis()
-        return transactionDao.getTransactionsFrom(startMillis).map { list -> list.map { it.toDomain() } }
+        return transactionDao.getTransactionsFrom(startMillis)
+            .map { list -> list.map { it.toDomain() } }
     }
 
     override fun getRelatedTransactions(relatedTransactionId: Int): Flow<List<Transaction>> {
-        return transactionDao.getRelatedTransactions(relatedTransactionId).map { list -> list.map { it.toDomain() } }
+        return transactionDao.getRelatedTransactions(relatedTransactionId)
+            .map { list -> list.map { it.toDomain() } }
     }
 }

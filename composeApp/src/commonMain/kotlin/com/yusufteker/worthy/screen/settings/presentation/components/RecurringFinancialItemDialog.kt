@@ -7,22 +7,47 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DividerDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.yusufteker.worthy.core.data.database.entities.ExpenseNeedType
 import com.yusufteker.worthy.core.domain.createTimestampId
-import com.yusufteker.worthy.core.domain.getCurrentMonth
 import com.yusufteker.worthy.core.domain.getCurrentYear
 import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.core.domain.model.Currency
@@ -81,8 +106,8 @@ fun RecurringFinancialItemDialog(
     isIncome: Boolean = false,
     onDismiss: () -> Unit,
     onClose: () -> Unit,
-    onUpdateGroup: (List<RecurringFinancialItem>) -> Unit= {},
-    onDeleteGroup: (String)-> Unit = {},
+    onUpdateGroup: (List<RecurringFinancialItem>) -> Unit = {},
+    onDeleteGroup: (String) -> Unit = {},
     onDelete: (RecurringFinancialItem) -> Unit = {},
     onAddNew: (RecurringFinancialItem) -> Unit = {},
 
@@ -98,7 +123,6 @@ fun RecurringFinancialItemDialog(
             val visibleItemIds = remember { mutableStateMapOf<String, Boolean>() }
 
             LazyColumn(modifier = Modifier.heightIn(min = 300.dp)) {
-
 
                 items( // TODO SIRALAMA SONRA DUZELECEK
                     items
@@ -140,7 +164,11 @@ fun RecurringFinancialItemDialog(
                 item {
                     Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                         IconButton(onClick = { showAddDialog = true }) {
-                            Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(32.dp))
+                            Icon(
+                                Icons.Default.Add,
+                                contentDescription = null,
+                                modifier = Modifier.size(32.dp)
+                            )
                         }
                     }
                 }
@@ -160,15 +188,14 @@ fun RecurringFinancialItemDialog(
         RecurringItemAddDialog(
             onDismiss = { showAddDialog = false },
             onAdd = { item ->
-                    onAddNew(item.copy(isIncome = isIncome))
-                    showAddDialog = false
+                onAddNew(item.copy(isIncome = isIncome))
+                showAddDialog = false
             },
             isIncome = isIncome
         )
     }
 
     editingItem?.let { item ->
-
 
         RecurringItemGroupEditDialog(
             initialItems = items.filter { it.groupId == item.groupId },
@@ -204,26 +231,26 @@ fun RecurringItemRow(
 ) {
     Column(Modifier.padding(vertical = 8.dp)) {
         Text(name, style = MaterialTheme.typography.titleMedium)
-        versions.sortedByDescending { it.startDate.year * 100 + it.startDate.month }.forEach { item ->
-            Row(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text("${item.amount?.formatted()}")
-                Row(modifier = Modifier.weight(1f), horizontalArrangement = Arrangement.End) {
-                    IconButton(onClick = { onEdit(item) }) {
-                        Icon(Icons.Default.Edit, contentDescription = null)
-                    }
-                    IconButton(onClick = { onDelete(item.groupId) }) {
-                        Icon(Icons.Default.Delete, contentDescription = null)
+        versions.sortedByDescending { it.startDate.year * 100 + it.startDate.month }
+            .forEach { item ->
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("${item.amount?.formatted()}")
+                    Row(modifier = Modifier.weight(1f), horizontalArrangement = Arrangement.End) {
+                        IconButton(onClick = { onEdit(item) }) {
+                            Icon(Icons.Default.Edit, contentDescription = null)
+                        }
+                        IconButton(onClick = { onDelete(item.groupId) }) {
+                            Icon(Icons.Default.Delete, contentDescription = null)
+                        }
                     }
                 }
             }
-        }
     }
 }
-
 
 @Composable
 fun RecurringItemAddDialog(
@@ -231,16 +258,15 @@ fun RecurringItemAddDialog(
     onAdd: (RecurringFinancialItem) -> Unit,
     isIncome: Boolean
 ) {
-    var name by remember { mutableStateOf( "") }
+    var name by remember { mutableStateOf("") }
     var nameError by remember { mutableStateOf<UiText?>(null) }
     var amount by remember { mutableStateOf<Money?>(emptyMoney()) }
     var amountError by remember { mutableStateOf<UiText?>(null) }
-    var isIncome by remember { mutableStateOf<Boolean>( isIncome) }
-    var needType by remember { mutableStateOf( ExpenseNeedType.NONE) }
+    var isIncome by remember { mutableStateOf<Boolean>(isIncome) }
+    var needType by remember { mutableStateOf(ExpenseNeedType.NONE) }
     var scheduledDay by remember { mutableStateOf<Int?>(null) }
 
     var startDate by remember { mutableStateOf<AppDate>(currentAppDate()) }
-
 
     val months = (1..12).toList()
     val years = (getCurrentYear() - 5..getCurrentYear() + 5).toList()
@@ -251,8 +277,9 @@ fun RecurringItemAddDialog(
             Text(
                 text = UiText.StringResourceId(
                     if (isIncome) Res.string.add_income
-                         else Res.string.add_expense
-            ).asString())
+                    else Res.string.add_expense
+                ).asString()
+            )
         },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -289,7 +316,7 @@ fun RecurringItemAddDialog(
 
                 amountError?.let { errorMessage ->
                     Text(
-                        text = errorMessage.asString() ,
+                        text = errorMessage.asString(),
                         color = AppColors.error,
                         style = AppTypography.bodySmall,
                         modifier = Modifier.padding(start = 16.dp, top = 4.dp)
@@ -321,14 +348,13 @@ fun RecurringItemAddDialog(
                     onDayChange = { scheduledDay = it }
                 )
 
-
                 // Başlangıç ve Bitiş Tarihleri
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     DateSelector(
                         month = startDate.month,
-                        onMonthChanged = {startDate =  startDate.copy(month = it) },
+                        onMonthChanged = { startDate = startDate.copy(month = it) },
                         year = startDate.year,
-                        onYearChanged = {startDate = startDate.copy(year = it) },
+                        onYearChanged = { startDate = startDate.copy(year = it) },
                         months = months,
                         years = years
 
@@ -354,30 +380,30 @@ fun RecurringItemAddDialog(
                 if (item.name.isBlank()) {
                     nameError = UiText.StringResourceId(Res.string.expense_name)
                 } else if ((item.amount?.amount ?: emptyMoney().amount) <= 0) {
-                    amountError = UiText.StringResourceId(Res.string.amount_must_be_greater_than_zero)
+                    amountError =
+                        UiText.StringResourceId(Res.string.amount_must_be_greater_than_zero)
                 } else {
                     isValid = true
                 }
-                if (isValid){
+                if (isValid) {
                     onAdd(item)
                     onDismiss()
-                }else{
+                } else {
                     //handleError
                 }
 
             }) {
-                Text(UiText.StringResourceId( Res.string.save).asString())
+                Text(UiText.StringResourceId(Res.string.save).asString())
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(UiText.StringResourceId( Res.string.cancel).asString())
+                Text(UiText.StringResourceId(Res.string.cancel).asString())
             }
         }
     )
 
 }
-
 
 @Preview
 @Composable
@@ -417,7 +443,6 @@ fun RecurringFinancialItemDialogPreview() {
     )
 }
 
-
 @Composable
 fun RecurringItemGroupEditDialog(
     initialItems: List<RecurringFinancialItem>,
@@ -426,7 +451,7 @@ fun RecurringItemGroupEditDialog(
     onDelete: (RecurringFinancialItem) -> Unit = { },
     onUpdateItem: (RecurringFinancialItem) -> Unit = { },
 
-) {
+    ) {
     val months = (1..12).toList()
     val years = (getCurrentYear() - 5..getCurrentYear() + 5).toList()
 
@@ -442,11 +467,13 @@ fun RecurringItemGroupEditDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(
-            text = UiText.StringResourceId(
-                if (initialItems.firstOrNull()?.isIncome == true) Res.string.incomes
-                else Res.string.expenses
-            ).asString())
+        title = {
+            Text(
+                text = UiText.StringResourceId(
+                    if (initialItems.firstOrNull()?.isIncome == true) Res.string.incomes
+                    else Res.string.expenses
+                ).asString()
+            )
         },
         text = {
             LazyColumn(
@@ -480,14 +507,15 @@ fun RecurringItemGroupEditDialog(
                         onAmountChange = {
                             tempAmount = it
                             errorMessageNew = null
-                                         },
+                        },
                         startMonth = tempStartDate.month,
                         onStartMonthChange = {
-                            tempStartDate = tempStartDate.copy( month = it)
+                            tempStartDate = tempStartDate.copy(month = it)
                             errorMessageNew = null
                         },
                         startYear = tempStartDate.year,
-                        onStartYearChange = { tempStartDate = tempStartDate.copy(year = it)
+                        onStartYearChange = {
+                            tempStartDate = tempStartDate.copy(year = it)
                             errorMessageNew = null
                         },
                         months = months,
@@ -496,11 +524,15 @@ fun RecurringItemGroupEditDialog(
                             val newItem = RecurringFinancialItem(
                                 id = 0,
                                 name = name,
-                                amount = Money(amount = tempAmount?.amount ?: 0.0, currency = Currency.TRY),
+                                amount = Money(
+                                    amount = tempAmount?.amount ?: 0.0,
+                                    currency = Currency.TRY
+                                ),
                                 endDate = tempEndDate,
-                                groupId = initialItems.firstOrNull()?.groupId ?: createTimestampId(),
+                                groupId = initialItems.firstOrNull()?.groupId
+                                    ?: createTimestampId(),
                                 isIncome = initialItems.firstOrNull()?.isIncome ?: true,
-                                startDate =tempStartDate
+                                startDate = tempStartDate
                             )
 
                             val tempItems = initialItems.toMutableList()
@@ -596,12 +628,10 @@ fun RecurringItemGroupEditDialog(
         }
     )
 
-
 }
 
-
 @OptIn(ExperimentalTime::class)
-fun hasDateConflict(items: List<RecurringFinancialItem>): Pair<Int, UiText>?  {
+fun hasDateConflict(items: List<RecurringFinancialItem>): Pair<Int, UiText>? {
     val sorted = items.sortedBy { it.startDate() }
 
     for (i in 0 until sorted.size - 1) {
@@ -613,7 +643,7 @@ fun hasDateConflict(items: List<RecurringFinancialItem>): Pair<Int, UiText>?  {
         val nextStart = next.startDate()
 
         // 1. Aynı startDate olamaz
-        if (currentStart == nextStart){
+        if (currentStart == nextStart) {
 
             return Pair(
                 current.id, UiText.StringResourceId(
@@ -624,13 +654,12 @@ fun hasDateConflict(items: List<RecurringFinancialItem>): Pair<Int, UiText>?  {
 
         }
 
-
         // 2. Yeni başlangıç tarihi, eskiye göre max 1 ay sonra olabilir
         val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
         val latestAllowed = today.plus(1, DateTimeUnit.MONTH)
-        if (currentStart > latestAllowed){
+        if (currentStart > latestAllowed) {
             return Pair(
-                current.id ,  UiText.StringResourceId(
+                current.id, UiText.StringResourceId(
                     id = Res.string.start_date_must_be_before,
                     args = arrayOf(latestAllowed.month.number, latestAllowed.year)
                 )
@@ -641,7 +670,7 @@ fun hasDateConflict(items: List<RecurringFinancialItem>): Pair<Int, UiText>?  {
         // 3. Sonraki item'ın başlangıç tarihi, mevcut item'ın tarih aralığının içine düşemez
         if (nextStart > currentStart && nextStart <= currentEnd) {
             return Pair(
-                next.id , UiText.StringResourceId(
+                next.id, UiText.StringResourceId(
                     id = Res.string.date_ranges_conflict,
                     args = arrayOf(
                         next.name,
@@ -660,20 +689,18 @@ fun hasDateConflict(items: List<RecurringFinancialItem>): Pair<Int, UiText>?  {
         // 3. current'ın endDate'i, sonraki startDate'den önce olmalı (== de dahil değil)
         if (currentEnd >= nextStart)
             return Pair(
-            current.id ,  UiText.StringResourceId(
-                id = Res.string.date_ranges_conflict,
-                args = arrayOf(
-                    current.name,
-                    currentStart.month.number,
-                    currentStart.year,
-                    next.name,
-                    nextStart.month.number,
-                    nextStart.year
+                current.id, UiText.StringResourceId(
+                    id = Res.string.date_ranges_conflict,
+                    args = arrayOf(
+                        current.name,
+                        currentStart.month.number,
+                        currentStart.year,
+                        next.name,
+                        nextStart.month.number,
+                        nextStart.year
+                    )
                 )
             )
-        )
-
-
 
     }
     for (item in sorted) {
@@ -682,7 +709,7 @@ fun hasDateConflict(items: List<RecurringFinancialItem>): Pair<Int, UiText>?  {
 
         if (end != null && start > end) {
             return Pair(
-                item.id , UiText.StringResourceId(
+                item.id, UiText.StringResourceId(
                     id = Res.string.start_date_after_end_date,
                     args = arrayOf(
                         item.name,
@@ -696,7 +723,7 @@ fun hasDateConflict(items: List<RecurringFinancialItem>): Pair<Int, UiText>?  {
         }
         if (item.endDate?.month == null && item.endDate?.year != null || item.endDate?.month != null && item.endDate?.year == null) {
             return Pair(
-                item.id , UiText.StringResourceId(
+                item.id, UiText.StringResourceId(
                     id = Res.string.missing_month_or_year
                 )
             )
@@ -706,7 +733,6 @@ fun hasDateConflict(items: List<RecurringFinancialItem>): Pair<Int, UiText>?  {
 
     return null
 }
-
 
 @Composable
 fun ExistingRecurringItemCard(
@@ -721,14 +747,15 @@ fun ExistingRecurringItemCard(
         elevation = CardDefaults.cardElevation(4.dp),
         border = BorderStroke(
             width = 1.dp,
-            color = if (validationError != null) AppColors.error else Color.Transparent)
+            color = if (validationError != null) AppColors.error else Color.Transparent
+        )
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
 
             MoneyInput(
                 money = item.amount,
                 onValueChange = { newAmount ->
-                    onUpdate(item.copy(amount = newAmount?: emptyMoney()))
+                    onUpdate(item.copy(amount = newAmount ?: emptyMoney()))
                 },
                 modifier = Modifier.fillMaxWidth()
 
@@ -753,7 +780,7 @@ fun ExistingRecurringItemCard(
                                 startDate = item.startDate.copy(year = it)
                             )
                         )
-                                    },
+                    },
                     months = months,
                     years = years
                 )
@@ -771,9 +798,13 @@ fun ExistingRecurringItemCard(
                         )
                     },
                     year = item.endDate?.year,
-                    onYearChanged = { onUpdate(item.copy(
+                    onYearChanged = {
+                        onUpdate(
+                            item.copy(
                                 endDate = item.endDate?.copy(year = it)
-                    )) },
+                            )
+                        )
+                    },
                     months = months,
                     years = years
                 )
@@ -788,13 +819,12 @@ fun ExistingRecurringItemCard(
                 )
             }
 
-
         }
     }
 }
 
 @Composable
-    fun NewRecurringItemInput(
+fun NewRecurringItemInput(
     amount: Money?,
     onAmountChange: (Money?) -> Unit,
     startMonth: Int?,
@@ -810,11 +840,15 @@ fun ExistingRecurringItemCard(
 
     var amountError by remember { mutableStateOf<UiText?>(null) }
 
-    Column(modifier = Modifier
-        .fillMaxWidth()
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
     ) {
 
-        Text(UiText.StringResourceId(Res.string.new_amount).asString(), style = MaterialTheme.typography.titleMedium)
+        Text(
+            UiText.StringResourceId(Res.string.new_amount).asString(),
+            style = MaterialTheme.typography.titleMedium
+        )
 
 
         MoneyInput(
@@ -870,9 +904,10 @@ fun ExistingRecurringItemCard(
 
         Button(
             onClick = {
-                if ((amount?.amount ?: 0.0) <= 0.0){
-                    amountError = UiText.StringResourceId(Res.string.amount_must_be_greater_than_zero)
-                }else{ // SUCCESS CASE
+                if ((amount?.amount ?: 0.0) <= 0.0) {
+                    amountError =
+                        UiText.StringResourceId(Res.string.amount_must_be_greater_than_zero)
+                } else { // SUCCESS CASE
                     onSave()
 
                 }
@@ -884,6 +919,7 @@ fun ExistingRecurringItemCard(
 
     }
 }
+
 fun adjustOpenEndedRecurringItems(items: List<RecurringFinancialItem>): List<RecurringFinancialItem> {
     val sorted = items.sortedBy { it.startDate() }
 
@@ -892,7 +928,11 @@ fun adjustOpenEndedRecurringItems(items: List<RecurringFinancialItem>): List<Rec
             val next = sorted[index + 1]
             val adjustedEndDate = next.startDate().minus(DatePeriod(months = 1))
             current.copy(
-                endDate = AppDate(month = adjustedEndDate.month.number, year = adjustedEndDate.year, day = current.endDate?.day),
+                endDate = AppDate(
+                    month = adjustedEndDate.month.number,
+                    year = adjustedEndDate.year,
+                    day = current.endDate?.day
+                ),
             )
         } else {
             current

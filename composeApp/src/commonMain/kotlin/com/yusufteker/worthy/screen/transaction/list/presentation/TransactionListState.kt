@@ -5,6 +5,6 @@ import com.yusufteker.worthy.core.presentation.base.BaseState
 data class TransactionListState(
     override val isLoading: Boolean = false,
     val errorMessage: String? = null
-): BaseState{
+) : BaseState {
     override fun copyWithLoading(isLoading: Boolean): BaseState = copy(isLoading = isLoading)
 }

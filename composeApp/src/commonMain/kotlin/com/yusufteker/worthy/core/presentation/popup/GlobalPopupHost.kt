@@ -5,11 +5,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.Composable
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,42 +33,33 @@ fun GlobalPopupHost() {
             is PopupType.Info -> InfoPopup(
                 title = UiText.StringResourceId(popup.title).asString(),
                 message = UiText.StringResourceId(popup.message).asString(),
-                onDismiss = { popupManager.dismissPopup(popup) }
-            )
+                onDismiss = { popupManager.dismissPopup(popup) })
 
             is PopupType.Confirm -> ConfirmPopup(
-                title = UiText.StringResourceId(popup.title).asString() ,
+                title = UiText.StringResourceId(popup.title).asString(),
                 message = UiText.StringResourceId(popup.message).asString(),
                 onConfirm = {
                     popup.onConfirm()
                     popupManager.dismissPopup(popup)
                 },
-                onDismiss = { popupManager.dismissPopup(popup) }
-            )
+                onDismiss = { popupManager.dismissPopup(popup) })
 
             is PopupType.Error -> ErrorPopup(
-                message = UiText.StringResourceId(popup.message).asString() ,
-                onDismiss = { popupManager.dismissPopup(popup) }
-            )
+                message = UiText.StringResourceId(popup.message).asString(),
+                onDismiss = { popupManager.dismissPopup(popup) })
 
             is PopupType.Custom -> CustomPopup(
-                content = popup.content,
-                onDismiss = {
+                content = popup.content, onDismiss = {
                     popupManager.dismissPopup(popup)
-                    Napier.d ("CustomPopup global popup onDismiss", tag = "popup")
-                }
-            )
+                    Napier.d("CustomPopup global popup onDismiss", tag = "popup")
+                })
         }
     }
 }
 
-
-
 @Composable
 private fun InfoPopup(
-    title: String,
-    message: String,
-    onDismiss: () -> Unit
+    title: String, message: String, onDismiss: () -> Unit
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -78,16 +69,12 @@ private fun InfoPopup(
             Button(onClick = onDismiss) {
                 Text(UiText.StringResourceId(Res.string.ok).asString())
             }
-        }
-    )
+        })
 }
 
 @Composable
 private fun ConfirmPopup(
-    title: String,
-    message: String,
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit
+    title: String, message: String, onConfirm: () -> Unit, onDismiss: () -> Unit
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -105,14 +92,12 @@ private fun ConfirmPopup(
             }) {
                 Text(UiText.StringResourceId(Res.string.confirm).asString())
             }
-        }
-    )
+        })
 }
 
 @Composable
 private fun ErrorPopup(
-    message: String,
-    onDismiss: () -> Unit
+    message: String, onDismiss: () -> Unit
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -122,26 +107,19 @@ private fun ErrorPopup(
             Button(onClick = onDismiss) {
                 Text(UiText.StringResourceId(Res.string.ok).asString())
             }
-        }
-    )
+        })
 }
 
 @Composable
 fun CustomPopup(
-    content: @Composable (onDismiss: () -> Unit) -> Unit,
-    onDismiss: () -> Unit
+    content: @Composable (onDismiss: () -> Unit) -> Unit, onDismiss: () -> Unit
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0x80000000))
-            .clickable(
-                onClick = onDismiss,
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() }
-            ),
-        contentAlignment = Alignment.Center
-    ) {
+        modifier = Modifier.fillMaxSize().background(Color(0x80000000)).clickable(
+            onClick = onDismiss,
+            indication = null,
+            interactionSource = remember { MutableInteractionSource() }),
+        contentAlignment = Alignment.Center) {
         content(onDismiss)
     }
 }

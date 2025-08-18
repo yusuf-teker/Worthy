@@ -2,10 +2,10 @@ package com.yusufteker.worthy.screen.dashboard.presentation
 
 import com.yusufteker.worthy.core.domain.getCurrentMonth
 import com.yusufteker.worthy.core.domain.getCurrentYear
+import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.DashboardMonthlyAmount
 import com.yusufteker.worthy.core.domain.model.Money
-import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.core.domain.model.currentAppDate
 import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.presentation.base.BaseState
@@ -16,18 +16,14 @@ data class DashboardState(
     val userName: String = "",
     val selectedCurrency: Currency = Currency.TRY,
     val monthlyWorkHours: Float = 0f,
-    val desireBudget: Money = emptyMoney( selectedCurrency),
+    val desireBudget: Money = emptyMoney(selectedCurrency),
     val savingProgress: Float = 0f,   // 0f – 1f
-
-
 
     var selectedChartIndex: Int? = null,
 
     //Bottom Sheet
     var isBottomSheetOpen: Boolean = false,
     var bottomSheetUiState: BottomSheetUiState = BottomSheetUiState(),
-
-
 
     val fixedExpenseFraction: Float = 0f,
     val desiresSpentFraction: Float = 0f,
@@ -37,9 +33,8 @@ data class DashboardState(
     // Mini Bar
     val miniBarsFractions: List<List<Float?>> = emptyList(),
     val selectedMiniBarsFraction: List<Float?> = emptyList(),
-    val miniBarsMonths:List<List<Int>> = emptyList(),
+    val miniBarsMonths: List<List<Int>> = emptyList(),
     val selectedMiniBarsMonths: List<Int> = emptyList(),
-
 
     //Total Income
     val totalSelectedMonthIncomeRecurringMoney: Money = emptyMoney(selectedCurrency),
@@ -47,8 +42,7 @@ data class DashboardState(
     val totalAllIncomeMoney: Money = emptyMoney(selectedCurrency),
     val totalAllExpenseMoney: Money = emptyMoney(selectedCurrency),
 
-
-    val incomeChangeRatio : Double = 0.0,
+    val incomeChangeRatio: Double = 0.0,
 
     //BAR CHART
     val dashboardRecurringData: DashboardRecurringData? = null,
@@ -67,13 +61,15 @@ data class DashboardState(
     val filteredWishlistMonthlyAmountList: List<DashboardMonthlyAmount> = emptyList(),
 
     val selectedMonthYear: AppDate = currentAppDate(),
-    val selectableMonths: List<AppDate> = getRecentYearMonths(currentMonth = getCurrentMonth(), currentYear = getCurrentYear()),
+    val selectableMonths: List<AppDate> = getRecentYearMonths(
+        currentMonth = getCurrentMonth(),
+        currentYear = getCurrentYear()
+    ),
     override val isLoading: Boolean = false
-    ): BaseState {
+) : BaseState {
     override fun copyWithLoading(isLoading: Boolean) = copy(isLoading = isLoading)
 
 }
-
 
 fun getSelectableMonthIndices(currentMonth: Int, count: Int = 6): List<Int> {
     return List(count + 1) { i ->
@@ -81,6 +77,7 @@ fun getSelectableMonthIndices(currentMonth: Int, count: Int = 6): List<Int> {
         if (month > 0) month else 12 + month
     }
 }
+
 fun getRecentYearMonths(
     currentYear: Int,
     currentMonth: Int,

@@ -15,7 +15,7 @@ import worthy.composeapp.generated.resources.bottom_icon_wishlist
 @Composable
 fun CategoryIcon(iconName: String?) {
     iconName?.let {
-        if (it.startsWith("category_icon")){
+        if (it.startsWith("category_icon")) {
             val iconResId = when (iconName) {
                 "ic_food" -> Res.drawable.bottom_icon_graph
                 "ic_shopping" -> Res.drawable.bottom_icon_wishlist
@@ -23,14 +23,11 @@ fun CategoryIcon(iconName: String?) {
             }
 
             Icon(
-                painter = painterResource(iconResId),
-                contentDescription = null
+                painter = painterResource(iconResId), contentDescription = null
             )
-        }
-        else {
+        } else {
             Text(
-                text = it,
-                modifier = Modifier.padding(end = 4.dp)
+                text = it, modifier = Modifier.padding(end = 4.dp)
             )
         }
     }

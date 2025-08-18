@@ -5,7 +5,7 @@ import com.yusufteker.worthy.core.presentation.base.BaseState
 data class WishlistDetailState(
     override val isLoading: Boolean = false,
     val errorMessage: String? = null
-): BaseState{
+) : BaseState {
     override fun copyWithLoading(isLoading: Boolean): BaseState {
         return copy(isLoading = isLoading)
     }

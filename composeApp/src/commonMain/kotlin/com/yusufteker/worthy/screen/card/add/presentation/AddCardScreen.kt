@@ -1,11 +1,24 @@
 package com.yusufteker.worthy.screen.card.add.presentation
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -20,11 +33,10 @@ import com.yusufteker.worthy.core.presentation.util.KeyboardOptionsDefaults
 import com.yusufteker.worthy.core.presentation.util.detectCardBrand
 import com.yusufteker.worthy.core.presentation.util.groupEvery4
 import com.yusufteker.worthy.core.presentation.util.parseExpiry
+import com.yusufteker.worthy.screen.card.add.presentation.components.CreditCardPreview
 import org.koin.compose.viewmodel.koinViewModel
 import worthy.composeapp.generated.resources.Res
-import worthy.composeapp.generated.resources.add_new_card
 import worthy.composeapp.generated.resources.screen_title_add_new_card
-import com.yusufteker.worthy.screen.card.add.presentation.components.CreditCardPreview
 
 @Composable
 fun AddCardScreenRoot(
@@ -47,7 +59,11 @@ fun AddCardScreenRoot(
     BaseContentWrapper(
         state = state
     ) {
-        AddCardScreen(state = state, onAction = viewModel::onAction, contentPadding = contentPadding)
+        AddCardScreen(
+            state = state,
+            onAction = viewModel::onAction,
+            contentPadding = contentPadding
+        )
     }
 }
 
@@ -77,7 +93,7 @@ fun AddCardScreen(
                 }
             )
         }
-    ){
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -88,7 +104,12 @@ fun AddCardScreen(
             CreditCardPreview(
                 cardHolder = holder,
                 cardNumberFormatted = formattedNumber.ifEmpty { "#### #### #### ####" },
-                expiryFormatted = if (mm.isNotEmpty() || yy.isNotEmpty()) "${mm.padStart(2,'0')}/${yy.take(2)}" else "MM/YY",
+                expiryFormatted = if (mm.isNotEmpty() || yy.isNotEmpty()) "${
+                    mm.padStart(
+                        2,
+                        '0'
+                    )
+                }/${yy.take(2)}" else "MM/YY",
                 brand = cardBrand,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -111,7 +132,8 @@ fun AddCardScreen(
             OutlinedTextField(
                 value = number,
                 onValueChange = { input ->
-                    val digits = input.filter { it.isDigit() }.take(19) // 19'a kadar bırak (AMEX gibi uzunlar için esnek)
+                    val digits = input.filter { it.isDigit() }
+                        .take(19) // 19'a kadar bırak (AMEX gibi uzunlar için esnek)
                     number = digits
                 },
                 label = { Text("Card Number") },
@@ -157,20 +179,22 @@ fun AddCardScreen(
                 onClick = {
                     val month = mm.toIntOrNull() ?: 0
                     val year = ("20" + yy.take(2)).toIntOrNull() ?: 0
-                    onAction(AddCardAction.AddCard(
-                        Card(
-                            cardHolderName = holder.trim(),
-                            cardNumber = number,
-                            expiryMonth = month,
-                            expiryYear = year,
-                            cvv = cvv,
-                            nickname = "",
-                            cardBrand = cardBrand,
-                            note = "",
-                            statementDay = 1,
+                    onAction(
+                        AddCardAction.AddCard(
+                            Card(
+                                cardHolderName = holder.trim(),
+                                cardNumber = number,
+                                expiryMonth = month,
+                                expiryYear = year,
+                                cvv = cvv,
+                                nickname = "",
+                                cardBrand = cardBrand,
+                                note = "",
+                                statementDay = 1,
 
+                                )
                         )
-                    ))
+                    )
                 },
                 enabled = holder.isNotBlank() && number.length >= 13 && expiry.length == 4 && cvv.length >= 3,
                 modifier = Modifier.fillMaxWidth().height(52.dp)
@@ -178,8 +202,8 @@ fun AddCardScreen(
                 Text("Save Card")
             }
         }
-        }
     }
+}
 
 
 

@@ -9,8 +9,8 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.yusufteker.worthy.core.presentation.components.fabmenu.MenuFabItem
 import com.yusufteker.worthy.core.presentation.components.fabmenu.AddFabMenu
+import com.yusufteker.worthy.core.presentation.components.fabmenu.MenuFabItem
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import org.jetbrains.compose.resources.painterResource
 import worthy.composeapp.generated.resources.Res
@@ -23,7 +23,7 @@ fun AddFabMenu(
     showMenu: Boolean,
     modifier: Modifier,
     onMenuClick: (MenuFabItem) -> Unit
-){
+) {
     val menuItems = rememberAddFabItems()
 
     Box(
@@ -51,21 +51,39 @@ fun rememberAddFabItems(): SnapshotStateList<MenuFabItem> {
         mutableStateListOf(
             MenuFabItem(
                 label = "Expense",
-                icon = { Icon(painter = painterResource(Res.drawable.expense), contentDescription = null, tint = Color.White) },
+                icon = {
+                    Icon(
+                        painter = painterResource(Res.drawable.expense),
+                        contentDescription = null,
+                        tint = Color.White
+                    )
+                },
                 labelBackgroundColor = Color.Black.copy(alpha = 0.6f),
                 labelTextColor = Color.White,
                 fabBackgroundColor = expenseFabColor
             ),
             MenuFabItem(
                 label = "Income",
-                icon = { Icon(painter = painterResource(Res.drawable.income), contentDescription = null, tint = Color.White) },
+                icon = {
+                    Icon(
+                        painter = painterResource(Res.drawable.income),
+                        contentDescription = null,
+                        tint = Color.White
+                    )
+                },
                 labelBackgroundColor = Color.Black.copy(alpha = 0.6f),
                 labelTextColor = Color.White,
                 fabBackgroundColor = incomeFabColor
             ),
             MenuFabItem(
                 label = "Card",
-                icon = { Icon(painter = painterResource(Res.drawable.card), contentDescription = null, tint = Color.White) },
+                icon = {
+                    Icon(
+                        painter = painterResource(Res.drawable.card),
+                        contentDescription = null,
+                        tint = Color.White
+                    )
+                },
                 labelBackgroundColor = Color.Black.copy(alpha = 0.6f),
                 labelTextColor = Color.White,
                 fabBackgroundColor = fabColor

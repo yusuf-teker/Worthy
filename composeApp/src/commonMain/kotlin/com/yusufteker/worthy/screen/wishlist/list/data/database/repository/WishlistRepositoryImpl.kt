@@ -40,10 +40,16 @@ class WishlistRepositoryImpl(
     override suspend fun delete(item: WishlistItem) {
         itemDao.delete(item.toEntity())
     }
+
     override suspend fun deleteById(id: Int) {
         itemDao.deleteById(id)
     }
-    override suspend fun updateIsPurchased(itemId: Int, isPurchased: Boolean, purchasedTime: Long?) {
+
+    override suspend fun updateIsPurchased(
+        itemId: Int,
+        isPurchased: Boolean,
+        purchasedTime: Long?
+    ) {
         itemDao.updateIsPurchased(itemId, isPurchased, purchasedTime)
     }
 

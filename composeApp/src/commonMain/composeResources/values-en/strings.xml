@@ -287,5 +287,10 @@
     <string name="pay_with_card">Pay with card</string>
 
 
+    <string name="expiry_label">Expiry Date: </string>
+    <string name="year">Year</string>
+    <string name="month">Month</string>
+
+
 
 </resources>

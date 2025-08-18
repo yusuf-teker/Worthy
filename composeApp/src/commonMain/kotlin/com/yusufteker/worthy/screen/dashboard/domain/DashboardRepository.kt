@@ -1,19 +1,17 @@
 package com.yusufteker.worthy.screen.dashboard.domain
 
-
 import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.DashboardMonthlyAmount
 import com.yusufteker.worthy.core.domain.model.Transaction
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDate
 
-interface  DashboardRepository {
+interface DashboardRepository {
 
     fun getAllRecurringMonthlyAmount(
         monthCount: Int,
         currentDate: LocalDate
-    ):  Flow<DashboardRecurringData>
-
+    ): Flow<DashboardRecurringData>
 
     fun getAllIncomeMonthlyAmount(
         monthCount: Int,

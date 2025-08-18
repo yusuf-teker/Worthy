@@ -84,7 +84,6 @@ fun WishlistAddScreen(
     contentPadding: PaddingValues = PaddingValues()
 ) {
 
-
     Column(Modifier.fillMaxSize().padding(contentPadding).padding(horizontal = 16.dp)) {
         Column(
             modifier = Modifier.verticalScroll(rememberScrollState())
@@ -97,7 +96,6 @@ fun WishlistAddScreen(
                 onNavIconClick = { onAction(WishlistAddAction.OnBackClick) },
                 isBack = true
             )
-
 
             // 1. Görsel seçimi
             BoxWithConstraints(
@@ -181,7 +179,6 @@ fun WishlistAddScreen(
                 Text(UiText.StringResourceId(Res.string.wishlist_checkbox_purchased).asString())
             }
 
-
         }
         AppButton(
             text = UiText.StringResourceId(Res.string.wishlist_button_save).asString(),
@@ -189,6 +186,5 @@ fun WishlistAddScreen(
             modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
         )
     }
-
 
 }

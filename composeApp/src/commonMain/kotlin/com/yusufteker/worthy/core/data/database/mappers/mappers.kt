@@ -6,19 +6,15 @@ import com.yusufteker.worthy.core.data.database.entities.RecurringFinancialItemE
 import com.yusufteker.worthy.core.data.database.entities.TransactionEntity
 import com.yusufteker.worthy.core.domain.getCurrentEpochMillis
 import com.yusufteker.worthy.core.domain.model.Card
-import com.yusufteker.worthy.screen.wishlist.list.data.database.entities.WishlistItemEntity
 import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.RecurringFinancialItem
 import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.TransactionType
+import com.yusufteker.worthy.screen.wishlist.list.data.database.entities.WishlistItemEntity
 import com.yusufteker.worthy.screen.wishlist.list.data.database.relation.WishlistWithCategory
 import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistItem
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
-
-
-
-
 
 // WishlistItem
 // data/mapper/WishlistMapper.kt
@@ -51,7 +47,6 @@ fun WishlistItemEntity.toDomain(category: Category?): WishlistItem {
     )
 }
 
-
 @OptIn(ExperimentalTime::class)
 fun WishlistItem.toEntity(): WishlistItemEntity {
     val newItem = addedDate <= 0L
@@ -68,8 +63,6 @@ fun WishlistItem.toEntity(): WishlistItemEntity {
         imageUri = imageUri
     )
 }
-
-
 
 fun CategoryEntity.toDomain(): Category {
     return Category(
@@ -96,8 +89,6 @@ fun Category.toEntity(): CategoryEntity {
     )
 }
 
-
-
 fun RecurringFinancialItemEntity.toDomain(): RecurringFinancialItem = RecurringFinancialItem(
     id = id,
     groupId = groupId,
@@ -121,8 +112,6 @@ fun RecurringFinancialItem.toEntity(): RecurringFinancialItemEntity = RecurringF
     startDate = startDate,
     endDate = endDate,
 )
-
-
 
 fun CardEntity.toDomain(): Card = Card(
     id = id,
@@ -179,6 +168,7 @@ fun Transaction.toEntity(): TransactionEntity {
         installmentStartDate = this.installmentStartDate
     )
 }
+
 fun WishlistItem.toExpenseTransaction(): Transaction {
     return Transaction(
         id = this.id,

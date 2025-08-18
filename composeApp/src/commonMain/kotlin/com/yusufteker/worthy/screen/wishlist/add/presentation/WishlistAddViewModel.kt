@@ -8,12 +8,10 @@ import com.yusufteker.worthy.core.domain.repository.CategoryRepository
 import com.yusufteker.worthy.core.domain.toEpochMillis
 import com.yusufteker.worthy.core.media.ImageSaver
 import com.yusufteker.worthy.core.media.toByteArray
-import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import com.yusufteker.worthy.core.presentation.UiEvent
+import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistRepository
 import io.github.aakira.napier.Napier
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -23,7 +21,7 @@ class WishlistAddViewModel(
     private val imageSaver: ImageSaver,
     private val wishlistRepository: WishlistRepository,
     private val categoryRepository: CategoryRepository,
-    ) : BaseViewModel<WishlistAddState>(WishlistAddState()) {
+) : BaseViewModel<WishlistAddState>(WishlistAddState()) {
 
 
     init {
@@ -32,7 +30,6 @@ class WishlistAddViewModel(
 
     fun onAction(action: WishlistAddAction) {
         when (action) {
-
 
             is WishlistAddAction.OnImageSelected -> {
 
@@ -52,6 +49,7 @@ class WishlistAddViewModel(
                     )
                 )
             }
+
             is WishlistAddAction.OnNameChanged -> {
                 _state.value = _state.value.copy(
                     wishlistItem = _state.value.wishlistItem.copy(
@@ -60,6 +58,7 @@ class WishlistAddViewModel(
                 )
 
             }
+
             is WishlistAddAction.OnNoteChanged -> {
                 _state.value = _state.value.copy(
                     wishlistItem = _state.value.wishlistItem.copy(
@@ -67,13 +66,15 @@ class WishlistAddViewModel(
                     )
                 )
             }
-            is WishlistAddAction.OnPriceChanged ->  {
+
+            is WishlistAddAction.OnPriceChanged -> {
                 _state.value = _state.value.copy(
                     wishlistItem = _state.value.wishlistItem.copy(
                         price = action.price ?: emptyMoney()
                     )
                 )
             }
+
             is WishlistAddAction.OnPriorityChanged -> {
                 _state.value = _state.value.copy(
                     wishlistItem = _state.value.wishlistItem.copy(
@@ -81,6 +82,7 @@ class WishlistAddViewModel(
                     )
                 )
             }
+
             is WishlistAddAction.OnPurchasedChanged -> {
                 _state.value = _state.value.copy(
                     wishlistItem = _state.value.wishlistItem.copy(
@@ -89,6 +91,7 @@ class WishlistAddViewModel(
                     )
                 )
             }
+
             WishlistAddAction.OnSaveClicked -> {
                 viewModelScope.launch {
                     saveWishlistItem()
@@ -99,7 +102,7 @@ class WishlistAddViewModel(
 
             is WishlistAddAction.OnNewCategoryCreated -> {
                 viewModelScope.launch {
-                   val categoryId =  categoryRepository.insert(action.wishlistCategory)
+                    val categoryId = categoryRepository.insert(action.wishlistCategory)
                     _state.update { currentState ->
                         currentState.copy(
                             wishlistItem = state.value.wishlistItem.copy(
@@ -119,49 +122,51 @@ class WishlistAddViewModel(
         }
     }
 
-     fun saveWishlistItem() {
-         viewModelScope.launch {
+    fun saveWishlistItem() {
+        viewModelScope.launch {
             showLoading()
-             Napier.d(_state.value.isLoading.toString())
-             val wishlistItem = _state.value.wishlistItem.copy(
+            Napier.d(_state.value.isLoading.toString())
+            val wishlistItem = _state.value.wishlistItem.copy(
 
-                 imageUri = state.value.imageBitmap?.toByteArray()?.let { byteArray ->
-                     imageSaver.saveImage(byteArray)
-                 }
-             )
-             Napier.d(_state.value.isLoading.toString())
+                imageUri = state.value.imageBitmap?.toByteArray()?.let { byteArray ->
+                    imageSaver.saveImage(byteArray)
+                }
+            )
+            Napier.d(_state.value.isLoading.toString())
 
-             hideLoading()
-             Napier.d(_state.value.isLoading.toString())
+            hideLoading()
+            Napier.d(_state.value.isLoading.toString())
 
-             wishlistRepository.insert(wishlistItem)
-         }
+            wishlistRepository.insert(wishlistItem)
+        }
     }
 
     private fun observeCategory() {
+        launchWithLoading {
 
-        categoryRepository.getAll()
-            .onEach { categories ->
-                val wishlistCategories = categories.filter { it.type == CategoryType.WISHLIST }
+            categoryRepository.getAll()
+                .onEach { categories ->
+                    val wishlistCategories = categories.filter { it.type == CategoryType.WISHLIST }
 
-                _state.update { currentState ->
-                    val shouldUpdateCategory = currentState.wishlistItem.category == null
-                    val defaultCategory = wishlistCategories.firstOrNull()
+                    _state.update { currentState ->
+                        val shouldUpdateCategory = currentState.wishlistItem.category == null
+                        val defaultCategory = wishlistCategories.firstOrNull()
 
-                    currentState.copy(
-                        wishlistCategories = wishlistCategories,
-                        wishlistItem = if (shouldUpdateCategory && defaultCategory != null) {
-                            currentState.wishlistItem.copy(category = defaultCategory)
-                        } else {
-                            currentState.wishlistItem
-                        }
-                    )
+                        currentState.copy(
+                            wishlistCategories = wishlistCategories,
+                            wishlistItem = if (shouldUpdateCategory && defaultCategory != null) {
+                                currentState.wishlistItem.copy(category = defaultCategory)
+                            } else {
+                                currentState.wishlistItem
+                            }
+                        )
+                    }
                 }
-            }
-            .launchIn(viewModelScope)
+                .launchIn(viewModelScope)
+        }
     }
 
-    suspend fun showLoading(){
+    suspend fun showLoading() {
         _state.update { currentState ->
             currentState.copy(
                 isLoading = true
@@ -169,7 +174,7 @@ class WishlistAddViewModel(
         }
     }
 
-    suspend fun hideLoading(){
+    suspend fun hideLoading() {
         _state.update { currentState ->
             currentState.copy(
                 isLoading = false

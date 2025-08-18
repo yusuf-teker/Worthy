@@ -3,19 +3,15 @@ package com.yusufteker.worthy.core.domain.model
 import com.yusufteker.worthy.core.domain.service.CurrencyConverter
 
 data class MonthlyAmount(
-    val month: String,
-    val amount: Float
+    val month: String, val amount: Float
 )
 
 data class DashboardMonthlyAmount(
-    val appDate: AppDate,
-    val amount: List<Money>
+    val appDate: AppDate, val amount: List<Money>
 )
 
 suspend fun List<DashboardMonthlyAmount>.sumConvertedAmount(
-    selectedCurrency: Currency,
-    selectedMonthYear: AppDate,
-    currencyConverter: CurrencyConverter
+    selectedCurrency: Currency, selectedMonthYear: AppDate, currencyConverter: CurrencyConverter
 
 ): Money? {
     val targetMonthlyAmount = this.find { it.appDate == selectedMonthYear }
@@ -30,7 +26,7 @@ suspend fun List<DashboardMonthlyAmount>.sumConvertedAmount(
 
 }
 
-fun List<DashboardMonthlyAmount>.getCurrent(): DashboardMonthlyAmount?{
+fun List<DashboardMonthlyAmount>.getCurrent(): DashboardMonthlyAmount? {
     return this.find {
         it.appDate == currentAppDate()
     }

@@ -40,7 +40,7 @@ fun WishlistScreenRoot(
     navigateToWishlistDetail: (wishlistId: Int) -> Unit = {},
     navigateBack: () -> Unit = {},
     navigateToWishlistAdd: () -> Unit = {}
-){
+) {
 
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -48,15 +48,17 @@ fun WishlistScreenRoot(
 
     LaunchedEffect(Unit) {
         viewModel.uiEvent.collect { event ->
-            when(event){
+            when (event) {
                 is UiEvent.NavigateTo -> {
-                    if (event.route == Routes.WishlistAdd){
+                    if (event.route == Routes.WishlistAdd) {
                         navigateToWishlistAdd()
                     }
                 }
+
                 is UiEvent.NavigateBack -> {
                     navigateBack.invoke()
                 }
+
                 else -> Unit
             }
         }
@@ -79,9 +81,7 @@ fun WishlistScreen(
     state: WishlistState,
     onAction: (WishlistAction) -> Unit,
     contentPadding: PaddingValues = PaddingValues(),
-){
-
-
+) {
 
     Scaffold(
         modifier = Modifier.padding(contentPadding),
@@ -106,7 +106,7 @@ fun WishlistScreen(
                 placeholder = UiText.StringResourceId(Res.string.search_placeholder).asString(),
             )
         }
-    ) {innerPadding ->
+    ) { innerPadding ->
 
         Column(Modifier.fillMaxSize()) {
 
@@ -120,8 +120,6 @@ fun WishlistScreen(
                     items = state.filteredItems,
                     key = { it.id }
                 ) { item ->
-
-
 
                     SwipeToDeleteWrapper(
                         modifier = Modifier
@@ -147,12 +145,9 @@ fun WishlistScreen(
             }
         }
 
-
-
     }
 
 }
-
 
 @Composable
 fun WishlistFab(

@@ -4,16 +4,12 @@ import androidx.lifecycle.viewModelScope
 import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.data.database.mappers.toExpenseTransaction
 import com.yusufteker.worthy.core.domain.getCurrentEpochMillis
-import com.yusufteker.worthy.core.domain.getCurrentLocalDateTime
 import com.yusufteker.worthy.core.domain.repository.SearchHistoryRepository
-import com.yusufteker.worthy.core.domain.toEpochMillis
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import com.yusufteker.worthy.core.presentation.components.SearchResult
 import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistItem
 import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistRepository
 import io.github.aakira.napier.Napier
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -23,43 +19,49 @@ class WishlistViewModel(
     private val wishlistRepository: WishlistRepository,
     private val searchHistoryRepository: SearchHistoryRepository
 ) : BaseViewModel<WishlistState>(WishlistState()) {
-    
+
     init {
         observeWishlistItems()
         observeSearchHistory()
     }
 
     private fun observeWishlistItems() {
-        wishlistRepository.getAll().onEach { wishlistItems ->
-            _state.update { currentState ->
-                currentState.copy(
-                    items = wishlistItems
-                )
-            }
-            performSearch(_state.value.searchText, wishlistItems)
+        launchWithLoading {
+            wishlistRepository.getAll().onEach { wishlistItems ->
+                _state.update { currentState ->
+                    currentState.copy(
+                        items = wishlistItems
+                    )
+                }
+                performSearch(_state.value.searchText, wishlistItems)
 
-        }.launchIn(viewModelScope)
+            }.launchIn(viewModelScope)
+        }
     }
 
     private fun observeSearchHistory() {
-        searchHistoryRepository.searchHistory.onEach { history ->
-            _state.update { currentState ->
-                currentState.copy(
-                    searchHistory = history
-                )
-            }
-        }.launchIn(viewModelScope)
+        launchWithLoading {
+            searchHistoryRepository.searchHistory.onEach { history ->
+                _state.update { currentState ->
+                    currentState.copy(
+                        searchHistory = history
+                    )
+                }
+            }.launchIn(viewModelScope)
+        }
     }
 
-    fun onAction(action: WishlistAction){
+    fun onAction(action: WishlistAction) {
 
-        when(action){
+        when (action) {
             WishlistAction.OnClearSearch -> {
                 _state.update { it.copy(searchText = "") }
             }
+
             WishlistAction.OnSearch -> {
                 TODO()
             }
+
             is WishlistAction.OnSearchTextChange -> {
                 _state.update { it.copy(searchText = action.text) }
                 performSearch(action.text, _state.value.items)
@@ -88,21 +90,18 @@ class WishlistViewModel(
                         purchasedTime = purchasedDate
                     )
 
+                    val transaction =
+                        wishlistRepository.getById(action.item.id)?.toExpenseTransaction()
 
-
-                    val transaction = wishlistRepository.getById(action.item.id)?.toExpenseTransaction()
-
-                    if (transaction != null){
+                    if (transaction != null) {
                         if (isPurchase) {
                             wishlistRepository.saveExpense(transaction)
-                        }else{
+                        } else {
                             wishlistRepository.deleteExpense(transaction)
                         }
-                    }else{
+                    } else {
                         //handleERROR
                     }
-
-
 
                 }
             }
@@ -122,14 +121,14 @@ class WishlistViewModel(
             it.name.contains(query, ignoreCase = true) ||
                     it.note?.contains(query, ignoreCase = true) == true
         }
-         val searchResults = filteredItems
+        val searchResults = filteredItems
             .map {
-            SearchResult(
-                id = it.id,
-                title = it.name,
-                description = it.note ?: ""
-            )
-        }
+                SearchResult(
+                    id = it.id,
+                    title = it.name,
+                    description = it.note ?: ""
+                )
+            }
 
         searchResults.firstOrNull()?.let {
             addSearchHistory(it.title)

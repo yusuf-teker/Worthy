@@ -1,7 +1,12 @@
 package com.yusufteker.worthy.screen.wishlist.detail.presentation
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -11,14 +16,19 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun WishlistDetailScreenRoot(
     viewModel: WishlistDetailViewModel = koinViewModel(),
-    contentPadding: PaddingValues = PaddingValues()
+    contentPadding: PaddingValues = PaddingValues(),
+    wishlistId: Int
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     BaseContentWrapper(
         state = state
     ) {
-        WishlistDetailScreen(state = state, onAction = viewModel::onAction, contentPadding = contentPadding)
+        WishlistDetailScreen(
+            state = state,
+            onAction = viewModel::onAction,
+            contentPadding = contentPadding
+        )
     }
 }
 

@@ -12,23 +12,28 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.yusufteker.worthy.core.domain.model.Category
-
-import androidx.compose.material3.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.CategoryType
 import com.yusufteker.worthy.core.domain.model.emojiOptions
 import com.yusufteker.worthy.core.domain.model.getNameResource
@@ -41,7 +46,6 @@ import worthy.composeapp.generated.resources.category_label
 import worthy.composeapp.generated.resources.category_name_label
 import worthy.composeapp.generated.resources.create_button
 import worthy.composeapp.generated.resources.create_new_category_title
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,9 +63,7 @@ fun CategorySelector(
 
 
     ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = { expanded = !expanded },
-        modifier = modifier
+        expanded = expanded, onExpandedChange = { expanded = !expanded }, modifier = modifier
     ) {
         OutlinedTextField(
             value = selectedCategory?.name ?: "",
@@ -75,120 +77,106 @@ fun CategorySelector(
                 {
                     CategoryIcon(selectedCategory.icon)
                 }
-            }else null,
-            modifier = Modifier
-                .menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true)
-            .fillMaxWidth()
-        )
+            } else null,
+            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true)
+                .fillMaxWidth())
 
         ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
+            expanded = expanded, onDismissRequest = { expanded = false }) {
             categories.forEach { category ->
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = category.getNameResource(),
-                            modifier = Modifier.padding(start = 8.dp),
-                            fontWeight = FontWeight.Medium
-                        )
+                DropdownMenuItem(text = {
+                    Text(
+                        text = category.getNameResource(),
+                        modifier = Modifier.padding(start = 8.dp),
+                        fontWeight = FontWeight.Medium
+                    )
 
-                    },
-                    leadingIcon = {
-                        CategoryIcon(category.icon)
-                    },
-                    onClick = {
-                        onCategorySelected(category)
-                        expanded = false
-                    }
-                )
+                }, leadingIcon = {
+                    CategoryIcon(category.icon)
+                }, onClick = {
+                    onCategorySelected(category)
+                    expanded = false
+                })
             }
 
 
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        text = UiText.StringResourceId(Res.string.add_new_category).asString(),
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                },
-                onClick = {
-                    expanded = false
-                    showDialog = true
-                }
-            )
+            DropdownMenuItem(text = {
+                Text(
+                    text = UiText.StringResourceId(Res.string.add_new_category).asString(),
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }, onClick = {
+                expanded = false
+                showDialog = true
+            })
         }
     }
-
 
     var newCategoryName by remember { mutableStateOf("") }
     var selectedEmoji by remember { mutableStateOf(emojiOptions.first()) }
 
     if (showDialog) {
-        AlertDialog(
-            onDismissRequest = { showDialog = false },
-            title = { Text( UiText.StringResourceId(Res.string.create_new_category_title).asString()) },
-            text = {
-                Column {
-                    OutlinedTextField(
-                        value = newCategoryName,
-                        onValueChange = { newCategoryName = it },
-                        label = { Text(UiText.StringResourceId(Res.string.category_name_label).asString()) },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Spacer(Modifier.height(12.dp))
-                    Column(
-                        Modifier.height(256.dp)
-                            .verticalScroll(rememberScrollState())
+        AlertDialog(onDismissRequest = { showDialog = false }, title = {
+            Text(
+                UiText.StringResourceId(Res.string.create_new_category_title).asString()
+            )
+        }, text = {
+            Column {
+                OutlinedTextField(
+                    value = newCategoryName,
+                    onValueChange = { newCategoryName = it },
+                    label = {
+                        Text(
+                            UiText.StringResourceId(Res.string.category_name_label).asString()
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(Modifier.height(12.dp))
+                Column(
+                    Modifier.height(256.dp).verticalScroll(rememberScrollState())
+                ) {
+                    FlowRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        FlowRow(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            emojiOptions.forEach { emoji ->
-                                Text(
-                                    text = emoji,
-                                    fontSize = 24.sp,
-                                    modifier = Modifier
-                                        .clip(CircleShape)
-                                        .background(if (emoji == selectedEmoji) AppColors.primary.copy(0.2f) else Color.Transparent)
-                                        .clickable { selectedEmoji = emoji }
-                                        .padding(8.dp)
-                                )
-                            }
+                        emojiOptions.forEach { emoji ->
+                            Text(
+                                text = emoji,
+                                fontSize = 24.sp,
+                                modifier = Modifier.clip(CircleShape).background(
+                                        if (emoji == selectedEmoji) AppColors.primary.copy(
+                                            0.2f
+                                        ) else Color.Transparent
+                                    ).clickable { selectedEmoji = emoji }.padding(8.dp))
                         }
                     }
+                }
 
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    if (newCategoryName.isNotBlank()) {
-                        val newCategory = Category(
-                            name = newCategoryName,
-                            icon = selectedEmoji,
-                            type = categoryType
-                        )
-                        onNewCategoryCreated(newCategory)
-                        onCategorySelected(newCategory)
-                        showDialog = false
-                        newCategoryName = ""
-                    }
-                }) {
-                    Text(UiText.StringResourceId(Res.string.create_button).asString())
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = {
+            }
+        }, confirmButton = {
+            TextButton(onClick = {
+                if (newCategoryName.isNotBlank()) {
+                    val newCategory = Category(
+                        name = newCategoryName, icon = selectedEmoji, type = categoryType
+                    )
+                    onNewCategoryCreated(newCategory)
+                    onCategorySelected(newCategory)
                     showDialog = false
                     newCategoryName = ""
-                }) {
-                    Text(UiText.StringResourceId(Res.string.cancel).asString())
                 }
+            }) {
+                Text(UiText.StringResourceId(Res.string.create_button).asString())
             }
-        )
+        }, dismissButton = {
+            TextButton(onClick = {
+                showDialog = false
+                newCategoryName = ""
+            }) {
+                Text(UiText.StringResourceId(Res.string.cancel).asString())
+            }
+        })
     }
 }

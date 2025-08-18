@@ -67,27 +67,27 @@ fun DashboardOverviewCard(
     miniBarsFractions: List<Float?>,
     miniBarsMonths: List<Int>,
     modifier: Modifier = Modifier,
-    colors : CardColors = CardDefaults.cardColors(
+    colors: CardColors = CardDefaults.cardColors(
         containerColor = AppColors.transparent
     ),
     selectedChartIndex: Int? = null,
     onChartSelected: (index: Int) -> Unit,
-    selectableMonths : List<AppDate>,
-    selectedMonth : AppDate,
+    selectableMonths: List<AppDate>,
+    selectedMonth: AppDate,
     onSelectedMonthChanged: (AppDate) -> Unit,
     onAddWishlistClicked: () -> Unit = {},
-    onAddRecurringClicked: () -> Unit= {},
+    onAddRecurringClicked: () -> Unit = {},
     onAddTransactionClicked: () -> Unit = {}
 
 ) {
 
-    LaunchedEffect(selectedChartIndex){
+    LaunchedEffect(selectedChartIndex) {
         Napier.d("IncomeAllocationCard Chart selected: $selectedChartIndex")
     }
     Card(
         modifier = modifier,
         colors = colors,
-        border = BorderStroke(1.dp,AppColors.surfaceVariant)
+        border = BorderStroke(1.dp, AppColors.surfaceVariant)
     ) {
         Column(Modifier.padding(24.dp)) {
             Row(
@@ -133,7 +133,10 @@ fun DashboardOverviewCard(
             )
             Spacer(Modifier.height(4.dp))
             Text(
-                text = UiText.StringResourceId(Res.string.income_allocation_compare_to_last_month,arrayOf(formatPercentageChange(incomeChangeRatio))).asString(),
+                text = UiText.StringResourceId(
+                    Res.string.income_allocation_compare_to_last_month,
+                    arrayOf(formatPercentageChange(incomeChangeRatio))
+                ).asString(),
                 style = AppTypography.bodyMedium,
                 color = if (incomeChangeRatio > 0) AppColors.savingsGreen else AppColors.error
             )
@@ -158,8 +161,6 @@ fun DashboardOverviewCard(
                 onAddTransactionClicked = { onAddTransactionClicked.invoke() }
             )
 
-
-
             // IncomeAllocationCard içinde
             AnimatedVisibility(
                 visible = selectedChartIndex != null,
@@ -173,24 +174,25 @@ fun DashboardOverviewCard(
                 ) + fadeOut()
             ) {
 
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(top = PaddingL)
+                ) {
 
-            Row(verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(top = PaddingL)) {
+                    Icon(
+                        painter = painterResource(resource = Res.drawable.history),
+                        contentDescription = "gecmis",
+                        tint = AppColors.onBackground,
+                        modifier = Modifier
+                            .size(AppIconSizeSmall)
+                    )
+                    Spacer(Modifier.width(Spacing16))
+                    MiniBarChart(
+                        values = miniBarsFractions,
+                        labels = miniBarsMonths
+                    )
 
-                Icon(
-                    painter = painterResource(resource = Res.drawable.history),
-                    contentDescription = "gecmis",
-                    tint = AppColors.onBackground,
-                    modifier = Modifier
-                        .size(AppIconSizeSmall)
-                )
-                Spacer(Modifier.width(Spacing16))
-                MiniBarChart(
-                    values = miniBarsFractions,
-                    labels = miniBarsMonths
-                )
-
-            }
+                }
 
             }
 
@@ -200,7 +202,7 @@ fun DashboardOverviewCard(
 
 @Preview
 @Composable
-fun IncomeAllocationCardPreview(){
+fun IncomeAllocationCardPreview() {
     Column(Modifier.background(AppColors.background)) {
         DashboardOverviewCard(
             barsFractions = listOf(0.25f, 0.5f, 0.75f),

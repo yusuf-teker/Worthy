@@ -1,6 +1,5 @@
 package com.yusufteker.worthy.core.domain.repository
 
-
 import com.yusufteker.worthy.core.domain.model.Currency
 
 interface CurrencyRatesRepository {

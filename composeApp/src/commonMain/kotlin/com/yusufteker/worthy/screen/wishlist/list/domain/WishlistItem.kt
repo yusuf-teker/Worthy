@@ -2,13 +2,10 @@ package com.yusufteker.worthy.screen.wishlist.list.domain
 
 import androidx.compose.ui.graphics.Color
 import com.yusufteker.worthy.core.domain.model.Category
-import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Money
-import com.yusufteker.worthy.core.domain.model.defaultCategories
 import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.theme.AppColors.priorityColors
-import org.jetbrains.compose.resources.StringResource
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.suggestion_book
 import worthy.composeapp.generated.resources.suggestion_game_console

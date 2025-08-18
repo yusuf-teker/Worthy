@@ -4,9 +4,8 @@ import androidx.lifecycle.viewModelScope
 import com.yusufteker.worthy.core.presentation.UiEvent
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import com.yusufteker.worthy.screen.card.add.domain.CardRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+
 class AddCardViewModel(
     private val cardRepository: CardRepository
 ) : BaseViewModel<AddCardState>(AddCardState()) {

@@ -51,12 +51,11 @@ import io.github.aakira.napier.Napier
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.bottom_sheet_button_calculate
 import worthy.composeapp.generated.resources.bottom_sheet_button_purchase
+import worthy.composeapp.generated.resources.bottom_sheet_error_category_required
 import worthy.composeapp.generated.resources.bottom_sheet_invalid_input
 import worthy.composeapp.generated.resources.bottom_sheet_label_category
-import worthy.composeapp.generated.resources.bottom_sheet_select_category
-import worthy.composeapp.generated.resources.bottom_sheet_error_category_required
 import worthy.composeapp.generated.resources.bottom_sheet_label_name
-
+import worthy.composeapp.generated.resources.bottom_sheet_select_category
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,8 +65,7 @@ fun BottomSheetContent(
     onCalculate: (Money) -> Unit,
     onPurchase: (Transaction) -> Unit,
     bottomSheetUiState: BottomSheetUiState = BottomSheetUiState(),
-)
-{
+) {
     var amount by remember { mutableStateOf<Money?>(emptyMoney()) }
     var selectedCategory by remember { mutableStateOf<Category?>(null) }
     var name by remember { mutableStateOf<String?>(null) }
@@ -77,19 +75,20 @@ fun BottomSheetContent(
     var nameError by remember { mutableStateOf<UiText?>(null) }
 
 
-    LaunchedEffect(bottomSheetUiState.evaluationResult != null, bottomSheetUiState.selectedCategory){
+    LaunchedEffect(
+        bottomSheetUiState.evaluationResult != null,
+        bottomSheetUiState.selectedCategory
+    ) {
         Napier.d("bottom sheet is open ${bottomSheetUiState.evaluationResult})")
 
         sheetState.expand()
     }
 
-
-
     val scrollState = rememberScrollState()
     val focusManager = LocalFocusManager.current
     Column(
         Modifier
-            .fillMaxWidth() .clickable(
+            .fillMaxWidth().clickable(
                 indication = null, // Ripple olmasın
                 interactionSource = remember { MutableInteractionSource() }
             ) {
@@ -98,7 +97,6 @@ fun BottomSheetContent(
             }
             .padding(16.dp).verticalScroll(scrollState)
     ) {
-
 
         bottomSheetUiState.evaluationResult?.let {
             PurchaseEvaluationInfoBox(
@@ -131,14 +129,18 @@ fun BottomSheetContent(
 
         bottomSheetUiState.evaluationResult?.let {
             OutlinedTextField(
-                value = name?:"" ,
+                value = name ?: "",
                 onValueChange = {
                     name = it
                 },
                 isError = nameError != null,
                 modifier = Modifier
-                    .fillMaxWidth() ,
-                label = { Text(UiText.StringResourceId(Res.string.bottom_sheet_label_name).asString()) },
+                    .fillMaxWidth(),
+                label = {
+                    Text(
+                        UiText.StringResourceId(Res.string.bottom_sheet_label_name).asString()
+                    )
+                },
                 supportingText = {
                     nameError?.let {
                         Text(
@@ -160,15 +162,22 @@ fun BottomSheetContent(
             )
             {
                 OutlinedTextField(
-                    value = selectedCategory?.name ?: UiText.StringResourceId(Res.string.bottom_sheet_select_category).asString(),
+                    value = selectedCategory?.name
+                        ?: UiText.StringResourceId(Res.string.bottom_sheet_select_category)
+                            .asString(),
                     onValueChange = { },
                     readOnly = true,
                     isError = categoryError != null,
                     modifier = Modifier
                         .fillMaxWidth()
                         .menuAnchor(PrimaryNotEditable),
-                    label = { Text(UiText.StringResourceId(Res.string.bottom_sheet_label_category).asString()) },
-                    leadingIcon =  if (selectedCategory?.icon != null) {
+                    label = {
+                        Text(
+                            UiText.StringResourceId(Res.string.bottom_sheet_label_category)
+                                .asString()
+                        )
+                    },
+                    leadingIcon = if (selectedCategory?.icon != null) {
                         {
                             selectedCategory?.let {
                                 CategoryIcon(iconName = it.icon)
@@ -218,19 +227,22 @@ fun BottomSheetContent(
                 }
             }
 
-
         }
 
         Spacer(Modifier.height(16.dp))
-
 
         // Hesapla butonu
         AppButton(
             text = UiText.StringResourceId(Res.string.bottom_sheet_button_calculate).asString(),
             onClick = {
                 amountError = isValidAmount(amount)
-                if (amountError == null){
-                    onCalculate(Money(amount?.amount?: 0.0, currency = amount?.currency?: Currency.TRY))
+                if (amountError == null) {
+                    onCalculate(
+                        Money(
+                            amount?.amount ?: 0.0,
+                            currency = amount?.currency ?: Currency.TRY
+                        )
+                    )
                 }
             },
             loading = bottomSheetUiState.isCalculating,
@@ -246,8 +258,8 @@ fun BottomSheetContent(
                 categoryError = isCategoryValid(selectedCategory)
                 nameError = isNameValid(name)
 
-                if (amountError == null && categoryError == null && nameError == null){
-                    selectedCategory?.let  {category ->
+                if (amountError == null && categoryError == null && nameError == null) {
+                    selectedCategory?.let { category ->
                         amount?.let { amount ->
                             onPurchase(
 
@@ -258,7 +270,7 @@ fun BottomSheetContent(
                                     transactionType = TransactionType.EXPENSE,
                                     transactionDate = getCurrentLocalDateTime().toEpochMillis(),
 
-                                )
+                                    )
 
                             )
                         }
@@ -271,32 +283,29 @@ fun BottomSheetContent(
             colors = secondaryButtonColors
         )
 
-
     }
 }
 
-
-fun isValidAmount(amount: Money?): UiText?{
-    if  ((amount?.amount ?: 0.0) > 0){
+fun isValidAmount(amount: Money?): UiText? {
+    if ((amount?.amount ?: 0.0) > 0) {
         return null
-    }
-    else {
+    } else {
         return UiText.StringResourceId(Res.string.bottom_sheet_invalid_input)
     }
 }
 
-fun isCategoryValid( selectedCategory: Category?): UiText?{
-    return if ( selectedCategory == null){
+fun isCategoryValid(selectedCategory: Category?): UiText? {
+    return if (selectedCategory == null) {
         UiText.StringResourceId(Res.string.bottom_sheet_error_category_required)
-    }else{
+    } else {
         null
     }
 }
 
-fun isNameValid(name: String?): UiText?{
-    return if ( name.isNullOrEmpty()){
+fun isNameValid(name: String?): UiText? {
+    return if (name.isNullOrEmpty()) {
         UiText.StringResourceId(Res.string.bottom_sheet_error_category_required)
-    }else{
+    } else {
         null
     }
 }

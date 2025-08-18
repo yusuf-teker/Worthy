@@ -1,7 +1,14 @@
 package com.yusufteker.worthy.core.presentation.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -14,42 +21,31 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun LabelledProgressBar(
-    label: String,
-    progress: Float,          // 0f–1f
+    label: String, progress: Float,          // 0f–1f
     trailingText: String,     // “600”, “750” gibi
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = label,
-                style = AppTypography.bodyLarge,
-                color = AppColors.onBackground
+                text = label, style = AppTypography.bodyLarge, color = AppColors.onBackground
             )
-           Text(
-                text = trailingText,
-                style = AppTypography.bodyLarge,
-                color = AppColors.onBackground
+            Text(
+                text = trailingText, style = AppTypography.bodyLarge, color = AppColors.onBackground
             )
         }
         Spacer(Modifier.height(8.dp))
 
         // Track
         Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(8.dp)
+            modifier = Modifier.fillMaxWidth().height(8.dp)
                 .clip(androidx.compose.foundation.shape.RoundedCornerShape(4.dp))
                 .background(AppColors.primary.copy(alpha = .25f))
         ) {
             Box(
-                Modifier
-                    .fillMaxHeight()
-                    .fillMaxWidth(progress)
-                    .background(AppColors.primary)
+                Modifier.fillMaxHeight().fillMaxWidth(progress).background(AppColors.primary)
             )
         }
     }
@@ -63,9 +59,7 @@ fun LabelledProgressBarPreview() {
     ) {
         Column(Modifier.background(AppColors.background)) {
             LabelledProgressBar(
-                label = "Label",
-                progress = 0.75f,
-                trailingText = "600"
+                label = "Label", progress = 0.75f, trailingText = "600"
             )
         }
     }

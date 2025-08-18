@@ -52,22 +52,34 @@ fun PurchaseEvaluationInfoBox(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = UiText.StringResourceId(Res.string.evaluation_income_percent,arrayOf(incomePercent.formatTwoDecimals())).asString(),
+            text = UiText.StringResourceId(
+                Res.string.evaluation_income_percent,
+                arrayOf(incomePercent.formatTwoDecimals())
+            ).asString(),
             style = AppTypography.bodyLarge,
             color = AppColors.onSurface
         )
         Text(
-            text = UiText.StringResourceId(Res.string.evaluation_expense_income_percent,arrayOf(incomeMinusExpensePercent.formatTwoDecimals())).asString(),
+            text = UiText.StringResourceId(
+                Res.string.evaluation_expense_income_percent,
+                arrayOf(incomeMinusExpensePercent.formatTwoDecimals())
+            ).asString(),
             style = AppTypography.bodyLarge,
             color = AppColors.onSurface
         )
         Text(
-            text = UiText.StringResourceId(Res.string.evaluation_desire_budget_percent,arrayOf(desireBudgetPercent.formatTwoDecimals())).asString(),
+            text = UiText.StringResourceId(
+                Res.string.evaluation_desire_budget_percent,
+                arrayOf(desireBudgetPercent.formatTwoDecimals())
+            ).asString(),
             style = AppTypography.bodyLarge,
             color = AppColors.onSurface
         )
         Text(
-            text = UiText.StringResourceId(Res.string.evaluation_work_hours,arrayOf(workHoursRequired.formatTwoDecimals())).asString(),
+            text = UiText.StringResourceId(
+                Res.string.evaluation_work_hours,
+                arrayOf(workHoursRequired.formatTwoDecimals())
+            ).asString(),
             style = AppTypography.bodyLarge,
             color = AppColors.onSurface
         )
@@ -75,15 +87,16 @@ fun PurchaseEvaluationInfoBox(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = UiText.StringResourceId(Res.string.purchase_note_remaining,arrayOf(remainingDesireBudget,currencySymbol )).asString(),
+            text = UiText.StringResourceId(
+                Res.string.purchase_note_remaining,
+                arrayOf(remainingDesireBudget, currencySymbol)
+            ).asString(),
             style = AppTypography.bodyLarge,
             color = AppColors.secondary
         )
     }
 
-
 }
-
 
 @Preview
 @Composable

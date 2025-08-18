@@ -1,9 +1,9 @@
 package com.yusufteker.worthy.core.data.database.repository
 
 import com.yusufteker.worthy.core.data.database.entities.defaultCategoryEntities
-import com.yusufteker.worthy.core.data.database.model.CategoryDao
 import com.yusufteker.worthy.core.data.database.mappers.toDomain
 import com.yusufteker.worthy.core.data.database.mappers.toEntity
+import com.yusufteker.worthy.core.data.database.model.CategoryDao
 import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.CategoryType
 import com.yusufteker.worthy.core.domain.repository.CategoryRepository
@@ -15,14 +15,11 @@ class CategoryRepositoryImpl(
     private val categoryDao: CategoryDao
 ) : CategoryRepository {
 
-
     override suspend fun initializeDefaultCategories() {
         if (categoryDao.getCategoryCount() == 0) {
             categoryDao.insertAll(defaultCategoryEntities)
         }
     }
-
-
 
     override fun getAll(): Flow<List<Category>> = flow {
         val currentList = categoryDao.getAllOnce()
@@ -35,7 +32,6 @@ class CategoryRepositoryImpl(
             emit(currentList.map { it.toDomain() })
         }
     }
-
 
     override fun getByType(type: CategoryType): Flow<List<Category>> {
         return categoryDao.getByType(type).map { list -> list.map { it.toDomain() } }

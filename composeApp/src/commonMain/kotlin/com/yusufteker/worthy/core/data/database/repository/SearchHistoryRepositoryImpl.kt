@@ -27,26 +27,24 @@ class SearchHistoryRepositoryImpl(
         coerceInputValues = true
     }
 
-    override val searchHistory: Flow<List<String>> = dataStore.data
-        .catch { exception ->
-            if (exception is IOException) {
-                emit(emptyPreferences())
-            } else {
-                throw exception
-            }
+    override val searchHistory: Flow<List<String>> = dataStore.data.catch { exception ->
+        if (exception is IOException) {
+            emit(emptyPreferences())
+        } else {
+            throw exception
         }
-        .map { prefs ->
-            val jsonString = prefs[SEARCH_HISTORY_KEY]
-            if (jsonString.isNullOrEmpty()) {
+    }.map { prefs ->
+        val jsonString = prefs[SEARCH_HISTORY_KEY]
+        if (jsonString.isNullOrEmpty()) {
+            emptyList()
+        } else {
+            try {
+                json.decodeFromString<List<String>>(jsonString)
+            } catch (_: Exception) {
                 emptyList()
-            } else {
-                try {
-                    json.decodeFromString<List<String>>(jsonString)
-                } catch (_: Exception) {
-                    emptyList()
-                }
             }
         }
+    }
 
     override suspend fun addSearchQuery(query: String) {
         if (query.isBlank()) return
@@ -55,7 +53,7 @@ class SearchHistoryRepositoryImpl(
             val currentList = prefs[SEARCH_HISTORY_KEY]?.let {
                 try {
                     json.decodeFromString<List<String>>(it).toMutableList()
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     mutableListOf()
                 }
             } ?: mutableListOf()

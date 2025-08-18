@@ -20,15 +20,16 @@ data class RecurringFinancialItem(
     val endDate: AppDate? = null,
 )
 
-
 fun RecurringFinancialItem.startDate(): LocalDate =
     LocalDate(year = startDate.year, month = startDate.month, day = 1)
 
 fun RecurringFinancialItem.endDate(): LocalDate? =
-    if (endDate?.month != null && endDate.month != null)
-        LocalDate(year = endDate.year, month = endDate.month, day = 1)
-    else
-        null
+    if (endDate?.month != null && endDate.month != null) LocalDate(
+        year = endDate.year,
+        month = endDate.month,
+        day = 1
+    )
+    else null
 
 fun RecurringFinancialItem.isValidFor(year: Int, month: Int): Boolean {
     val start = this.startDate.year * 100 + this.startDate.month
@@ -64,17 +65,21 @@ fun getRecentMonths(currentDate: LocalDate, count: Int): List<Pair<Int, Int>> {
 fun generateMonthlyAmounts(
     isIncome: Boolean? = null,
     items: List<RecurringFinancialItem>,
-    referenceDate: LocalDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
+    referenceDate: LocalDate = Clock.System.now()
+        .toLocalDateTime(TimeZone.currentSystemDefault()).date,
     monthCount: Int
 ): List<DashboardMonthlyAmount> {
     val months = getRecentMonths(referenceDate, monthCount)
 
     return months.map { (year, month) ->
-        val validItems = items.filter { it.isValidFor(year, month)  && (if (isIncome != null) it.isIncome == isIncome  else true)}
+        val validItems = items.filter {
+            it.isValidFor(
+                year, month
+            ) && (if (isIncome != null) it.isIncome == isIncome else true)
+        }
         DashboardMonthlyAmount(
             appDate = AppDate(year = year, month = month),
-            amount = validItems.map { it.amount?: emptyMoney() }
-        )
+            amount = validItems.map { it.amount ?: emptyMoney() })
     }
 }
 
@@ -83,18 +88,17 @@ val items = listOf(
         id = 1,
         groupId = "g1",
         name = "Maaş",
-        amount = Money(10000.0, Currency.TRY    ),
+        amount = Money(10000.0, Currency.TRY),
         isIncome = true,
-        startDate  = AppDate(2023, 1),
-    ),
-    RecurringFinancialItem(
+        startDate = AppDate(2023, 1),
+    ), RecurringFinancialItem(
         id = 2,
         groupId = "g2",
         name = "Kira",
         amount = Money(3000.0, Currency.TRY),
         isIncome = false,
 
-        startDate  = AppDate(2023, 1),
+        startDate = AppDate(2023, 1),
     )
 )
 

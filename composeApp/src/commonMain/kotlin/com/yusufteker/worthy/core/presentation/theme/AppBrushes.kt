@@ -8,11 +8,8 @@ import com.yusufteker.worthy.core.presentation.theme.AppColors.screenBackgroundC
 object AppBrushes {
 
     val screenBackground: Brush
-        @Composable
-        get() = Brush.linearGradient(
-            colors = screenBackgroundColors,
-            start = Offset.Zero,
-            end = Offset.Infinite
+        @Composable get() = Brush.linearGradient(
+            colors = screenBackgroundColors, start = Offset.Zero, end = Offset.Infinite
         )
 
 }

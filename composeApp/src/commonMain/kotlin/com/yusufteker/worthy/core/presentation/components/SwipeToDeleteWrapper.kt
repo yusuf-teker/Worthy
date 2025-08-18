@@ -4,7 +4,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -34,33 +33,28 @@ fun SwipeToDeleteWrapper(
     val swipeState = rememberSwipeToDismissBoxState(
         confirmValueChange = { dismissValue ->
             when (dismissValue) {
-                SwipeToDismissBoxValue.StartToEnd,
-                SwipeToDismissBoxValue.EndToStart -> {
+                SwipeToDismissBoxValue.StartToEnd, SwipeToDismissBoxValue.EndToStart -> {
                     onDelete()
                     true
                 }
+
                 SwipeToDismissBoxValue.Settled -> false
             }
-        }
-    )
+        })
 
     // Eğer sürüklenme olduysa (ama henüz bırakılmadıysa), ikonu döndür
-    val isSwiping = swipeState.currentValue == SwipeToDismissBoxValue.Settled &&
-            swipeState.targetValue != SwipeToDismissBoxValue.Settled
+    val isSwiping =
+        swipeState.currentValue == SwipeToDismissBoxValue.Settled && swipeState.targetValue != SwipeToDismissBoxValue.Settled
 
     val rotation by animateFloatAsState(
-        targetValue = if (isSwiping) -45f else 0f,
-        label = "DeleteIconRotation"
+        targetValue = if (isSwiping) -45f else 0f, label = "DeleteIconRotation"
     )
 
 
     SwipeToDismissBox(
-        state = swipeState,
-        backgroundContent = {
+        state = swipeState, backgroundContent = {
             Box(
-                modifier = Modifier
-                    .clip(shape)
-                    .fillMaxSize()
+                modifier = Modifier.clip(shape).fillMaxSize()
                     .background(Color.Red.copy(alpha = 0.8f)),
                 contentAlignment = Alignment.CenterEnd
             ) {
@@ -68,13 +62,10 @@ fun SwipeToDeleteWrapper(
                     imageVector = Icons.Default.Delete,
                     contentDescription = "Delete",
                     tint = Color.White,
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .rotate(rotation)
+                    modifier = Modifier.padding(16.dp).rotate(rotation)
                 )
             }
-        },
-        modifier = modifier
+        }, modifier = modifier
     ) {
         content()
     }

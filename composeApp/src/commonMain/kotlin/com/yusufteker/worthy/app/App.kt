@@ -15,7 +15,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 @Preview
 fun App(
-    prefs: DataStore<Preferences>
+    prefs: DataStore<Preferences> // todo gereklimi kontrol et
 ) {
 
     val navController = rememberNavController()

@@ -20,11 +20,10 @@ sealed class PopupType {
     ) : PopupType()
 
     data class Error(
-        val message: StringResource,
-        override val onDismiss: () -> Unit = {}
+        val message: StringResource, override val onDismiss: () -> Unit = {}
     ) : PopupType()
 
-     class Custom(
+    class Custom(
         val content: @Composable (onDismiss: () -> Unit) -> Unit,
         override val onDismiss: () -> Unit = {}
     ) : PopupType()

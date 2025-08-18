@@ -19,5 +19,4 @@ interface WishlistRepository {
     suspend fun saveExpense(expense: Transaction)
     suspend fun deleteExpense(expense: Transaction)
 
-
 }

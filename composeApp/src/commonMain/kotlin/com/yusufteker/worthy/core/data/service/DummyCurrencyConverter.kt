@@ -19,8 +19,7 @@ class DummyCurrencyConverter : CurrencyConverter {
     }
 
     override suspend fun convertAll(
-        money: List<Money>,
-        to: Currency
+        moneyList: List<Money>, to: Currency
     ): List<Money> {
         TODO("Not yet implemented")
     }

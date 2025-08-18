@@ -6,18 +6,18 @@ import kotlin.math.pow
 
 @Serializable
 data class Money(
-    val amount: Double = 0.0,
-    val currency: Currency
+    val amount: Double = 0.0, val currency: Currency
 ) {
     fun formatted(): String {
         return "${currency.symbol} ${amount.toFixedSafe(2)}"
     }
+
     fun setAmount(newAmount: Double): Money {
         return Money(newAmount, currency)
     }
+
     fun Double.toFormattedWithThousandsSeparator(
-        digits: Int = 2,
-        separator: Char = '.'
+        digits: Int = 2, separator: Char = '.'
     ): String {
         val multiplier = 10.0.pow(digits)
         val rounded = kotlin.math.round(this * multiplier) / multiplier
@@ -27,10 +27,8 @@ data class Money(
         val decimalPart = parts.getOrNull(1) ?: ""
 
         // Tam sayı kısmını tersine çevir, 3'erli grupla, sonra tekrar ters çevir
-        val formattedInt = integerPart.reversed()
-            .chunked(3)
-            .joinToString(separator.toString())
-            .reversed()
+        val formattedInt =
+            integerPart.reversed().chunked(3).joinToString(separator.toString()).reversed()
 
         // Ondalık kısmı tamamla
         val formattedDecimal = decimalPart.padEnd(digits, '0')
@@ -41,14 +39,14 @@ data class Money(
 
 fun emptyMoney(currency: Currency = Currency.TRY) = Money(0.0, currency)
 
-
-fun List<Money>.sumWithoutCurrencyConverted(): Money{
+fun List<Money>.sumWithoutCurrencyConverted(): Money {
     return Money(this.sumOf { it.amount }, this.first().currency)
 }
 
-suspend fun List<Money>.sumWithCurrencyConverted(currencyConverter: CurrencyConverter, currency: Currency): Money{
-    if (this.isEmpty())
-        return emptyMoney( currency)
+suspend fun List<Money>.sumWithCurrencyConverted(
+    currencyConverter: CurrencyConverter, currency: Currency
+): Money {
+    if (this.isEmpty()) return emptyMoney(currency)
     currencyConverter.convertAll(this, currency).sumWithoutCurrencyConverted()
     return currencyConverter.convertAll(this, currency).sumWithoutCurrencyConverted()
 

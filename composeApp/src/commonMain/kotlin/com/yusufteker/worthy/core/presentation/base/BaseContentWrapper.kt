@@ -23,16 +23,11 @@ fun <T : BaseState> BaseContentWrapper(
 
         if (state.isLoading) {
             Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .background(Color.Transparent)
-                    .pointerInput(Unit) {}
-            )
+                modifier = Modifier.matchParentSize().background(Color.Transparent)
+                    .pointerInput(Unit) {})
 
             Box(
-                modifier = Modifier
-                    .fillMaxSize(),
-                contentAlignment = Alignment.Center
+                modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
             ) {
                 loadingContent()
             }
@@ -43,10 +38,7 @@ fun <T : BaseState> BaseContentWrapper(
 @Composable
 fun DefaultLoading() {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-        ,
-        contentAlignment = Alignment.Center
+        modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator()
     }

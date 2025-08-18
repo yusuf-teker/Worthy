@@ -1,18 +1,16 @@
 package com.yusufteker.worthy.screen.wishlist.add.presentation
 
-import androidx.compose.ui.graphics.ImageBitmap
 import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.media.PlatformImage
 
 sealed interface WishlistAddAction {
-    data class OnImageSelected (val platformImage: PlatformImage) : WishlistAddAction
+    data class OnImageSelected(val platformImage: PlatformImage) : WishlistAddAction
     object OnWishlistAdd : WishlistAddAction
 
     data class OnPriorityChanged(val priority: Int) : WishlistAddAction
 
-    data class OnCategorySelected(val wishlistCategory: Category)
-        : WishlistAddAction
+    data class OnCategorySelected(val wishlistCategory: Category) : WishlistAddAction
 
     data class OnNewCategoryCreated(val wishlistCategory: Category) : WishlistAddAction
 
@@ -26,8 +24,6 @@ sealed interface WishlistAddAction {
 
     object OnSaveClicked : WishlistAddAction
 
-    object OnBackClick: WishlistAddAction
-
-
+    object OnBackClick : WishlistAddAction
 
 }

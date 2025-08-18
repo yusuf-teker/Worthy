@@ -49,9 +49,8 @@ import org.koin.compose.viewmodel.koinViewModel
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AppNavHost(
-    navController: NavHostController,
-    onboardingManager: OnboardingManager = koinInject()
-){
+    navController: NavHostController, onboardingManager: OnboardingManager = koinInject()
+) {
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStackEntry?.destination?.route?.substringAfterLast(".")
     val systemBars = WindowInsets.systemBars
@@ -59,9 +58,9 @@ fun AppNavHost(
 
     // Bottom bar'ın gösterilmesi gereken ekranlar
     val showBottomBar = currentRoute in listOf(
-        Routes.Dashboard .toString(),
+        Routes.Dashboard.toString(),
         Routes.Wishlist.toString(),
-        Routes.Trends .toString(),
+        Routes.Trends.toString(),
         Routes.Settings.toString(),
         Routes.AddTransaction.toString(),
     )
@@ -70,7 +69,7 @@ fun AppNavHost(
 
     LaunchedEffect(currentRoute) {
         currentRoute?.let { route ->
-            Napier.d("-- Navigated to: $route --", tag = "AppNavHost" )
+            Napier.d("-- Navigated to: $route --", tag = "AppNavHost")
         }
     }
 
@@ -86,8 +85,7 @@ fun AppNavHost(
         return
     }
 
-    val startDestination =
-        if (onboardingDone == true) Routes.MainGraph else Routes.OnboardingGraph
+    val startDestination = if (onboardingDone == true) Routes.MainGraph else Routes.OnboardingGraph
 
 
 
@@ -99,10 +97,9 @@ fun AppNavHost(
                     modifier = Modifier.padding(bottom = bottomPadding),
                     currentRoute = currentRoute ?: "",
                     onItemSelected = { route ->
-                        if (route.toString().substringBefore("(") == Routes.AddTransaction.NAME){
+                        if (route.toString().substringBefore("(") == Routes.AddTransaction.NAME) {
                             showAddFabMenu = !showAddFabMenu
-                        }
-                        else if (route.toString() != currentRoute) {
+                        } else if (route.toString() != currentRoute) {
                             showAddFabMenu = false
                             navController.navigate(route) {
                                 popUpTo(Routes.Dashboard.toString()) { saveState = true }
@@ -110,11 +107,9 @@ fun AppNavHost(
                                 restoreState = true
                             }
                         }
-                    }
-                )
+                    })
             }
-        }
-    ) { innerPadding ->
+        }) { innerPadding ->
 
         Box(modifier = Modifier.fillMaxSize()) {
 
@@ -147,17 +142,15 @@ fun AppNavHost(
                     composable<Routes.Dashboard> {
 
                         DashboardScreenRoot(
-                            contentPadding = innerPadding,
-                            onNavigateTo = { route ->
+                            contentPadding = innerPadding, onNavigateTo = { route ->
                                 navController.navigate(route)
-                            }
-                        )
+                            })
                     }
 
 
                     navigation<Routes.WishlistGraph>(
                         startDestination = Routes.Wishlist
-                    ){
+                    ) {
                         composable<Routes.Wishlist> { entry ->
 
                             WishlistScreenRoot(
@@ -170,18 +163,15 @@ fun AppNavHost(
                                 },
                                 navigateToWishlistDetail = { wishlistId ->
                                     navController.navigate(Routes.WishlistDetail(wishlistId))
-                                }
-                            )
+                                })
 
 
                         }
                         composable<Routes.WishlistAdd> {
                             WishlistAddScreenRoot(
-                                contentPadding = innerPadding,
-                                navigateBack = {
+                                contentPadding = innerPadding, navigateBack = {
                                     navController.popBackStack()
-                                }
-                            )
+                                })
                         }
 
                         composable<Routes.WishlistDetail> { // Todo Wishlist Detay ekranı eklenecek
@@ -189,11 +179,12 @@ fun AppNavHost(
                             val wishlistId = args.id
                             WishlistDetailScreenRoot(
                                 contentPadding = innerPadding,
+                                wishlistId = wishlistId
                             )
                         }
                     }
 
-                    composable<Routes.AddTransaction>{
+                    composable<Routes.AddTransaction> {
                         val args = it.toRoute<Routes.AddTransaction>()
                         val isIncomeByDefault = args.isIncome
                         AddTransactionScreenRoot(
@@ -204,17 +195,14 @@ fun AppNavHost(
                             },
                             navigateToAddCardScreen = {
                                 navController.navigate(Routes.AddCard)
-                            }
-                        )
+                            })
                     }
 
                     composable<Routes.AddCard> {
                         AddCardScreenRoot(
-                            contentPadding = innerPadding,
-                            onNavigateBack = {
+                            contentPadding = innerPadding, onNavigateBack = {
                                 navController.popBackStack()
-                            }
-                        )
+                            })
                     }
 
                     composable<Routes.Wallet> {
@@ -236,17 +224,22 @@ fun AppNavHost(
                 modifier = Modifier.padding(innerPadding).align(Alignment.BottomCenter)
             ) { fabItem ->
                 showAddFabMenu = false
-                when(fabItem.label){
+                when (fabItem.label) {
                     "Expense" -> {
                         navController.navigate(Routes.AddTransaction(false))
                     }
+
                     "Income" -> {
                         navController.navigate(Routes.AddTransaction(true))
                     }
+
                     "Card" -> {
                         navController.navigate(Routes.AddTransaction)
                     }
-                    else -> {showAddFabMenu = false}
+
+                    else -> {
+                        showAddFabMenu = false
+                    }
                 }
             }
         }

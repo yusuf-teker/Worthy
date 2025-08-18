@@ -30,8 +30,7 @@ fun PieChart(
 
     LaunchedEffect(values) {
         progress.animateTo(
-            targetValue = 1f,
-            animationSpec = tween(durationMillis = animationDuration)
+            targetValue = 1f, animationSpec = tween(durationMillis = animationDuration)
         )
     }
 
@@ -43,9 +42,7 @@ fun PieChart(
         if (positiveValues.isEmpty() || positiveValues.all { it == 0.0 }) {
             drawArc(
                 color = colors.getOrElse(0) { Color.Red }, // İlk rengini kullan
-                startAngle = 0f,
-                sweepAngle = 360f * progress.value,
-                useCenter = true
+                startAngle = 0f, sweepAngle = 360f * progress.value, useCenter = true
             )
         } else {
             // Dilimleri çiz
@@ -67,7 +64,7 @@ fun PieChart(
 
             val positiveCount = positiveValues.count { it > 0f }
 
-            if (positiveCount > 1){
+            if (positiveCount > 1) {
                 startAngle = -90f
 
 

@@ -11,14 +11,10 @@ import com.yusufteker.worthy.core.domain.service.CurrencyConverter
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import com.yusufteker.worthy.screen.settings.domain.UserPrefsManager
 import io.github.aakira.napier.Napier
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.collections.component1
-import kotlin.collections.component2
 
 class SettingsViewModel(
     private val userPrefsManager: UserPrefsManager,
@@ -27,8 +23,7 @@ class SettingsViewModel(
     private val currencyConverter: CurrencyConverter,
 ) : BaseViewModel<SettingsState>(SettingsState()) {
 
-
-    fun calculateTotalFixedIncome(){
+    fun calculateTotalFixedIncome() {
         viewModelScope.launch {
 
             _state.update { currentState ->
@@ -45,17 +40,16 @@ class SettingsViewModel(
                                 state.value.selectedCurrency
                             ).amount
 
-
                         }
                 )
             }
-            if (state.value.totalFixedExpenses > state.value.totalFixedIncome){
+            if (state.value.totalFixedExpenses > state.value.totalFixedIncome) {
                 updateBudgetIfNeeded()
             }
         }
     }
 
-    fun calculateTotalFixedExpenses(){
+    fun calculateTotalFixedExpenses() {
         viewModelScope.launch {
             _state.update { currentState ->
                 currentState.copy(
@@ -73,8 +67,8 @@ class SettingsViewModel(
                         }
                 )
             }
-            if (state.value.totalFixedExpenses > state.value.totalFixedIncome){
-                 updateBudgetIfNeeded()
+            if (state.value.totalFixedExpenses > state.value.totalFixedIncome) {
+                updateBudgetIfNeeded()
             }
 
         }
@@ -88,35 +82,43 @@ class SettingsViewModel(
     }
 
     private fun observeData() {
-        combine(
-            categoryRepository.getAll(),
-            recurringRepository.getAll(),
-        ) {  categories, recurringItems ->
-            _state.update { currentState ->
-                currentState.copy(
-                    categories = categories,
-                    incomeRecurringItems = recurringItems.filter { it.isIncome },
-                    expenseRecurringItems = recurringItems.filter { !it.isIncome },
-                    uniqueIncomeRecurringItems = recurringItems.filter { it.isIncome }
-                        .groupBy { it.groupId }.values.map { itemsInGroup ->
-                            itemsInGroup.maxByOrNull { it.startDate() }!! },
-                    uniqueExpenseRecurringItems = recurringItems.filter { !it.isIncome }
-                        .groupBy { it.groupId }.values.map { itemsInGroup ->
-                            itemsInGroup.maxByOrNull { it.startDate() }!! },
+        launchWithLoading {
 
-                )
-            }
+            combine(
+                categoryRepository.getAll(),
+                recurringRepository.getAll(),
+            ) { categories, recurringItems ->
+                _state.update { currentState ->
+                    currentState.copy(
+                        categories = categories,
+                        incomeRecurringItems = recurringItems.filter { it.isIncome },
+                        expenseRecurringItems = recurringItems.filter { !it.isIncome },
+                        uniqueIncomeRecurringItems = recurringItems.filter { it.isIncome }
+                            .groupBy { it.groupId }.values.map { itemsInGroup ->
+                                itemsInGroup.maxByOrNull { it.startDate() }!!
+                            },
+                        uniqueExpenseRecurringItems = recurringItems.filter { !it.isIncome }
+                            .groupBy { it.groupId }.values.map { itemsInGroup ->
+                                itemsInGroup.maxByOrNull { it.startDate() }!!
+                            },
 
-            calculateAll()
+                        )
+                }
 
+                calculateAll()
 
-        }.launchIn(viewModelScope)
+            }.launchIn(viewModelScope)
+        }
     }
 
-    private fun  calculateSavings(){
+    private fun calculateSavings() {
         viewModelScope.launch {
             _state.update { currentState ->
-                val savings = state.value.totalFixedIncome - state.value.totalFixedExpenses - currencyConverter.convert(money = state.value.budgetAmount, to = state.value.selectedCurrency).amount
+                val savings =
+                    state.value.totalFixedIncome - state.value.totalFixedExpenses - currencyConverter.convert(
+                        money = state.value.budgetAmount,
+                        to = state.value.selectedCurrency
+                    ).amount
                 currentState.copy(
                     savingsAmount = savings
                 )
@@ -144,12 +146,12 @@ class SettingsViewModel(
                 state.value.budgetAmount,
                 to = state.value.selectedCurrency
             ).amount
-            if (expenseSum >= incomeSum){
-                updateBudgetAmount ( state.value.budgetAmount.copy(amount = 0.0) )
-            }else if (state.value.budgetAmount.amount < 0){
+            if (expenseSum >= incomeSum) {
+                updateBudgetAmount(state.value.budgetAmount.copy(amount = 0.0))
+            } else if (state.value.budgetAmount.amount < 0) {
                 // Gelir daha yüksek + budget -'de kalmıs
                 updateBudgetAmount(state.value.budgetAmount.copy(amount = 0.0))
-            }else if ( (expenseSum + budgetAmount )> incomeSum ){
+            } else if ((expenseSum + budgetAmount) > incomeSum) {
                 // Gelir daha yüksek + budget +'de kalmıs
                 updateBudgetAmount(
                     state.value.budgetAmount.copy(
@@ -168,7 +170,7 @@ class SettingsViewModel(
             userPrefsManager.desireBudget,
             userPrefsManager.weeklyWorkHours,
             userPrefsManager.selectedCurrency
-        ) {  budgetAmount, weeklyWorkHours, selectedCurrency ->
+        ) { budgetAmount, weeklyWorkHours, selectedCurrency ->
             _state.update { currentState ->
                 currentState.copy(
                     budgetAmount =
@@ -184,20 +186,20 @@ class SettingsViewModel(
         }.launchIn(viewModelScope)
     }
 
-    fun  calculateAll(){// TODO BAKILACAK OPTİMİZASYON
+    fun calculateAll() {// TODO BAKILACAK OPTİMİZASYON
         calculateTotalFixedIncome()
         calculateTotalFixedExpenses()
         //updateBudgetIfNeeded()
 
         calculateSavings()
     }
-    fun onAction(action: SettingsAction){
-        when(action){
+
+    fun onAction(action: SettingsAction) {
+        when (action) {
             is SettingsAction.OnBudgetValueChange -> {
                 updateBudgetAmount(action.newBudget)
                 calculateSavings()
             }
-
 
             is SettingsAction.OnWeeklyWorkHoursChange -> {
 
@@ -213,8 +215,6 @@ class SettingsViewModel(
 
             is SettingsAction.OnSaveRecurringItems -> {
 
-
-
             }
 
             is SettingsAction.OnAddNewRecurringItem -> {
@@ -226,8 +226,8 @@ class SettingsViewModel(
                     }
                 }
 
-
             }
+
             is SettingsAction.OnDeleteRecurringItem -> {
                 viewModelScope.launch {
                     try {
@@ -237,6 +237,7 @@ class SettingsViewModel(
                     }
                 }
             }
+
             is SettingsAction.OnUpdateRecurringItems -> {
                 viewModelScope.launch {
                     try {
@@ -246,6 +247,7 @@ class SettingsViewModel(
                     }
                 }
             }
+
             is SettingsAction.OnDeleteGroupRecurringItem -> {
 
                 viewModelScope.launch {
@@ -259,8 +261,6 @@ class SettingsViewModel(
         }
 
     }
-
-
 
     private fun updateCurrency(currency: Currency) {
         viewModelScope.launch {

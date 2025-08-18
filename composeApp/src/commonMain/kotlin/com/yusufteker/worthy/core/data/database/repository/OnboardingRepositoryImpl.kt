@@ -7,12 +7,11 @@ import com.yusufteker.worthy.screen.onboarding.domain.OnboardingManager
 import com.yusufteker.worthy.screen.onboarding.domain.OnboardingRepository
 import com.yusufteker.worthy.screen.settings.domain.UserPrefsManager
 
-
 class OnboardingRepositoryImpl(
     private val userPrefsManager: UserPrefsManager,
     private val onboardingManager: OnboardingManager,
     private val recurringRepository: RecurringFinancialItemRepository,
-): OnboardingRepository {
+) : OnboardingRepository {
 
     override suspend fun addName(name: String) {
         userPrefsManager.setUserName(name)

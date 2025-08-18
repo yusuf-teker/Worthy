@@ -1,7 +1,6 @@
 package com.yusufteker.worthy.screen.wishlist.list.presentation.components
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,8 +31,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil3.compose.rememberAsyncImagePainter
-import coil3.toUri
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.media.loadImageBitmapFromPath
@@ -46,7 +43,6 @@ import io.github.aakira.napier.Napier
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
-
 
 @Composable
 fun WishlistItemCard(
@@ -163,7 +159,6 @@ fun PurchasedIndicator(
         )
     }
 }
-
 
 @OptIn(ExperimentalTime::class)
 @Preview

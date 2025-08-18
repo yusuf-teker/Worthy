@@ -8,5 +8,4 @@ sealed interface AddCardAction {
 
     data class AddCard(val card: Card) : AddCardAction
 
-
 }

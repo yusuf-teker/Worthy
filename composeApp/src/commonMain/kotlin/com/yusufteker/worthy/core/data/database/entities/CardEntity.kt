@@ -6,8 +6,7 @@ import com.yusufteker.worthy.core.domain.model.CardBrand
 
 @Entity(tableName = "cards")
 data class CardEntity(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
 
     val cardHolderName: String,
 

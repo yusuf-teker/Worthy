@@ -8,11 +8,11 @@ import com.yusufteker.worthy.screen.card.add.domain.CardRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-
 class CardRepositoryImpl(private val cardDao: CardDao) : CardRepository {
     override suspend fun getCards(): Flow<List<Card>> {
         return cardDao.getAllCards().map { entityList -> entityList.map { it.toDomain() } }
     }
+
     override suspend fun addCard(card: Card) {
         cardDao.insertCard(card.toEntity())
     }
@@ -20,6 +20,7 @@ class CardRepositoryImpl(private val cardDao: CardDao) : CardRepository {
     override suspend fun deleteCard(cardId: Int) {
         cardDao.deleteCardById(cardId)
     }
+
     override suspend fun updateCard(card: Card) {
         cardDao.updateCard(card.toEntity())
     }

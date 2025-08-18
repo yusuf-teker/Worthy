@@ -43,7 +43,7 @@ fun BudgetSlider(
             value = budgetAmount.amount.toFloat(),
             onValueChange = { v ->
                 onBudgetChange(v.toDouble().coerceIn(0.0, maxValue))
-                            },
+            },
             valueRange = 0f..maxValue.toFloat(),
             enabled = totalIncome > totalFixedExpenses,
             colors = SliderDefaults.colors(

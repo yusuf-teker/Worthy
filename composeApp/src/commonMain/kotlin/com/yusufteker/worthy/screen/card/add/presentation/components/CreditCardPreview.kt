@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yusufteker.worthy.core.domain.model.CardBrand
 
-
 @Composable
 fun CreditCardPreview(
     cardHolder: String,
@@ -34,7 +33,12 @@ fun CreditCardPreview(
     modifier: Modifier = Modifier
 ) {
     val gradient = when (brand) {
-        CardBrand.Visa -> Brush.linearGradient(listOf(Color(0xFF0F2027), Color(0xFF203A43), Color(0xFF2C5364)))
+        CardBrand.Visa -> Brush.linearGradient(
+            listOf(
+                Color(0xFF0F2027), Color(0xFF203A43), Color(0xFF2C5364)
+            )
+        )
+
         CardBrand.Mastercard -> Brush.linearGradient(listOf(Color(0xFF93291E), Color(0xFFED213A)))
         CardBrand.Amex -> Brush.linearGradient(listOf(Color(0xFF13547A), Color(0xFF80D0C7)))
         CardBrand.Unknown -> Brush.linearGradient(listOf(Color(0xFF1F1C2C), Color(0xFF928DAB)))
@@ -48,10 +52,7 @@ fun CreditCardPreview(
         modifier = modifier
     ) {
         Box(
-            Modifier
-                .fillMaxSize()
-                .background(gradient)
-                .padding(20.dp)
+            Modifier.fillMaxSize().background(gradient).padding(20.dp)
         ) {
             // Brand
             Text(
@@ -73,15 +74,12 @@ fun CreditCardPreview(
                 color = Color.White,
                 fontSize = 22.sp,
                 fontFamily = FontFamily.Monospace,
-                modifier = Modifier
-                    .align(Alignment.CenterStart)
+                modifier = Modifier.align(Alignment.CenterStart)
             )
 
             // Holder + Expiry
             Row(
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .fillMaxWidth(),
+                modifier = Modifier.align(Alignment.BottomStart).fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Column(modifier = Modifier.weight(1f)) {
@@ -101,14 +99,10 @@ fun CreditCardPreview(
                 Spacer(Modifier.width(12.dp))
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
-                        text = "EXPIRES",
-                        color = Color.White.copy(alpha = 0.7f),
-                        fontSize = 11.sp
+                        text = "EXPIRES", color = Color.White.copy(alpha = 0.7f), fontSize = 11.sp
                     )
                     Text(
-                        text = expiryFormatted,
-                        color = Color.White,
-                        fontSize = 14.sp
+                        text = expiryFormatted, color = Color.White, fontSize = 14.sp
                     )
                 }
             }

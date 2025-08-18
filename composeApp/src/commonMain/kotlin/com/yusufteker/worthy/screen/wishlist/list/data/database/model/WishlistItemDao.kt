@@ -28,6 +28,7 @@ interface WishlistItemDao {
 
     @Delete
     suspend fun delete(item: WishlistItemEntity)
+
     @Query("DELETE FROM WISHLIST WHERE id = :id")
     suspend fun deleteById(id: Int)
 

@@ -14,10 +14,9 @@ class DefaultCurrencyConverter(
     }
 
     override suspend fun convertAll(
-        moneyList: List<Money>,
-        to: Currency
+        moneyList: List<Money>, to: Currency
     ): List<Money> {
-       return moneyList.map {
+        return moneyList.map {
             val rate = repository.getRates(it.currency)[to] ?: 1.0
             Money(it.amount * rate, to)
         }

@@ -10,9 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowColumn
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,7 +23,6 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -35,7 +32,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -50,6 +46,7 @@ import worthy.composeapp.generated.resources.add_recurring_item
 import worthy.composeapp.generated.resources.add_transaction
 import worthy.composeapp.generated.resources.add_wish
 import worthy.composeapp.generated.resources.no_data
+
 @Composable
 fun ColumnBarChart(
     values: List<Float>, // 0f–1f oranlar
@@ -58,17 +55,15 @@ fun ColumnBarChart(
     selectedIndex: Int?,
     onBarClick: (Int) -> Unit,
     onAddWishlistClicked: () -> Unit = {},
-    onAddRecurringClicked: () -> Unit= {},
+    onAddRecurringClicked: () -> Unit = {},
     onAddTransactionClicked: () -> Unit = {}
 ) {
     val hasData = values.any { it > 0f }
 
     // Crossfade kullanarak iki state arasında geçiş
     Crossfade(
-        targetState = hasData,
-        animationSpec = tween(
-            durationMillis = 800,
-            easing = FastOutSlowInEasing
+        targetState = hasData, animationSpec = tween(
+            durationMillis = 800, easing = FastOutSlowInEasing
         ), modifier = Modifier.height(120.dp)
     ) { showChart ->
         if (showChart) {
@@ -86,10 +81,8 @@ fun ColumnBarChart(
                     val animatedHeight = remember { Animatable(0f) }
                     LaunchedEffect(v) {
                         animatedHeight.animateTo(
-                            targetHeight.value,
-                            animationSpec = tween(
-                                durationMillis = 800,
-                                easing = FastOutSlowInEasing
+                            targetHeight.value, animationSpec = tween(
+                                durationMillis = 800, easing = FastOutSlowInEasing
                             )
                         )
                     }
@@ -97,9 +90,9 @@ fun ColumnBarChart(
                     val barColor by animateColorAsState(
                         targetValue = if (isSelected) AppColors.primary else AppColors.surfaceVariant,
                         animationSpec = tween(
-                            durationMillis = 500,
-                            easing = FastOutSlowInEasing
-                        ), label = "barColor"
+                            durationMillis = 500, easing = FastOutSlowInEasing
+                        ),
+                        label = "barColor"
                     )
 
                     Column(
@@ -107,28 +100,21 @@ fun ColumnBarChart(
                         modifier = Modifier.weight(1f).align(Alignment.Top)
                     ) {
                         Box(
-                            modifier = Modifier
-                                .height(maxBarHeight)
-                                .clip(RoundedCornerShape(4.dp))
+                            modifier = Modifier.height(maxBarHeight).clip(RoundedCornerShape(4.dp))
                                 .background(Color.Transparent),
                             contentAlignment = Alignment.BottomCenter
                         ) {
                             Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(animatedHeight.value.dp)
-                                    .clickable { onBarClick.invoke(i) }
-                                    .clip(RoundedCornerShape(4.dp))
-                                    .then(
-                                        if (isSelected) Modifier.shadow(6.dp, RoundedCornerShape(4.dp)) else Modifier
-                                    )
-                                    .background(barColor)
-                                    .align(Alignment.BottomCenter)
-                            )
+                                modifier = Modifier.fillMaxWidth().height(animatedHeight.value.dp)
+                                .clickable { onBarClick.invoke(i) }.clip(RoundedCornerShape(4.dp))
+                                .then(
+                                    if (isSelected) Modifier.shadow(
+                                        6.dp, RoundedCornerShape(4.dp)
+                                    ) else Modifier
+                                ).background(barColor).align(Alignment.BottomCenter))
                             if (animatedHeight.value <= 0) {
                                 IconButton(
-                                    onClick = { onBarClick.invoke(i) }
-                                ) {
+                                    onClick = { onBarClick.invoke(i) }) {
                                     Icon(Icons.Default.Warning, contentDescription = null)
                                 }
                             }
@@ -153,7 +139,6 @@ fun ColumnBarChart(
                 contentAlignment = Alignment.Center
             ) {
 
-
                 Row(
                     modifier = modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -172,49 +157,47 @@ fun ColumnBarChart(
                             color = AppColors.onSurfaceVariant
                         )
                     }
-                    FlowRow  (
+                    FlowRow(
                         maxItemsInEachRow = 2,
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
 
-                            Text(
-                                modifier = Modifier.clickable{
-                                      onAddWishlistClicked.invoke()
-                                },
-                                text = "+ " + UiText.StringResourceId(Res.string.add_wish).asString(),
-                                style = AppTypography.bodyMedium.copy(
-                                    fontWeight = FontWeight.Bold
-                                ),
-                                color = AppColors.primary
-                            )
-
                         Text(
-                            modifier = Modifier.clickable{
-                                onAddTransactionClicked.invoke()
+                            modifier = Modifier.clickable {
+                                onAddWishlistClicked.invoke()
                             },
-                            text = "+ " + UiText.StringResourceId(Res.string.add_transaction).asString(),
+                            text = "+ " + UiText.StringResourceId(Res.string.add_wish).asString(),
                             style = AppTypography.bodyMedium.copy(
                                 fontWeight = FontWeight.Bold
                             ),
                             color = AppColors.primary
                         )
-                            Text(
-                                modifier = Modifier.clickable{
-                                    onAddRecurringClicked.invoke()
-                                },
-                                text = "+ " + UiText.StringResourceId(Res.string.add_recurring_item).asString(),
-                                style = AppTypography.bodyMedium.copy(
-                                    fontWeight = FontWeight.Bold
-                                ),
-                                color = AppColors.primary
-                            )
 
-
-
+                        Text(
+                            modifier = Modifier.clickable {
+                                onAddTransactionClicked.invoke()
+                            },
+                            text = "+ " + UiText.StringResourceId(Res.string.add_transaction)
+                                .asString(),
+                            style = AppTypography.bodyMedium.copy(
+                                fontWeight = FontWeight.Bold
+                            ),
+                            color = AppColors.primary
+                        )
+                        Text(
+                            modifier = Modifier.clickable {
+                                onAddRecurringClicked.invoke()
+                            },
+                            text = "+ " + UiText.StringResourceId(Res.string.add_recurring_item)
+                                .asString(),
+                            style = AppTypography.bodyMedium.copy(
+                                fontWeight = FontWeight.Bold
+                            ),
+                            color = AppColors.primary
+                        )
 
                     }
-
 
                 }
             }
@@ -222,14 +205,11 @@ fun ColumnBarChart(
     }
 }
 
-
-
 @Composable
 fun MiniBarChart(
     values: List<Float?>, // 0f–1f oranlar
     labels: List<Int>, // Ay isimleri
-    modifier: Modifier = Modifier,
-    barColor: Color = AppColors.secondary
+    modifier: Modifier = Modifier, barColor: Color = AppColors.secondary
 ) {
     val maxBarHeight = 60.dp
 
@@ -239,7 +219,7 @@ fun MiniBarChart(
         verticalAlignment = Alignment.Bottom
     ) {
 
-        if (values.isNotEmpty() && !values.all { it == 0f }){
+        if (values.isNotEmpty() && !values.all { it == 0f }) {
             values.forEachIndexed { idx, value ->
                 val heightRatio = value?.coerceIn(0f, 1f) ?: 0f
                 val animatedHeight = remember { Animatable(0f) }
@@ -256,18 +236,13 @@ fun MiniBarChart(
                     modifier = Modifier.padding(horizontal = 4.dp)
                 ) {
                     Box(
-                        modifier = Modifier
-                            .width(16.dp)
-                            .height(maxBarHeight)
+                        modifier = Modifier.width(16.dp).height(maxBarHeight)
                             .clip(RoundedCornerShape(2.dp)),
                         contentAlignment = Alignment.BottomCenter
                     ) {
                         Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(animatedHeight.value.dp)
-                                .clip(RoundedCornerShape(2.dp))
-                                .background(barColor)
+                            modifier = Modifier.fillMaxWidth().height(animatedHeight.value.dp)
+                                .clip(RoundedCornerShape(2.dp)).background(barColor)
                         )
                     }
 
@@ -282,7 +257,7 @@ fun MiniBarChart(
                     )
                 }
             }
-        }else { // Values is Empty
+        } else { // Values is Empty
             Text(
                 text = UiText.StringResourceId(Res.string.no_data).asString()
             )
@@ -291,15 +266,13 @@ fun MiniBarChart(
     }
 }
 
-
-fun adjustValuesForBarChart(values: List<Double?> ): List<Float>{
+fun adjustValuesForBarChart(values: List<Double?>): List<Float> {
     return values.map { value ->
-        if (value == null )
-            0f
-        else{
-            if (value.toFloat() > 0.0f){
+        if (value == null) 0f
+        else {
+            if (value.toFloat() > 0.0f) {
                 (value.toFloat() * 2 / 10) + 0.2f
-            }else{
+            } else {
                 0f
             }
         }
@@ -307,10 +280,9 @@ fun adjustValuesForBarChart(values: List<Double?> ): List<Float>{
     }
 }
 
-
 @Preview
 @Composable
-fun ColumnBarChartPreview(){
+fun ColumnBarChartPreview() {
     Column(Modifier.background(AppColors.background)) {
         ColumnBarChart(
             values = listOf(0.25f, 0.5f, 0.75f),
@@ -318,7 +290,7 @@ fun ColumnBarChartPreview(){
             selectedIndex = 1,
             onBarClick = {},
 
-        )
+            )
     }
 
 }

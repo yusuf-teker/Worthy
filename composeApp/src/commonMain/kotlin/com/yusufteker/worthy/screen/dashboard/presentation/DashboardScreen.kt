@@ -2,17 +2,15 @@ package com.yusufteker.worthy.screen.dashboard.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.ui.Modifier
-import com.yusufteker.worthy.core.presentation.theme.AppColors
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,24 +20,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.presentation.UiEvent
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
-import com.yusufteker.worthy.core.presentation.components.AppTopBar
-import com.yusufteker.worthy.screen.dashboard.presentation.components.DashboardOverviewCard
 import com.yusufteker.worthy.core.presentation.components.AppButton
+import com.yusufteker.worthy.core.presentation.components.AppTopBar
 import com.yusufteker.worthy.core.presentation.theme.AppBrushes.screenBackground
+import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppDimens.Spacing16
 import com.yusufteker.worthy.core.presentation.theme.AppDimens.Spacing8
 import com.yusufteker.worthy.screen.dashboard.presentation.components.BottomSheetContent
+import com.yusufteker.worthy.screen.dashboard.presentation.components.DashboardOverviewCard
 import io.github.aakira.napier.Napier
 import org.koin.compose.viewmodel.koinViewModel
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.dashboard_evaluate_purchase
 import worthy.composeapp.generated.resources.dashboard_overview
-
 
 @Composable
 fun DashboardScreenRoot(
@@ -82,7 +81,6 @@ fun DashboardScreen(
     onAction: (DashboardAction) -> Unit,
 ) {
 
-
     Column(
         Modifier.fillMaxSize()
             .background(
@@ -117,7 +115,6 @@ fun DashboardScreen(
             miniBarsFractions = state.selectedMiniBarsFraction,
             miniBarsMonths = state.selectedMiniBarsMonths,
 
-
             selectedChartIndex = state.selectedChartIndex,
             onChartSelected = {
                 onAction(DashboardAction.ChartSelected(it))
@@ -145,7 +142,6 @@ fun DashboardScreen(
             )
         }
         Spacer(Modifier.height(Spacing16))
-
 
     }
 
@@ -188,6 +184,5 @@ fun DashboardScreen(
                 )
         }
     }
-
 
 }

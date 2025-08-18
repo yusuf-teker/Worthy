@@ -7,7 +7,7 @@ import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
 import org.koin.android.ext.koin.androidContext
 
-class WorthyApplication: Application() {
+class WorthyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         Napier.base(DebugAntilog()) // init logger

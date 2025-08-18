@@ -15,10 +15,9 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             App(
-                prefs = remember{
+                prefs = remember {
                     createDataStore(this)
-                }
-            )
+                })
         }
     }
 }

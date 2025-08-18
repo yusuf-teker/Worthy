@@ -277,5 +277,8 @@
     <string name="screen_title_add_new_card">Kart Ekle</string>
     <string name="pay_with_card">Kart ile ödeme</string>
 
+    <string name="expiry_label">Geçerlilik Tarihi: </string>
+    <string name="year">Yıl</string>
+    <string name="month">Ay</string>
 
 </resources>

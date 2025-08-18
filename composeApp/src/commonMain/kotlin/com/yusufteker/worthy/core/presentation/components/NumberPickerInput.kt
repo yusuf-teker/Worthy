@@ -2,7 +2,6 @@ package com.yusufteker.worthy.core.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -40,7 +39,7 @@ fun NumberPickerInput(
     value: Int,
     range: IntRange = 0..80,
     step: Int = 1,
-    format: (Int) -> String = {     it.toString() },
+    format: (Int) -> String = { it.toString() },
     onValueChange: (Int) -> Unit,
     errorMessage: UiText? = null,
     isEnabled: Boolean = false
@@ -64,7 +63,7 @@ fun NumberPickerInput(
 
     Column(modifier) {
 
-        Box{
+        Box {
 
             OutlinedTextField(
                 value = textFieldValue,
@@ -76,27 +75,22 @@ fun NumberPickerInput(
                 },
                 modifier = modifier,
                 isError = errorMessage != null,
-                label = {Text(text = label) },
+                label = { Text(text = label) },
                 singleLine = true,
                 readOnly = !isEnabled,
                 trailingIcon = {
                     IconButton(onClick = { expanded = !expanded }) {
                         Icon(
-                            imageVector = if (expanded)
-                                Icons.Default.KeyboardArrowUp
-                            else
-                                Icons.Default.KeyboardArrowDown,
-                            contentDescription = null
+                            imageVector = if (expanded) Icons.Default.KeyboardArrowUp
+                            else Icons.Default.KeyboardArrowDown, contentDescription = null
                         )
                     }
                 },
             )
             Box(
-                Modifier.fillMaxWidth().height(64.dp)
-                    .clickable{
+                Modifier.fillMaxWidth().height(64.dp).clickable {
                         expanded = !expanded
-                    }
-            ){
+                    }) {
 
             }
 
@@ -104,9 +98,8 @@ fun NumberPickerInput(
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(max = 200.dp).onGloballyPositioned { measuredSize ->
+                modifier = Modifier.fillMaxWidth().heightIn(max = 200.dp)
+                    .onGloballyPositioned { measuredSize ->
                         dropdownItemHeight = measuredSize.size.height
                     },
                 scrollState = scrollState
@@ -118,12 +111,11 @@ fun NumberPickerInput(
                             onValueChange(num)
                             textFieldValue = format(num)
                             expanded = false
-                        }
-                    )
+                        })
                 }
             }
         }
-        if ( errorMessage != null) {
+        if (errorMessage != null) {
             Text(
                 text = errorMessage.asString(),
                 color = AppColors.error,
@@ -139,12 +131,7 @@ fun NumberPickerInput(
 fun NumberPickerInputPreview() {
     Column(modifier = Modifier.background(AppColors.background)) {
         NumberPickerInput(
-            label = "Çalışma Süresi",
-            value = 40,
-            range = 0..80,
-            step = 5,
-            onValueChange = {}
-        )
+            label = "Çalışma Süresi", value = 40, range = 0..80, step = 5, onValueChange = {})
     }
 
 }

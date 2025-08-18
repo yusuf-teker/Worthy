@@ -20,7 +20,6 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.label_currency
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CurrencyPicker(
@@ -42,22 +41,16 @@ fun CurrencyPicker(
             readOnly = true,
             label = { Text(UiText.StringResourceId(Res.string.label_currency).asString()) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
-            modifier = Modifier
-                .menuAnchor(MenuAnchorType.PrimaryEditable)
+            modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryEditable)
         )
 
         ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
+            expanded = expanded, onDismissRequest = { expanded = false }) {
             Currency.entries.forEach { currency ->
-                DropdownMenuItem(
-                    text = { Text("${currency.symbol} ${currency.name}") },
-                    onClick = {
-                        onCurrencySelected(currency)
-                        expanded = false
-                    }
-                )
+                DropdownMenuItem(text = { Text("${currency.symbol} ${currency.name}") }, onClick = {
+                    onCurrencySelected(currency)
+                    expanded = false
+                })
             }
         }
     }
@@ -67,7 +60,5 @@ fun CurrencyPicker(
 @Composable
 fun CurrencyPickerPreview() {
     CurrencyPicker(
-        selectedCurrency = Currency.USD,
-        onCurrencySelected = {}
-    )
+        selectedCurrency = Currency.USD, onCurrencySelected = {})
 }
