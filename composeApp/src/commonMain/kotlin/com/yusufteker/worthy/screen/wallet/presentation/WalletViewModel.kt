@@ -4,10 +4,7 @@ import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class WalletViewModel : BaseViewModel() {
-    private val _state = MutableStateFlow(WalletState())
-    val state: StateFlow<WalletState> = _state
-
+class WalletViewModel : BaseViewModel<WalletState>(WalletState()) {
     fun onAction(action: WalletAction) {
         when (action) {
             is WalletAction.Init -> {

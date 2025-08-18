@@ -61,7 +61,7 @@ import worthy.composeapp.generated.resources.income_allocation_title
 
 @Composable
 fun DashboardOverviewCard(
-    amountText: String = "$5,000",
+    amountText: String = "",
     incomeChangeRatio: Double = 0.0,
     barsFractions: List<Float>,
     miniBarsFractions: List<Float?>,

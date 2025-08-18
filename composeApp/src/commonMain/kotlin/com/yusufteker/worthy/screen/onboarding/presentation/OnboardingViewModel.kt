@@ -16,11 +16,9 @@ import kotlinx.coroutines.launch
 
 class OnboardingViewModel(
     private val onboardingRepository: OnboardingRepository
-) : BaseViewModel() {
+) : BaseViewModel<OnboardingState>(OnboardingState()) {
 
 
-    private val _state = MutableStateFlow(OnboardingState())
-    val state: StateFlow<OnboardingState> = _state
 
     fun onAction(action: OnboardingAction){
         when(action){

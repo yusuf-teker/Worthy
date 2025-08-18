@@ -25,11 +25,8 @@ class SettingsViewModel(
     private val categoryRepository: CategoryRepository,
     private val recurringRepository: RecurringFinancialItemRepository,
     private val currencyConverter: CurrencyConverter,
-) : BaseViewModel() {
+) : BaseViewModel<SettingsState>(SettingsState()) {
 
-
-    private val _state = MutableStateFlow(SettingsState())
-    val state: StateFlow<SettingsState> = _state
 
     fun calculateTotalFixedIncome(){
         viewModelScope.launch {

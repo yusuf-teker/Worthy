@@ -9,9 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 class AddTransactionViewModel(
     private val transactionRepository: TransactionRepository,
-) : BaseViewModel() {
-    private val _state = MutableStateFlow(AddTransactionState())
-    val state: StateFlow<AddTransactionState> = _state
+) : BaseViewModel<AddTransactionState>(AddTransactionState()) {
 
     fun onAction(action: AddTransactionAction) {
         when (action) {

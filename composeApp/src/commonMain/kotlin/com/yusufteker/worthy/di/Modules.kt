@@ -21,6 +21,7 @@ import com.yusufteker.worthy.core.domain.repository.TransactionRepository
 import com.yusufteker.worthy.core.domain.service.CurrencyConverter
 import com.yusufteker.worthy.core.domain.service.datasource.CurrencyRatesCacheDataSource
 import com.yusufteker.worthy.core.domain.service.datasource.CurrencyRatesRemoteDataSource
+import com.yusufteker.worthy.core.presentation.base.BaseState
 import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistRepository
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import com.yusufteker.worthy.screen.addtransaction.presentation.AddTransactionViewModel
@@ -85,7 +86,7 @@ val sharedModule = module {
 
 
     viewModel { OnboardingViewModel(get()) }
-    viewModel { BaseViewModel() }
+    //viewModel { BaseViewModel<BaseState>(BaseState) }
     viewModel { DashboardViewModel(get(),get(), get()) }
     viewModel { SettingsViewModel(get(),get(),get(),get() )}
     viewModel { WishlistViewModel(get(), get()) }

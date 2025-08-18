@@ -69,8 +69,10 @@ data class DashboardState(
     val selectedMonthYear: AppDate = currentAppDate(),
     val selectableMonths: List<AppDate> = getRecentYearMonths(currentMonth = getCurrentMonth(), currentYear = getCurrentYear()),
     override val isLoading: Boolean = false
-    ): BaseState
+    ): BaseState {
+    override fun copyWithLoading(isLoading: Boolean) = copy(isLoading = isLoading)
 
+}
 
 
 fun getSelectableMonthIndices(currentMonth: Int, count: Int = 6): List<Int> {

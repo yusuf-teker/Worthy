@@ -20,6 +20,7 @@ import com.yusufteker.worthy.core.presentation.util.hideKeyboard
 import com.yusufteker.worthy.screen.dashboard.domain.DashboardRepository
 import com.yusufteker.worthy.screen.dashboard.domain.EvaluationResult
 import com.yusufteker.worthy.screen.settings.domain.UserPrefsManager
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -32,17 +33,10 @@ class DashboardViewModel(
     private val userPrefsManager: UserPrefsManager,
     private val dashboardRepository: DashboardRepository,
     private val currencyConverter: CurrencyConverter
-) : BaseViewModel() {
-
-    private val _state = MutableStateFlow(DashboardState())
-    val state: StateFlow<DashboardState> = _state
+) : BaseViewModel<DashboardState>(DashboardState()) {
 
     init {
-
-
-
         observeData()
-
     }
 
     fun onAction(action: DashboardAction) = when (action) {
@@ -70,7 +64,8 @@ class DashboardViewModel(
 
         is DashboardAction.CalculateButtonClicked -> {
 
-            viewModelScope.launch {
+            launchWithLoading{
+
                 _state.update { it.updateBottomSheet { copy(isCalculating = true) } }
                 action.money.let {
 
@@ -161,63 +156,65 @@ class DashboardViewModel(
 
     private fun observeData(){
 
-        viewModelScope.launch {
-            showLoading()
-            _state.update {
-                it.copy(
-                    // TODO : repository’den gerçek veriyi çek prefden değil
-                    userName = "Yusuf",
-                    selectedCurrency = userPrefsManager.selectedCurrency.first(),
-                    monthlyWorkHours = userPrefsManager.weeklyWorkHours.first() * 4.33f,
-                    desireBudget = userPrefsManager.desireBudget.first() ?: emptyMoney( userPrefsManager.selectedCurrency.first()),
-                    savingProgress = 0.36f,
-                )
+        launchWithLoading {
+
+                delay(2000)
+                _state.update {
+                    it.copy(
+                        // TODO : repository’den gerçek veriyi çek prefden değil
+                        userName = "Yusuf",
+                        selectedCurrency = userPrefsManager.selectedCurrency.first(),
+                        monthlyWorkHours = userPrefsManager.weeklyWorkHours.first() * 4.33f,
+                        desireBudget = userPrefsManager.desireBudget.first() ?: emptyMoney( userPrefsManager.selectedCurrency.first()),
+                        savingProgress = 0.36f,
+                    )
+                }
+
+
+                combine(
+                    dashboardRepository.getAllExpenseMonthlyAmount(
+                        6,
+                        getCurrentLocalDateTime()
+                    ),
+                    dashboardRepository.getAllIncomeMonthlyAmount(
+                        6,
+                        getCurrentLocalDateTime()
+                    ),
+                    dashboardRepository.getAllRecurringMonthlyAmount(
+                        monthCount = 6,
+                        currentDate = getCurrentLocalDateTime()
+                    ),
+                    dashboardRepository.getAllWishlistMonthlyAmount(
+                        monthCount = 6,
+                        currentDate = getCurrentLocalDateTime()
+                    ),
+                    dashboardRepository.getExpenseCategories()
+                ) { expenses, incomes, dashboardRecurringData, wishlistItems, categories ->
+                    _state.update { currentState ->
+                        currentState.copy(
+                            expenseMonthlyAmountList = expenses,
+                            incomeMonthlyAmountList = incomes,
+                            recurringIncomeMonthlyAmountList = dashboardRecurringData.incomes,
+                            recurringExpenseMonthlyAmountList = dashboardRecurringData.expenses,
+                            wishlistMonthlyAmountList = wishlistItems,
+                        ).updateBottomSheet { copy(categories = categories) }
+                    }
+
+                    calculateBarRatios(
+                        expenses,
+                        incomes,
+                        dashboardRecurringData.incomes,
+                        dashboardRecurringData.expenses,
+                        wishlistItems
+                    )
+
+
+
+                }.launchIn(viewModelScope)
+
             }
 
 
-            combine(
-                dashboardRepository.getAllExpenseMonthlyAmount(
-                    6,
-                    getCurrentLocalDateTime()
-                ),
-                dashboardRepository.getAllIncomeMonthlyAmount(
-                    6,
-                    getCurrentLocalDateTime()
-                ),
-                dashboardRepository.getAllRecurringMonthlyAmount(
-                    monthCount = 6,
-                    currentDate = getCurrentLocalDateTime()
-                ),
-                dashboardRepository.getAllWishlistMonthlyAmount(
-                    monthCount = 6,
-                    currentDate = getCurrentLocalDateTime()
-                ),
-                dashboardRepository.getExpenseCategories()
-            ) { expenses, incomes, dashboardRecurringData, wishlistItems, categories ->
-                _state.update { currentState ->
-                    currentState.copy(
-                        expenseMonthlyAmountList = expenses,
-                        incomeMonthlyAmountList = incomes,
-                        recurringIncomeMonthlyAmountList = dashboardRecurringData.incomes,
-                        recurringExpenseMonthlyAmountList = dashboardRecurringData.expenses,
-                        wishlistMonthlyAmountList = wishlistItems,
-                    ).updateBottomSheet { copy(categories = categories) }
-                }
-
-                calculateBarRatios(
-                    expenses,
-                    incomes,
-                    dashboardRecurringData.incomes,
-                    dashboardRecurringData.expenses,
-                    wishlistItems
-                )
-
-                hideLoading()
-
-
-            }.launchIn(viewModelScope)
-
-        }
     }
 
 

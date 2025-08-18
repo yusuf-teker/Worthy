@@ -22,12 +22,8 @@ import kotlinx.coroutines.launch
 class WishlistViewModel(
     private val wishlistRepository: WishlistRepository,
     private val searchHistoryRepository: SearchHistoryRepository
-) : BaseViewModel() {
-
-
-    private val _state = MutableStateFlow(WishlistState())
-    val state: StateFlow<WishlistState> = _state
-
+) : BaseViewModel<WishlistState>(WishlistState()) {
+    
     init {
         observeWishlistItems()
         observeSearchHistory()

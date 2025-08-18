@@ -4,9 +4,7 @@ import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class TransactionListViewModel : BaseViewModel() {
-    private val _state = MutableStateFlow(TransactionListState())
-    val state: StateFlow<TransactionListState> = _state
+class TransactionListViewModel : BaseViewModel<TransactionListState>(TransactionListState()) {
 
     fun onAction(action: TransactionListAction) {
         when (action) {

@@ -20,7 +20,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
 
-open class BaseViewModel(): ViewModel(), KoinComponent {
+open class BaseViewModel<S : BaseState>(
+    initialState: S
+): ViewModel(), KoinComponent {
+
+
+    protected val _state = MutableStateFlow(initialState)
+    val state: StateFlow<S> = _state
 
     protected val popupManager: PopupManager by inject()
 
@@ -39,6 +45,29 @@ open class BaseViewModel(): ViewModel(), KoinComponent {
 
     fun navigateTo(route: Routes) {
         sendUiEventSafe(UiEvent.NavigateTo(route))
+    }
+
+    protected fun launchWithLoading(block: suspend CoroutineScope.() -> Unit) {
+        viewModelScope.launch {
+            try {
+                setLoading(true)
+                block()
+            } catch (e: Exception) {
+                setError(e.message ?: "Unexpected error")
+            } finally {
+                setLoading(false)
+            }
+        }
+    }
+
+    private fun setLoading(loading: Boolean) {
+        _state.update {
+            current -> current.copyWithLoading(loading) as S
+        }
+    }
+
+    private fun setError(message: String) {
+        //_state.update { current -> current.copyWithError(message) }
     }
 
 }

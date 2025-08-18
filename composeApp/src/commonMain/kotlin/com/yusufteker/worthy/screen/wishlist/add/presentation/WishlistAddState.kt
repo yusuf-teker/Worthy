@@ -14,4 +14,7 @@ data class WishlistAddState(
 
     val wishlistCategories : List<Category> = emptyList(),
     override val isLoading: Boolean = false,
-): BaseState
+): BaseState{
+    override fun copyWithLoading(isLoading: Boolean) = copy(isLoading = isLoading)
+
+}

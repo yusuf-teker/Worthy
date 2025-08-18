@@ -4,9 +4,7 @@ import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class WishlistDetailViewModel : BaseViewModel() {
-    private val _state = MutableStateFlow(WishlistDetailState())
-    val state: StateFlow<WishlistDetailState> = _state
+class WishlistDetailViewModel : BaseViewModel<WishlistDetailState>(WishlistDetailState()) {
 
     fun onAction(action: WishlistDetailAction) {
         when (action) {

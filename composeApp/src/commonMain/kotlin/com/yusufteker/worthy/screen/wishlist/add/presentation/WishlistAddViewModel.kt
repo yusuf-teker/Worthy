@@ -23,9 +23,7 @@ class WishlistAddViewModel(
     private val imageSaver: ImageSaver,
     private val wishlistRepository: WishlistRepository,
     private val categoryRepository: CategoryRepository,
-    ) : BaseViewModel() {
-    private val _state = MutableStateFlow(WishlistAddState())
-    val state: StateFlow<WishlistAddState> = _state
+    ) : BaseViewModel<WishlistAddState>(WishlistAddState()) {
 
 
     init {
