@@ -211,6 +211,9 @@ fun AppNavHost(
                     composable<Routes.AddCard> {
                         AddCardScreenRoot(
                             contentPadding = innerPadding,
+                            onNavigateBack = {
+                                navController.popBackStack()
+                            }
                         )
                     }
 

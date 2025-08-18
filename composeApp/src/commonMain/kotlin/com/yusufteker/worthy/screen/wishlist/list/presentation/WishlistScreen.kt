@@ -23,6 +23,7 @@ import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.presentation.UiEvent
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.asStringList
+import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
 import com.yusufteker.worthy.core.presentation.components.InteractiveSearchBar
 import com.yusufteker.worthy.core.presentation.components.SwipeToDeleteWrapper
 import com.yusufteker.worthy.screen.wishlist.list.domain.generalSuggestions
@@ -60,11 +61,17 @@ fun WishlistScreenRoot(
             }
         }
     }
-    WishlistScreen(
-        state = state,
-        onAction = viewModel::onAction,
-        contentPadding = contentPadding
-    )
+
+    BaseContentWrapper(
+        state = state
+    ) {
+        WishlistScreen(
+            state = state,
+            onAction = viewModel::onAction,
+            contentPadding = contentPadding
+        )
+    }
+
 }
 
 @Composable
@@ -83,11 +90,8 @@ fun WishlistScreen(
                 onClick = { onAction(WishlistAction.OnFabClick) }
             )
 
-        }
-    ) {innerPadding ->
-
-        Column(Modifier.fillMaxSize()) {
-
+        },
+        topBar = {
             InteractiveSearchBar(
                 query = state.searchText,
                 onSearchQueryChange = {
@@ -101,6 +105,10 @@ fun WishlistScreen(
                 },
                 placeholder = UiText.StringResourceId(Res.string.search_placeholder).asString(),
             )
+        }
+    ) {innerPadding ->
+
+        Column(Modifier.fillMaxSize()) {
 
             LazyColumn(
                 modifier = Modifier.padding(

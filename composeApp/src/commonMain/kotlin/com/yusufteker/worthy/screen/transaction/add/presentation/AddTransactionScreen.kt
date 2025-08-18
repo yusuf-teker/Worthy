@@ -11,6 +11,7 @@ import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.domain.model.Card
 import com.yusufteker.worthy.core.presentation.UiEvent
 import com.yusufteker.worthy.core.presentation.UiText
+import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
 import com.yusufteker.worthy.core.presentation.components.MoneyInput
 import com.yusufteker.worthy.core.presentation.components.Screen
@@ -34,12 +35,8 @@ fun AddTransactionScreenRoot(
 
     ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    AddTransactionScreen(
-        state = state,
-        onAction = viewModel::onAction,
-        contentPadding = contentPadding,
-        isIncomeByDefault = isIncomeByDefault
-    )
+
+
 
     LaunchedEffect(Unit) {
         viewModel.uiEvent.collect { event ->
@@ -57,6 +54,19 @@ fun AddTransactionScreenRoot(
             }
         }
     }
+
+    BaseContentWrapper(
+        state = state
+    ) {
+        AddTransactionScreen(
+            state = state,
+            onAction = viewModel::onAction,
+            contentPadding = contentPadding,
+            isIncomeByDefault = isIncomeByDefault
+        )
+    }
+
+
 }
 
 @Composable

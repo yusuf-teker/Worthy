@@ -51,23 +51,27 @@ fun DashboardScreenRoot(
 
     LaunchedEffect(Unit) {
         viewModel.uiEvent.collect { event ->
-            when(event){
+            when (event) {
                 is UiEvent.NavigateTo -> {
-                    onNavigateTo (event.route)
+                    onNavigateTo(event.route)
                 }
 
                 else -> Unit
             }
         }
     }
+    BaseContentWrapper(
+        state = state
+    ) {
+        DashboardScreen(
+            state = state,
+            contentPadding = contentPadding,
+            onAction = { action ->
+                viewModel.onAction(action)
+            },
+        )
+    }
 
-    DashboardScreen(
-        state = state,
-        contentPadding = contentPadding,
-        onAction = { action ->
-            viewModel.onAction(action)
-        },
-    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -78,81 +82,78 @@ fun DashboardScreen(
     onAction: (DashboardAction) -> Unit,
 ) {
 
-    BaseContentWrapper(
-        state = state
-    ){
-        Column(Modifier.fillMaxSize()
+
+    Column(
+        Modifier.fillMaxSize()
             .background(
                 //color = AppColors.background
                 brush = screenBackground
             )
             .padding(contentPadding)
+    )
+    {
+
+        AppTopBar(
+            title = UiText.StringResourceId(Res.string.dashboard_overview).asString(),
+            onNavIconClick = null,
+            isBack = false,
+            modifier = Modifier.background(AppColors.transparent)
+        ) { }
+
+
+
+        Spacer(Modifier.height(Spacing8))
+        // 3 – Kart
+        DashboardOverviewCard(
+            modifier = Modifier.fillMaxWidth(),
+            amountText = state.totalAllIncomeMoney.formatted(),// todo + income eklenecek
+            incomeChangeRatio = state.incomeChangeRatio,
+            barsFractions = listOf(
+                state.fixedExpenseFraction,
+                state.desiresSpentFraction,
+                state.remainingFraction,
+                state.expensesFraction
+            ),
+            miniBarsFractions = state.selectedMiniBarsFraction,
+            miniBarsMonths = state.selectedMiniBarsMonths,
+
+
+            selectedChartIndex = state.selectedChartIndex,
+            onChartSelected = {
+                onAction(DashboardAction.ChartSelected(it))
+            },
+            selectableMonths = state.selectableMonths,
+            selectedMonth = state.selectedMonthYear,
+            onSelectedMonthChanged = { yearMonth ->
+                onAction(DashboardAction.OnSelectedMonthChanged(yearMonth))
+            },
+            onAddWishlistClicked = { onAction(DashboardAction.AddWishlistClicked) },
+            onAddRecurringClicked = { onAction(DashboardAction.AddRecurringClicked) },
+            onAddTransactionClicked = { onAction(DashboardAction.AddTransactionClicked) }
+
         )
-        {
 
-            AppTopBar(
-                title = UiText.StringResourceId(Res.string.dashboard_overview).asString(),
-                onNavIconClick = null,
-                isBack = false,
-                modifier = Modifier.background(AppColors.transparent)
-            ) {  }
+        Spacer(Modifier.weight(1f))
 
-
-
-                Spacer(Modifier.height(Spacing8))
-                // 3 – Kart
-                DashboardOverviewCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    amountText = state.totalAllIncomeMoney.formatted(),// todo + income eklenecek
-                    incomeChangeRatio = state.incomeChangeRatio,
-                    barsFractions = listOf(
-                        state.fixedExpenseFraction,
-                        state.desiresSpentFraction,
-                        state.remainingFraction,
-                        state.expensesFraction
-                    ),
-                    miniBarsFractions = state.selectedMiniBarsFraction,
-                    miniBarsMonths = state.selectedMiniBarsMonths,
-
-
-                    selectedChartIndex = state.selectedChartIndex,
-                    onChartSelected = {
-                        onAction(DashboardAction.ChartSelected(it))
-                    },
-                    selectableMonths = state.selectableMonths,
-                    selectedMonth = state.selectedMonthYear,
-                    onSelectedMonthChanged = { yearMonth ->
-                        onAction(DashboardAction.OnSelectedMonthChanged(yearMonth))
-                    },
-                    onAddWishlistClicked = { onAction(DashboardAction.AddWishlistClicked) },
-                    onAddRecurringClicked = { onAction(DashboardAction.AddRecurringClicked) },
-                    onAddTransactionClicked = { onAction(DashboardAction.AddTransactionClicked) }
-
-                )
-
-                Spacer(Modifier.weight(1f))
-
-                // 4 – Evaluate Purchase
-                Row {
-                    Spacer(modifier = Modifier.weight(1f))
-                    AppButton(
-                        text = UiText.StringResourceId(Res.string.dashboard_evaluate_purchase).asString(),
-                        onClick = { onAction(DashboardAction.EvaluateButtonClicked) },
-                        textModifier = Modifier.widthIn(max = 80.dp)
-                    )
-                }
-                Spacer(Modifier.height(Spacing16))
-
-
-
+        // 4 – Evaluate Purchase
+        Row {
+            Spacer(modifier = Modifier.weight(1f))
+            AppButton(
+                text = UiText.StringResourceId(Res.string.dashboard_evaluate_purchase).asString(),
+                onClick = { onAction(DashboardAction.EvaluateButtonClicked) },
+                textModifier = Modifier.widthIn(max = 80.dp)
+            )
         }
+        Spacer(Modifier.height(Spacing16))
+
+
     }
 
 
 
 
 
-    LaunchedEffect(state.isBottomSheetOpen){
+    LaunchedEffect(state.isBottomSheetOpen) {
         Napier.d("bottom sheet is open ${state.isBottomSheetOpen}")
     }
     val bottomSheetState = rememberModalBottomSheetState(
@@ -165,7 +166,7 @@ fun DashboardScreen(
             containerColor = AppColors.surface,
             tonalElevation = 6.dp,
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-            contentWindowInsets = {  WindowInsets.ime}
+            contentWindowInsets = { WindowInsets.ime }
         ) {
             BottomSheetContent(
                 sheetState = bottomSheetState,
@@ -184,7 +185,7 @@ fun DashboardScreen(
                 },
                 bottomSheetUiState = state.bottomSheetUiState,
 
-            )
+                )
         }
     }
 

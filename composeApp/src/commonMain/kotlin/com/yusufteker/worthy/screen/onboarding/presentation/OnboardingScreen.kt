@@ -15,6 +15,7 @@
     import androidx.compose.ui.Modifier
     import androidx.compose.ui.platform.LocalFocusManager
     import androidx.lifecycle.compose.collectAsStateWithLifecycle
+    import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
     import com.yusufteker.worthy.core.presentation.theme.AppColors
     import com.yusufteker.worthy.core.presentation.theme.AppDimens.ScreenPadding
     import com.yusufteker.worthy.screen.onboarding.presentation.components.UserFormPager
@@ -28,21 +29,26 @@
     ) {
         val state by viewModel.state.collectAsStateWithLifecycle()
 
-        OnboardingScreen(
-            state = state,
-             onAction = { action ->
-                when (action) {
-                    is OnboardingAction.OnGetStartedClicked -> {
-                        //viewModel.navigateTo(Routes.Dashboard)
-                        onGetStarted.invoke()
-                    }
+        BaseContentWrapper(
+            state = state
+        ) {
+            OnboardingScreen(
+                state = state,
+                onAction = { action ->
+                    when (action) {
+                        is OnboardingAction.OnGetStartedClicked -> {
+                            //viewModel.navigateTo(Routes.Dashboard)
+                            onGetStarted.invoke()
+                        }
 
-                    else -> Unit
-                }
-                viewModel.onAction(action)
-            },
-            contentPadding = contentPadding
-        )
+                        else -> Unit
+                    }
+                    viewModel.onAction(action)
+                },
+                contentPadding = contentPadding
+            )
+        }
+
     }
 
 

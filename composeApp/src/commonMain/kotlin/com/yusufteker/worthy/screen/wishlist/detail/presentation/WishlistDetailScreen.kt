@@ -5,6 +5,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -13,7 +14,12 @@ fun WishlistDetailScreenRoot(
     contentPadding: PaddingValues = PaddingValues()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    WishlistDetailScreen(state = state, onAction = viewModel::onAction, contentPadding = contentPadding)
+
+    BaseContentWrapper(
+        state = state
+    ) {
+        WishlistDetailScreen(state = state, onAction = viewModel::onAction, contentPadding = contentPadding)
+    }
 }
 
 @Composable

@@ -283,6 +283,9 @@
     <string name="card_selector_label">Card</string>
     <string name="screen_title_new_transaction">New Transaction</string>
     <string name="add_new_card">➕ Add New Card</string>
+    <string name="screen_title_add_new_card">Add Card</string>
+    <string name="pay_with_card">Pay with card</string>
+
 
 
 </resources>

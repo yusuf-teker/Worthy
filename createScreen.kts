@@ -3,7 +3,7 @@
 import java.io.File
 
 
-val screenName = "TransactionList"//args.getOrNull(0) ?: error("Ekran adı girilmedi")
+val screenName = "Deneme"//args.getOrNull(0) ?: error("Ekran adı girilmedi")
 val packageName = screenName.lowercase()
 val baseDir = File("composeApp/src/commonMain/kotlin/com/yusufteker/worthy/screen/$packageName/presentation")
 
@@ -18,6 +18,8 @@ val files = listOf(
 
     "$screenName" + "State.kt" to """
         package com.yusufteker.worthy.screen.$packageName.presentation
+        
+        import com.yusufteker.worthy.core.presentation.base.BaseState
 
         data class ${screenName}State(
             override val isLoading: Boolean = false,
@@ -28,7 +30,7 @@ val files = listOf(
     "$screenName" + "ViewModel.kt" to """
         package com.yusufteker.worthy.screen.$packageName.presentation
 
-        import com.yusufteker.worthy.core.presentation.BaseViewModel
+        import com.yusufteker.worthy.core.presentation.base.BaseViewModel
         import kotlinx.coroutines.flow.MutableStateFlow
         import kotlinx.coroutines.flow.StateFlow
 
@@ -47,45 +49,61 @@ val files = listOf(
     """.trimIndent(),
 
     "$screenName" + "Screen.kt" to """
-        package com.yusufteker.worthy.screen.$packageName.presentation
+    package com.yusufteker.worthy.screen.$packageName.presentation
 
-        import androidx.compose.foundation.layout.*
-        import androidx.compose.runtime.*
-        import androidx.compose.ui.Modifier
-        import androidx.compose.ui.unit.dp
-        import androidx.lifecycle.compose.collectAsStateWithLifecycle
-        import org.koin.compose.viewmodel.koinViewModel
+    import androidx.compose.foundation.layout.*
+    import androidx.compose.runtime.*
+    import androidx.compose.ui.Modifier
+    import androidx.compose.ui.unit.dp
+    import androidx.lifecycle.compose.collectAsStateWithLifecycle
+    import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
+    import org.koin.compose.viewmodel.koinViewModel
 
-        @Composable
-        fun ${screenName}ScreenRoot(
-            viewModel: ${screenName}ViewModel = koinViewModel(),
-            contentPadding: PaddingValues = PaddingValues()
-        ) {
-            val state by viewModel.state.collectAsStateWithLifecycle()
-            ${screenName}Screen(state = state, onAction = viewModel::onAction, contentPadding = contentPadding)
+    @Composable
+    fun ${screenName}ScreenRoot(
+        viewModel: ${screenName}ViewModel = koinViewModel(),
+        contentPadding: PaddingValues = PaddingValues()
+    ) {
+        val state by viewModel.state.collectAsStateWithLifecycle()
+
+        BaseContentWrapper(state = state) {
+            ${screenName}Screen(
+                state = state,
+                onAction = viewModel::onAction,
+                contentPadding = contentPadding
+            )
         }
+    }
 
-        @Composable
-        fun ${screenName}Screen(
-            state: ${screenName}State,
-            onAction: (action: ${screenName}Action) -> Unit,
-            contentPadding: PaddingValues = PaddingValues()
-        ) {
-            BaseContentWrapper(
-                state = state
-            ){
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(contentPadding),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    // TODO
-                }
-            }
-           
+    @Composable
+    fun ${screenName}Screen(
+        state: ${screenName}State,
+        onAction: (action: ${screenName}Action) -> Unit,
+        contentPadding: PaddingValues = PaddingValues()
+    ) {
+    
+    Scaffold(
+        modifier = Modifier.fillMaxSize().padding(contentPadding),
+        topBar = {
+            AppTopBar(
+                title = UiText.StringResourceId(Res.string.add_new_card).asString(),
+                onNavIconClick = {}
+            )
         }
-    """.trimIndent()
+    ){
+      Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(contentPadding),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // TODO
+        }
+    }
+      
+    }
+""".trimIndent()
+
 )
 
 baseDir.mkdirs()

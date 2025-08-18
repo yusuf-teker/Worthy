@@ -31,7 +31,7 @@ fun AppTopBar(
     modifier: Modifier = Modifier.background(AppColors.background),
     title: String,
     onNavIconClick: (() -> Unit)? = null,
-    isBack: Boolean = false,
+    isBack: Boolean = true,
     actions: @Composable RowScope.() -> Unit = {},
 ) {
     Box(

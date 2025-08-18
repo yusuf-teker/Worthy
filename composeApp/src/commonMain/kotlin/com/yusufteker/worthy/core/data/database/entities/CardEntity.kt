@@ -2,6 +2,7 @@ package com.yusufteker.worthy.core.data.database.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.yusufteker.worthy.core.domain.model.CardBrand
 
 @Entity(tableName = "cards")
 data class CardEntity(
@@ -20,7 +21,7 @@ data class CardEntity(
 
     val nickname: String? = null,
 
-    val issuer: String? = null,
+    val cardBrand: CardBrand? = null,
 
     val note: String? = null
 )

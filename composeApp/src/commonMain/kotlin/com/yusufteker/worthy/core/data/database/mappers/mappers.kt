@@ -5,7 +5,6 @@ import com.yusufteker.worthy.core.data.database.entities.CategoryEntity
 import com.yusufteker.worthy.core.data.database.entities.RecurringFinancialItemEntity
 import com.yusufteker.worthy.core.data.database.entities.TransactionEntity
 import com.yusufteker.worthy.core.domain.getCurrentEpochMillis
-import com.yusufteker.worthy.core.domain.getCurrentLocalDateTime
 import com.yusufteker.worthy.core.domain.model.Card
 import com.yusufteker.worthy.screen.wishlist.list.data.database.entities.WishlistItemEntity
 import com.yusufteker.worthy.core.domain.model.Category
@@ -133,7 +132,7 @@ fun CardEntity.toDomain(): Card = Card(
     expiryYear = expiryYear,
     cvv = encryptedCvv,
     nickname = nickname,
-    issuer = issuer,
+    cardBrand = cardBrand,
     note = note
 )
 
@@ -145,7 +144,7 @@ fun Card.toEntity(): CardEntity = CardEntity(
     expiryYear = expiryYear,
     encryptedCvv = cvv,
     nickname = nickname,
-    issuer = issuer,
+    cardBrand = cardBrand,
     note = note
 )
 

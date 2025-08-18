@@ -1,6 +1,8 @@
 package com.yusufteker.worthy.screen.transaction.add.presentation.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,6 +44,7 @@ import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.add
 import worthy.composeapp.generated.resources.installment_count_label
 import worthy.composeapp.generated.resources.note
+import worthy.composeapp.generated.resources.pay_with_card
 import worthy.composeapp.generated.resources.wishlist_label_product_name
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -139,7 +142,10 @@ fun AddTransactionForm(
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().clickable{
+                    onIsCardPaymentChanged(!isCardPayment)
+
+                }
             ) {
                 Checkbox(
                     checked = isCardPayment,
@@ -147,57 +153,61 @@ fun AddTransactionForm(
                         onIsCardPaymentChanged(checked)
                     }
                 )
-                Text("Kart ile ödeme")
+                Text(UiText.StringResourceId(Res.string.pay_with_card).asString())
             }
-            if (state.isCardPayment){
-                Row( // INSTALLMENT
-                    verticalAlignment = Alignment.Bottom
-                )
-                {
-                    Box(Modifier.weight(1f)) {
-                        NumberPickerInput(
 
-                            label = UiText.StringResourceId(Res.string.installment_count_label).asString(),
-                            value = state.installmentCount,
-                            range = 0..MAX_INSTALLMENT_COUNT,
-                            step = 1,
-                            onValueChange = {
-                                onInstallmentCountChange(it)
-                            },
-                            modifier = Modifier.fillMaxWidth(1f),
-                            errorMessage = null
+            AnimatedVisibility(visible = isCardPayment) {
+                Column {
+                    Row( // INSTALLMENT
+                        verticalAlignment = Alignment.Bottom
+                    )
+                    {
+                        Box(Modifier.weight(1f)) {
+                            NumberPickerInput(
 
-                        )
-                    }
-
-                    if (targetWeight > 0f){
-                        Spacer(Modifier.width(16.dp))
-
-                        Box(Modifier.weight(targetWeight)){
-                            WheelDatePicker(
-                                initialDate = currentDate,
-                                onDateSelected = { epochSeconds ->
-                                    onInstallmentStartDateChange(epochSeconds)
+                                label = UiText.StringResourceId(Res.string.installment_count_label).asString(),
+                                value = state.installmentCount,
+                                range = 0..MAX_INSTALLMENT_COUNT,
+                                step = 1,
+                                onValueChange = {
+                                    onInstallmentCountChange(it)
                                 },
-                                modifier = Modifier.wrapContentHeight(),
-                                title = "Installment Start Date"
+                                modifier = Modifier.fillMaxWidth(1f),
+                                errorMessage = null
+
                             )
                         }
+
+                        if (targetWeight > 0f){
+                            Spacer(Modifier.width(16.dp))
+
+                            Box(Modifier.weight(targetWeight)){
+                                WheelDatePicker(
+                                    initialDate = currentDate,
+                                    onDateSelected = { epochSeconds ->
+                                        onInstallmentStartDateChange(epochSeconds)
+                                    },
+                                    modifier = Modifier.wrapContentHeight(),
+                                    title = "Installment Start Date"
+                                )
+                            }
+                        }
+
                     }
 
+                    CardSelector(
+                        cards = state.cards,
+                        selectedCard = state.selectedCard,
+                        onCardSelected = {
+                            onCardSelected(it)
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        onAddNewCard = {
+                            onAddNewCardClicked.invoke()
+                        }
+                    )
                 }
 
-                CardSelector(
-                    cards = state.cards,
-                    selectedCard = state.selectedCard,
-                    onCardSelected = {
-                        onCardSelected(it)
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    onAddNewCard = {
-                        onAddNewCardClicked.invoke()
-                    }
-                )
             }
 
 

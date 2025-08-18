@@ -24,6 +24,8 @@ import com.yusufteker.worthy.core.domain.service.datasource.CurrencyRatesRemoteD
 import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistRepository
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import com.yusufteker.worthy.screen.addtransaction.presentation.AddTransactionViewModel
+import com.yusufteker.worthy.screen.card.add.data.CardRepositoryImpl
+import com.yusufteker.worthy.screen.card.add.domain.CardRepository
 import com.yusufteker.worthy.screen.card.add.presentation.AddCardViewModel
 import com.yusufteker.worthy.screen.dashboard.domain.DashboardRepository
 import com.yusufteker.worthy.screen.dashboard.presentation.DashboardViewModel
@@ -65,6 +67,7 @@ val sharedModule = module {
     single { get<WorthyDatabase>().wishlistItemDao }
     single { get<WorthyDatabase>().categoryDao }
     single { get<WorthyDatabase>().recurringFinancialItemDao }
+    single { get<WorthyDatabase>().cardDao }
 
     // Repository implementasyonlarını bind et
     single<CurrencyRatesRepository> { CurrencyRatesRepositoryImpl(get(), get()) }
@@ -77,6 +80,7 @@ val sharedModule = module {
     single<DashboardRepository> { DashboardRepositoryImpl(get(), get(),get(),get()) }
     single<CurrencyRatesCacheDataSource> { CurrencyRatesCacheDataSourceImpl() }
     single<CurrencyRatesRemoteDataSource> { CurrencyRatesRemoteDataSourceImpl() }
+    single<CardRepository> { CardRepositoryImpl(get()) }
 
 
 
@@ -87,5 +91,5 @@ val sharedModule = module {
     viewModel { WishlistViewModel(get(), get()) }
     viewModel { WishlistAddViewModel(get(),get(),get()) }
     viewModel { AddTransactionViewModel(get()) }
-    viewModel { AddCardViewModel() }
+    viewModel { AddCardViewModel(get()) }
 }

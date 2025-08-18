@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yusufteker.worthy.core.presentation.UiText
+import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
 import com.yusufteker.worthy.screen.settings.presentation.components.BudgetSlider
 import com.yusufteker.worthy.core.presentation.components.CurrencyPicker
@@ -56,17 +57,23 @@ fun SettingsScreenRoot(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    SettingsScreen(
-        state = state,
-        onAction = { action ->
-            when (action) {
 
-                else -> Unit
-            }
-            viewModel.onAction(action)
-        },
-        contentPadding = contentPadding
-    )
+    BaseContentWrapper(
+        state = state
+    ) {
+        SettingsScreen(
+            state = state,
+            onAction = { action ->
+                when (action) {
+
+                    else -> Unit
+                }
+                viewModel.onAction(action)
+            },
+            contentPadding = contentPadding
+        )
+    }
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

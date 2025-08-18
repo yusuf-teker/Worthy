@@ -8,6 +8,10 @@ data class Card(
     val expiryYear: Int,
     val cvv: String,              // 3 veya 4 haneli güvenlik kodu, yine şifrelenmeli
     val nickname: String? = null, // Kullanıcının kart için verdiği isim (örn. "Kredi Kartı 1")
-    val issuer: String? = null,   // Visa, Mastercard, vs.
-    val note: String? = null
+    val cardBrand: CardBrand? = null,   // Visa, Mastercard, vs.
+    val note: String? = null,
+    val statementDay: Int? = null
 )
+
+
+enum class CardBrand { Visa, Mastercard, Amex, Troy, Unknown }

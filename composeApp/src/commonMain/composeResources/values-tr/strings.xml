@@ -274,6 +274,8 @@
     <string name="card_selector_label">Kart</string>
     <string name="screen_title_new_transaction">Yeni İşlem</string>
     <string name="add_new_card">➕ Yeni Kart Ekle</string>
+    <string name="screen_title_add_new_card">Kart Ekle</string>
+    <string name="pay_with_card">Kart ile ödeme</string>
 
 
 </resources>

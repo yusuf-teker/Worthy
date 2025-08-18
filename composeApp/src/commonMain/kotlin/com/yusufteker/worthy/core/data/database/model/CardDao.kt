@@ -17,6 +17,8 @@ interface CardDao {
     @Delete
     suspend fun deleteCard(card: CardEntity)
 
+    @Query("DELETE FROM cards WHERE id = :id")
+    suspend fun deleteCardById(id: Int)
     @Query("SELECT * FROM cards WHERE id = :id LIMIT 1")
     suspend fun getCardById(id: Int): CardEntity?
 

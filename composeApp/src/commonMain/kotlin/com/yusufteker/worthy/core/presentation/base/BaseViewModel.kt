@@ -14,11 +14,13 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.yusufteker.routealarm.core.presentation.popup.PopupManager
 import androidx.compose.runtime.State
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 
 
-open class BaseViewModel : ViewModel(), KoinComponent {
+open class BaseViewModel(): ViewModel(), KoinComponent {
 
     protected val popupManager: PopupManager by inject()
 
@@ -38,4 +40,5 @@ open class BaseViewModel : ViewModel(), KoinComponent {
     fun navigateTo(route: Routes) {
         sendUiEventSafe(UiEvent.NavigateTo(route))
     }
+
 }
