@@ -1,6 +1,7 @@
 package com.yusufteker.worthy.screen.wishlist.add.presentation
 
 import androidx.lifecycle.viewModelScope
+import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.domain.getCurrentLocalDateTime
 import com.yusufteker.worthy.core.domain.model.CategoryType
 import com.yusufteker.worthy.core.domain.model.emptyMoney
@@ -93,10 +94,8 @@ class WishlistAddViewModel(
             }
 
             WishlistAddAction.OnSaveClicked -> {
-                viewModelScope.launch {
-                    saveWishlistItem()
-                    sendUiEvent(UiEvent.NavigateBack)
-                }
+
+                saveWishlistItem()
 
             }
 
@@ -117,14 +116,13 @@ class WishlistAddViewModel(
             }
 
             WishlistAddAction.OnBackClick -> {
-                sendUiEventSafe(UiEvent.NavigateBack)
+                navigateBack()
             }
         }
     }
 
     fun saveWishlistItem() {
-        viewModelScope.launch {
-            showLoading()
+        launchWithLoading {
             Napier.d(_state.value.isLoading.toString())
             val wishlistItem = _state.value.wishlistItem.copy(
 
@@ -132,12 +130,9 @@ class WishlistAddViewModel(
                     imageSaver.saveImage(byteArray)
                 }
             )
-            Napier.d(_state.value.isLoading.toString())
-
-            hideLoading()
-            Napier.d(_state.value.isLoading.toString())
-
             wishlistRepository.insert(wishlistItem)
+            navigateBack()
+
         }
     }
 

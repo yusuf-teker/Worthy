@@ -6,13 +6,12 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.yusufteker.worthy.app.navigation.NavigationHandler
 import com.yusufteker.worthy.app.navigation.Routes
-import com.yusufteker.worthy.core.presentation.UiEvent
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
@@ -30,32 +29,15 @@ fun AddTransactionScreenRoot(
     viewModel: AddTransactionViewModel = koinViewModel(),
     contentPadding: PaddingValues = PaddingValues(),
     isIncomeByDefault: Boolean = false,
-    navigateBack: () -> Unit = {},
-    navigateToAddCardScreen: () -> Unit = {}
+    onNavigateTo: (Routes) -> Unit = {}
 
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-
-
-    LaunchedEffect(Unit) {
-        viewModel.uiEvent.collect { event ->
-            when (event) {
-                is UiEvent.NavigateBack -> {
-                    navigateBack.invoke()
-                }
-
-                is UiEvent.NavigateTo -> {
-                    if (event.route == Routes.AddCard) {
-                        navigateToAddCardScreen.invoke()
-                    }
-
-                }
-
-                else -> Unit
-            }
-        }
+    NavigationHandler(viewModel){ route, data ->
+        onNavigateTo(route)
     }
+
 
     BaseContentWrapper(
         state = state

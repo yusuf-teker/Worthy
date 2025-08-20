@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.presentation.UiText
+import com.yusufteker.worthy.core.presentation.components.ErrorText
 import com.yusufteker.worthy.core.presentation.components.MoneyInput
 import com.yusufteker.worthy.core.presentation.components.NumberPickerInput
 import com.yusufteker.worthy.core.presentation.theme.AppColors
@@ -169,6 +170,9 @@ fun UserFormPager(
                             text = userOnboardingData.name,
                             onTextChange = {
                                 userOnboardingData = userOnboardingData.copy(name = it)
+                                if (it.length > 3){ // HATA SIFIRLANSIN DİYE EKLENDİ TODO
+                                    validationErrors = validatePage(0)
+                                }
                             },
                             placeholder = UiText.StringResourceId(Res.string.hint_enter_name)
                                 .asString(),
@@ -185,11 +189,13 @@ fun UserFormPager(
                             salary = userOnboardingData.monthlySalary,
                             onSalaryChange = {
                                 userOnboardingData = userOnboardingData.copy(monthlySalary = it)
+                                validationErrors = validatePage(1)
                             },
                             question2 = UiText.StringResourceId(id = Res.string.onboarding_q1_2_title),
                             number = userOnboardingData.weeklyWorkHours,
                             onNumberChange = {
                                 userOnboardingData = userOnboardingData.copy(weeklyWorkHours = it)
+                                validationErrors = validatePage(1)
                             },
                             checked = userOnboardingData.hasMonthlySalary,
                             onCheckedChange = {
@@ -386,14 +392,7 @@ fun QuestionInput(
 
         )
 
-    if (errorMessage != null) {
-        Text(
-            text = errorMessage.asString(),
-            color = AppColors.error,
-            style = AppTypography.bodySmall,
-            modifier = Modifier.padding(start = 16.dp, top = 4.dp)
-        )
-    }
+    ErrorText(errorMessage?.asString(),Modifier.padding(start = 16.dp, top = 4.dp))
 }
 
 @Composable

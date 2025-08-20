@@ -17,7 +17,7 @@ class AddCardViewModel(
             }
 
             AddCardAction.OnNavigateBack -> {
-                sendUiEventSafe(UiEvent.NavigateBack)
+                navigateBack()
             }
 
             is AddCardAction.AddCard -> {

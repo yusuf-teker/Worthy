@@ -1,6 +1,7 @@
 package com.yusufteker.worthy.screen.settings.presentation
 
 import androidx.lifecycle.viewModelScope
+import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.emptyMoney
@@ -8,6 +9,8 @@ import com.yusufteker.worthy.core.domain.model.startDate
 import com.yusufteker.worthy.core.domain.repository.CategoryRepository
 import com.yusufteker.worthy.core.domain.repository.RecurringFinancialItemRepository
 import com.yusufteker.worthy.core.domain.service.CurrencyConverter
+import com.yusufteker.worthy.core.presentation.UiEvent
+import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import com.yusufteker.worthy.screen.settings.domain.UserPrefsManager
 import io.github.aakira.napier.Napier
@@ -257,6 +260,10 @@ class SettingsViewModel(
                         handleError(e)
                     }
                 }
+            }
+
+            SettingsAction.OnMyCardsClick -> {
+                sendUiEventSafe(UiEvent.NavigateTo(Routes.CardGraph))
             }
         }
 

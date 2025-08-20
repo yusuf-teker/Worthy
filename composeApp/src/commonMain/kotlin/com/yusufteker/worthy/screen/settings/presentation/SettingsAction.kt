@@ -17,4 +17,7 @@ sealed interface SettingsAction {
 
     data class OnDeleteGroupRecurringItem(val groupId: String) : SettingsAction
 
+    object OnMyCardsClick : SettingsAction
+
+
 }

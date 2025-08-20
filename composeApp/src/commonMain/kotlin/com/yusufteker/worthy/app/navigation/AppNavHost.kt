@@ -22,6 +22,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -33,6 +35,7 @@ import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppDimens.ScreenPadding
 import com.yusufteker.worthy.screen.addtransaction.presentation.AddTransactionScreenRoot
 import com.yusufteker.worthy.screen.card.add.presentation.AddCardScreenRoot
+import com.yusufteker.worthy.screen.card.list.presentation.CardListScreenRoot
 import com.yusufteker.worthy.screen.dashboard.presentation.DashboardScreenRoot
 import com.yusufteker.worthy.screen.onboarding.domain.OnboardingManager
 import com.yusufteker.worthy.screen.onboarding.presentation.OnboardingScreenRoot
@@ -87,6 +90,7 @@ fun AppNavHost(
 
     val startDestination = if (onboardingDone == true) Routes.MainGraph else Routes.OnboardingGraph
 
+    val currentDestination = navController.currentBackStackEntryAsState().value?.destination
 
 
     Scaffold(
@@ -97,7 +101,11 @@ fun AppNavHost(
                     modifier = Modifier.padding(bottom = bottomPadding),
                     currentRoute = currentRoute ?: "",
                     onItemSelected = { route ->
-                        if (route.toString().substringBefore("(") == Routes.AddTransaction.NAME) {
+
+                        if (isOnCurrentDestination(route.toString(),currentDestination)){
+                            return@BottomNavigationBar
+                        }
+                        if (route.isAddTransaction()) {
                             showAddFabMenu = !showAddFabMenu
                         } else if (route.toString() != currentRoute) {
                             showAddFabMenu = false
@@ -119,7 +127,6 @@ fun AppNavHost(
                 navigation<Routes.OnboardingGraph>(
                     startDestination = Routes.Onboarding
                 ) {
-
                     composable<Routes.Onboarding> {
 
                         OnboardingScreenRoot(
@@ -138,15 +145,12 @@ fun AppNavHost(
                 navigation<Routes.MainGraph>(
                     startDestination = Routes.Dashboard
                 ) {
-
                     composable<Routes.Dashboard> {
-
                         DashboardScreenRoot(
                             contentPadding = innerPadding, onNavigateTo = { route ->
-                                navController.navigate(route)
+                                navController.navigateTo(route)
                             })
                     }
-
 
                     navigation<Routes.WishlistGraph>(
                         startDestination = Routes.Wishlist
@@ -155,23 +159,20 @@ fun AppNavHost(
 
                             WishlistScreenRoot(
                                 contentPadding = innerPadding,
-                                navigateToWishlistAdd = {
-                                    navController.navigate(Routes.WishlistAdd)
-                                },
-                                navigateBack = {
-                                    navController.popBackStack()
-                                },
-                                navigateToWishlistDetail = { wishlistId ->
-                                    navController.navigate(Routes.WishlistDetail(wishlistId))
-                                })
+                                onNavigateTo = { route ->
+                                    navController.navigateTo(route)
+                                }
+                            )
 
 
                         }
                         composable<Routes.WishlistAdd> {
                             WishlistAddScreenRoot(
-                                contentPadding = innerPadding, navigateBack = {
-                                    navController.popBackStack()
-                                })
+                                contentPadding = innerPadding,
+                                onNavigateTo = { route ->
+                                    navController.navigateTo(route)
+                                }
+                            )
                         }
 
                         composable<Routes.WishlistDetail> { // Todo Wishlist Detay ekranı eklenecek
@@ -179,7 +180,21 @@ fun AppNavHost(
                             val wishlistId = args.id
                             WishlistDetailScreenRoot(
                                 contentPadding = innerPadding,
-                                wishlistId = wishlistId
+                                wishlistId = wishlistId,
+                                onNavigateTo = { route ->
+                                    navController.navigateTo(route)
+                                }
+                            )
+                        }
+                    }
+
+                    navigation<Routes.CardGraph>(
+                        startDestination = Routes.CardList
+                    ) {
+
+                        composable<Routes.CardList> {
+                            CardListScreenRoot(
+                                contentPadding = innerPadding,
                             )
                         }
                     }
@@ -190,19 +205,17 @@ fun AppNavHost(
                         AddTransactionScreenRoot(
                             isIncomeByDefault = isIncomeByDefault,
                             contentPadding = innerPadding,
-                            navigateBack = {
-                                navController.popBackStack()
-                            },
-                            navigateToAddCardScreen = {
-                                navController.navigate(Routes.AddCard)
+                            onNavigateTo = { route ->
+                                navController.navigateTo(route)
                             })
                     }
 
                     composable<Routes.AddCard> {
                         AddCardScreenRoot(
-                            contentPadding = innerPadding, onNavigateBack = {
-                                navController.popBackStack()
-                            })
+                            contentPadding = innerPadding, onNavigateTo = { route ->
+                                navController.navigateTo(route)
+                            }
+                        )
                     }
 
                     composable<Routes.Wallet> {
@@ -215,6 +228,9 @@ fun AppNavHost(
                     composable<Routes.Settings> {
                         SettingsScreenRoot(
                             contentPadding = innerPadding,
+                            onNavigateTo = { route ->
+                                navController.navigateTo(route)
+                            }
                         )
                     }
                 }
@@ -226,15 +242,15 @@ fun AppNavHost(
                 showAddFabMenu = false
                 when (fabItem.label) {
                     "Expense" -> {
-                        navController.navigate(Routes.AddTransaction(false))
+                        navController.navigateTo(Routes.AddTransaction(false))
                     }
 
                     "Income" -> {
-                        navController.navigate(Routes.AddTransaction(true))
+                        navController.navigateTo(Routes.AddTransaction(true))
                     }
 
                     "Card" -> {
-                        navController.navigate(Routes.AddTransaction)
+                        navController.navigateTo(Routes.AddCard)
                     }
 
                     else -> {
@@ -255,4 +271,18 @@ inline fun <reified T : ViewModel> NavBackStackEntry.sharedKoinViewModel(
         navController.getBackStackEntry(navGraphRoute)
     }
     return koinViewModel(viewModelStoreOwner = parentEntry)
+}
+
+fun isOnCurrentDestination(destinationRoute: String, currentDestination: NavDestination?): Boolean {
+    return  currentDestination
+        ?.hierarchy
+        ?.any {
+            it.route?.contains(destinationRoute) ?: false
+        } == true
+
+}
+
+fun NavHostController.navigateTo(route: Routes){
+    if (route == Routes.Back) this.popBackStack()
+    else this.navigate(route)
 }

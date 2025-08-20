@@ -52,7 +52,6 @@ fun NumberPickerInput(
     val options = remember(range, step) { range.filter { (it - range.first) % step == 0 } }
     val selectedIndex = options.indexOf(value).coerceAtLeast(0)
 
-
     LaunchedEffect(expanded) {
         if (expanded) {
             scrollState.animateScrollTo(selectedIndex * dropdownItemHeight / 4)
@@ -89,8 +88,8 @@ fun NumberPickerInput(
             )
             Box(
                 Modifier.fillMaxWidth().height(64.dp).clickable {
-                        expanded = !expanded
-                    }) {
+                    expanded = !expanded
+                }) {
 
             }
 
@@ -115,14 +114,8 @@ fun NumberPickerInput(
                 }
             }
         }
-        if (errorMessage != null) {
-            Text(
-                text = errorMessage.asString(),
-                color = AppColors.error,
-                style = AppTypography.bodySmall,
-                modifier = Modifier.padding(start = 16.dp, top = 4.dp)
-            )
-        }
+        ErrorText(errorMessage?.asString(), Modifier.padding(start = 16.dp, top = 4.dp))
+
     }
 }
 

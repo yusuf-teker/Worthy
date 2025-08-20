@@ -40,6 +40,14 @@ open class BaseViewModel<S : BaseState>(
         sendUiEventSafe(UiEvent.NavigateTo(route))
     }
 
+    fun navigateBack(){
+        sendUiEventSafe(UiEvent.NavigateTo(Routes.Back))
+    }
+
+    fun <T>navigateWithData(route: Routes, data: T) {
+        sendUiEventSafe(UiEvent.NavigateWithData(route, data))
+    }
+
     private var activeLoadingJobs = 0
 
     protected fun launchWithLoading(block: suspend () -> Unit) {

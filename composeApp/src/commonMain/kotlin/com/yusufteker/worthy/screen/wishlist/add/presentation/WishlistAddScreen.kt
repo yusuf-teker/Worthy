@@ -20,7 +20,6 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,8 +27,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.yusufteker.worthy.app.navigation.NavigationHandler
+import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.domain.model.CategoryType
-import com.yusufteker.worthy.core.presentation.UiEvent
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
 import com.yusufteker.worthy.core.presentation.components.AppButton
@@ -51,21 +51,14 @@ import worthy.composeapp.generated.resources.wishlist_label_product_name
 fun WishlistAddScreenRoot(
     viewModel: WishlistAddViewModel = koinViewModel(),
     contentPadding: PaddingValues = PaddingValues(),
-    navigateBack: () -> Unit = { },
+    onNavigateTo: (route: Routes) -> Unit = {}
 
     ) {
 
-    LaunchedEffect(Unit) {
-        viewModel.uiEvent.collect { event ->
-            when (event) {
-                is UiEvent.NavigateBack -> {
-                    navigateBack.invoke()
-                }
-
-                else -> Unit
-            }
-        }
+    NavigationHandler(viewModel){route, data ->
+        onNavigateTo(route)
     }
+
     val state by viewModel.state.collectAsStateWithLifecycle()
     BaseContentWrapper(
         state = state

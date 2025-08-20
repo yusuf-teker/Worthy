@@ -46,6 +46,8 @@
     <string name ="expenses">Giderler</string>
     <string name="no_selected">Seçilmedi</string>
     <string name="note">Note</string>
+    <string name="empty_screen_message">Gösterilecek bir şey yok</string>
+
 
 
 
@@ -153,6 +155,8 @@
     <string name="wishlist_label_note_optional">Not (isteğe bağlı)</string>
     <string name="wishlist_checkbox_purchased">Satın alındı olarak işaretle</string>
     <string name="wishlist_button_save">Kaydet</string>
+    <string name="wishlist_empty_screen_button">İlk dileğini ekle 🎁</string>
+
 
     <!-- Image Picker -->
     <string name="image_picker_placeholder">Görsel Seçin</string>
@@ -274,11 +278,38 @@
     <string name="card_selector_label">Kart</string>
     <string name="screen_title_new_transaction">Yeni İşlem</string>
     <string name="add_new_card">➕ Yeni Kart Ekle</string>
-    <string name="screen_title_add_new_card">Kart Ekle</string>
     <string name="pay_with_card">Kart ile ödeme</string>
 
+
+    <!-- ADD CARD -->
+    <string name="screen_title_add_new_card">Kart Ekle</string>
+    <string name="my_cards">Kartlarım</string>
     <string name="expiry_label">Geçerlilik Tarihi: </string>
     <string name="year">Yıl</string>
     <string name="month">Ay</string>
+    <string name="card_expiry_label">Geçerlilik Tarihi (AA/YY)</string>
+    <string name="expiry_placeholder">AA/YY</string>
+    <string name="expiry_month_error">Ay 12’den büyük olamaz</string>
+    <string name="save_card">Kartı Kaydet</string>
+    <string name="card_number">Kart Numarası</string>
+    <string name="cardholder_placeholder">Ad Soyad</string>
+    <string name="cardholder_label">Kart Sahibi</string>
+    <string name="card_nickname_label">Kart Takma Adı</string>
+    <string name="card_nickname_placeholder">ör. Benim Visam</string>
+        <!-- Kart Sahibi -->
+    <string name="error_cardholder_empty">Kart sahibi adı boş olamaz</string>
+        <!-- Kart numarası -->
+    <string name="error_card_number_empty">Kart numarası boş olamaz</string>
+    <string name="error_card_number_invalid">Kart numarası 16 haneli olmalıdır</string>
+        <!-- Son Kullanma -->
+    <string name="error_expiry_empty">Son kullanma tarihi boş olamaz</string>
+    <string name="error_expiry_invalid">Geçersiz son kullanma tarihi</string>
+    <string name="error_expiry_month_invalid">Ay 01 ile 12 arasında olmalıdır</string>
+        <!-- CVV -->
+    <string name="error_cvv_empty">CVV boş olamaz</string>
+    <string name="error_cvv_invalid">CVV 3 veya 4 haneli olmalıdır</string>
+
+    <string name="toggle_card_details_show">Kart detaylarını gir (isteğe bağlı)</string>
+    <string name="toggle_card_details_skip">Kart detaylarını girmeme</string>
 
 </resources>

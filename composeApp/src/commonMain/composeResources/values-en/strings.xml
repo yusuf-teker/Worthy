@@ -47,6 +47,8 @@
     <string name ="expenses">Expenses</string>
     <string name="no_selected">No selected</string>
     <string name="note">Note</string>
+    <string name="empty_screen_message">Nothing to show here</string>
+
 
 
     <!-- Dashboard -->
@@ -153,6 +155,8 @@
     <string name="wishlist_label_note_optional">Note (optional)</string>
     <string name="wishlist_checkbox_purchased">Mark as purchased</string>
     <string name="wishlist_button_save">Save</string>
+    <string name="wishlist_empty_screen_button">Add your first wish 🎁</string>
+
 
     <!-- Image Picker -->
     <string name="image_picker_placeholder">Select Image</string>
@@ -283,13 +287,40 @@
     <string name="card_selector_label">Card</string>
     <string name="screen_title_new_transaction">New Transaction</string>
     <string name="add_new_card">➕ Add New Card</string>
-    <string name="screen_title_add_new_card">Add Card</string>
     <string name="pay_with_card">Pay with card</string>
 
 
+
+    <!-- ADD CARD -->
+    <string name="screen_title_add_new_card">Add Card</string>
+    <string name="my_cards">My Cards</string>
     <string name="expiry_label">Expiry Date: </string>
     <string name="year">Year</string>
     <string name="month">Month</string>
+    <string name="card_expiry_label">Expiry (MM/YY)</string>
+    <string name="expiry_placeholder">MM/YY</string>
+    <string name="expiry_month_error">Month cannot be greater than 12</string>
+    <string name="save_card">Save Card</string>
+    <string name="card_number">Card Number</string>
+    <string name="cardholder_placeholder">Name Surname</string>
+    <string name="cardholder_label">Cardholder Name</string>
+    <string name="card_nickname_label">Card Nickname</string>
+    <string name="card_nickname_placeholder">e.g. My Visa</string>
+        <!-- Cardholder -->
+    <string name="error_cardholder_empty">Cardholder name cannot be empty</string>
+        <!-- Card number -->
+    <string name="error_card_number_empty">Card number cannot be empty</string>
+    <string name="error_card_number_invalid">Card number must be 16 digits</string>
+        <!-- Expiry -->
+    <string name="error_expiry_empty">Expiry date cannot be empty</string>
+    <string name="error_expiry_invalid">Invalid expiry date</string>
+    <string name="error_expiry_month_invalid">Month must be between 01 and 12</string>
+        <!-- CVV -->
+    <string name="error_cvv_empty">CVV cannot be empty</string>
+    <string name="error_cvv_invalid">CVV must be 3 or 4 digits</string>
+
+    <string name="toggle_card_details_show">Enter card details (optional)</string>
+    <string name="toggle_card_details_skip">Skip entering card details</string>
 
 
 

@@ -163,7 +163,7 @@ class AddTransactionViewModel(
             }
 
             AddTransactionAction.OnBackClick -> {
-                sendUiEventSafe(UiEvent.NavigateBack)
+                sendUiEventSafe(UiEvent.NavigateTo(Routes.Back))
             }
         }
     }

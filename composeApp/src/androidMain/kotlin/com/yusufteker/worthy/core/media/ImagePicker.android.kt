@@ -4,7 +4,9 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
@@ -18,10 +20,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.yalantis.ucrop.UCrop
+import com.yalantis.ucrop.UCropActivity
+import com.yusufteker.worthy.R
 import io.github.aakira.napier.Napier
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import androidx.core.graphics.toColorInt
+import com.yusufteker.worthy.core.presentation.UiText
+import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 actual fun rememberImagePicker(): ImagePicker {
@@ -166,6 +174,32 @@ class AndroidImagePicker(
         }
     }
 
+
+    val options = UCrop.Options().apply {
+        setToolbarTitle(context.getString(R.string.crop_toolbar_title))
+        setToolbarWidgetColor(Color.WHITE)
+        setToolbarColor(Color.BLACK)
+
+        setStatusBarColor(Color.BLACK)
+        setRootViewBackgroundColor(Color.BLACK)
+
+        setStatusBarColor(Color.BLACK)
+        setToolbarColor(Color.BLACK)
+
+        setShowCropFrame(true)
+        setShowCropGrid(true)
+
+        setToolbarCropDrawable(R.drawable.done)
+
+
+        setCompressionFormat(Bitmap.CompressFormat.JPEG)
+        setCompressionQuality(90)
+        setRootViewBackgroundColor(Color.BLACK)
+
+        setActiveControlsWidgetColor(Color.WHITE)
+        setDimmedLayerColor("#99000000".toColorInt())
+    }
+
     override fun cropImage(
         image: PlatformImage, aspectRatio: AspectRatio, onCropped: (PlatformImage?) -> Unit
     ) {
@@ -188,6 +222,7 @@ class AndroidImagePicker(
         val uCrop = UCrop.of(inputUri, outputUri)
             .withAspectRatio(aspectRatio.widthRatio, aspectRatio.heightRatio)
             .withMaxResultSize(1080, 1080)
+            .withOptions(options)
 
         // Ucrop başlıyor arka planda uCropActivity açılıyor
         // Sonuc cropLauncher'da yakalanıyor //cropLauncher tanımlandıgı yerde

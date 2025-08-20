@@ -162,8 +162,9 @@ fun InteractiveSearchBar(
                         onClick = {
                             if (query.isNotEmpty()) {
                                 onSearchQueryChange("")
-                                focusManager.clearFocus()
                             }
+                            focusManager.clearFocus()
+
                         }, modifier = Modifier.size(24.dp)
                     ) {
                         Icon(

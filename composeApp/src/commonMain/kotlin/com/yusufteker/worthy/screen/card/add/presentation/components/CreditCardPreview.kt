@@ -40,7 +40,6 @@ fun CreditCardPreview(
         )
 
         CardBrand.Mastercard -> Brush.linearGradient(listOf(Color(0xFF93291E), Color(0xFFED213A)))
-        CardBrand.Amex -> Brush.linearGradient(listOf(Color(0xFF13547A), Color(0xFF80D0C7)))
         CardBrand.Unknown -> Brush.linearGradient(listOf(Color(0xFF1F1C2C), Color(0xFF928DAB)))
         CardBrand.Troy -> TODO()
     }
@@ -59,9 +58,8 @@ fun CreditCardPreview(
                 text = when (brand) {
                     CardBrand.Visa -> "VISA"
                     CardBrand.Mastercard -> "MASTERCARD"
-                    CardBrand.Amex -> "AMEX"
                     CardBrand.Unknown -> "CARD"
-                    CardBrand.Troy -> TODO()
+                    CardBrand.Troy -> "TROY"
                 },
                 color = Color.White.copy(alpha = 0.9f),
                 fontSize = 18.sp,
@@ -70,7 +68,7 @@ fun CreditCardPreview(
 
             // Number
             Text(
-                text = cardNumberFormatted,
+                text = formatCardWithMask(cardNumberFormatted),
                 color = Color.White,
                 fontSize = 22.sp,
                 fontFamily = FontFamily.Monospace,
@@ -108,4 +106,15 @@ fun CreditCardPreview(
             }
         }
     }
+}
+
+fun formatCardWithMask(raw: String): String {
+    val digits = raw.filter { it.isDigit() }
+    val maxLength = 16
+
+    // doldurulmamış yerleri # ile tamamla
+    val masked = digits + "#".repeat(maxLength - digits.length)
+
+    // 4’lü gruplara ayır
+    return masked.chunked(4).joinToString(" ")
 }

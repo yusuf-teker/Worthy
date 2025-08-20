@@ -72,7 +72,10 @@ class WishlistViewModel(
                 navigateTo(Routes.WishlistAdd)
             }
 
-            is WishlistAction.OnItemClick -> TODO()
+            is WishlistAction.OnItemClick -> {
+                navigateTo(Routes.WishlistDetail(action.itemId))
+
+            }
             is WishlistAction.OnItemDelete -> {
                 viewModelScope.launch {
                     wishlistRepository.deleteById(action.itemId)

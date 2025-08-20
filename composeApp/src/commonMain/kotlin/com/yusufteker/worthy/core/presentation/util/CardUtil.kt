@@ -13,7 +13,6 @@ public fun detectCardBrand(digits: String): CardBrand {
     if (digits.isEmpty()) return CardBrand.Unknown
     return when {
         digits.startsWith("4") -> CardBrand.Visa
-        digits.startsWith("34") || digits.startsWith("37") -> CardBrand.Amex
         // Mastercard BIN aralığı (51–55) veya 2221–2720
         digits.take(2).toIntOrNull() in 51..55 ||
                 digits.take(4).toIntOrNull() in 2221..2720 -> CardBrand.Mastercard
@@ -42,7 +41,13 @@ public fun detectCardBrand(digits: String): CardBrand {
         val mapping = object : OffsetMapping {
             // raw -> formatted
             override fun originalToTransformed(offset: Int): Int {
-                val groupsBefore = (offset / 4)
+                val groupsBefore = (offset / 4) //imleci bosluk kadar sağa kaydır
+                // formatted formatlı boşluklı string 1234 56
+                // offset raw stringin uzunlugu "123456".length -> 5
+                // groupsBefore -> 5/4 -> 1
+                // imlec formatlı stringin 6.karakterin sağında olacak 6|
+                // formatlı stringin uzunlugundan daha fazlal olamaz cunku zaten formatlı stringin sonuna gelecek
+                // 1234 durumunda offset 4 group 1 oldugu icin min aldık yoksa 5 oluyor
                 return min(formatted.length, offset + groupsBefore)
             }
             // formatted -> raw
@@ -83,4 +88,25 @@ public fun detectCardBrand(digits: String): CardBrand {
 object KeyboardOptionsDefaults {
     val Number = KeyboardOptions.Default.copy(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number)
     val NumberPassword = KeyboardOptions.Default.copy(keyboardType = androidx.compose.ui.text.input.KeyboardType.NumberPassword)
+}
+
+object CardValidator {
+
+    fun isFormValid(
+        showCardDetailInputs: Boolean,
+        holder: String,
+        number: String,
+        expiry: String,
+        cvv: String,
+        nickname: String
+    ): Boolean {
+        return if (showCardDetailInputs) {
+            holder.isNotBlank() &&
+                    number.length == 16 &&
+                    expiry.length == 4 &&
+                    cvv.length in 3..4
+        } else {
+            nickname.isNotBlank()
+        }
+    }
 }

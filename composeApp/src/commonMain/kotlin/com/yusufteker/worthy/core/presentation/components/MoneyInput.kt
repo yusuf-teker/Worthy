@@ -73,7 +73,7 @@ fun MoneyInput(
             },
             singleLine = true
         )
-
+/*
         // Hata mesajı
         if (isError && errorMessage != null) {
             Text(
@@ -82,7 +82,8 @@ fun MoneyInput(
                 style = AppTypography.bodySmall,
                 modifier = Modifier.padding(start = 16.dp, top = 4.dp)
             )
-        }
+        }*/
+        ErrorText(errorMessage?.asString())
     }
 
 }

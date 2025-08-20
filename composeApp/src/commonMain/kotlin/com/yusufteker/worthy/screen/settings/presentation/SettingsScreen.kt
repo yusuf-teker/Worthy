@@ -26,10 +26,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.yusufteker.worthy.app.navigation.NavigationHandler
+import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
 import com.yusufteker.worthy.core.presentation.components.CurrencyPicker
+import com.yusufteker.worthy.core.presentation.components.MenuRow
 import com.yusufteker.worthy.core.presentation.components.NumberPickerInput
 import com.yusufteker.worthy.core.presentation.components.PieChart
 import com.yusufteker.worthy.core.presentation.theme.AppColors
@@ -39,8 +42,10 @@ import com.yusufteker.worthy.core.presentation.toFormattedWithThousandsSeparator
 import com.yusufteker.worthy.screen.settings.presentation.components.BudgetSlider
 import com.yusufteker.worthy.screen.settings.presentation.components.FinancialWidget
 import com.yusufteker.worthy.screen.settings.presentation.components.RecurringFinancialItemDialog
+import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import worthy.composeapp.generated.resources.Res
+import worthy.composeapp.generated.resources.card
 import worthy.composeapp.generated.resources.hour_singular
 import worthy.composeapp.generated.resources.hours_plural
 import worthy.composeapp.generated.resources.label_budget
@@ -48,29 +53,30 @@ import worthy.composeapp.generated.resources.label_fixed_expenses
 import worthy.composeapp.generated.resources.label_income_sources
 import worthy.composeapp.generated.resources.label_savings
 import worthy.composeapp.generated.resources.label_weekly_work_hours
+import worthy.composeapp.generated.resources.my_cards
 import worthy.composeapp.generated.resources.screen_title_settings
 
 @Composable
 fun SettingsScreenRoot(
     viewModel: SettingsViewModel = koinViewModel(),
     contentPadding: PaddingValues = PaddingValues(),
+    onNavigateTo: (Routes) -> Unit = {}
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-
+    NavigationHandler(viewModel) { route, _ ->
+        onNavigateTo(route)
+    }
     BaseContentWrapper(
         state = state
     ) {
         SettingsScreen(
-            state = state,
-            onAction = { action ->
+            state = state, onAction = { action ->
                 when (action) {
-
                     else -> Unit
                 }
                 viewModel.onAction(action)
-            },
-            contentPadding = contentPadding
+            }, contentPadding = contentPadding
         )
     }
 
@@ -89,9 +95,7 @@ fun SettingsScreen(
     var showFixedExpenseDialog by remember { mutableStateOf(false) }
 
     Column(
-        Modifier
-            .fillMaxSize()
-            .padding(contentPadding),
+        Modifier.fillMaxSize().padding(contentPadding),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         AppTopBar(
@@ -108,19 +112,11 @@ fun SettingsScreen(
             // PIE CHART
             PieChart(
                 values = listOf(
-                    state.totalFixedExpenses,
-                    state.budgetAmount.amount,
-                    state.savingsAmount
-                ),
-                colors = listOf(
-                    AppColors.fixedExpenseGray,
-                    AppColors.budgetBlue,
-                    AppColors.savingsGreen
-                ),
-                modifier = Modifier
-                    .size(120.dp)
+                    state.totalFixedExpenses, state.budgetAmount.amount, state.savingsAmount
+                ), colors = listOf(
+                    AppColors.fixedExpenseGray, AppColors.budgetBlue, AppColors.savingsGreen
+                ), modifier = Modifier.size(120.dp)
             )
-
 
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
 
@@ -220,10 +216,18 @@ fun SettingsScreen(
             )
         }
 
+        MenuRow(
+            iconPainter = painterResource(Res.drawable.card),
+            text = UiText.StringResourceId(Res.string.my_cards).asString(),
+            onClick = { onAction(SettingsAction.OnMyCardsClick) }
+        )
+
+
     }
 
-    // INCOME DIALOG
 
+
+    // INCOME DIALOG
     if (showIncomeDialog) {
 
         RecurringFinancialItemDialog(
@@ -255,7 +259,6 @@ fun SettingsScreen(
     }
 
     // FIXED EXPENSES DIALOG
-
     if (showFixedExpenseDialog) {
         RecurringFinancialItemDialog(
 
@@ -286,9 +289,7 @@ fun SettingsScreen(
 private fun ReadOnlyRow(label: String, amount: Double, color: Color, currencySymbol: String = "₺") {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Box(
-            Modifier
-                .size(16.dp)
-                .background(color, CircleShape)
+            Modifier.size(16.dp).background(color, CircleShape)
         )
         Spacer(Modifier.width(8.dp))
         Text(

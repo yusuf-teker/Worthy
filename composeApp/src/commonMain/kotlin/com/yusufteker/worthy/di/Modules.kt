@@ -28,6 +28,7 @@ import com.yusufteker.worthy.screen.addtransaction.presentation.AddTransactionVi
 import com.yusufteker.worthy.screen.card.add.data.CardRepositoryImpl
 import com.yusufteker.worthy.screen.card.add.domain.CardRepository
 import com.yusufteker.worthy.screen.card.add.presentation.AddCardViewModel
+import com.yusufteker.worthy.screen.card.list.presentation.CardListViewModel
 import com.yusufteker.worthy.screen.dashboard.domain.DashboardRepository
 import com.yusufteker.worthy.screen.dashboard.presentation.DashboardViewModel
 import com.yusufteker.worthy.screen.onboarding.domain.OnboardingManager
@@ -36,6 +37,7 @@ import com.yusufteker.worthy.screen.onboarding.presentation.OnboardingViewModel
 import com.yusufteker.worthy.screen.settings.domain.UserPrefsManager
 import com.yusufteker.worthy.screen.settings.presentation.SettingsViewModel
 import com.yusufteker.worthy.screen.wishlist.add.presentation.WishlistAddViewModel
+import com.yusufteker.worthy.screen.wishlist.detail.presentation.WishlistDetailViewModel
 import com.yusufteker.worthy.screen.wishlist.list.data.database.repository.WishlistRepositoryImpl
 import com.yusufteker.worthy.screen.wishlist.list.presentation.WishlistViewModel
 import org.koin.core.module.Module
@@ -92,4 +94,6 @@ val sharedModule = module {
     viewModel { WishlistAddViewModel(get(),get(),get()) }
     viewModel { AddTransactionViewModel(get()) }
     viewModel { AddCardViewModel(get()) }
+    viewModel { CardListViewModel() }
+    viewModel { WishlistDetailViewModel() }
 }

@@ -1,56 +1,64 @@
 package com.yusufteker.worthy.app.navigation
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 @Serializable
-sealed class Routes {
+sealed class Routes(
+    @Transient val screenName: String = ""
+) {
 
     @Serializable
-    data object OnboardingGraph : Routes()
+    data object OnboardingGraph : Routes("OnboardingGraph")
 
     @Serializable
-    data object Onboarding : Routes()
+    data object Onboarding : Routes("Onboarding")
 
     @Serializable
-    data object MainGraph : Routes()
+    data object MainGraph : Routes("MainGraph")
 
     @Serializable
-    data object Dashboard : Routes()
+    data object Dashboard : Routes("Dashboard")
+
+    @Serializable
+    data object WishlistGraph : Routes("WishlistGraph")
+
+    @Serializable
+    data object Wishlist : Routes("Wishlist")
+
+    @Serializable
+    data object WishlistAdd : Routes("WishlistAdd")
+
+    @Serializable
+    data class WishlistDetail(val id: Int) : Routes("WishlistDetail")
+
+    @Serializable
+    data object Wallet : Routes("Wallet")
+
+    @Serializable
+    data class AddTransaction(val isIncome: Boolean = false) : Routes("AddTransaction")
+
+    @Serializable
+    data object AddCard : Routes("AddCard")
+
+    @Serializable
+    data object CardList : Routes("CardList")
+
+    @Serializable
+    data object CardGraph : Routes("CardGraph")
 
 
     @Serializable
-    data object WishlistGraph : Routes()
+    data object Trends : Routes("Trends")
 
     @Serializable
-    data object Wishlist : Routes()
+    data object Settings : Routes("Settings")
 
     @Serializable
-    data object WishlistAdd : Routes()
+    data object Back : Routes("Back")
 
-    @Serializable
-    data class WishlistDetail(val id: Int) : Routes()
+}
 
-    @Serializable
-    data object Wallet : Routes()
-
-    @Serializable
-    data class AddTransaction(val isIncome: Boolean) : Routes() {
-        override fun toString() = NAME
-
-        companion object {
-            const val NAME = "AddTransaction"
-        }
-    }
-
-
-    @Serializable
-    data object AddCard : Routes()
-
-    @Serializable
-    data object Trends : Routes()
-
-    @Serializable
-    data object Settings : Routes()
-
-
+fun Routes.isAddTransaction(): Boolean {
+    return this.toString().substringBefore("(") == Routes.AddTransaction().screenName
 }
