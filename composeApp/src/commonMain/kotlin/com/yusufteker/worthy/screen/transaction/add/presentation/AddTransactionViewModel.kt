@@ -1,13 +1,46 @@
 package com.yusufteker.worthy.screen.addtransaction.presentation
 
+import androidx.lifecycle.viewModelScope
 import com.yusufteker.worthy.app.navigation.Routes
+import com.yusufteker.worthy.core.domain.repository.CategoryRepository
 import com.yusufteker.worthy.core.domain.repository.TransactionRepository
 import com.yusufteker.worthy.core.presentation.UiEvent
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
+import com.yusufteker.worthy.screen.card.add.domain.CardRepository
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.update
 
 class AddTransactionViewModel(
     private val transactionRepository: TransactionRepository,
 ) : BaseViewModel<AddTransactionState>(AddTransactionState()) {
+
+
+    init {
+        observeData()
+    }
+
+    fun observeData() {
+        launchWithLoading {
+            combine(
+                transactionRepository.getExpenseCategories(),
+                transactionRepository.getIncomeCategories(),
+                transactionRepository.getCards()
+            ) { expenseCategories, incomeCategories, cards ->
+                _state.value = _state.value.copy(
+                    expenseForm = _state.value.expenseForm.copy(
+                        categories = expenseCategories,
+                        cards = cards
+                    ),
+                    incomeForm = _state.value.incomeForm.copy(
+                        categories = incomeCategories
+                    )
+                )
+            }.launchIn(viewModelScope)
+
+        }
+    }
+
 
     fun onAction(action: AddTransactionAction) {
         when (action) {
@@ -75,7 +108,9 @@ class AddTransactionViewModel(
 
                     }
 
-                    is TransactionFormAction.SaveClicked -> {}
+                    is TransactionFormAction.SaveClicked -> {
+
+                    }
                     is TransactionFormAction.AddNewCardClicked -> {
                         sendUiEventSafe(UiEvent.NavigateTo(Routes.AddCard))
                     }

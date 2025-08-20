@@ -49,7 +49,10 @@ sealed class Routes(
 
 
     @Serializable
-    data object Trends : Routes("Trends")
+    data object AnalyticsGraph : Routes("AnalyticsGraph")
+
+    @Serializable
+    data object Analytics : Routes("Analytics")
 
     @Serializable
     data object Settings : Routes("Settings")

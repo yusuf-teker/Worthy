@@ -3,20 +3,39 @@ package com.yusufteker.worthy.core.data.database.repository
 import com.yusufteker.worthy.core.data.database.mappers.toDomain
 import com.yusufteker.worthy.core.data.database.mappers.toEntity
 import com.yusufteker.worthy.core.data.database.model.TransactionDao
+import com.yusufteker.worthy.core.domain.model.Card
+import com.yusufteker.worthy.core.domain.model.Category
+import com.yusufteker.worthy.core.domain.model.CategoryType
 import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.TransactionType
+import com.yusufteker.worthy.core.domain.repository.CategoryRepository
 import com.yusufteker.worthy.core.domain.repository.TransactionRepository
 import com.yusufteker.worthy.core.domain.toEpochMillis
+import com.yusufteker.worthy.screen.card.add.domain.CardRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDate
 
 class TransactionRepositoryImpl(
-    private val transactionDao: TransactionDao
+    private val transactionDao: TransactionDao,
+    private val cardRepository: CardRepository,
+    private val categoryRepository: CategoryRepository
 ) : TransactionRepository {
 
     override fun getAll(): Flow<List<Transaction>> {
         return transactionDao.getAll().map { list -> list.map { it.toDomain() } }
+    }
+
+    override fun getExpenseCategories(): Flow<List<Category>> {
+        return categoryRepository.getByType(CategoryType.EXPENSE)
+    }
+
+    override fun getIncomeCategories(): Flow<List<Category>> {
+        return categoryRepository.getByType(CategoryType.INCOME)
+    }
+
+    override fun getCards(): Flow<List<Card>> {
+        return cardRepository.getCards()
     }
 
     override fun getByCategory(categoryId: Int): Flow<List<Transaction>> {

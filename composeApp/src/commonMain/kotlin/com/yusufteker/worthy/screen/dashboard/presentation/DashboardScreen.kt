@@ -138,7 +138,7 @@ fun DashboardScreen(
             AppButton(
                 text = UiText.StringResourceId(Res.string.dashboard_evaluate_purchase).asString(),
                 onClick = { onAction(DashboardAction.EvaluateButtonClicked) },
-                textModifier = Modifier.widthIn(max = 80.dp)
+                textModifier = Modifier.widthIn(max = 85.dp)
             )
         }
         Spacer(Modifier.height(Spacing16))

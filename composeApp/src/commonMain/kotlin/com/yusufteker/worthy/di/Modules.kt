@@ -76,7 +76,7 @@ val sharedModule = module {
     single<CurrencyRatesRepository> { CurrencyRatesRepositoryImpl(get(), get()) }
     single<CurrencyConverter> { DefaultCurrencyConverter(get()) }
     single<OnboardingRepository> { OnboardingRepositoryImpl(get(), get(), get()) }
-    single<TransactionRepository> { TransactionRepositoryImpl(get()) }
+    single<TransactionRepository> { TransactionRepositoryImpl(get(),get(),get()) }
     single<WishlistRepository> { WishlistRepositoryImpl(get(),get()) }
     single<CategoryRepository> { CategoryRepositoryImpl(get()) }
     single<RecurringFinancialItemRepository> { RecurringFinancialItemRepositoryImpl(get()) }
@@ -94,6 +94,6 @@ val sharedModule = module {
     viewModel { WishlistAddViewModel(get(),get(),get()) }
     viewModel { AddTransactionViewModel(get()) }
     viewModel { AddCardViewModel(get()) }
-    viewModel { CardListViewModel() }
+    viewModel { CardListViewModel(get()) }
     viewModel { WishlistDetailViewModel() }
 }

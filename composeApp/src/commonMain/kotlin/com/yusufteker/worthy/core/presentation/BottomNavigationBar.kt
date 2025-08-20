@@ -51,9 +51,9 @@ fun BottomNavigationBar(
             route = Routes.Dashboard
         ),
         BottomNavItem(
-            "Details",
+            "AnalyticsGraph",
             painter = painterResource(Res.drawable.bottom_icon_graph),
-            route = Routes.Trends
+            route = Routes.AnalyticsGraph
         ),
         BottomNavItem(
             "AddTransaction",

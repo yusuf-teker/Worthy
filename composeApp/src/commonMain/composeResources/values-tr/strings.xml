@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
 
-    <string name= "search_hint">Search here </string>
-    <string name= "clear_search">Clear Search</string>
-    <string name= "search_results">Search Results</string>
-    <string name= "no_result">No Result</string>
+    <string name="search_hint">Ara</string>
+    <string name="clear_search">Aramayı temizle</string>
+    <string name="search_results">Arama Sonuçları</string>
+    <string name="no_result">Sonuç yok</string>
 
-    <string name= "error_occured">An error occurred</string>
+    <string name="error_occured">Bir hata oluştu</string>
     <!-- Local Errors -->
     <string name="error_disk_full">Disk dolu. Lütfen boş alan açın.</string>
     <string name="error_local_unknown">Bilinmeyen bir hata oluştu.</string>
@@ -283,6 +283,7 @@
 
     <!-- ADD CARD -->
     <string name="screen_title_add_new_card">Kart Ekle</string>
+    <string name="screen_title_my_cards">Kartlarım</string>
     <string name="my_cards">Kartlarım</string>
     <string name="expiry_label">Geçerlilik Tarihi: </string>
     <string name="year">Yıl</string>
@@ -310,6 +311,6 @@
     <string name="error_cvv_invalid">CVV 3 veya 4 haneli olmalıdır</string>
 
     <string name="toggle_card_details_show">Kart detaylarını gir (isteğe bağlı)</string>
-    <string name="toggle_card_details_skip">Kart detaylarını girmeme</string>
-
+    <string name="toggle_card_details_skip">Kart detaylarını olmadan devam et</string>
+    <string name="statement_day">Ödeme Günü</string>
 </resources>

@@ -34,6 +34,7 @@ import com.yusufteker.worthy.core.presentation.BottomNavigationBar
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppDimens.ScreenPadding
 import com.yusufteker.worthy.screen.addtransaction.presentation.AddTransactionScreenRoot
+import com.yusufteker.worthy.screen.analytics.presentation.AnalyticsScreenRoot
 import com.yusufteker.worthy.screen.card.add.presentation.AddCardScreenRoot
 import com.yusufteker.worthy.screen.card.list.presentation.CardListScreenRoot
 import com.yusufteker.worthy.screen.dashboard.presentation.DashboardScreenRoot
@@ -63,7 +64,7 @@ fun AppNavHost(
     val showBottomBar = currentRoute in listOf(
         Routes.Dashboard.toString(),
         Routes.Wishlist.toString(),
-        Routes.Trends.toString(),
+        Routes.Analytics.toString(),
         Routes.Settings.toString(),
         Routes.AddTransaction.toString(),
     )
@@ -152,6 +153,20 @@ fun AppNavHost(
                             })
                     }
 
+                    navigation<Routes.AnalyticsGraph>(
+                        startDestination = Routes.Analytics
+                    ) {
+
+                        composable<Routes.Analytics> {
+                            AnalyticsScreenRoot(
+                                contentPadding = innerPadding,
+                                onNavigateTo = { route ->
+                                    navController.navigateTo(route)
+                                }
+                            )
+                        }
+                    }
+
                     navigation<Routes.WishlistGraph>(
                         startDestination = Routes.Wishlist
                     ) {
@@ -195,6 +210,9 @@ fun AppNavHost(
                         composable<Routes.CardList> {
                             CardListScreenRoot(
                                 contentPadding = innerPadding,
+                                onNavigateTo = { route ->
+                                    navController.navigateTo(route)
+                                }
                             )
                         }
                     }

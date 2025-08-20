@@ -1,5 +1,7 @@
 package com.yusufteker.worthy.core.domain.repository
 
+import com.yusufteker.worthy.core.domain.model.Card
+import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.TransactionType
 import kotlinx.coroutines.flow.Flow
@@ -8,6 +10,12 @@ import kotlinx.datetime.LocalDate
 interface TransactionRepository {
 
     fun getAll(): Flow<List<Transaction>>
+
+    fun getExpenseCategories(): Flow<List<Category>>
+
+    fun getIncomeCategories(): Flow<List<Category>>
+
+    fun getCards(): Flow<List<Card>>
 
     fun getByCategory(categoryId: Int): Flow<List<Transaction>>
 

@@ -14,6 +14,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -23,6 +27,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yusufteker.worthy.core.domain.model.CardBrand
+import com.yusufteker.worthy.core.presentation.components.ResponsiveText
+import com.yusufteker.worthy.core.presentation.theme.AppTypography
 
 @Composable
 fun CreditCardPreview(
@@ -67,12 +73,26 @@ fun CreditCardPreview(
             )
 
             // Number
-            Text(
+            /*Text(
                 text = formatCardWithMask(cardNumberFormatted),
                 color = Color.White,
                 fontSize = 22.sp,
                 fontFamily = FontFamily.Monospace,
                 modifier = Modifier.align(Alignment.CenterStart)
+            )*/
+
+            var fontSize by remember { mutableStateOf(22.sp) }
+
+            ResponsiveText(
+                modifier = Modifier.align(Alignment.CenterStart),
+                text = formatCardWithMask(cardNumberFormatted),
+                color = Color.White,
+                textStyle = AppTypography.titleLarge.copy(
+                    fontSize = fontSize,
+                    fontFamily = FontFamily.Monospace,
+                ), onTextSizeChanged = {
+                    fontSize = it
+                }
             )
 
             // Holder + Expiry

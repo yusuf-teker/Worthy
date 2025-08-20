@@ -8,16 +8,16 @@
 
     <string name= "error_occured">An error occurred</string>
     <!-- Local Errors -->
-    <string name="error_disk_full">Disk dolu. Lütfen boş alan açın.</string>
-    <string name="error_local_unknown">Bilinmeyen bir hata oluştu.</string>
+    <string name="error_disk_full">Disk is full. Please free up some space.</string>
+    <string name="error_local_unknown">An unknown error occurred.</string>
 
     <!-- Remote Errors -->
-    <string name="error_request_timeout">İstek zaman aşımına uğradı. Lütfen tekrar deneyin.</string>
-    <string name="error_too_many_requests">Çok fazla istek gönderildi. Lütfen daha sonra tekrar deneyin.</string>
-    <string name="error_no_internet">İnternet bağlantısı yok. Lütfen bağlantınızı kontrol edin.</string>
-    <string name="error_server">Sunucu hatası. Lütfen daha sonra tekrar deneyin.</string>
-    <string name="error_serialization">Veri dönüştürme hatası. Lütfen tekrar deneyin.</string>
-    <string name="error_remote_unknown">Bilinmeyen bir hata oluştu.</string>
+    <string name="error_request_timeout">Request timed out. Please try again.</string>
+    <string name="error_too_many_requests">Too many requests. Please try again later.</string>
+    <string name="error_no_internet">No internet connection. Please check your connection.</string>
+    <string name="error_server">Server error. Please try again later.</string>
+    <string name="error_serialization">Data conversion error. Please try again.</string>
+    <string name="error_remote_unknown">An unknown error occurred.</string>
 
     <string name="no_popup_manager">No PopupManager provided</string>
 
@@ -293,6 +293,7 @@
 
     <!-- ADD CARD -->
     <string name="screen_title_add_new_card">Add Card</string>
+    <string name="screen_title_my_cards">My Cards</string>
     <string name="my_cards">My Cards</string>
     <string name="expiry_label">Expiry Date: </string>
     <string name="year">Year</string>
@@ -321,6 +322,7 @@
 
     <string name="toggle_card_details_show">Enter card details (optional)</string>
     <string name="toggle_card_details_skip">Skip entering card details</string>
+    <string name="statement_day">Statement Day</string>
 
 
 

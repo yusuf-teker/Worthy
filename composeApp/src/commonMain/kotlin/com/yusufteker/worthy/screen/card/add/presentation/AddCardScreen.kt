@@ -68,6 +68,7 @@ import worthy.composeapp.generated.resources.expiry_month_error
 import worthy.composeapp.generated.resources.expiry_placeholder
 import worthy.composeapp.generated.resources.save_card
 import worthy.composeapp.generated.resources.screen_title_add_new_card
+import worthy.composeapp.generated.resources.statement_day
 import worthy.composeapp.generated.resources.toggle_card_details_show
 import worthy.composeapp.generated.resources.toggle_card_details_skip
 
@@ -341,7 +342,8 @@ fun AddCardScreen(
 
                     DayOfMonthSelector(
                         selectedDay = statementDay,
-                        onDayChange = { statementDay = it }
+                        onDayChange = { statementDay = it },
+                        label = UiText.StringResourceId(Res.string.statement_day)
                     )
                 }
             }

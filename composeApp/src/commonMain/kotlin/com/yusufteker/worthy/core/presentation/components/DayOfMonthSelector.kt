@@ -23,7 +23,8 @@ import worthy.composeapp.generated.resources.last_day
 
 @Composable
 fun DayOfMonthSelector(
-    selectedDay: Int?, onDayChange: (Int?) -> Unit
+    selectedDay: Int?, onDayChange: (Int?) -> Unit,
+    label: UiText = UiText.StringResourceId(Res.string.day_of_month)
 ) {
     var text by remember { mutableStateOf(selectedDay?.toString() ?: "") }
     var isLastDay by remember { mutableStateOf(selectedDay == null) }
@@ -48,9 +49,10 @@ fun DayOfMonthSelector(
                 }
             },
             label = {
+                val text = if (isLastDay) UiText.StringResourceId( Res.string.last_day) else label
+
                 Text(
-                    UiText.StringResourceId(if (isLastDay) Res.string.last_day else Res.string.day_input_hint)
-                        .asString()
+                       text.asString()
                 )
             },
             placeholder = {
