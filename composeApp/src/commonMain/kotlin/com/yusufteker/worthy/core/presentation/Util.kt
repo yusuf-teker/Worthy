@@ -1,6 +1,7 @@
 package com.yusufteker.worthy.core.presentation
 
 import androidx.compose.runtime.Composable
+import com.yusufteker.worthy.core.domain.model.AppDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
@@ -33,6 +34,12 @@ fun Float.formatTwoDecimals(): String {
 }
 
 fun Double.formatTwoDecimals(): String {
+    val intPart = this.toInt()
+    val decimalPart = ((this - intPart) * 100).toInt().absoluteValue
+    return "$intPart.${decimalPart.toString().padStart(2, '0')}"
+}
+
+fun Int.formatTwoDecimals(): String {
     val intPart = this.toInt()
     val decimalPart = ((this - intPart) * 100).toInt().absoluteValue
     return "$intPart.${decimalPart.toString().padStart(2, '0')}"
@@ -124,4 +131,16 @@ fun formatPercentageChange(value: Double): String {
         value < 0 -> "- %$rounded"
         else -> "%0"
     }
+}
+
+
+@OptIn(ExperimentalTime::class)
+fun Long.toAppDate(): AppDate {
+    val localDateTime = Instant.fromEpochMilliseconds(this)
+        .toLocalDateTime(TimeZone.currentSystemDefault())
+    return AppDate(
+        year = localDateTime.year,
+        month = localDateTime.month.number,
+        day = localDateTime.day
+    )
 }

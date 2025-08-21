@@ -13,6 +13,7 @@ import com.yusufteker.worthy.core.presentation.UiEvent
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistRepository
 import io.github.aakira.napier.Napier
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -123,7 +124,6 @@ class WishlistAddViewModel(
 
     fun saveWishlistItem() {
         launchWithLoading {
-            Napier.d(_state.value.isLoading.toString())
             val wishlistItem = _state.value.wishlistItem.copy(
 
                 imageUri = state.value.imageBitmap?.toByteArray()?.let { byteArray ->
@@ -131,6 +131,7 @@ class WishlistAddViewModel(
                 }
             )
             wishlistRepository.insert(wishlistItem)
+            delay(3000)
             navigateBack()
 
         }

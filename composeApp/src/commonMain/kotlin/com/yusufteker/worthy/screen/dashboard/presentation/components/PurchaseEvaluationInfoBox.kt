@@ -17,6 +17,8 @@ import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.formatTwoDecimals
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
+import com.yusufteker.worthy.core.presentation.util.formatMoneyText
+import com.yusufteker.worthy.core.presentation.util.formatPercentSuffix
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.evaluation_desire_budget_percent
@@ -54,42 +56,56 @@ fun PurchaseEvaluationInfoBox(
         Text(
             text = UiText.StringResourceId(
                 Res.string.evaluation_income_percent,
-                arrayOf(incomePercent.formatTwoDecimals())
+                arrayOf(formatPercentSuffix(incomePercent.formatTwoDecimals()))
             ).asString(),
             style = AppTypography.bodyLarge,
             color = AppColors.onSurface
         )
-        Text(
-            text = UiText.StringResourceId(
-                Res.string.evaluation_expense_income_percent,
-                arrayOf(incomeMinusExpensePercent.formatTwoDecimals())
-            ).asString(),
-            style = AppTypography.bodyLarge,
-            color = AppColors.onSurface
-        )
-        Text(
-            text = UiText.StringResourceId(
-                Res.string.evaluation_desire_budget_percent,
-                arrayOf(desireBudgetPercent.formatTwoDecimals())
-            ).asString(),
-            style = AppTypography.bodyLarge,
-            color = AppColors.onSurface
-        )
-        Text(
-            text = UiText.StringResourceId(
-                Res.string.evaluation_work_hours,
-                arrayOf(workHoursRequired.formatTwoDecimals())
-            ).asString(),
-            style = AppTypography.bodyLarge,
-            color = AppColors.onSurface
-        )
+        if (incomeMinusExpensePercent > 0){
+            Text(
+                text = UiText.StringResourceId(
+                    Res.string.evaluation_expense_income_percent,
+                    arrayOf( incomeMinusExpensePercent.formatTwoDecimals())
+                ).asString(),
+                style = AppTypography.bodyLarge,
+                color = AppColors.onSurface
+            )
+        }
+
+        if (desireBudgetPercent > 0){ //todo
+            Text(
+                text = UiText.StringResourceId(
+                    Res.string.evaluation_desire_budget_percent,
+                    arrayOf(desireBudgetPercent.formatTwoDecimals())
+                ).asString(),
+                style = AppTypography.bodyLarge,
+                color = AppColors.onSurface
+            )
+        }
+
+       if (workHoursRequired == -1f){ // Çalışma saati 0 todo
+
+       }else if (workHoursRequired == -2f){ // Geliri 0 todo
+
+       }
+       else if (workHoursRequired > 0){
+            Text(
+                text = UiText.StringResourceId(
+                    Res.string.evaluation_work_hours,
+                    arrayOf(workHoursRequired.formatTwoDecimals())
+                ).asString(),
+                style = AppTypography.bodyLarge,
+                color = AppColors.onSurface
+            )
+        }
+
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
             text = UiText.StringResourceId(
                 Res.string.purchase_note_remaining,
-                arrayOf(remainingDesireBudget, currencySymbol)
+                arrayOf(remainingDesireBudget.formatTwoDecimals(), currencySymbol)
             ).asString(),
             style = AppTypography.bodyLarge,
             color = AppColors.secondary

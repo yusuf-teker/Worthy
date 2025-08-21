@@ -199,6 +199,14 @@ class IOSImagePicker : ImagePicker {
 
         return topViewController
     }
+
+    override fun cancelPendingCallbacks() {
+        handleGalleryCancel()
+        handleCameraCancel()
+
+        //cropCallback = null
+        //permissionCallback = null
+    }
 }
 
 // Delegates
@@ -238,7 +246,7 @@ class CameraPickerDelegate(
         picker: UIImagePickerController,
         didFinishPickingMediaWithInfo: Map<Any?, *>
     ) {
-        NSOperationQueue.mainQueue.addOperationWithBlock {
+       // NSOperationQueue.mainQueue.addOperationWithBlock {
             val image = didFinishPickingMediaWithInfo[UIImagePickerControllerOriginalImage] as? UIImage
             if (image == null) {
                 picker.dismissViewControllerAnimated(true) {
@@ -249,7 +257,7 @@ class CameraPickerDelegate(
                     imagePicker.handleCameraImage(image)
                 }
             }
-        }
+      //  }
     }
 
     override fun imagePickerControllerDidCancel(picker: UIImagePickerController) {

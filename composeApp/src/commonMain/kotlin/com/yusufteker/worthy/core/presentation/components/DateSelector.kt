@@ -12,13 +12,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.yusufteker.worthy.core.presentation.UiText
 import worthy.composeapp.generated.resources.Res
-import worthy.composeapp.generated.resources.expiry_label
 import worthy.composeapp.generated.resources.month
+import worthy.composeapp.generated.resources.start_date
 import worthy.composeapp.generated.resources.year
 
 @Composable
 fun DateSelector(
-    title: String = UiText.StringResourceId(Res.string.expiry_label).asString(),
+    title: String = UiText.StringResourceId(Res.string.start_date).asString(),
     month: Int?,
     onMonthChanged: (Int) -> Unit,
     year: Int?,

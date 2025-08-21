@@ -40,6 +40,9 @@ interface TransactionDao {
     @Delete
     suspend fun delete(transaction: TransactionEntity)
 
+    @Query("DELETE FROM transactions WHERE id = :transactionId")
+    suspend fun deleteById(transactionId: Int)
+
     @Delete
     suspend fun deleteAll(items: List<TransactionEntity>)
 

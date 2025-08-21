@@ -34,7 +34,7 @@ class CardListViewModel (
     fun observeCardList(){
         launchWithLoading {
 
-            cardRepository.getCards().onEach { cards ->
+            cardRepository.getAll().onEach { cards ->
                 _state.update { currentState ->
                     currentState.copy(
                         cards = cards

@@ -46,6 +46,8 @@ interface ImagePicker {
         onCropped: (PlatformImage?) -> Unit
     )
 
+    fun cancelPendingCallbacks()
+
 }
 
 enum class AspectRatio(val widthRatio: Float, val heightRatio: Float) {

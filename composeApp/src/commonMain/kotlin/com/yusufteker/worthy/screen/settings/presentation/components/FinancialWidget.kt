@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
 import com.yusufteker.worthy.core.presentation.toFormattedWithThousandsSeparator
+import com.yusufteker.worthy.core.presentation.util.formatMoneyText
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.amount_with_currency
 
@@ -58,7 +59,7 @@ fun FinancialWidget(
                 Text(
                     text = UiText.StringResourceId(
                         id = Res.string.amount_with_currency,
-                        arrayOf(totalAmount.toFormattedWithThousandsSeparator(), currencySymbol)
+                        arrayOf(totalAmount.formatMoneyText(), currencySymbol)
                     ).asString(),
                     style = AppTypography.bodyMedium,
                     color = color,

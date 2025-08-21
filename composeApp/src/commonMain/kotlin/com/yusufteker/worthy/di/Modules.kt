@@ -25,6 +25,9 @@ import com.yusufteker.worthy.core.presentation.base.BaseState
 import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistRepository
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import com.yusufteker.worthy.screen.addtransaction.presentation.AddTransactionViewModel
+import com.yusufteker.worthy.screen.analytics.data.AnalyticsRepositoryImpl
+import com.yusufteker.worthy.screen.analytics.domain.AnalyticsRepository
+import com.yusufteker.worthy.screen.analytics.presentation.AnalyticsViewModel
 import com.yusufteker.worthy.screen.card.add.data.CardRepositoryImpl
 import com.yusufteker.worthy.screen.card.add.domain.CardRepository
 import com.yusufteker.worthy.screen.card.add.presentation.AddCardViewModel
@@ -84,7 +87,7 @@ val sharedModule = module {
     single<CurrencyRatesCacheDataSource> { CurrencyRatesCacheDataSourceImpl() }
     single<CurrencyRatesRemoteDataSource> { CurrencyRatesRemoteDataSourceImpl() }
     single<CardRepository> { CardRepositoryImpl(get()) }
-
+    single<AnalyticsRepository> { AnalyticsRepositoryImpl(get(), get(), get()) }
 
 
     viewModel { OnboardingViewModel(get()) }
@@ -96,4 +99,5 @@ val sharedModule = module {
     viewModel { AddCardViewModel(get()) }
     viewModel { CardListViewModel(get()) }
     viewModel { WishlistDetailViewModel() }
+    viewModel { AnalyticsViewModel(get()) }
 }

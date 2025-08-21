@@ -176,6 +176,7 @@ fun WishlistAddScreen(
         AppButton(
             text = UiText.StringResourceId(Res.string.wishlist_button_save).asString(),
             onClick = { onAction(WishlistAddAction.OnSaveClicked) },
+            loading = state.isLoading,
             modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
         )
     }

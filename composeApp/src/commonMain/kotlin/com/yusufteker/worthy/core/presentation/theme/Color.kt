@@ -129,6 +129,10 @@ object AppColors {
             disabledContentColor   = AppColors.onSecondary.copy(alpha = 0.3f)
         )
 
+
+    val transactionIncomeColor = Color(0xFF4CAF50)
+    val transactionExpenseColor = Color(0xFFF44336)
+    val transactionRefundColor = Color(0xFF2196F3)
 }
 
 

@@ -39,6 +39,7 @@ import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
 import com.yusufteker.worthy.core.presentation.theme.Constants.WEEKLY_MAX_HOURS
 import com.yusufteker.worthy.core.presentation.toFormattedWithThousandsSeparator
+import com.yusufteker.worthy.core.presentation.util.formatMoneyText
 import com.yusufteker.worthy.screen.settings.presentation.components.BudgetSlider
 import com.yusufteker.worthy.screen.settings.presentation.components.FinancialWidget
 import com.yusufteker.worthy.screen.settings.presentation.components.RecurringFinancialItemDialog
@@ -293,8 +294,10 @@ private fun ReadOnlyRow(label: String, amount: Double, color: Color, currencySym
         )
         Spacer(Modifier.width(8.dp))
         Text(
-            "$label: ${amount.toFormattedWithThousandsSeparator()} $currencySymbol",
+            "$label: ${amount.formatMoneyText()} $currencySymbol",
             style = AppTypography.bodyMedium
         )
     }
 }
+
+

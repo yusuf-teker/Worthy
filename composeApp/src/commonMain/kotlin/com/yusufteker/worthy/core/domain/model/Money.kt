@@ -1,16 +1,16 @@
 package com.yusufteker.worthy.core.domain.model
 
+import androidx.compose.ui.text.intl.Locale
 import com.yusufteker.worthy.core.domain.service.CurrencyConverter
 import kotlinx.serialization.Serializable
+import kotlin.math.floor
 import kotlin.math.pow
+import kotlin.math.roundToInt
 
 @Serializable
 data class Money(
     val amount: Double = 0.0, val currency: Currency
 ) {
-    fun formatted(): String {
-        return "${currency.symbol} ${amount.toFixedSafe(2)}"
-    }
 
     fun setAmount(newAmount: Double): Money {
         return Money(newAmount, currency)
@@ -42,6 +42,7 @@ fun emptyMoney(currency: Currency = Currency.TRY) = Money(0.0, currency)
 fun List<Money>.sumWithoutCurrencyConverted(): Money {
     return Money(this.sumOf { it.amount }, this.first().currency)
 }
+
 
 suspend fun List<Money>.sumWithCurrencyConverted(
     currencyConverter: CurrencyConverter, currency: Currency

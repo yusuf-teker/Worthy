@@ -35,7 +35,7 @@ class TransactionRepositoryImpl(
     }
 
     override fun getCards(): Flow<List<Card>> {
-        return cardRepository.getCards()
+        return cardRepository.getAll()
     }
 
     override fun getByCategory(categoryId: Int): Flow<List<Transaction>> {
@@ -68,6 +68,10 @@ class TransactionRepositoryImpl(
 
     override suspend fun delete(transaction: Transaction) {
         transactionDao.delete(transaction.toEntity())
+    }
+
+    override suspend fun deleteById(transactionId: Int) {
+        transactionDao.deleteById(transactionId)
     }
 
     override suspend fun deleteAll(items: List<Transaction>) {

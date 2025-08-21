@@ -10,6 +10,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -47,6 +48,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.yusufteker.worthy.core.data.database.entities.ExpenseNeedType
+import com.yusufteker.worthy.core.data.database.entities.toText
 import com.yusufteker.worthy.core.domain.createTimestampId
 import com.yusufteker.worthy.core.domain.getCurrentYear
 import com.yusufteker.worthy.core.domain.model.AppDate
@@ -65,6 +67,7 @@ import com.yusufteker.worthy.core.presentation.components.MoneyInput
 import com.yusufteker.worthy.core.presentation.components.SwipeToDeleteWrapper
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
+import com.yusufteker.worthy.core.presentation.util.formatted
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -90,6 +93,7 @@ import worthy.composeapp.generated.resources.income_name
 import worthy.composeapp.generated.resources.incomes
 import worthy.composeapp.generated.resources.missing_month_or_year
 import worthy.composeapp.generated.resources.new_amount
+import worthy.composeapp.generated.resources.repeat_day
 import worthy.composeapp.generated.resources.save
 import worthy.composeapp.generated.resources.start_date
 import worthy.composeapp.generated.resources.start_date_after_end_date
@@ -238,7 +242,7 @@ fun RecurringItemRow(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("${item.amount?.formatted()}")
+                    Text(item.amount.formatted())
                     Row(modifier = Modifier.weight(1f), horizontalArrangement = Arrangement.End) {
                         IconButton(onClick = { onEdit(item) }) {
                             Icon(Icons.Default.Edit, contentDescription = null)
@@ -325,7 +329,12 @@ fun RecurringItemAddDialog(
 
 
                 if (!isIncome) {
-                    Row {
+
+                    FlowRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalArrangement = Arrangement.Center,
+                    ){
                         ExpenseNeedType.entries.forEach { type ->
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
@@ -335,17 +344,19 @@ fun RecurringItemAddDialog(
                                     selected = needType == type,
                                     onClick = { needType = type }
                                 )
-                                Text(type.name)
+                                Text(type.toText().asString())
                             }
                         }
                     }
+
                 }
 
 
 
                 DayOfMonthSelector(
                     selectedDay = scheduledDay,
-                    onDayChange = { scheduledDay = it }
+                    onDayChange = { scheduledDay = it },
+                    label = UiText.StringResourceId(Res.string.repeat_day)
                 )
 
                 // Başlangıç ve Bitiş Tarihleri

@@ -37,6 +37,7 @@ import com.yusufteker.worthy.core.media.loadImageBitmapFromPath
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
 import com.yusufteker.worthy.core.presentation.toFormattedDate
+import com.yusufteker.worthy.core.presentation.util.formatted
 import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistItem
 import com.yusufteker.worthy.screen.wishlist.list.domain.priorityColor
 import io.github.aakira.napier.Napier

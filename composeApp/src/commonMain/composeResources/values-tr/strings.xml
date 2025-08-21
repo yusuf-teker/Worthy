@@ -42,6 +42,9 @@
     <string name="name">Ad</string>
     <string name="income_name">Gelir Adı</string>
     <string name="expense_name">Gider Adı</string>
+    <string name="expense">Gider</string>
+    <string name="income">Gelir</string>
+    <string name="card">Kart</string>
     <string name ="incomes">Gelirler</string>
     <string name ="expenses">Giderler</string>
     <string name="no_selected">Seçilmedi</string>
@@ -59,22 +62,22 @@
     <string name="dashboard_evaluate_purchase">Harcamayı Değerlendir</string>
 
     <!-- Dashboard Bottom Sheet -->
-    <string name="bottom_sheet_label_amount">Tutar</string>
-    <string name="bottom_sheet_label_category">Kategori</string>
-    <string name="bottom_sheet_label_name">İsim</string>
+    <string name="bottom_sheet_label_amount">Harcama Tutarı</string>
+    <string name="bottom_sheet_label_category">Harcama Kategorisi</string>
+    <string name="bottom_sheet_label_name">Ürün / Hizmet Adı</string>
     <string name="bottom_sheet_button_calculate">Hesapla</string>
     <string name="bottom_sheet_button_purchase">Satın Al</string>
     <string name="bottom_sheet_result">Sonuç: %1$.2f ₺ (%2$s)</string>
-    <string name="bottom_sheet_invalid_input">Geçersiz tutar</string>
+    <string name="bottom_sheet_invalid_input">Lütfen geçerli bir tutar girin</string>
     <string name="bottom_sheet_select_category">Lütfen kategori seçin</string>
     <string name="bottom_sheet_error_category_required">Kategori seçilmelidir.</string>
+    <string name="bottom_sheet_error_name_required">Ürün / hizmet adını girmelisiniz</string>
 
+    <string name="evaluation_income_percent">• Aylık gelirinin %1$s denk geliyor</string>
+    <string name="evaluation_expense_income_percent">• Masraflar hariç gelirinin %1$ denk geliyor</string>
 
-    <string name="evaluation_income_percent">• Aylık Gelirinin %1$s oranında</string>
-    <string name="evaluation_expense_income_percent">• Aylık masraflar dışındaki gelirinin %%1$d'u</string>
-
-    <string name="evaluation_desire_budget_percent">• "İstek" bütçenin % %1$s kadarını oluşturuyor</string>
-    <string name="evaluation_work_hours">• %1$s saatlik çalışma süresine denk geliyor</string>
+    <string name="evaluation_desire_budget_percent">• İstekler için ayırdığın bütçenin %1$s’ini kapsıyor</string>
+    <string name="evaluation_work_hours">• Yaklaşık %1$s saat çalışmaya eşit</string>
     <string name="purchase_note_title">📌 Bu harcama:</string>
     <string name="purchase_note_remaining">💰 Bu harcamadan sonra "İstek" bütçende %1$s%2$s kalacak.</string>
     <string name="fixed_expense">Sabit Gider</string>
@@ -139,7 +142,10 @@
     <string name="edit_income_expense_group">Gelir/Gider Grubu Düzenle</string>
     <string name="add_expense">Gider Ekle</string>
     <string name="add_income">Gelir Ekle</string>
-
+    <string name="need">İhtiyaç</string>
+    <string name="desire">İstek</string>
+    <string name="none">Yok</string>
+    <string name="repeat_day">Tekrarlama günü</string>
 
     <!-- Currency -->
     <string name="currency_try">Türk Lirası</string>
@@ -280,12 +286,17 @@
     <string name="add_new_card">➕ Yeni Kart Ekle</string>
     <string name="pay_with_card">Kart ile ödeme</string>
 
+    <string name="validation_name_empty">İsim boş olamaz</string>
+    <string name="validation_amount_empty">Tutar girilmelidir</string>
+    <string name="validation_category_empty">Kategori seçilmelidir</string>
+    <string name="validation_date_empty">Tarih seçilmelidir</string>
+
 
     <!-- ADD CARD -->
     <string name="screen_title_add_new_card">Kart Ekle</string>
     <string name="screen_title_my_cards">Kartlarım</string>
     <string name="my_cards">Kartlarım</string>
-    <string name="expiry_label">Geçerlilik Tarihi: </string>
+    <string name="expiry_label">Son Geçerlilik Tarihi: </string>
     <string name="year">Yıl</string>
     <string name="month">Ay</string>
     <string name="card_expiry_label">Geçerlilik Tarihi (AA/YY)</string>
@@ -313,4 +324,12 @@
     <string name="toggle_card_details_show">Kart detaylarını gir (isteğe bağlı)</string>
     <string name="toggle_card_details_skip">Kart detaylarını olmadan devam et</string>
     <string name="statement_day">Ödeme Günü</string>
+
+
+    <!-- Analytics -->
+    <string name="screen_name_analytics">İşlemlerim</string>
+
+
+
+
 </resources>

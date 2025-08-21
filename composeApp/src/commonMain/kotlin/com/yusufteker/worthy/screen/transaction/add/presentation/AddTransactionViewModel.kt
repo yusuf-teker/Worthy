@@ -2,14 +2,24 @@ package com.yusufteker.worthy.screen.addtransaction.presentation
 
 import androidx.lifecycle.viewModelScope
 import com.yusufteker.worthy.app.navigation.Routes
+import com.yusufteker.worthy.core.domain.model.Transaction
+import com.yusufteker.worthy.core.domain.model.TransactionType
 import com.yusufteker.worthy.core.domain.repository.CategoryRepository
 import com.yusufteker.worthy.core.domain.repository.TransactionRepository
 import com.yusufteker.worthy.core.presentation.UiEvent
+import com.yusufteker.worthy.core.presentation.UiText
+import com.yusufteker.worthy.core.presentation.ValidationResult
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
+import com.yusufteker.worthy.core.presentation.toAppDate
 import com.yusufteker.worthy.screen.card.add.domain.CardRepository
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
+import worthy.composeapp.generated.resources.Res
+import worthy.composeapp.generated.resources.validation_amount_empty
+import worthy.composeapp.generated.resources.validation_category_empty
+import worthy.composeapp.generated.resources.validation_date_empty
+import worthy.composeapp.generated.resources.validation_name_empty
 
 class AddTransactionViewModel(
     private val transactionRepository: TransactionRepository,
@@ -110,6 +120,28 @@ class AddTransactionViewModel(
 
                     is TransactionFormAction.SaveClicked -> {
 
+                        launchWithLoading {
+                            if (validateExpenseForm(state.value).successful){
+                                val transaction = Transaction(
+                                    id = 0,
+                                    name = _state.value.expenseForm.name,
+                                    amount = _state.value.expenseForm.money!!,
+                                    categoryId = _state.value.expenseForm.selectedCategory!!.id,
+                                    transactionDate = _state.value.expenseForm.transactionDate,
+                                    note = _state.value.expenseForm.note,
+                                    installmentCount = _state.value.expenseForm.installmentCount,
+                                    installmentStartDate = _state.value.expenseForm.installmentStartDate.toAppDate(),
+                                    transactionType = TransactionType.EXPENSE,
+
+                                    )
+
+                                transactionRepository.insert(transaction)
+
+                                navigateTo(Routes.Dashboard)
+                            }
+
+                        }
+
                     }
                     is TransactionFormAction.AddNewCardClicked -> {
                         sendUiEventSafe(UiEvent.NavigateTo(Routes.AddCard))
@@ -186,7 +218,30 @@ class AddTransactionViewModel(
                         )
                     }
 
-                    TransactionFormAction.SaveClicked -> {}
+                    TransactionFormAction.SaveClicked -> {
+
+                        launchWithLoading {
+                            if (validateIncomeForm(state.value).successful){
+                                val transaction = Transaction(
+                                    id = 0,
+                                    name = _state.value.incomeForm.name,
+                                    amount = _state.value.incomeForm.money!!,
+                                    categoryId = _state.value.incomeForm.selectedCategory!!.id,
+                                    transactionDate = _state.value.incomeForm.transactionDate,
+                                    note = _state.value.incomeForm.note,
+                                    transactionType = TransactionType.INCOME,
+
+                                    )
+
+                                transactionRepository.insert(transaction)
+
+                                navigateTo(Routes.Dashboard)
+                            }
+
+                        }
+
+
+                    }
                     TransactionFormAction.AddNewCardClicked -> {
 
                     }
@@ -202,4 +257,66 @@ class AddTransactionViewModel(
             }
         }
     }
+}
+
+private fun validateExpenseForm(state: AddTransactionState): ValidationResult {
+    val form = state.expenseForm
+
+    if (form.name.isBlank()) {
+        return ValidationResult(
+            successful = false,
+            errorMessage = UiText.StringResourceId(Res.string.validation_name_empty)
+        )
+    }
+    if (form.money == null) {
+        return ValidationResult(
+            successful = false,
+            errorMessage = UiText.StringResourceId(Res.string.validation_amount_empty)
+        )
+    }
+    if (form.selectedCategory == null) {
+        return ValidationResult(
+            successful = false,
+            errorMessage = UiText.StringResourceId(Res.string.validation_category_empty)
+        )
+    }
+    if (form.transactionDate == 0L) {
+        return ValidationResult(
+            successful = false,
+            errorMessage = UiText.StringResourceId(Res.string.validation_date_empty)
+        )
+    }
+
+    return ValidationResult(true)
+}
+
+private fun validateIncomeForm(state: AddTransactionState): ValidationResult {
+    val form = state.incomeForm
+
+    if (form.name.isBlank()) {
+        return ValidationResult(
+            successful = false,
+            errorMessage = UiText.StringResourceId(Res.string.validation_name_empty)
+        )
+    }
+    if (form.money == null) {
+        return ValidationResult(
+            successful = false,
+            errorMessage = UiText.StringResourceId(Res.string.validation_amount_empty)
+        )
+    }
+    if (form.selectedCategory == null) {
+        return ValidationResult(
+            successful = false,
+            errorMessage = UiText.StringResourceId(Res.string.validation_category_empty)
+        )
+    }
+    if (form.transactionDate == 0L) {
+        return ValidationResult(
+            successful = false,
+            errorMessage = UiText.StringResourceId(Res.string.validation_date_empty)
+        )
+    }
+
+    return ValidationResult(true)
 }

@@ -43,6 +43,9 @@
     <string name="name">Name</string>
     <string name="income_name">Income Name</string>
     <string name="expense_name">Expense Name</string>
+    <string name="expense">Expense</string>
+    <string name="income">Income</string>
+    <string name="card">Card</string>
     <string name ="incomes">Incomes</string>
     <string name ="expenses">Expenses</string>
     <string name="no_selected">No selected</string>
@@ -66,17 +69,17 @@
     <string name="bottom_sheet_button_calculate">Calculate</string>
     <string name="bottom_sheet_button_purchase">Purchase</string>
 
-    <string name="bottom_sheet_invalid_input">Invalid amount</string>
+    <string name="bottom_sheet_invalid_input">Please enter a valid amount</string>
     <string name="bottom_sheet_select_category">Please select a category</string>
-    <string name="bottom_sheet_error_category_required">Category is required.</string>
+    <string name="bottom_sheet_error_category_required">You must select a category</string>
 
 
-    <string name="evaluation_income_percent">• %1$s of your  monthly income</string>
-    <string name="evaluation_expense_income_percent">• %1$d%% of your income excluding monthly expenses</string>
-    <string name="evaluation_desire_budget_percent">• % %1$s of your "wants" budget</string>
+    <string name="evaluation_income_percent">• %%1$s of your monthly income</string>
+    <string name="evaluation_expense_income_percent">• This is %%1$d% of your disposable income</string>
+    <string name="evaluation_desire_budget_percent">• Uses %%1$s of your "wants" budget</string>
     <string name="evaluation_work_hours">• Equivalent to %1$s hours of work</string>
     <string name="purchase_note_title">📌 This expense:</string>
-    <string name="purchase_note_remaining">💰 After this expense, you’ll have %1$s%2$s left in your "wants" budget.</string>
+    <string name="purchase_note_remaining">💰 After this purchase, you’ll have %1$s%2$s left in your "wants" budget.</string>
     <string name="fixed_expense">Fixed Expense</string>
     <string name="fixed_income">Fixed Income</string>
 
@@ -138,6 +141,11 @@
     <string name="missing_month_or_year">Month or year is missing.</string>
     <string name="add_expense">Add Expense</string>
     <string name="add_income">Add Income</string>
+
+    <string name="need">Need</string>
+    <string name="desire">Desire</string>
+    <string name="none">None</string>
+    <string name="repeat_day">Repeat Day</string>
 
 
     <!-- Currency -->
@@ -288,6 +296,11 @@
     <string name="screen_title_new_transaction">New Transaction</string>
     <string name="add_new_card">➕ Add New Card</string>
     <string name="pay_with_card">Pay with card</string>
+    <string name="validation_name_empty">Name cannot be empty</string>
+    <string name="validation_amount_empty">Amount must be entered</string>
+    <string name="validation_category_empty">Category must be selected</string>
+    <string name="validation_date_empty">Date must be selected</string>
+    <string name="bottom_sheet_error_name_required">Product name is required</string>
 
 
 
@@ -323,6 +336,11 @@
     <string name="toggle_card_details_show">Enter card details (optional)</string>
     <string name="toggle_card_details_skip">Skip entering card details</string>
     <string name="statement_day">Statement Day</string>
+
+
+    <!-- Analytics -->
+    <string name="screen_name_analytics">İşlemlerim</string>
+
 
 
 

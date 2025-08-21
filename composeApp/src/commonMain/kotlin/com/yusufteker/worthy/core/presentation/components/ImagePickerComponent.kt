@@ -22,7 +22,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -73,7 +75,11 @@ fun ImagePickerComponent(
 
     val permissionChecker = rememberPermissionChecker()
 
-
+    LaunchedEffect(showBottomSheet) {
+        if (!showBottomSheet) {
+            imagePicker.cancelPendingCallbacks()
+        }
+    }
 
     Box(
         modifier = modifier
@@ -128,9 +134,12 @@ fun ImagePickerComponent(
         permissionChecker.requestCameraPermission { granted ->
             if (granted) {
                 imagePicker.pickFromCamera { bitmap ->
-
                     bitmap?.let {
-                        imagePicker.cropImage(it) { cropped ->
+                        imagePicker.cropImage(
+                            it,
+                            aspectRatio = cropAspectRatio
+                        ) { cropped ->
+
                             cropped?.let { onImageSelected(it) }
                         }
                     }
@@ -143,10 +152,15 @@ fun ImagePickerComponent(
         }
     }
 
+    val bottomSheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
+
     // Bottom Sheet
     if (showBottomSheet) {
         ModalBottomSheet(
-            onDismissRequest = { showBottomSheet = false }
+            onDismissRequest = { showBottomSheet = false },
+            sheetState = bottomSheetState,
         ) {
             Column(
                 modifier = Modifier
@@ -164,7 +178,7 @@ fun ImagePickerComponent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
-
+                            showBottomSheet = false
                             imagePicker.pickFromGallery { bitmap ->
                                 bitmap?.let {
                                     imagePicker.cropImage(
@@ -177,7 +191,6 @@ fun ImagePickerComponent(
                                 }
 
                             }
-                            showBottomSheet = false
 
                         }
                         .padding(vertical = 12.dp),
@@ -205,7 +218,11 @@ fun ImagePickerComponent(
                                 if (permissionChecker.hasCameraPermission()) {
                                     imagePicker.pickFromCamera { bitmap ->
                                         bitmap?.let {
-                                            imagePicker.cropImage(it) { cropped ->
+                                            imagePicker.cropImage(
+                                                it,
+                                                aspectRatio = cropAspectRatio
+                                            ) { cropped ->
+
                                                 cropped?.let { onImageSelected(it) }
                                             }
                                         }

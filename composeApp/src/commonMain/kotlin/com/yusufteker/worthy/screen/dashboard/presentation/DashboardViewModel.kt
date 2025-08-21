@@ -80,9 +80,18 @@ class DashboardViewModel(
                         to = action.money.currency
                     )
                     val incomeMinusExpense = monthlyIncome.amount - monthlyExpense.amount
-                    val desirePercent = ((action.money.amount / desireBudget.amount) * 100)
+                    val desirePercent = if (desireBudget.amount == 0.0) {
+                        -1.0
+                    } else {
+                        (action.money.amount / desireBudget.amount) * 100
+                    }
                     val workHours =
-                        (action.money.amount / (monthlyIncome.amount / state.value.monthlyWorkHours)).toFloat()
+                        if (state.value.monthlyWorkHours == 0f){ // Çalışma süresi 0
+                            -1.0f
+                        }else if (monthlyIncome.amount == 0.0){ // Geliri 0
+                            -2.0f
+                        }
+                        else (action.money.amount / (monthlyIncome.amount / state.value.monthlyWorkHours)).toFloat()
                     val remainingDesire =
                         (state.value.desireBudget.amount - action.money.amount).toInt()
                     val currencySymbol = state.value.selectedCurrency.symbol

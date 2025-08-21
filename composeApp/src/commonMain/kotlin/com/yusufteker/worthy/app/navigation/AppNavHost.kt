@@ -1,6 +1,7 @@
 package com.yusufteker.worthy.app.navigation
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,8 +32,11 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
 import com.yusufteker.worthy.core.presentation.BottomNavigationBar
+import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppDimens.ScreenPadding
+import com.yusufteker.worthy.core.presentation.util.isOnCurrentDestination
+import com.yusufteker.worthy.core.presentation.util.navigateTo
 import com.yusufteker.worthy.screen.addtransaction.presentation.AddTransactionScreenRoot
 import com.yusufteker.worthy.screen.analytics.presentation.AnalyticsScreenRoot
 import com.yusufteker.worthy.screen.card.add.presentation.AddCardScreenRoot
@@ -49,6 +53,10 @@ import com.yusufteker.worthy.screen.wishlist.list.presentation.WishlistScreenRoo
 import io.github.aakira.napier.Napier
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
+import worthy.composeapp.generated.resources.Res
+import worthy.composeapp.generated.resources.card
+import worthy.composeapp.generated.resources.expenses
+import worthy.composeapp.generated.resources.income
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -253,21 +261,38 @@ fun AppNavHost(
                     }
                 }
             }
+
+
+            val expenseLabel = UiText.StringResourceId(Res.string.expenses).asString()
+            val incomeLabel = UiText.StringResourceId(Res.string.income).asString()
+            val cardLabel = UiText.StringResourceId(Res.string.card).asString()
+
+            if (showAddFabMenu) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(AppColors.background.copy(alpha = 0.3f))
+                        .clickable {
+                            showAddFabMenu = false
+                        }
+                )
+            }
             AddFabMenu(
                 showMenu = showAddFabMenu,
                 modifier = Modifier.padding(innerPadding).align(Alignment.BottomCenter)
             ) { fabItem ->
                 showAddFabMenu = false
+
                 when (fabItem.label) {
-                    "Expense" -> {
+                    expenseLabel -> {
                         navController.navigateTo(Routes.AddTransaction(false))
                     }
 
-                    "Income" -> {
+                    incomeLabel -> {
                         navController.navigateTo(Routes.AddTransaction(true))
                     }
 
-                    "Card" -> {
+                    cardLabel -> {
                         navController.navigateTo(Routes.AddCard)
                     }
 
@@ -291,16 +316,3 @@ inline fun <reified T : ViewModel> NavBackStackEntry.sharedKoinViewModel(
     return koinViewModel(viewModelStoreOwner = parentEntry)
 }
 
-fun isOnCurrentDestination(destinationRoute: String, currentDestination: NavDestination?): Boolean {
-    return  currentDestination
-        ?.hierarchy
-        ?.any {
-            it.route?.contains(destinationRoute) ?: false
-        } == true
-
-}
-
-fun NavHostController.navigateTo(route: Routes){
-    if (route == Routes.Back) this.popBackStack()
-    else this.navigate(route)
-}

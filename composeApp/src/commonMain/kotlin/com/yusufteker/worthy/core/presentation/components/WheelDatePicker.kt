@@ -69,7 +69,7 @@ fun WheelDatePicker(
     fun emitEpochSeconds() {
         val date = LocalDate(selectedYear, Month(selectedMonth), selectedDay)
         val instant = date.atStartOfDayIn(TimeZone.currentSystemDefault())
-        onDateSelected(instant.epochSeconds)
+        onDateSelected(instant.toEpochMilliseconds())
     }
 
     val border = if (showBorder) {

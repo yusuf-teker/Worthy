@@ -40,7 +40,7 @@ actual fun rememberImagePicker(): ImagePicker {
         contract = ActivityResultContracts.PickVisualMedia()
     ) { uri: Uri? ->
         val bitmap = uri?.let { loadImageFromUri(context, it) }
-        galleryCallback?.invoke(PlatformImage(bitmap!!))
+        bitmap?.let { galleryCallback?.invoke(PlatformImage(bitmap)) }
         galleryCallback = null
     }
 
@@ -52,7 +52,7 @@ actual fun rememberImagePicker(): ImagePicker {
         val bitmap = if (success) {
             currentPhotoUri?.let { loadImageFromUri(context, it) }
         } else null
-        cameraCallback?.invoke(PlatformImage(bitmap!!))
+        bitmap?.let {         cameraCallback?.invoke(PlatformImage(bitmap)) }
         cameraCallback = null
     }
 
@@ -66,7 +66,7 @@ actual fun rememberImagePicker(): ImagePicker {
             val uri = UCrop.getOutput(result.data!!)
             val bitmap = uri?.let { loadImageFromUri(context, it) }
             //callback imagepicker da cropImage çalıştığında  tanımlanıyor
-            cropCallback?.invoke(PlatformImage(bitmap!!))
+            bitmap?.let { cropCallback?.invoke(PlatformImage(bitmap)) }
         } else {
             cropCallback?.invoke(null)
         }
@@ -246,6 +246,12 @@ class AndroidImagePicker(
         )
     }
 
+    override fun cancelPendingCallbacks() {
+        galleryCallback = null
+        cameraCallback = null
+        cropCallback = null
+        permissionCallback = null
+    }
 
 }
 

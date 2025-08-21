@@ -7,8 +7,8 @@ data class AddTransactionState(
     override val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val isIncomeByDefault: Boolean = false,
-    val expenseForm: AddTransactionFormState = AddTransactionFormState(),
-    val incomeForm: AddTransactionFormState = AddTransactionFormState()
+    val expenseForm: AddTransactionFormState = AddTransactionFormState(isLoading = isLoading),
+    val incomeForm: AddTransactionFormState = AddTransactionFormState(isLoading = isLoading)
 
 ) : BaseState {
     override fun copyWithLoading(isLoading: Boolean) = copy(isLoading = isLoading)

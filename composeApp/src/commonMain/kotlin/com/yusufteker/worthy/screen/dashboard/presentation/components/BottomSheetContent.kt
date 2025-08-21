@@ -42,6 +42,7 @@ import com.yusufteker.worthy.core.domain.model.TransactionType
 import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.domain.toEpochMillis
 import com.yusufteker.worthy.core.presentation.UiText
+import com.yusufteker.worthy.core.presentation.ValidationResult
 import com.yusufteker.worthy.core.presentation.components.AppButton
 import com.yusufteker.worthy.core.presentation.components.CategoryIcon
 import com.yusufteker.worthy.core.presentation.components.MoneyInput
@@ -52,6 +53,7 @@ import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.bottom_sheet_button_calculate
 import worthy.composeapp.generated.resources.bottom_sheet_button_purchase
 import worthy.composeapp.generated.resources.bottom_sheet_error_category_required
+import worthy.composeapp.generated.resources.bottom_sheet_error_name_required
 import worthy.composeapp.generated.resources.bottom_sheet_invalid_input
 import worthy.composeapp.generated.resources.bottom_sheet_label_category
 import worthy.composeapp.generated.resources.bottom_sheet_label_name
@@ -235,14 +237,17 @@ fun BottomSheetContent(
         AppButton(
             text = UiText.StringResourceId(Res.string.bottom_sheet_button_calculate).asString(),
             onClick = {
-                amountError = isValidAmount(amount)
-                if (amountError == null) {
+                val result = validateAmount(amount)
+
+                if (result.successful) {
                     onCalculate(
                         Money(
                             amount?.amount ?: 0.0,
                             currency = amount?.currency ?: Currency.TRY
                         )
                     )
+                }else{
+                    amountError = result.errorMessage
                 }
             },
             loading = bottomSheetUiState.isCalculating,
@@ -254,9 +259,10 @@ fun BottomSheetContent(
             text = UiText.StringResourceId(Res.string.bottom_sheet_button_purchase).asString(),
             onClick = {
 
-                amountError = isValidAmount(amount)
-                categoryError = isCategoryValid(selectedCategory)
-                nameError = isNameValid(name)
+
+                amountError = validateAmount(amount).errorMessage
+                categoryError = validateCategory(selectedCategory).errorMessage
+                nameError = validateName(name).errorMessage
 
                 if (amountError == null && categoryError == null && nameError == null) {
                     selectedCategory?.let { category ->
@@ -286,27 +292,37 @@ fun BottomSheetContent(
     }
 }
 
-fun isValidAmount(amount: Money?): UiText? {
-    if ((amount?.amount ?: 0.0) > 0) {
-        return null
+
+
+fun validateAmount(amount: Money?): ValidationResult {
+    return if ((amount?.amount ?: 0.0) > 0) {
+        ValidationResult(successful = true)
     } else {
-        return UiText.StringResourceId(Res.string.bottom_sheet_invalid_input)
+        ValidationResult(
+            successful = false,
+            errorMessage = UiText.StringResourceId(Res.string.bottom_sheet_invalid_input)
+        )
     }
 }
 
-fun isCategoryValid(selectedCategory: Category?): UiText? {
-    return if (selectedCategory == null) {
-        UiText.StringResourceId(Res.string.bottom_sheet_error_category_required)
+fun validateCategory(selectedCategory: Category?): ValidationResult {
+    return if (selectedCategory != null) {
+        ValidationResult(successful = true, null)
     } else {
-        null
+        ValidationResult(
+            successful = false,
+            errorMessage = UiText.StringResourceId(Res.string.bottom_sheet_error_category_required)
+        )
     }
 }
 
-fun isNameValid(name: String?): UiText? {
-    return if (name.isNullOrEmpty()) {
-        UiText.StringResourceId(Res.string.bottom_sheet_error_category_required)
+fun validateName(name: String?): ValidationResult {
+    return if (!name.isNullOrEmpty()) {
+        ValidationResult(successful = true)
     } else {
-        null
+        ValidationResult(
+            successful = false,
+            errorMessage = UiText.StringResourceId(Res.string.bottom_sheet_error_name_required)
+        )
     }
 }
-

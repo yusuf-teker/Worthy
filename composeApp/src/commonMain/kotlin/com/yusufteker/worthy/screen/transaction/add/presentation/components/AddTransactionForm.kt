@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
@@ -49,6 +51,7 @@ import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 data class AddTransactionFormState(
+    val isLoading: Boolean = false,
     val name: String = "",
     val money: Money? = null,
     val categories: List<Category> = emptyList(),
@@ -85,7 +88,8 @@ fun AddTransactionForm(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         // 1 NAME
@@ -229,6 +233,7 @@ fun AddTransactionForm(
         AppButton(
             modifier = Modifier.fillMaxWidth(),
             text = UiText.StringResourceId(Res.string.add).asString(),
+            loading = state.isLoading,
             onClick = onSaveClick
         )
     }

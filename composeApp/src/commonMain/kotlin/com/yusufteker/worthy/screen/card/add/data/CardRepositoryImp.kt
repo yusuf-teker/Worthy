@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class CardRepositoryImpl(private val cardDao: CardDao) : CardRepository {
-    override  fun getCards(): Flow<List<Card>> {
+    override  fun getAll(): Flow<List<Card>> {
         return cardDao.getAllCards().map { entityList -> entityList.map { it.toDomain() } }
     }
 

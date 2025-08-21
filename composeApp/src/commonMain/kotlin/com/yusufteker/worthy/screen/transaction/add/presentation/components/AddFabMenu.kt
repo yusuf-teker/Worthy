@@ -9,13 +9,16 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.components.fabmenu.AddFabMenu
 import com.yusufteker.worthy.core.presentation.components.fabmenu.MenuFabItem
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import org.jetbrains.compose.resources.painterResource
 import worthy.composeapp.generated.resources.Res
+import worthy.composeapp.generated.resources.add
 import worthy.composeapp.generated.resources.card
 import worthy.composeapp.generated.resources.expense
+import worthy.composeapp.generated.resources.expenses
 import worthy.composeapp.generated.resources.income
 
 @Composable
@@ -47,10 +50,14 @@ fun rememberAddFabItems(): SnapshotStateList<MenuFabItem> {
     val incomeFabColor = AppColors.icon_green
 
 
+    val expenseLabel = UiText.StringResourceId(Res.string.expenses).asString()
+    val incomeLabel = UiText.StringResourceId(Res.string.income).asString()
+    val cardLabel = UiText.StringResourceId(Res.string.card).asString()
+
     return remember {
         mutableStateListOf(
             MenuFabItem(
-                label = "Expense",
+                label = expenseLabel,
                 icon = {
                     Icon(
                         painter = painterResource(Res.drawable.expense),
@@ -63,7 +70,7 @@ fun rememberAddFabItems(): SnapshotStateList<MenuFabItem> {
                 fabBackgroundColor = expenseFabColor
             ),
             MenuFabItem(
-                label = "Income",
+                label = incomeLabel,
                 icon = {
                     Icon(
                         painter = painterResource(Res.drawable.income),
@@ -76,7 +83,7 @@ fun rememberAddFabItems(): SnapshotStateList<MenuFabItem> {
                 fabBackgroundColor = incomeFabColor
             ),
             MenuFabItem(
-                label = "Card",
+                label = cardLabel,
                 icon = {
                     Icon(
                         painter = painterResource(Res.drawable.card),
