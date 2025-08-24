@@ -340,8 +340,31 @@
 
     <!-- Analytics -->
     <string name="screen_name_analytics">İşlemlerim</string>
+    <string name="analytics_empty_screen_button">Add your first transaction</string>
 
+    <string name="summary_income">Total Income</string>
+    <string name="summary_expense">Total Expense</string>
+    <string name="summary_refund">Refunds</string>
+    <string name="summary_balance">Net Balance</string>
+    <string name="currency_format">%1$d %2$s </string>
+    <string name="bar_chart_data_daily">📌 Each bar in this chart shows the total of 1 day</string>
+    <string name="bar_chart_data_weekly">📌 Each bar in this chart shows the total of 1 week</string>
+    <string name="chart_category_analysis_income">📊 Category Analysis - Income</string>
+    <string name="chart_category_analysis_expense">📊 Category Analysis - Expense</string>
+    <string name="chart_category_analysis_refund">📊 Category Analysis - Refund</string>
 
+    <string name="period_none">None</string>
+    <string name="period_week">Week</string>
+    <string name="period_month">Month</string>
+    <string name="period_three_months">3 Months</string>
+    <string name="period_six_months">6 Months</string>
+    <string name="period_year">Year</string>
+    <string name="trend_analysis_title">📈 Income–Expense Trend</string>
 
+    <string name="chart_type_line">Line Chart</string>
+    <string name="chart_type_pie">Pie Chart</string>
+    <string name="chart_type_bar">Bar Chart</string>
+    <string name="monthly_comparison_title">📅 Monthly Comparison</string>
+    <string name="top_transactions_title">🔝 Top Transactions</string>
 
 </resources>

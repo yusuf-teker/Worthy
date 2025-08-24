@@ -1,18 +1,13 @@
 package com.yusufteker.worthy.screen.analytics.presentation.components
 
-
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yusufteker.worthy.core.domain.model.Currency
@@ -21,10 +16,7 @@ import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.TransactionType
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
-
 import kotlinx.datetime.*
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.time.ExperimentalTime
 
@@ -43,8 +35,8 @@ fun TransactionListItem(
 
     val localDateTime = Instant.fromEpochMilliseconds(transaction.transactionDate)
         .toLocalDateTime(TimeZone.currentSystemDefault())
-    val dateString = "${localDateTime.day.toString().padStart(2,'0')}/" +
-            "${localDateTime.month.number.toString().padStart(2,'0')}/" +
+    val dateString = "${localDateTime.day.toString().padStart(2, '0')}/" +
+            "${localDateTime.month.number.toString().padStart(2, '0')}/" +
             "${localDateTime.year}"
 
     Card(
@@ -53,7 +45,7 @@ fun TransactionListItem(
             .clickable { onItemClicked(transaction) },
         shape = CardDefaults.shape,
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-    )  {
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -85,7 +77,7 @@ fun TransactionListItem(
             Spacer(modifier = Modifier.width(8.dp))
 
             Text(
-                text = "${if (transaction.transactionType == com.yusufteker.worthy.core.domain.model.TransactionType.EXPENSE) "-" else "+"} ${transaction.amount.amount} ${transaction.amount.currency}",
+                text = "${if (transaction.transactionType == TransactionType.EXPENSE) "-" else "+"} ${transaction.amount.amount} ${transaction.amount.currency.symbol}",
                 color = amountColor,
                 fontSize = 16.sp,
                 style = AppTypography.titleMedium
@@ -93,7 +85,6 @@ fun TransactionListItem(
         }
     }
 }
-
 
 @OptIn(ExperimentalTime::class)
 @Preview
@@ -113,17 +104,18 @@ fun TransactionListPreview() {
         Transaction(
             id = 2,
             name = "Market Alışverişi",
-            amount = Money(250.0,  Currency.TRY),
+            amount = Money(250.0, Currency.TRY),
             transactionType = TransactionType.EXPENSE,
             categoryId = 2,
             cardId = 2,
-            transactionDate = kotlin.time.Clock.System.now().toEpochMilliseconds().minus(2_592_000_000), // 30 gün önce
+            transactionDate = kotlin.time.Clock.System.now().toEpochMilliseconds()
+                .minus(2_592_000_000), // 30 gün önce
             note = "Gıda ve temizlik"
         ),
         Transaction(
             id = 3,
             name = "İade",
-            amount = Money(100.0,  Currency.TRY),
+            amount = Money(100.0, Currency.TRY),
             transactionType = TransactionType.REFUND,
             categoryId = 3,
             cardId = 1,

@@ -47,3 +47,5 @@ fun getCurrentEpochMillis(): Long {
 fun getCurrentYear(): Int {
     return Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year
 }
+
+fun isLeapYear(year: Int) = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)

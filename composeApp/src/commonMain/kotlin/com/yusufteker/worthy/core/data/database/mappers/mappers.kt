@@ -82,6 +82,7 @@ fun Category.toEntity(): CategoryEntity {
         id = id,
         name = name,
         type = type,
+        nameResourceKey = nameResourceKey,
         createdAt = createdAt,
         userCreated = userCreated,
         icon = icon,
@@ -176,7 +177,7 @@ fun WishlistItem.toExpenseTransaction(): Transaction {
         amount = this.price,
         transactionType = TransactionType.EXPENSE,
         categoryId = this.category?.id,
-        cardId = null, //todo satın alırken card eklenebilir sonra param ile maplerim
+        cardId = null, //atodo satın alırken card eklenebilir sonra param ile maplerim
         transactionDate = this.purchasedDate ?: getCurrentEpochMillis(),
         relatedTransactionId = null,
         installmentCount = null,

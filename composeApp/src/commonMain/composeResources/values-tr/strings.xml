@@ -328,8 +328,33 @@
 
     <!-- Analytics -->
     <string name="screen_name_analytics">İşlemlerim</string>
+    <string name="analytics_empty_screen_button">İlk işlemini ekle</string>
+    <string name="summary_income">Toplam Gelir</string>
+    <string name="summary_expense">Toplam Gider</string>
+    <string name="summary_refund">İadeler</string>
+    <string name="summary_balance">Net Bakiye</string>
+    <string name="currency_format">%1$d %2$s</string>
+
+    <string name="bar_chart_data_daily">📌 Bu grafikte her bir bar, 1 günlük verilerin toplamını gösterir</string>
+    <string name="bar_chart_data_weekly">📌 Bu grafikte her bir bar, 1 haftalık verilerin toplamını gösterir</string>
 
 
+    <string name="chart_category_analysis_income">📊 Kategori Analizi - Gelir</string>
+    <string name="chart_category_analysis_expense">📊 Kategori Analizi - Gider</string>
+    <string name="chart_category_analysis_refund">📊 Category Analysis - İade</string>
 
+    <string name="period_none">Yok</string>
+    <string name="period_week">Hafta</string>
+    <string name="period_month">Ay</string>
+    <string name="period_three_months">3 Ay</string>
+    <string name="period_six_months">6 Ay</string>
+    <string name="period_year">Yıl</string>
+    <string name="trend_analysis_title">📈 Gelir–Gider Trendi</string>
+
+    <string name="chart_type_line">Çizgi Grafiği</string>
+    <string name="chart_type_pie">Pasta Grafiği</string>
+    <string name="chart_type_bar">Çubuk Grafiği</string>
+    <string name="monthly_comparison_title">📅 Aylık Karşılaştırma</string>
+    <string name="top_transactions_title">🔝 En Büyük İşlemler</string>
 
 </resources>

@@ -1,6 +1,7 @@
 package com.yusufteker.worthy.core.domain.model
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import com.yusufteker.worthy.core.presentation.UiText
 import org.jetbrains.compose.resources.StringResource
 
@@ -50,6 +51,26 @@ data class Category @OptIn(ExperimentalTime::class) constructor(
 enum class CategoryType {
     INCOME, EXPENSE, WISHLIST
 }
+
+
+val categoryColorPalette = listOf(
+    Color(0xFF4CAF50),
+    Color(0xFFF44336),
+    Color(0xFFFFC107),
+    Color(0xFF2196F3),
+    Color(0xFF9C27B0),
+    Color(0xFFFF5722),
+    Color(0xFF3F51B5),
+    Color(0xFF00BCD4),
+    Color(0xFFE91E63),
+    Color(0xFF8BC34A)
+)
+
+// index'e göre renk seç
+fun getColorByIndex(index: Int): Color {
+    return categoryColorPalette[index % categoryColorPalette.size]
+}
+
 
 @Composable
 fun getResourceByKey(key: String): StringResource {

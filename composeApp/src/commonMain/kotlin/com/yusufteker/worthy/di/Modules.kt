@@ -87,7 +87,7 @@ val sharedModule = module {
     single<CurrencyRatesCacheDataSource> { CurrencyRatesCacheDataSourceImpl() }
     single<CurrencyRatesRemoteDataSource> { CurrencyRatesRemoteDataSourceImpl() }
     single<CardRepository> { CardRepositoryImpl(get()) }
-    single<AnalyticsRepository> { AnalyticsRepositoryImpl(get(), get(), get()) }
+    single<AnalyticsRepository> { AnalyticsRepositoryImpl(get(), get(), get(), get()) }
 
 
     viewModel { OnboardingViewModel(get()) }
@@ -99,5 +99,5 @@ val sharedModule = module {
     viewModel { AddCardViewModel(get()) }
     viewModel { CardListViewModel(get()) }
     viewModel { WishlistDetailViewModel() }
-    viewModel { AnalyticsViewModel(get()) }
+    viewModel { AnalyticsViewModel(get(), get()) }
 }

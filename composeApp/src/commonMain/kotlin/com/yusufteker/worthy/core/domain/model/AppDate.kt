@@ -4,9 +4,11 @@ import com.yusufteker.worthy.core.domain.getCurrentMonth
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.number
+import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.todayIn
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 data class AppDate(
     val year: Int, val month: Int, val day: Int? = null
@@ -26,7 +28,10 @@ data class AppDate(
     override fun toString(): String {
         return if (day != null) "$day/$month/$year" else "$month/$year"
     }
+
+
 }
+
 
 @OptIn(ExperimentalTime::class)
 fun currentAppDate(includeDay: Boolean = false): AppDate {
@@ -51,3 +56,14 @@ fun getLastSixMonths(): List<Int> {
         if (month <= 0) month + 12 else month
     }
 }
+@OptIn(ExperimentalTime::class)
+fun Long.toAppDate(): AppDate {
+    val localDateTime = Instant.fromEpochMilliseconds(this)
+        .toLocalDateTime(TimeZone.currentSystemDefault())
+    return AppDate(
+        year = localDateTime.year,
+        month = localDateTime.month.number,
+        day = localDateTime.day
+    )
+}
+

@@ -4,17 +4,14 @@ import androidx.lifecycle.viewModelScope
 import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.TransactionType
-import com.yusufteker.worthy.core.domain.repository.CategoryRepository
+import com.yusufteker.worthy.core.domain.model.toAppDate
 import com.yusufteker.worthy.core.domain.repository.TransactionRepository
 import com.yusufteker.worthy.core.presentation.UiEvent
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.ValidationResult
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
-import com.yusufteker.worthy.core.presentation.toAppDate
-import com.yusufteker.worthy.screen.card.add.domain.CardRepository
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.update
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.validation_amount_empty
 import worthy.composeapp.generated.resources.validation_category_empty
@@ -68,7 +65,13 @@ class AddTransactionViewModel(
                         )
                     }
 
-                    is TransactionFormAction.CardSelected -> {}
+                    is TransactionFormAction.CardSelected -> {
+                        _state.value = _state.value.copy(
+                            expenseForm = _state.value.expenseForm.copy(
+                                selectedCard = action.action.card
+                            )
+                        )
+                    }
                     is TransactionFormAction.CategoryChanged -> {
                         _state.value = _state.value.copy(
                             expenseForm = _state.value.expenseForm.copy(
@@ -201,7 +204,13 @@ class AddTransactionViewModel(
                         )
                     }
 
-                    is TransactionFormAction.NoteChanged -> {}
+                    is TransactionFormAction.NoteChanged -> {
+                        _state.value = _state.value.copy(
+                            incomeForm = _state.value.incomeForm.copy(
+                                note = action.action.note
+                            )
+                        )
+                    }
                     is TransactionFormAction.InstallmentCountChanged -> {
                         _state.value = _state.value.copy(
                             incomeForm = _state.value.incomeForm.copy(

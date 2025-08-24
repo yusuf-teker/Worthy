@@ -25,6 +25,7 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 fun Double.toRadians(): Double = this * PI / 180
+fun Double.toDegrees(): Double = this * 180.0 / kotlin.math.PI
 
 
 fun Float.formatTwoDecimals(): String {
@@ -121,7 +122,19 @@ fun getMonthName(month: Int): UiText {
             12 -> UiText.StringResourceId(Res.string.month_december)
             else -> UiText.StringResourceId(Res.string.month_january) // fallback
         }
+}
+@Composable
+fun getMonthShortName(month: Int): String {
+    return getMonthName(month).asString().take(3)
+}
 
+fun getMonthShortNameByLocale(month: Int, isTurkish: Boolean = true): String {
+    val trShort = listOf("Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara")
+    val enShort = listOf("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec")
+
+    return if (month in 1..12) {
+        if (isTurkish) trShort[month - 1] else enShort[month - 1]
+    } else ""
 }
 
 fun formatPercentageChange(value: Double): String {
@@ -134,13 +147,3 @@ fun formatPercentageChange(value: Double): String {
 }
 
 
-@OptIn(ExperimentalTime::class)
-fun Long.toAppDate(): AppDate {
-    val localDateTime = Instant.fromEpochMilliseconds(this)
-        .toLocalDateTime(TimeZone.currentSystemDefault())
-    return AppDate(
-        year = localDateTime.year,
-        month = localDateTime.month.number,
-        day = localDateTime.day
-    )
-}

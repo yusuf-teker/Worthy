@@ -1,26 +1,44 @@
 package com.yusufteker.worthy.screen.analytics.presentation.components
 
-
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.Alignment
 import com.yusufteker.worthy.core.domain.model.Card
 import com.yusufteker.worthy.core.domain.model.CardBrand
 import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.CategoryType
+import com.yusufteker.worthy.core.domain.model.getNameResource
+import com.yusufteker.worthy.screen.analytics.domain.TimePeriod
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -33,8 +51,8 @@ fun TransactionFilter(
     selectedCards: List<Card> = emptyList(),
     onCardSelected: (Card, Boolean) -> Unit,
 
-    selectedDateRange: DateRange = DateRange.ALL_TIME,
-    onDateRangeSelected: (DateRange) -> Unit,
+    selectedTimePeriod: TimePeriod = TimePeriod.NONE,
+    onSelectedTimePeriodSelected: (TimePeriod) -> Unit,
 
     clearFilters: () -> Unit,
     modifier: Modifier = Modifier
@@ -52,17 +70,17 @@ fun TransactionFilter(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             maxLines = 2
         ) {
-            DateRange.entries.forEach { range ->
-                val isSelected = range == selectedDateRange
+            TimePeriod.entries.forEach { timePeriod ->
+                val isSelected = timePeriod == selectedTimePeriod
                 Button(
-                    onClick = { onDateRangeSelected(range) },
+                    onClick = { onSelectedTimePeriodSelected(timePeriod) },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface
                     ),
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
                 ) {
                     Text(
-                        text = range.displayName,
+                        text = timePeriod.label.asString(),
                         color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                     )
                 }
@@ -78,13 +96,12 @@ fun TransactionFilter(
             onToggleExpanded = { isCategoryExpanded = !isCategoryExpanded }
         ) {
 
-
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(minSize = 100.dp), // minimum genişlik 100dp
                 modifier = Modifier.padding(8.dp),
                 contentPadding = PaddingValues(8.dp)
 
-            ){
+            ) {
                 items(categories) { category ->
                     val checked = selectedCategories.contains(category)
                     Row(
@@ -99,7 +116,7 @@ fun TransactionFilter(
                     ) {
                         Checkbox(checked = checked, onCheckedChange = null)
                         Spacer(Modifier.width(8.dp))
-                        Text(text = category.name)
+                        Text(text = category.getNameResource())
                     }
                 }
             }
@@ -131,18 +148,6 @@ fun TransactionFilter(
             }
         }
     }
-}
-
-// Tarih seçenekleri enum
-enum class DateRange(val displayName: String) {
-    ALL_TIME("NONE"),
-    TODAY("Bugün"),
-    ONE_MONTH("1 Ay"),
-    THREE_MONTHS("3 Ay"),
-    SIX_MONTHS("6 Ay"),
-    ONE_YEAR("1 Yıl"),
-    CUSTOM("Özel"),
-
 }
 
 @Composable
@@ -178,13 +183,29 @@ fun ExpandableFilterSection(
 @Preview
 @Composable
 fun TransactionFilterPreview() {
-    var selectedDateRange by remember { mutableStateOf(DateRange.TODAY) }
+    var selectedTimePeriod by remember { mutableStateOf(TimePeriod.NONE) }
     var selectedCategories by remember { mutableStateOf(listOf<Category>()) }
     var selectedCards by remember { mutableStateOf(listOf<Card>()) }
     val cards = listOf(
-        Card(id = 1, cardNumber = "1234 5678 9012 3456", cardHolderName = "", expiryYear = 1, expiryMonth = 2, cvv = "321", cardBrand = CardBrand.Mastercard),
-        Card(id = 2, cardNumber = "9",  expiryYear = 1, expiryMonth = 2, cardHolderName = "", cvv = "123", cardBrand = CardBrand.Mastercard)
+        Card(
+            id = 1,
+            cardNumber = "1234 5678 9012 3456",
+            cardHolderName = "",
+            expiryYear = 1,
+            expiryMonth = 2,
+            cvv = "321",
+            cardBrand = CardBrand.Mastercard
+        ),
+        Card(
+            id = 2,
+            cardNumber = "9",
+            expiryYear = 1,
+            expiryMonth = 2,
+            cardHolderName = "",
+            cvv = "123",
+            cardBrand = CardBrand.Mastercard
         )
+    )
     val categories = listOf(
         Category(id = 1, name = "Yiyecek", type = CategoryType.INCOME),
         Category(id = 2, name = "Ulaşım", type = CategoryType.INCOME),
@@ -195,8 +216,8 @@ fun TransactionFilterPreview() {
     TransactionFilter(
         categories = categories,
         selectedCategories = selectedCategories,
-        selectedDateRange = selectedDateRange,
-        onDateRangeSelected = { selectedDateRange = it },
+        selectedTimePeriod = selectedTimePeriod,
+        onSelectedTimePeriodSelected = { selectedTimePeriod = it },
         onCategorySelected = { category, selected ->
             selectedCategories = if (selected) selectedCategories + category
             else selectedCategories - category
@@ -210,7 +231,7 @@ fun TransactionFilterPreview() {
         clearFilters = {
             selectedCards = emptyList()
             selectedCategories = emptyList()
-            selectedDateRange = DateRange.ALL_TIME
+            selectedTimePeriod = TimePeriod.NONE
         }
     )
 }

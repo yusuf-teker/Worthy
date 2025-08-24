@@ -33,6 +33,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Money
+import com.yusufteker.worthy.core.domain.model.getNameResource
 import com.yusufteker.worthy.core.media.loadImageBitmapFromPath
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
@@ -112,7 +113,7 @@ fun WishlistItemCard(
                 item.category?.let {
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = it.name,
+                        text = it.getNameResource(),
                         style = AppTypography.labelSmall,
                         color = AppColors.onSurface.copy(alpha = 0.6f)
                     )

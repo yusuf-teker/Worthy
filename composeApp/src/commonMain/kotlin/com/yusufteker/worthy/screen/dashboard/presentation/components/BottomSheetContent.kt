@@ -40,6 +40,7 @@ import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.TransactionType
 import com.yusufteker.worthy.core.domain.model.emptyMoney
+import com.yusufteker.worthy.core.domain.model.getNameResource
 import com.yusufteker.worthy.core.domain.toEpochMillis
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.ValidationResult
@@ -164,7 +165,7 @@ fun BottomSheetContent(
             )
             {
                 OutlinedTextField(
-                    value = selectedCategory?.name
+                    value = selectedCategory?.getNameResource()
                         ?: UiText.StringResourceId(Res.string.bottom_sheet_select_category)
                             .asString(),
                     onValueChange = { },
@@ -217,7 +218,7 @@ fun BottomSheetContent(
                                 ) {
                                     CategoryIcon(iconName = category.icon)
                                     Spacer(Modifier.width(12.dp))
-                                    Text(category.name)
+                                    Text(category.getNameResource())
                                 }
                             },
                             onClick = {

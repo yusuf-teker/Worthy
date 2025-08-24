@@ -1,24 +1,35 @@
-        package com.yusufteker.worthy.screen.analytics.presentation
-        
-        import com.yusufteker.worthy.core.domain.model.Card
-        import com.yusufteker.worthy.core.domain.model.Category
-        import com.yusufteker.worthy.core.domain.model.Transaction
-        import com.yusufteker.worthy.core.presentation.base.BaseState
-        import com.yusufteker.worthy.screen.analytics.presentation.components.DateRange
+package com.yusufteker.worthy.screen.analytics.presentation
 
-        data class AnalyticsState(
-            override val isLoading: Boolean = false,
-            val errorMessage: String? = null,
-            val categories: List<Category> = emptyList(),
-            val cards: List<Card> = emptyList(),
-            val selectedCategories: List<Category> = emptyList(),
-            val selectedCards: List<Card> = emptyList(),
-            val selectedDateRange: DateRange = DateRange.ALL_TIME,
+import com.yusufteker.worthy.core.domain.model.Card
+import com.yusufteker.worthy.core.domain.model.Category
+import com.yusufteker.worthy.core.domain.model.Currency
+import com.yusufteker.worthy.core.domain.model.Transaction
+import com.yusufteker.worthy.core.presentation.base.BaseState
+import com.yusufteker.worthy.screen.analytics.domain.TimePeriod
+import com.yusufteker.worthy.screen.analytics.presentation.components.ChartType
 
-            val transactions: List<Transaction> = emptyList()
+enum class AnalyticsViewMode {
+    LIST,
+    CHART
+}
 
-        ): BaseState{
-            override fun copyWithLoading(isLoading: Boolean): BaseState {
-            return this.copy(isLoading = isLoading)
-        }
+data class AnalyticsState(
+    override val isLoading: Boolean = false,
+    val errorMessage: String? = null,
+    val categories: List<Category> = emptyList(),
+    val cards: List<Card> = emptyList(),
+    val selectedCategories: List<Category> = emptyList(),
+    val selectedCards: List<Card> = emptyList(),
+    val selectedTimePeriod: TimePeriod = TimePeriod.WEEK,
+    val filteredTransactions: List<Transaction> = emptyList(),
+    val transactions: List<Transaction> = emptyList(),
+    val monthlyComparisonLast6MonthConvertedTransactions: List<Transaction> = emptyList(),
+    val viewMode: AnalyticsViewMode = AnalyticsViewMode.LIST,
+    val selectedChart: ChartType = ChartType.LINE_CHART,
+    val selectedCurrency: Currency = Currency.TRY
+
+) : BaseState {
+    override fun copyWithLoading(isLoading: Boolean): BaseState {
+        return this.copy(isLoading = isLoading)
+    }
 }

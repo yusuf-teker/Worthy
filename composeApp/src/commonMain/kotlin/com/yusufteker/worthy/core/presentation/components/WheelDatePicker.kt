@@ -35,6 +35,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import com.yusufteker.worthy.core.domain.isLeapYear
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
@@ -221,6 +222,5 @@ private fun monthLength(year: Int, month: Int): Int {
     }
 }
 
-private fun isLeapYear(year: Int) = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)
 
 

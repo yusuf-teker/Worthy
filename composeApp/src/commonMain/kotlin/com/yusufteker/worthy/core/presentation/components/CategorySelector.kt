@@ -66,7 +66,7 @@ fun CategorySelector(
         expanded = expanded, onExpandedChange = { expanded = !expanded }, modifier = modifier
     ) {
         OutlinedTextField(
-            value = selectedCategory?.name ?: "",
+            value = selectedCategory?.getNameResource() ?: "",
             onValueChange = {},
             readOnly = true,
             label = { Text(UiText.StringResourceId(Res.string.category_label).asString()) },

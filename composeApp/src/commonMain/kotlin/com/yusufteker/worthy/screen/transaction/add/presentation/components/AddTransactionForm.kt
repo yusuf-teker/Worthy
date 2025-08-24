@@ -174,7 +174,7 @@ fun AddTransactionForm(
                                 label = UiText.StringResourceId(Res.string.installment_count_label)
                                     .asString(),
                                 value = state.installmentCount,
-                                range = 0..MAX_INSTALLMENT_COUNT,
+                                range = 1..MAX_INSTALLMENT_COUNT,
                                 step = 1,
                                 onValueChange = {
                                     onInstallmentCountChange(it)
