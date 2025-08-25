@@ -104,7 +104,7 @@ fun CategorySelector(
                 Text(
                     text = UiText.StringResourceId(Res.string.add_new_category).asString(),
                     fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.primary
+                    color = AppColors.primary
                 )
             }, onClick = {
                 expanded = false

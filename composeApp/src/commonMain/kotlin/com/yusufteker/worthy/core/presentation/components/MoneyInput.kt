@@ -31,7 +31,7 @@ import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.amount
 
 @Composable
-fun MoneyInput(
+fun MoneyInput( // TODO KÜSÜRAT KISMINDA EKSIKLIKLER VAR
     money: Money? = emptyMoney(),
     onValueChange: (Money?) -> Unit,
     modifier: Modifier = Modifier,

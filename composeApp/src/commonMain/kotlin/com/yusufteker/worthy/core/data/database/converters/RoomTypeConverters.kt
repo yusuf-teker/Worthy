@@ -6,6 +6,7 @@ import com.yusufteker.worthy.core.domain.model.CategoryType
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.TransactionType
+import com.yusufteker.worthy.screen.subscription.domain.model.SubscriptionCategory
 
 class RoomTypeConverters {
     @TypeConverter
@@ -47,6 +48,16 @@ class RoomTypeConverters {
     @TypeConverter
     fun toTransactionType(value: String): TransactionType {
         return TransactionType.valueOf(value)
+    }
+
+    @TypeConverter
+    fun fromCategory(category: SubscriptionCategory?): String? {
+        return category?.name
+    }
+
+    @TypeConverter
+    fun toCategory(value: String?): SubscriptionCategory? {
+        return value?.let { SubscriptionCategory.valueOf(it) }
     }
 
 }

@@ -1,5 +1,6 @@
 package com.yusufteker.worthy.core.domain
 
+import com.yusufteker.worthy.core.domain.model.AppDate
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
@@ -46,6 +47,10 @@ fun getCurrentEpochMillis(): Long {
 @OptIn(ExperimentalTime::class)
 fun getCurrentYear(): Int {
     return Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year
+}
+
+fun getCurrentAppDate(): AppDate{
+    return AppDate(getCurrentYear(), getCurrentMonth())
 }
 
 fun isLeapYear(year: Int) = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)

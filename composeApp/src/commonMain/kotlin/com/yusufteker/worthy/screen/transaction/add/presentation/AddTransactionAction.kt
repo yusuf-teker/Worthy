@@ -1,6 +1,6 @@
 package com.yusufteker.worthy.screen.addtransaction.presentation
 
-import com.yusufteker.worthy.core.domain.model.Card
+import com.yusufteker.worthy.screen.card.domain.model.Card
 import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.Money
 

@@ -41,7 +41,8 @@ import com.yusufteker.worthy.core.presentation.components.AppTopBar
 import com.yusufteker.worthy.core.presentation.components.EmptyScreen
 import com.yusufteker.worthy.core.presentation.components.SwipeToDeleteWrapper
 import com.yusufteker.worthy.core.presentation.theme.AppColors
-import com.yusufteker.worthy.screen.analytics.domain.TimePeriod
+import com.yusufteker.worthy.core.presentation.theme.Constants.EMPTY_SCREEN_SIZE
+import com.yusufteker.worthy.screen.analytics.domain.model.TimePeriod
 import com.yusufteker.worthy.screen.analytics.presentation.AnalyticsAction.OnItemDelete
 import com.yusufteker.worthy.screen.analytics.presentation.components.BarChart
 import com.yusufteker.worthy.screen.analytics.presentation.components.CategoryAnalysisPager
@@ -140,7 +141,7 @@ fun AnalyticsScreen(
                         Icon(
                             painter = painterResource(Res.drawable.transaction),
                             contentDescription = "Add Transaction",
-                            modifier = Modifier.size(192.dp)
+                            modifier = Modifier.size(EMPTY_SCREEN_SIZE)
                         )
                     },
                     buttonText = UiText.StringResourceId(Res.string.analytics_empty_screen_button)

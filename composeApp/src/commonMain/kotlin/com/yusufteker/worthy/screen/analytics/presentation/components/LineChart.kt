@@ -47,8 +47,9 @@ import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.TransactionType
 import com.yusufteker.worthy.core.domain.model.toAppDate
 import com.yusufteker.worthy.core.presentation.getMonthShortNameByLocale
+import com.yusufteker.worthy.core.presentation.theme.AppTypography
 import com.yusufteker.worthy.core.presentation.util.formatMoneyText
-import com.yusufteker.worthy.screen.analytics.domain.TimePeriod
+import com.yusufteker.worthy.screen.analytics.domain.model.TimePeriod
 import kotlin.math.abs
 import kotlin.math.absoluteValue
 import kotlin.math.pow
@@ -342,19 +343,19 @@ fun LineChart(
                     Text(
                         text = "${point.date.toAppDate()}",
                         color = Color.White,
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = AppTypography.bodyMedium,
 
                         )
                     Text(
                         text = "${point.value.formatMoneyText()} ${currency.symbol}",
                         color = Color.White,
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = AppTypography.bodyMedium,
                     )
                 }
             }
         } else {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("Veri yok", style = MaterialTheme.typography.bodyLarge)
+                Text("Veri yok", style = AppTypography.bodyLarge)
             }
         }
     }

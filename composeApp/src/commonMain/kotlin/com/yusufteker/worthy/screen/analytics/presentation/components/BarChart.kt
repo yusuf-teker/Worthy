@@ -29,7 +29,7 @@ import com.yusufteker.worthy.core.domain.model.toAppDate
 import com.yusufteker.worthy.core.domain.toEpochMillis
 import com.yusufteker.worthy.core.presentation.getMonthShortNameByLocale
 import com.yusufteker.worthy.core.presentation.util.formatMoneyText
-import com.yusufteker.worthy.screen.analytics.domain.TimePeriod
+import com.yusufteker.worthy.screen.analytics.domain.model.TimePeriod
 import kotlinx.datetime.*
 import kotlin.time.ExperimentalTime
 

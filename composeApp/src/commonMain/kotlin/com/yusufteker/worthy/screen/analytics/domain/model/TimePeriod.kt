@@ -1,4 +1,4 @@
-package com.yusufteker.worthy.screen.analytics.domain
+package com.yusufteker.worthy.screen.analytics.domain.model
 
 import com.yusufteker.worthy.core.presentation.UiText
 import worthy.composeapp.generated.resources.Res

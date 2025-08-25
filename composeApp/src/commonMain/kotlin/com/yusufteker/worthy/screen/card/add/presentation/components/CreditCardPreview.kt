@@ -26,7 +26,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.yusufteker.worthy.core.domain.model.CardBrand
+import com.yusufteker.worthy.screen.card.domain.model.CardBrand
 import com.yusufteker.worthy.core.presentation.components.ResponsiveText
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
 

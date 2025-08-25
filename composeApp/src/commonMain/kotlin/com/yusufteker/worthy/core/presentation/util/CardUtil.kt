@@ -5,7 +5,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
-import com.yusufteker.worthy.core.domain.model.CardBrand
+import com.yusufteker.worthy.screen.card.domain.model.CardBrand
 import kotlin.math.min
 
 

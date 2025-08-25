@@ -6,8 +6,8 @@ import com.yusufteker.worthy.core.domain.getCurrentEpochMillis
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.service.CurrencyConverter
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
-import com.yusufteker.worthy.screen.analytics.domain.AnalyticsRepository
-import com.yusufteker.worthy.screen.analytics.domain.TimePeriod
+import com.yusufteker.worthy.screen.analytics.domain.repository.AnalyticsRepository
+import com.yusufteker.worthy.screen.analytics.domain.model.TimePeriod
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update

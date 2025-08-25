@@ -26,6 +26,8 @@ import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.TransactionType
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.formatTwoDecimals
+import com.yusufteker.worthy.core.presentation.theme.AppColors
+import com.yusufteker.worthy.core.presentation.theme.AppTypography
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.top_transactions_title
 
@@ -41,7 +43,7 @@ fun TopTransactionsCard(transactions: List<Transaction>) {
         ) {
             Text(
                 text = UiText.StringResourceId(Res.string.top_transactions_title).asString(),
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                style = AppTypography.titleLarge.copy(fontWeight = FontWeight.Bold)
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -90,7 +92,7 @@ fun TopTransactionItem(transaction: Transaction, rank: Int) {
         ) {
             Text(
                 text = rank.toString(),
-                style = MaterialTheme.typography.labelSmall.copy(
+                style = AppTypography.labelSmall.copy(
                     fontWeight = FontWeight.Bold,
                     color = typeColor
                 )
@@ -106,13 +108,13 @@ fun TopTransactionItem(transaction: Transaction, rank: Int) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = transaction.name,
-                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium)
+                style = AppTypography.bodyMedium.copy(fontWeight = FontWeight.Medium)
             )
             if (transaction.note != null) {
                 Text(
                     text = transaction.note!!,
-                    style = MaterialTheme.typography.labelSmall.copy(
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    style = AppTypography.labelSmall.copy(
+                        color = AppColors.onSurface.copy(alpha = 0.7f)
                     )
                 )
             }
@@ -120,7 +122,7 @@ fun TopTransactionItem(transaction: Transaction, rank: Int) {
 
         Text(
             text = "${(transaction.amount.amount).formatTwoDecimals()} ${transaction.amount.currency.symbol}",
-            style = MaterialTheme.typography.bodyMedium.copy(
+            style = AppTypography.bodyMedium.copy(
                 fontWeight = FontWeight.Bold,
                 color = typeColor
             )

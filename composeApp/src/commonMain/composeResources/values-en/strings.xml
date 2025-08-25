@@ -146,6 +146,8 @@
     <string name="desire">Desire</string>
     <string name="none">None</string>
     <string name="repeat_day">Repeat Day</string>
+    <string name="menu_subscriptions">Subscriptions</string>
+
 
 
     <!-- Currency -->
@@ -366,5 +368,22 @@
     <string name="chart_type_bar">Bar Chart</string>
     <string name="monthly_comparison_title">📅 Monthly Comparison</string>
     <string name="top_transactions_title">🔝 Top Transactions</string>
+
+    <!-- Subscription -->
+    <string name="screen_title_subscription_list">My Subscriptions</string>
+    <string name="subscription_empty_screen_button">Add Subscription 🎧🍿</string>
+    <string name="screen_title_add_new_subscription">Add Subscription</string>
+    <string name="category_video">Video</string>
+    <string name="category_music">Music</string>
+    <string name="category_software">Software</string>
+    <string name="category_game">Game</string>
+    <string name="category_other">Other</string>
+    <string name="monthly_price">Monthly Price</string>
+    <string name="service_name">Service Name</string>
+
+    <string name="subscription_start_date">Subscription Start</string>
+    <string name="subscription_end_date">Subscription End</string>
+    <string name="toggle_optional_info_show">Show optional informations</string>
+    <string name="toggle_optional_info_hide">Hide optional informations</string>
 
 </resources>

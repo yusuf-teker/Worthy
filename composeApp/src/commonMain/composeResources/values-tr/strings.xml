@@ -146,6 +146,8 @@
     <string name="desire">İstek</string>
     <string name="none">Yok</string>
     <string name="repeat_day">Tekrarlama günü</string>
+    <string name="menu_subscriptions">Abonelikler</string>
+
 
     <!-- Currency -->
     <string name="currency_try">Türk Lirası</string>
@@ -356,5 +358,26 @@
     <string name="chart_type_bar">Çubuk Grafiği</string>
     <string name="monthly_comparison_title">📅 Aylık Karşılaştırma</string>
     <string name="top_transactions_title">🔝 En Büyük İşlemler</string>
+
+
+    <!-- Subscription -->
+    <string name="screen_title_subscription_list">Aboneliklerim</string>
+    <string name="subscription_empty_screen_button">Abonelik Ekle 🎧🍿</string>
+    <string name="screen_title_add_new_subscription">Abonelik Ekle</string>
+
+    <string name="category_video">Video</string>
+    <string name="category_music">Müzik</string>
+    <string name="category_software">Yazılım</string>
+    <string name="category_game">Oyun</string>
+    <string name="category_other">Diğer</string>
+    <string name="monthly_price">Aylık Ücret</string>
+    <string name="service_name">Hizmet Adı</string>
+
+    <string name="subscription_start_date">Abonelik Başlangıç</string>
+    <string name="subscription_end_date">Abonelik Bitiş</string>
+
+    <string name="toggle_optional_info_show">Opsiyonel bilgileri göster</string>
+    <string name="toggle_optional_info_hide">Opsiyonel bilgileri gizle</string>
+
 
 </resources>

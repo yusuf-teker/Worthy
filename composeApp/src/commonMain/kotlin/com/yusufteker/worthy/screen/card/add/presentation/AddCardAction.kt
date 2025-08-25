@@ -1,6 +1,6 @@
 package com.yusufteker.worthy.screen.card.add.presentation
 
-import com.yusufteker.worthy.core.domain.model.Card
+import com.yusufteker.worthy.screen.card.domain.model.Card
 
 sealed interface AddCardAction {
     object Init : AddCardAction

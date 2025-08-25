@@ -9,12 +9,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
-import com.yusufteker.worthy.core.domain.model.Card
-import com.yusufteker.worthy.core.domain.model.CardBrand
+import com.yusufteker.worthy.screen.card.domain.model.Card
+import com.yusufteker.worthy.screen.card.domain.model.CardBrand
 import com.yusufteker.worthy.core.presentation.util.groupEvery4
 import com.yusufteker.worthy.screen.card.add.presentation.components.CreditCardPreview
 import org.jetbrains.compose.ui.tooling.preview.Preview

@@ -234,7 +234,7 @@ fun RecurringItemRow(
     onDelete: (String) -> Unit
 ) {
     Column(Modifier.padding(vertical = 8.dp)) {
-        Text(name, style = MaterialTheme.typography.titleMedium)
+        Text(name, style = AppTypography.titleMedium)
         versions.sortedByDescending { it.startDate.year * 100 + it.startDate.month }
             .forEach { item ->
                 Row(
@@ -825,7 +825,7 @@ fun ExistingRecurringItemCard(
                 Text(
                     text = it,
                     color = AppColors.error,
-                    style = MaterialTheme.typography.bodySmall,
+                    style = AppTypography.bodySmall,
                     modifier = Modifier.padding(top = 4.dp)
                 )
             }
@@ -858,7 +858,7 @@ fun NewRecurringItemInput(
 
         Text(
             UiText.StringResourceId(Res.string.new_amount).asString(),
-            style = MaterialTheme.typography.titleMedium
+            style = AppTypography.titleMedium
         )
 
 
@@ -906,7 +906,7 @@ fun NewRecurringItemInput(
             Text(
                 text = errorMessage,
                 color = Color.Red,
-                style = MaterialTheme.typography.bodySmall,
+                style = AppTypography.bodySmall,
                 modifier = Modifier.padding(top = 4.dp)
             )
             Spacer(Modifier.height(8.dp))

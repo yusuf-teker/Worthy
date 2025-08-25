@@ -1,8 +1,8 @@
 package com.yusufteker.worthy.screen.analytics.presentation
 
-import com.yusufteker.worthy.core.domain.model.Card
+import com.yusufteker.worthy.screen.card.domain.model.Card
 import com.yusufteker.worthy.core.domain.model.Category
-import com.yusufteker.worthy.screen.analytics.domain.TimePeriod
+import com.yusufteker.worthy.screen.analytics.domain.model.TimePeriod
 import com.yusufteker.worthy.screen.analytics.presentation.components.ChartType
 
 sealed interface AnalyticsAction {

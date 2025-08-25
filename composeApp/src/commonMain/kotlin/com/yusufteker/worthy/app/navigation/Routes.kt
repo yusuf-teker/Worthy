@@ -60,6 +60,15 @@ sealed class Routes(
     @Serializable
     data object Back : Routes("Back")
 
+    @Serializable
+    data object SubscriptionGraph : Routes("SubscriptionGraph")
+
+    @Serializable
+    data object SubscriptionList : Routes("SubscriptionList")
+
+    @Serializable
+    data object AddSubscription : Routes("AddSubscription")
+
 }
 
 fun Routes.isAddTransaction(): Boolean {

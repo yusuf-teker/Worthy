@@ -1,15 +1,18 @@
 package com.yusufteker.worthy.core.data.database.mappers
 
-import com.yusufteker.worthy.core.data.database.entities.CardEntity
+import com.yusufteker.worthy.screen.card.data.database.entities.CardEntity
 import com.yusufteker.worthy.core.data.database.entities.CategoryEntity
 import com.yusufteker.worthy.core.data.database.entities.RecurringFinancialItemEntity
 import com.yusufteker.worthy.core.data.database.entities.TransactionEntity
 import com.yusufteker.worthy.core.domain.getCurrentEpochMillis
-import com.yusufteker.worthy.core.domain.model.Card
+import com.yusufteker.worthy.screen.card.domain.model.Card
 import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.RecurringFinancialItem
 import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.TransactionType
+import com.yusufteker.worthy.screen.subscription.data.database.entities.SubscriptionEntity
+import com.yusufteker.worthy.screen.subscription.domain.model.Subscription
+import com.yusufteker.worthy.screen.subscription.domain.model.SubscriptionCategory
 import com.yusufteker.worthy.screen.wishlist.list.data.database.entities.WishlistItemEntity
 import com.yusufteker.worthy.screen.wishlist.list.data.database.relation.WishlistWithCategory
 import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistItem
@@ -182,5 +185,37 @@ fun WishlistItem.toExpenseTransaction(): Transaction {
         relatedTransactionId = null,
         installmentCount = null,
         installmentStartDate = null
+    )
+}
+
+
+fun SubscriptionEntity.toDomain(): Subscription {
+    return Subscription(
+        id = id,
+        name = name,
+        icon = icon,
+        category = category?.let { SubscriptionCategory.valueOf(it) },
+        customCategoryName = if (category == null) name else null,
+        money = money,
+        startDate = startDate,
+        endDate = endDate,
+        scheduledDay = scheduledDay,
+        cardId = cardId,
+        color = color
+    )
+}
+
+fun Subscription.toEntity(): SubscriptionEntity {
+    return SubscriptionEntity(
+        id = id,
+        name = name,
+        icon = icon,
+        category = category?.name,
+        money = money,
+        startDate = startDate,
+        endDate = endDate,
+        scheduledDay = scheduledDay,
+        cardId = cardId,
+        color = color
     )
 }

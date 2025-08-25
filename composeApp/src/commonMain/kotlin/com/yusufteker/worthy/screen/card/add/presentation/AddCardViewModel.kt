@@ -1,9 +1,7 @@
 package com.yusufteker.worthy.screen.card.add.presentation
 
-import androidx.lifecycle.viewModelScope
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
-import com.yusufteker.worthy.screen.card.add.domain.CardRepository
-import kotlinx.coroutines.launch
+import com.yusufteker.worthy.screen.card.domain.repository.CardRepository
 
 class AddCardViewModel(
     private val cardRepository: CardRepository

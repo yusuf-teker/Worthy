@@ -23,8 +23,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
-import androidx.navigation.NavDestination
-import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -45,6 +43,8 @@ import com.yusufteker.worthy.screen.dashboard.presentation.DashboardScreenRoot
 import com.yusufteker.worthy.screen.onboarding.domain.OnboardingManager
 import com.yusufteker.worthy.screen.onboarding.presentation.OnboardingScreenRoot
 import com.yusufteker.worthy.screen.settings.presentation.SettingsScreenRoot
+import com.yusufteker.worthy.screen.subscription.add.presentation.AddSubscriptionScreenRoot
+import com.yusufteker.worthy.screen.subscription.list.presentation.SubscriptionListScreenRoot
 import com.yusufteker.worthy.screen.transaction.add.presentation.components.AddFabMenu
 import com.yusufteker.worthy.screen.wallet.presentation.WalletScreenRoot
 import com.yusufteker.worthy.screen.wishlist.add.presentation.WishlistAddScreenRoot
@@ -258,6 +258,29 @@ fun AppNavHost(
                                 navController.navigateTo(route)
                             }
                         )
+                    }
+
+                    navigation<Routes.SubscriptionGraph>(
+                        startDestination = Routes.SubscriptionList
+                    ) {
+
+                        composable<Routes.SubscriptionList> {
+                            SubscriptionListScreenRoot(
+                                contentPadding = innerPadding,
+                                onNavigateTo = { route ->
+                                    navController.navigateTo(route)
+                                }
+                            )
+                        }
+
+                        composable<Routes.AddSubscription> {
+                            AddSubscriptionScreenRoot(
+                                contentPadding = innerPadding,
+                                onNavigateTo = { route ->
+                                    navController.navigateTo(route)
+                                }
+                            )
+                        }
                     }
                 }
             }

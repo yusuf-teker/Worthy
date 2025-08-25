@@ -3,7 +3,7 @@ package com.yusufteker.worthy.screen.card.list.presentation
 import androidx.lifecycle.viewModelScope
 import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
-import com.yusufteker.worthy.screen.card.add.domain.CardRepository
+import com.yusufteker.worthy.screen.card.domain.repository.CardRepository
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update

@@ -25,8 +25,8 @@ fun ThemeColorPreview() {
             
         ) {
             Spacer(Modifier.width(100.dp))
-            Text(text = "Light", style = MaterialTheme.typography.labelLarge)
-            Text(text = "Dark", style = MaterialTheme.typography.labelLarge)
+            Text(text = "Light", style = AppTypography.labelLarge)
+            Text(text = "Dark", style = AppTypography.labelLarge)
         }
         Spacer(modifier = Modifier.height(8.dp))
 

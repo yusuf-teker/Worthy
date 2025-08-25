@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.yusufteker.worthy.core.domain.getCurrentYear
 import com.yusufteker.worthy.core.presentation.UiText
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.month
@@ -23,8 +24,8 @@ fun DateSelector(
     onMonthChanged: (Int) -> Unit,
     year: Int?,
     onYearChanged: (Int) -> Unit,
-    months: List<Int>,
-    years: List<Int>
+    months: List<Int> = (1..12).toList(),
+    years: List<Int> = (getCurrentYear() -10..getCurrentYear()+10).toList()
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,

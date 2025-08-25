@@ -1,10 +1,10 @@
-package com.yusufteker.worthy.screen.card.add.data
+package com.yusufteker.worthy.screen.card.data.database.repository
 
 import com.yusufteker.worthy.core.data.database.mappers.toDomain
 import com.yusufteker.worthy.core.data.database.mappers.toEntity
-import com.yusufteker.worthy.core.data.database.model.CardDao
-import com.yusufteker.worthy.core.domain.model.Card
-import com.yusufteker.worthy.screen.card.add.domain.CardRepository
+import com.yusufteker.worthy.screen.card.data.database.model.CardDao
+import com.yusufteker.worthy.screen.card.domain.model.Card
+import com.yusufteker.worthy.screen.card.domain.repository.CardRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

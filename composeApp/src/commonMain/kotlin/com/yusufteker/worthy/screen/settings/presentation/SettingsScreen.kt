@@ -54,8 +54,10 @@ import worthy.composeapp.generated.resources.label_fixed_expenses
 import worthy.composeapp.generated.resources.label_income_sources
 import worthy.composeapp.generated.resources.label_savings
 import worthy.composeapp.generated.resources.label_weekly_work_hours
+import worthy.composeapp.generated.resources.menu_subscriptions
 import worthy.composeapp.generated.resources.my_cards
 import worthy.composeapp.generated.resources.screen_title_settings
+import worthy.composeapp.generated.resources.subscription
 
 @Composable
 fun SettingsScreenRoot(
@@ -221,6 +223,11 @@ fun SettingsScreen(
             iconPainter = painterResource(Res.drawable.card),
             text = UiText.StringResourceId(Res.string.my_cards).asString(),
             onClick = { onAction(SettingsAction.OnMyCardsClick) }
+        )
+        MenuRow(
+            iconPainter = painterResource(Res.drawable.subscription),
+            text = UiText.StringResourceId(Res.string.menu_subscriptions).asString(),
+            onClick = { onAction(SettingsAction.OnSubscriptionsClick) }
         )
 
 

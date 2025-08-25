@@ -1,6 +1,6 @@
 package com.yusufteker.worthy.screen.card.list.presentation
         
-        import com.yusufteker.worthy.core.domain.model.Card
+        import com.yusufteker.worthy.screen.card.domain.model.Card
         import com.yusufteker.worthy.core.presentation.base.BaseState
 
         data class CardListState(

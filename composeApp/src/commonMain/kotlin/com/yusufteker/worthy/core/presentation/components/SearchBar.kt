@@ -32,6 +32,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
+import com.yusufteker.worthy.core.presentation.theme.AppColors
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -40,7 +41,7 @@ fun SearchBar(
     onTextChange: (String) -> Unit,
     onSearch: () -> Unit,
     onClear: () -> Unit,
-    color: Color = MaterialTheme.colorScheme.background
+    color: Color = AppColors.background
 ) {
 
     var isTextFieldFocused by remember { mutableStateOf(false) }

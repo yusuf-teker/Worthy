@@ -5,6 +5,8 @@ object Constants {
     const val WEEKLY_MAX_HOURS = 84
     const val MAX_INSTALLMENT_COUNT = 36
 
+    val EMPTY_SCREEN_SIZE = 192.dp
+
     val fabIconSize = 48.dp
     val bottomNavItemIconSize = 24.dp
 

@@ -47,6 +47,7 @@ import com.yusufteker.worthy.core.presentation.ValidationResult
 import com.yusufteker.worthy.core.presentation.components.AppButton
 import com.yusufteker.worthy.core.presentation.components.CategoryIcon
 import com.yusufteker.worthy.core.presentation.components.MoneyInput
+import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppColors.secondaryButtonColors
 import com.yusufteker.worthy.core.presentation.util.hideKeyboard
 import io.github.aakira.napier.Napier
@@ -148,7 +149,7 @@ fun BottomSheetContent(
                     nameError?.let {
                         Text(
                             text = it.asString(),
-                            color = androidx.compose.material3.MaterialTheme.colorScheme.error
+                            color = AppColors.error
                         )
                     }
                 }
@@ -199,7 +200,7 @@ fun BottomSheetContent(
                         categoryError?.let {
                             Text(
                                 text = it.asString(),
-                                color = androidx.compose.material3.MaterialTheme.colorScheme.error
+                                color = AppColors.error
                             )
                         }
                     }

@@ -30,7 +30,7 @@ import com.yusufteker.worthy.core.domain.model.TransactionType
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
-import com.yusufteker.worthy.screen.analytics.domain.TimePeriod
+import com.yusufteker.worthy.screen.analytics.domain.model.TimePeriod
 import kotlinx.coroutines.delay
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.currency_format

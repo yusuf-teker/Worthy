@@ -18,8 +18,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.yusufteker.worthy.core.domain.model.Card
+import com.yusufteker.worthy.screen.card.domain.model.Card
 import com.yusufteker.worthy.core.presentation.UiText
+import com.yusufteker.worthy.core.presentation.theme.AppColors
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.add_new_card
 import worthy.composeapp.generated.resources.card_selector_label
@@ -82,7 +83,7 @@ fun CardSelector(
                     Text(
                         text = UiText.StringResourceId(Res.string.add_new_card).asString(),
                         fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.primary
+                        color = AppColors.primary
                     )
                 },
                 onClick = {

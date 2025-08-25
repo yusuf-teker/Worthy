@@ -9,6 +9,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
+import com.yusufteker.worthy.core.presentation.theme.AppColors
 
 const val TEXT_SCALE_REDUCTION_INTERVAL = 0.9f
 
@@ -16,7 +17,7 @@ const val TEXT_SCALE_REDUCTION_INTERVAL = 0.9f
 fun ResponsiveText(
     modifier: Modifier = Modifier,
     text: String,
-    color: Color = MaterialTheme.colorScheme.onBackground,
+    color: Color = AppColors.onBackground,
     textAlign: TextAlign = TextAlign.Center,
     textStyle: TextStyle = TextStyle.Default,
     onTextSizeChanged: (TextUnit) -> Unit,

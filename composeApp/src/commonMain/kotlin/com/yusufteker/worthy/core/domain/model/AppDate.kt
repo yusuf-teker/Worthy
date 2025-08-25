@@ -12,7 +12,7 @@ import kotlin.time.Instant
 
 data class AppDate(
     val year: Int, val month: Int, val day: Int? = null
-) {
+): Comparable<AppDate> {
     fun previousMonth(): AppDate {
         val newMonth = if (month > 1) month - 1 else 12
         val newYear = if (month > 1) year else year - 1
@@ -29,6 +29,11 @@ data class AppDate(
         return if (day != null) "$day/$month/$year" else "$month/$year"
     }
 
+    override fun compareTo(other: AppDate): Int {
+        if (year != other.year) return year - other.year
+        if (month != other.month) return month - other.month
+        return (day ?: 0) - (other.day ?: 0)
+    }
 
 }
 
@@ -47,7 +52,10 @@ fun AppDate.getLastMonth(): AppDate {
     } else {
         return this.copy(year = this.year - 1, 12)
     }
+}
 
+fun AppDate.toRoomInt(): Int {
+    return this.year * 100 + this.month
 }
 
 fun getLastSixMonths(): List<Int> {
@@ -66,4 +74,5 @@ fun Long.toAppDate(): AppDate {
         day = localDateTime.day
     )
 }
+
 

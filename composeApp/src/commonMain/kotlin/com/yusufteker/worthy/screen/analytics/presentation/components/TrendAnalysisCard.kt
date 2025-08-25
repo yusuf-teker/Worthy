@@ -37,7 +37,8 @@ import com.yusufteker.worthy.core.domain.getCurrentEpochMillis
 import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.TransactionType
 import com.yusufteker.worthy.core.presentation.UiText
-import com.yusufteker.worthy.screen.analytics.domain.TimePeriod
+import com.yusufteker.worthy.core.presentation.theme.AppTypography
+import com.yusufteker.worthy.screen.analytics.domain.model.TimePeriod
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.expense
 import worthy.composeapp.generated.resources.income
@@ -55,7 +56,7 @@ fun TrendAnalysisCard(
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = UiText.StringResourceId(Res.string.trend_analysis_title).asString(),
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                style = AppTypography.titleLarge.copy(fontWeight = FontWeight.Bold)
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -137,7 +138,7 @@ fun LegendItem(label: String, color: Color) {
                 .background(color, CircleShape)
         )
         Spacer(modifier = Modifier.width(4.dp))
-        Text(text = label, style = MaterialTheme.typography.labelSmall)
+        Text(text = label, style = AppTypography.labelSmall)
     }
 }
 

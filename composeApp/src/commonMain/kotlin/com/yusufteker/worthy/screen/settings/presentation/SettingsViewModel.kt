@@ -262,8 +262,12 @@ class SettingsViewModel(
                 }
             }
 
-            SettingsAction.OnMyCardsClick -> {
+            is SettingsAction.OnMyCardsClick -> {
                 sendUiEventSafe(UiEvent.NavigateTo(Routes.CardGraph))
+            }
+            is SettingsAction.OnSubscriptionsClick -> {
+                sendUiEventSafe(UiEvent.NavigateTo(Routes.SubscriptionGraph))
+
             }
         }
 

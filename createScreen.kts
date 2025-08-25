@@ -3,7 +3,7 @@
 import java.io.File
 
 
-val screenName = "Analytics"//args.getOrNull(0) ?: error("Ekran adı girilmedi")
+val screenName = "AddSubscription"//args.getOrNull(0) ?: error("Ekran adı girilmedi")
 val packageName = screenName.lowercase()
 val baseDir = File("composeApp/src/commonMain/kotlin/com/yusufteker/worthy/screen/$packageName/presentation")
 
@@ -66,15 +66,23 @@ val files = listOf(
     import org.koin.compose.viewmodel.koinViewModel
     import worthy.composeapp.generated.resources.Res
     import worthy.composeapp.generated.resources.add_new_card
+    import com.yusufteker.worthy.app.navigation.NavigationHandler
+    import com.yusufteker.worthy.app.navigation.Routes
 
 
     @Composable
     fun ${screenName}ScreenRoot(
         viewModel: ${screenName}ViewModel = koinViewModel(),
-        contentPadding: PaddingValues = PaddingValues()
+        contentPadding: PaddingValues = PaddingValues(),
+        onNavigateTo: (route: Routes) -> Unit
+
     ) {
         val state by viewModel.state.collectAsStateWithLifecycle()
-
+        
+        NavigationHandler(viewModel){ route, data ->
+            onNavigateTo(route)
+        }
+        
         BaseContentWrapper(state = state) {
             ${screenName}Screen(
                 state = state,

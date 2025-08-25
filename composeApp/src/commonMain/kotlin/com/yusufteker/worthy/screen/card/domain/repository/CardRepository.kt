@@ -1,6 +1,6 @@
-package com.yusufteker.worthy.screen.card.add.domain
+package com.yusufteker.worthy.screen.card.domain.repository
 
-import com.yusufteker.worthy.core.domain.model.Card
+import com.yusufteker.worthy.screen.card.domain.model.Card
 import kotlinx.coroutines.flow.Flow
 
 interface CardRepository {

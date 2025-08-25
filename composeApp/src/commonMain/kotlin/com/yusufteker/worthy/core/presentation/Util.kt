@@ -147,3 +147,8 @@ fun formatPercentageChange(value: Double): String {
 }
 
 
+fun String.capitalizeWords(): String {
+    return this.trim().split(" ").joinToString(" ") { word ->
+        word.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+    }
+}

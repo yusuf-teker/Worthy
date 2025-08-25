@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.TransactionType
+import com.yusufteker.worthy.screen.card.data.database.entities.CardEntity
 
 @Entity(
     tableName = "transactions", foreignKeys = [ForeignKey(

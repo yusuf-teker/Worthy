@@ -36,11 +36,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.yusufteker.worthy.core.domain.isLeapYear
+import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.core.presentation.theme.AppColors
+import com.yusufteker.worthy.core.presentation.theme.AppTypography
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
+import kotlinx.datetime.number
 import kotlinx.datetime.todayIn
 import org.jetbrains.compose.resources.painterResource
 import worthy.composeapp.generated.resources.Res
@@ -58,10 +61,12 @@ fun WheelDatePicker(
     showIcon: Boolean = true,
     errorMessage: String? = null,
     title: String? = null,
-) {
+    maxDate: AppDate = AppDate(2100, 12, 31),
+
+    ) {
     var selectedYear by remember { mutableStateOf(initialDate.year) }
-    var selectedMonth by remember { mutableStateOf(initialDate.monthNumber) }
-    var selectedDay by remember { mutableStateOf(initialDate.dayOfMonth) }
+    var selectedMonth by remember { mutableStateOf(initialDate.month.number) }
+    var selectedDay by remember { mutableStateOf(initialDate.day) }
 
     val daysInMonth = remember(selectedYear, selectedMonth) {
         monthLength(selectedYear, selectedMonth)
@@ -71,6 +76,21 @@ fun WheelDatePicker(
         val date = LocalDate(selectedYear, Month(selectedMonth), selectedDay)
         val instant = date.atStartOfDayIn(TimeZone.currentSystemDefault())
         onDateSelected(instant.toEpochMilliseconds())
+    }
+
+    fun adjustSelection() {
+        if (selectedYear > maxDate.year) selectedYear = maxDate.year
+        if (selectedYear == maxDate.year && selectedMonth > maxDate.month) selectedMonth = maxDate.month
+        val maxDayInMonth = monthLength(selectedYear, selectedMonth)
+        if (selectedDay > maxDayInMonth) selectedDay = maxDayInMonth
+        if (selectedYear == maxDate.year && selectedMonth == maxDate.month && selectedDay > (maxDate.day ?: maxDayInMonth)) {
+            selectedDay = maxDate.day ?: maxDayInMonth
+        }
+    }
+
+    LaunchedEffect(selectedYear, selectedMonth, selectedDay) {
+        adjustSelection()
+        emitEpochSeconds()
     }
 
     val border = if (showBorder) {
@@ -158,7 +178,7 @@ fun WheelDatePicker(
                 Text(
                     text = title,
 
-                    style = MaterialTheme.typography.bodySmall.copy(
+                    style = AppTypography.bodySmall.copy(
                         fontSize = 12.sp,
                         color = if (errorMessage != null) AppColors.error else AppColors.onSurfaceVariant
                     ),
@@ -169,12 +189,161 @@ fun WheelDatePicker(
         }
         if (errorMessage != null) {
             Text(
-                text = errorMessage, color = MaterialTheme.colorScheme.error
+                text = errorMessage, color = AppColors.error
             )
         }
 
     }
 
+}
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
+@Composable
+fun WheelDatePickerV2(
+    initialDate: AppDate = AppDate(
+        year = Clock.System.todayIn(TimeZone.currentSystemDefault()).year,
+        month = Clock.System.todayIn(TimeZone.currentSystemDefault()).month.number,
+        day = Clock.System.todayIn(TimeZone.currentSystemDefault()).day
+    ),
+    onDateSelected: (AppDate) -> Unit,
+    modifier: Modifier = Modifier,
+    showBorder: Boolean = true,
+    showIcon: Boolean = true,
+    errorMessage: String? = null,
+    title: String? = null,
+    maxDate: AppDate = AppDate(2100, 12, 31),
+    minDate: AppDate = AppDate(1970, 1, 1),
+
+
+    ) {
+    var selectedYear by remember { mutableStateOf(initialDate.year) }
+    var selectedMonth by remember { mutableStateOf(initialDate.month) }
+    var selectedDay by remember { mutableStateOf(initialDate.day ?: 1) }
+
+    val daysInMonth = remember(selectedYear, selectedMonth) { monthLength(selectedYear, selectedMonth) }
+
+    fun adjustSelection() {
+        // Yıl sınırları
+        selectedYear = selectedYear.coerceIn(minDate.year, maxDate.year)
+
+        // Ay sınırları
+        val minMonth = if (selectedYear == minDate.year) minDate.month else 1
+        val maxMonth = if (selectedYear == maxDate.year) maxDate.month else 12
+        selectedMonth = selectedMonth.coerceIn(minMonth, maxMonth)
+
+        // Gün sınırları
+        val maxDayInMonth = monthLength(selectedYear, selectedMonth)
+        val minDay = if (selectedYear == minDate.year && selectedMonth == minDate.month) (minDate.day ?: 1) else 1
+        val maxDay = if (selectedYear == maxDate.year && selectedMonth == maxDate.month) (maxDate.day ?: maxDayInMonth) else maxDayInMonth
+        selectedDay = selectedDay.coerceIn(minDay, maxDay)
+    }
+
+    fun emitDate() {
+        adjustSelection()
+        onDateSelected(AppDate(selectedYear, selectedMonth, selectedDay))
+    }
+
+    LaunchedEffect(selectedYear, selectedMonth, selectedDay) {
+        emitDate()
+    }
+
+
+
+    val border = if (showBorder) {
+        BorderStroke(
+            1.dp, color = if (errorMessage != null) AppColors.error else AppColors.outline
+        )
+    } else {
+        BorderStroke(0.dp, Color.Transparent)
+    }
+
+    Box(modifier = modifier) {
+        Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .border(border, shape = RoundedCornerShape(4.dp))
+                .height(56.dp)
+                .padding(top = 8.dp, start = 8.dp, end = 8.dp, bottom = 4.dp)
+                .background(Color.Transparent),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            if (showIcon) {
+                Spacer(modifier = Modifier.width(8.dp))
+                Icon(
+                    painter = painterResource(Res.drawable.ic_calendar),
+                    contentDescription = "Takvim",
+                    tint = AppColors.primary,
+                    modifier = Modifier.size(32.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+            }
+
+            Row(
+                modifier = Modifier.weight(1f),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                WheelPicker(
+                    items = (1..daysInMonth).map { it.toString().padStart(2, '0') },
+                    startIndex = selectedDay - 1,
+                    onSelected = {
+                        selectedDay = it + 1
+                        emitDate()
+                    },
+                    modifier = Modifier.width(30.dp)
+                )
+
+                WheelPicker(
+                    items = (1..12).map { it.toString().padStart(2, '0') },
+                    startIndex = selectedMonth - 1,
+                    onSelected = {
+                        selectedMonth = it + 1
+                        if (selectedDay > monthLength(selectedYear, selectedMonth)) {
+                            selectedDay = monthLength(selectedYear, selectedMonth)
+                        }
+                        emitDate()
+                    },
+                    modifier = Modifier.width(30.dp)
+                )
+
+                WheelPicker(
+                    items = (1970..2100).map { it.toString() },
+                    startIndex = selectedYear - 1970,
+                    onSelected = {
+                        selectedYear = it + 1970
+                        if (selectedDay > monthLength(selectedYear, selectedMonth)) {
+                            selectedDay = monthLength(selectedYear, selectedMonth)
+                        }
+                        emitDate()
+                    },
+                    modifier = Modifier.width(60.dp)
+                )
+            }
+        }
+
+        if (title != null) {
+            Box(
+                modifier = Modifier.align(Alignment.TopStart).zIndex(2f)
+                    .offset(x = 8.dp, y = (-8).dp)
+            ) {
+                Text(
+                    text = title,
+                    style = AppTypography.bodySmall.copy(
+                        fontSize = 12.sp,
+                        color = if (errorMessage != null) AppColors.error else AppColors.onSurfaceVariant
+                    ),
+                    modifier = Modifier.background(AppColors.background)
+                        .padding(horizontal = 2.dp)
+                )
+            }
+        }
+
+        if (errorMessage != null) {
+            Text(
+                text = errorMessage, color =AppColors.error
+            )
+        }
+    }
 }
 
 @Composable
@@ -206,7 +375,7 @@ fun WheelPicker(
                     text = item,
                     fontSize = 18.sp,
                     textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onBackground
+                    color =AppColors.onBackground
                 )
             }
         }

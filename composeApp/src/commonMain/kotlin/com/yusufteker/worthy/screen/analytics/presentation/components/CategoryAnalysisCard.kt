@@ -141,7 +141,7 @@ fun CategoryAnalysisItem(
             Text(
                 text = "${(percentage * animationProgress).formatTwoDecimals()}%",
                 style = AppTypography.labelSmall.copy(
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    color = AppColors.onSurface.copy(alpha = 0.7f)
                 )
             )
         }

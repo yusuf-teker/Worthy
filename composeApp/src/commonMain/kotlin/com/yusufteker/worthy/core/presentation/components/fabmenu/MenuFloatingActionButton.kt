@@ -146,7 +146,7 @@ fun MenuFloatingActionButton(
                     Spacer(Modifier.width(16.dp))
                 }
                 FloatingActionButton(
-                    containerColor = if (item.fabBackgroundColor == Color.Unspecified) MaterialTheme.colorScheme.primary else item.fabBackgroundColor,
+                    containerColor = if (item.fabBackgroundColor == Color.Unspecified) AppColors.primary else item.fabBackgroundColor,
                     modifier = Modifier.size(fabIconSize),
                     onClick = {
                         menuFabState.menuFabStateEnum.value = MenuFabStateEnum.Collapsed
@@ -163,7 +163,7 @@ fun MenuFloatingActionButton(
         // Ana FAB butonu
         FloatingActionButton(
             modifier = Modifier.padding(0.dp, end = 25.dp),
-            containerColor = if (fabBackgroundColor == Color.Unspecified) MaterialTheme.colorScheme.primary else fabBackgroundColor,
+            containerColor = if (fabBackgroundColor == Color.Unspecified) AppColors.primary else fabBackgroundColor,
             onClick = {
                 menuFabState.menuFabStateEnum.value =
                     if (menuFabState.menuFabStateEnum.value == MenuFabStateEnum.Collapsed) MenuFabStateEnum.Expanded else MenuFabStateEnum.Collapsed
@@ -341,7 +341,7 @@ fun MenuFloatingActionButtonWithScale(
                     Spacer(Modifier.width(16.dp))
                 }
                 FloatingActionButton(
-                    containerColor = if (item.fabBackgroundColor == Color.Unspecified) MaterialTheme.colorScheme.primary else item.fabBackgroundColor,
+                    containerColor = if (item.fabBackgroundColor == Color.Unspecified) AppColors.primary else item.fabBackgroundColor,
                     modifier = Modifier.size(fabIconSize),
                     onClick = {
                         menuFabState.menuFabStateEnum.value = MenuFabStateEnum.Collapsed

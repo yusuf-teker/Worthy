@@ -25,6 +25,7 @@ import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.TransactionType
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.getMonthShortNameByLocale
+import com.yusufteker.worthy.core.presentation.theme.AppTypography
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -53,7 +54,7 @@ fun MonthlyComparisonCard(transactions: List<Transaction>) {
         ) {
             Text(
                 text = UiText.StringResourceId(Res.string.monthly_comparison_title).asString(),
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                style = AppTypography.titleLarge.copy(fontWeight = FontWeight.Bold)
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -93,7 +94,7 @@ fun MonthlyComparisonItem(
     ) {
         Text(
             text = month,
-            style = MaterialTheme.typography.bodyMedium,
+            style = AppTypography.bodyMedium,
             modifier = Modifier.width(40.dp)
         )
 
@@ -121,7 +122,7 @@ fun MonthlyComparisonItem(
 
         Text(
             text = "${if (balance >= 0) "+" else ""}${balance.toInt()} ${currency.symbol} ",
-            style = MaterialTheme.typography.bodyMedium.copy(
+            style = AppTypography.bodyMedium.copy(
                 fontWeight = FontWeight.Bold,
                 color = if (balance >= 0) Color(0xFF4CAF50) else Color(0xFFF44336)
             ),

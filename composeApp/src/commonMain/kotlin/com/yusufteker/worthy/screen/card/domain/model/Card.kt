@@ -1,4 +1,4 @@
-package com.yusufteker.worthy.core.domain.model
+package com.yusufteker.worthy.screen.card.domain.model
 
 data class Card(
     val id: Int = 0,
@@ -10,7 +10,7 @@ data class Card(
     val nickname: String? = null, // Kullanıcının kart için verdiği isim (örn. "Kredi Kartı 1")
     val cardBrand: CardBrand? = null,   // Visa, Mastercard, vs.
     val note: String? = null,
-    val statementDay: Int? = null
+    val statementDay: Int? = null,
 )
 
 enum class CardBrand { Visa, Mastercard,Troy, Unknown }

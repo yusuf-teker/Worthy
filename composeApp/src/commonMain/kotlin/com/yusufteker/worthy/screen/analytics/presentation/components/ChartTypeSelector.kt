@@ -25,6 +25,8 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yusufteker.worthy.core.presentation.UiText
+import com.yusufteker.worthy.core.presentation.theme.AppColors
+import com.yusufteker.worthy.core.presentation.theme.AppTypography
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.chart_type_bar
 import worthy.composeapp.generated.resources.chart_type_line
@@ -67,8 +69,8 @@ fun ChartTypeSelector(
                     .clickable { onChartChange(chartType) },
                 colors = CardDefaults.cardColors(
                     containerColor = if (isSelected)
-                        MaterialTheme.colorScheme.primaryContainer
-                    else MaterialTheme.colorScheme.surface
+                        AppColors.primaryContainer
+                    else AppColors.surface
                 ),
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = if (isSelected) 8.dp else 2.dp
@@ -85,10 +87,10 @@ fun ChartTypeSelector(
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = chartType.label.asString(),
-                        style = MaterialTheme.typography.labelMedium,
+                        style = AppTypography.labelMedium,
                         color = if (isSelected)
-                            MaterialTheme.colorScheme.onPrimaryContainer
-                        else MaterialTheme.colorScheme.onSurface
+                            AppColors.onPrimaryContainer
+                        else AppColors.onSurface
                     )
                 }
             }

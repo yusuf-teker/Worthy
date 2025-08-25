@@ -1,8 +1,8 @@
-package com.yusufteker.worthy.core.data.database.entities
+package com.yusufteker.worthy.screen.card.data.database.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.yusufteker.worthy.core.domain.model.CardBrand
+import com.yusufteker.worthy.screen.card.domain.model.CardBrand
 
 @Entity(tableName = "cards")
 data class CardEntity(

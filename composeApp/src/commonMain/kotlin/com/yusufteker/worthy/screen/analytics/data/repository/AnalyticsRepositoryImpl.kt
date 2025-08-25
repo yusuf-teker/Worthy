@@ -1,13 +1,13 @@
-package com.yusufteker.worthy.screen.analytics.data
+package com.yusufteker.worthy.screen.analytics.data.repository
 
-import com.yusufteker.worthy.core.domain.model.Card
 import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.repository.CategoryRepository
 import com.yusufteker.worthy.core.domain.repository.TransactionRepository
-import com.yusufteker.worthy.screen.analytics.domain.AnalyticsRepository
-import com.yusufteker.worthy.screen.card.add.domain.CardRepository
+import com.yusufteker.worthy.screen.analytics.domain.repository.AnalyticsRepository
+import com.yusufteker.worthy.screen.card.domain.model.Card
+import com.yusufteker.worthy.screen.card.domain.repository.CardRepository
 import com.yusufteker.worthy.screen.settings.domain.UserPrefsManager
 import kotlinx.coroutines.flow.Flow
 

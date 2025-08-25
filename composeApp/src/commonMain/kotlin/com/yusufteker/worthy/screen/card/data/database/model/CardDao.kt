@@ -1,4 +1,4 @@
-package com.yusufteker.worthy.core.data.database.model
+package com.yusufteker.worthy.screen.card.data.database.model
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -6,13 +6,13 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.yusufteker.worthy.core.data.database.entities.CardEntity
+import com.yusufteker.worthy.screen.card.data.database.entities.CardEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CardDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertCard(card: CardEntity): Long
 
     @Update

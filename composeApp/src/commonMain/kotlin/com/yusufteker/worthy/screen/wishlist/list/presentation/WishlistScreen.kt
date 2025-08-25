@@ -27,6 +27,7 @@ import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
 import com.yusufteker.worthy.core.presentation.components.EmptyScreen
 import com.yusufteker.worthy.core.presentation.components.InteractiveSearchBar
 import com.yusufteker.worthy.core.presentation.components.SwipeToDeleteWrapper
+import com.yusufteker.worthy.core.presentation.theme.Constants.EMPTY_SCREEN_SIZE
 import com.yusufteker.worthy.screen.wishlist.list.domain.generalSuggestions
 import com.yusufteker.worthy.screen.wishlist.list.presentation.components.WishlistItemCard
 import org.jetbrains.compose.resources.painterResource
@@ -95,7 +96,7 @@ fun WishlistScreen(
                         Icon(
                             painter = painterResource(Res.drawable.no_wish),
                             contentDescription = "Add Wishlist Item",
-                            modifier = Modifier.size(192.dp)
+                            modifier = Modifier.size(EMPTY_SCREEN_SIZE)
                         )
                     },
                     buttonText = UiText.StringResourceId(Res.string.wishlist_empty_screen_button)
