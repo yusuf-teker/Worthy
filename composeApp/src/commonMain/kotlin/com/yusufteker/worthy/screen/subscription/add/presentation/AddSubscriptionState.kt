@@ -5,6 +5,7 @@ import com.yusufteker.worthy.core.domain.getCurrentYear
 import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.emptyMoney
+import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.base.BaseState
 import com.yusufteker.worthy.screen.card.domain.model.Card
 import com.yusufteker.worthy.screen.subscription.domain.model.Subscription
@@ -17,7 +18,7 @@ data class AddSubscriptionState(
 
     var subscriptionName: String = "",
     val selectedCategory: SubscriptionCategory? = null,
-    val categories: List<SubscriptionCategory> = SubscriptionCategory.entries,
+    val categories: List<SubscriptionCategory> = emptyList(),
     val color: String? = "",
     val customCategoryName: String = "",
     val selectedEmoji: String? = null,
@@ -27,10 +28,20 @@ data class AddSubscriptionState(
     val scheduledDay: Int = 1,
     val cards: List<Card> = emptyList(),
     val selectedCard: Card? = null,
+    val errorName: UiText? = null,
+    val errorCategory: UiText? = null,
+    val errorPrice: UiText? = null,
+
 
     val subscriptionPrev: Subscription = emptySubscription
 ) : BaseState {
     override fun copyWithLoading(isLoading: Boolean): BaseState {
         return this.copy(isLoading = isLoading)
     }
+}
+
+fun AddSubscriptionState.hasError(): Boolean {
+    return errorName != null ||
+            errorCategory != null ||
+            errorPrice != null
 }

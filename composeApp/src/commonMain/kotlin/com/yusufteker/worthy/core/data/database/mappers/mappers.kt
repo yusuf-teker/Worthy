@@ -10,7 +10,9 @@ import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.RecurringFinancialItem
 import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.TransactionType
+import com.yusufteker.worthy.screen.subscription.data.database.entities.SubscriptionCategoryEntity
 import com.yusufteker.worthy.screen.subscription.data.database.entities.SubscriptionEntity
+import com.yusufteker.worthy.screen.subscription.domain.model.Default
 import com.yusufteker.worthy.screen.subscription.domain.model.Subscription
 import com.yusufteker.worthy.screen.subscription.domain.model.SubscriptionCategory
 import com.yusufteker.worthy.screen.wishlist.list.data.database.entities.WishlistItemEntity
@@ -194,8 +196,7 @@ fun SubscriptionEntity.toDomain(): Subscription {
         id = id,
         name = name,
         icon = icon,
-        category = category?.let { SubscriptionCategory.valueOf(it) },
-        customCategoryName = if (category == null) name else null,
+        category = category,
         money = money,
         startDate = startDate,
         endDate = endDate,
@@ -210,12 +211,31 @@ fun Subscription.toEntity(): SubscriptionEntity {
         id = id,
         name = name,
         icon = icon,
-        category = category?.name,
+        category = category?: SubscriptionCategory.Default,
         money = money,
         startDate = startDate,
         endDate = endDate,
         scheduledDay = scheduledDay,
         cardId = cardId,
         color = color
+    )
+}
+fun SubscriptionCategoryEntity.toDomain(): SubscriptionCategory {
+    return SubscriptionCategory(
+        id = id,
+        name = name,
+        nameResourceKey = nameResourceKey,
+        icon = icon,
+        color = colorHex
+    )
+}
+
+fun SubscriptionCategory.toEntity(): SubscriptionCategoryEntity {
+    return SubscriptionCategoryEntity(
+        id = id,
+        name = name ?: "", // name null olmasın DB'de
+        nameResourceKey = nameResourceKey,
+        icon = icon,
+        colorHex = color
     )
 }

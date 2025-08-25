@@ -16,10 +16,15 @@ import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
+import com.yusufteker.worthy.core.presentation.components.EmptyScreen
+import com.yusufteker.worthy.core.presentation.theme.Constants.EMPTY_SCREEN_SIZE
 import com.yusufteker.worthy.screen.card.list.presentation.components.CreditCardCarousel
+import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.add_new_card
+import worthy.composeapp.generated.resources.add_your_first_card
+import worthy.composeapp.generated.resources.empty_credit_card
 import worthy.composeapp.generated.resources.my_cards
 import worthy.composeapp.generated.resources.screen_title_my_cards
 
@@ -87,6 +92,20 @@ Scaffold(
               modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
               cards = state.cards
           )
+      }else{
+          EmptyScreen(
+              icon = {
+                  Icon(
+                      painter = painterResource(Res.drawable.empty_credit_card),
+                      contentDescription = UiText.StringResourceId(Res.string.add_new_card).asString(),
+                      modifier = Modifier.size(EMPTY_SCREEN_SIZE)
+                  )
+              },
+              buttonText = UiText.StringResourceId(Res.string.add_your_first_card).asString()
+          ){
+            onAction(CardListAction.AddNewCard)
+          }
+
       }
 
 

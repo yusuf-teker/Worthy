@@ -326,6 +326,7 @@
     <string name="toggle_card_details_show">Kart detaylarını gir (isteğe bağlı)</string>
     <string name="toggle_card_details_skip">Kart detaylarını olmadan devam et</string>
     <string name="statement_day">Ödeme Günü</string>
+    <string name="add_your_first_card">İlk kartını ekle 💳</string>
 
 
     <!-- Analytics -->
@@ -378,6 +379,11 @@
 
     <string name="toggle_optional_info_show">Opsiyonel bilgileri göster</string>
     <string name="toggle_optional_info_hide">Opsiyonel bilgileri gizle</string>
-
+    <string name="payment_day">Ödeme Günü</string>
+    <string name="error_empty_service_name">Servis adı boş olamaz</string>
+    <string name="error_empty_category">Kategori seçilmelidir</string>
+    <string name="error_empty_price">Fiyat boş olamaz</string>
+    <string name="error_empty_start_date">Başlangıç tarihi boş olamaz</string>
+    <string name="error_empty_payment_day">Ödeme günü seçilmelidir</string>
 
 </resources>

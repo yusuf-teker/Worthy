@@ -3,6 +3,7 @@ package com.yusufteker.worthy.screen.settings.domain
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.IOException
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
@@ -35,23 +36,24 @@ class UserPrefsManager(private val dataStore: DataStore<Preferences>) {
 
         val SPENDING_LIMIT = stringPreferencesKey("spending_limit")
         val SAVING_GOAL = stringPreferencesKey("saving_goal")
+
+        val IS_CATEGORY_INITIALIZED = booleanPreferencesKey("is_category_initialized")
+        val IS_SUBSCRIPTION_CATEGORY_INITIALIZED =
+            booleanPreferencesKey("is_subscription_category_initialized")
     }
 
     /* ******** Flows ******** */
     /** GELİR */
-    val incomeItems: Flow<List<IncomeItem>> = dataStore.data
-        .catch { exception ->
+    val incomeItems: Flow<List<IncomeItem>> = dataStore.data.catch { exception ->
             // IOException durumunda emptyPreferences() emit et
             if (exception is IOException) {
                 emit(emptyPreferences())
             } else {
                 throw exception
             }
-        }
-        .map { prefs ->
+        }.map { prefs ->
             try {
-                prefs[INCOME_ITEMS]
-                    ?.let { json.decodeFromString<List<IncomeItem>>(it) }
+                prefs[INCOME_ITEMS]?.let { json.decodeFromString<List<IncomeItem>>(it) }
                     ?: emptyList()
             } catch (e: SerializationException) {
                 // Corrupt data durumunda boş liste döner
@@ -60,28 +62,24 @@ class UserPrefsManager(private val dataStore: DataStore<Preferences>) {
         }
 
     /** HAFTALIK ÇALIŞMA SAATİ */
-    val weeklyWorkHours: Flow<Int> = dataStore.data
-        .catch { exception ->
+    val weeklyWorkHours: Flow<Int> = dataStore.data.catch { exception ->
             if (exception is IOException) {
                 emit(emptyPreferences())
             } else {
                 throw exception
             }
-        }
-        .map { prefs ->
+        }.map { prefs ->
             prefs[WEEKLY_WORK_HOURS] ?: 0
         }
 
     /** SEÇİLEN PARA BİRİMİ */
-    val selectedCurrency: Flow<Currency> = dataStore.data
-        .catch { exception ->
+    val selectedCurrency: Flow<Currency> = dataStore.data.catch { exception ->
             if (exception is IOException) {
                 emit(emptyPreferences())
             } else {
                 throw exception
             }
-        }
-        .map { prefs ->
+        }.map { prefs ->
             val savedCode = prefs[CURRENCY] ?: Currency.TRY.name
             Currency.entries.find { it.name == savedCode } ?: Currency.TRY
         }
@@ -158,6 +156,34 @@ class UserPrefsManager(private val dataStore: DataStore<Preferences>) {
 
     val userName: Flow<String?> = dataStore.data.map { prefs ->
         prefs[USER_NAME]
+    }
+
+    val isCategoryInitialized: Flow<Boolean> = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) emit(emptyPreferences()) else throw exception
+        }
+        .map { prefs ->
+            prefs[IS_CATEGORY_INITIALIZED] ?: false
+        }
+
+    suspend fun setCategoryInitialized(initialized: Boolean) {
+        dataStore.edit { prefs ->
+            prefs[IS_CATEGORY_INITIALIZED] = initialized
+        }
+    }
+
+    val isSubscriptionCategoryInitialized: Flow<Boolean> = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) emit(emptyPreferences()) else throw exception
+        }
+        .map { prefs ->
+            prefs[IS_SUBSCRIPTION_CATEGORY_INITIALIZED] ?: false
+        }
+
+    suspend fun setSubscriptionCategoryInitialized(initialized: Boolean) {
+        dataStore.edit { prefs ->
+            prefs[IS_SUBSCRIPTION_CATEGORY_INITIALIZED] = initialized
+        }
     }
 
 }

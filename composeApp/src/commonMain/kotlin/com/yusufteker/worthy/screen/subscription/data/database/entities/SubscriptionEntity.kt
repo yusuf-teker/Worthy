@@ -7,6 +7,7 @@ import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.screen.card.data.database.entities.CardEntity
+import com.yusufteker.worthy.screen.subscription.domain.model.SubscriptionCategory
 
 @Entity(
     tableName = "subscriptions",
@@ -15,7 +16,7 @@ import com.yusufteker.worthy.screen.card.data.database.entities.CardEntity
             entity = CardEntity::class,
             parentColumns = ["id"],
             childColumns = ["cardId"],
-            onDelete = ForeignKey.Companion.SET_NULL // kart silinirse subscription boş kalsın
+            onDelete = ForeignKey.SET_NULL
         )
     ]
 )
@@ -23,8 +24,8 @@ data class SubscriptionEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val name: String,
     val icon: String,
-    val color: String?,                   // HEX kod
-    val category: String? = null, // enum -> converter ile string saklanacak
+    val color: String?,
+    val category: SubscriptionCategory,  // artık string değil domain modeli
     val money: Money = emptyMoney(),
     val startDate: AppDate,
     val endDate: AppDate? = null,

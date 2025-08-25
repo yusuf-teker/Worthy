@@ -34,12 +34,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yusufteker.worthy.core.presentation.UiText
+import com.yusufteker.worthy.core.presentation.components.ErrorText
 import com.yusufteker.worthy.core.presentation.theme.AppColors
+import com.yusufteker.worthy.screen.subscription.domain.model.Default
 import com.yusufteker.worthy.screen.subscription.domain.model.SubscriptionCategory
+import com.yusufteker.worthy.screen.subscription.domain.model.emojiOptionsList
 import com.yusufteker.worthy.screen.subscription.domain.model.getDisplayName
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.cancel
 import worthy.composeapp.generated.resources.category_label
+import worthy.composeapp.generated.resources.create_button
 import worthy.composeapp.generated.resources.create_new_category_title
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,7 +53,8 @@ fun SubscriptionCategorySelector(
     selectedCategory: SubscriptionCategory?,
     modifier: Modifier = Modifier,
     onCategorySelected: (SubscriptionCategory?) -> Unit,
-    onNewCategoryCreated: (SubscriptionCategory) -> Unit
+    onNewCategoryCreated: (SubscriptionCategory) -> Unit,
+    error: UiText? = null
 ) {
     var expanded by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
@@ -59,20 +64,28 @@ fun SubscriptionCategorySelector(
         onExpandedChange = { expanded = !expanded },
         modifier = modifier
     ) {
-        OutlinedTextField(
-            value = selectedCategory?.getDisplayName() ?: "",
-            onValueChange = {},
-            readOnly = true,
-            label = { Text(UiText.StringResourceId(Res.string.category_label).asString()) },
-            trailingIcon = {
-                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-            },
-            leadingIcon = if (selectedCategory != null) {
-                { Text(selectedCategory.defaultIcon) }
-            } else null,
-            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true)
-                .fillMaxWidth()
-        )
+        Column {
+            OutlinedTextField(
+                value = selectedCategory.getDisplayName(),
+                onValueChange = {},
+                readOnly = true,
+                isError = error != null,
+                label = { Text(UiText.StringResourceId(Res.string.category_label).asString()) },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                },
+                leadingIcon = if (selectedCategory != null) {
+                    { Text(selectedCategory.icon) }
+                } else null,
+                modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true)
+                    .fillMaxWidth()
+            )
+            ErrorText(
+                message = error?.asString(),
+            )
+        }
+
+
 
         ExposedDropdownMenu(
             expanded = expanded,
@@ -81,7 +94,7 @@ fun SubscriptionCategorySelector(
             categories.forEach { category ->
                 DropdownMenuItem(
                     text = { Text(category.getDisplayName()) },
-                    leadingIcon = { Text(category.defaultIcon) },
+                    leadingIcon = { Text(category.icon) },
                     onClick = {
                         onCategorySelected(category)
                         expanded = false
@@ -107,7 +120,6 @@ fun SubscriptionCategorySelector(
 
     var newCategoryName by remember { mutableStateOf("") }
     var selectedEmoji by remember { mutableStateOf("📦") } // default emoji
-    val emojiOptionsList = listOf("🎬", "🎵", "💻", "🎮", "📺", "🎧", "📚", "🍿")
 
     if (showDialog) {
         AlertDialog(
@@ -118,7 +130,7 @@ fun SubscriptionCategorySelector(
                     OutlinedTextField(
                         value = newCategoryName,
                         onValueChange = { newCategoryName = it },
-                        label = { Text("Category Name") },
+                        label = { Text(UiText.StringResourceId(Res.string.category_label).asString()) },
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(Modifier.height(12.dp))
@@ -147,15 +159,18 @@ fun SubscriptionCategorySelector(
             confirmButton = {
                 TextButton(onClick = {
                     if (newCategoryName.isNotBlank()) {
-                        //TODO DUMMY EKRAN KATEGORİ EKLEME GELECEK
-                        val newCategory = SubscriptionCategory.OTHER
+                        val newCategory = SubscriptionCategory(
+                            id = 0,
+                            name = newCategoryName,
+                            icon = selectedEmoji
+                        )
                         onNewCategoryCreated(newCategory)
                         onCategorySelected(newCategory)
                         showDialog = false
                         newCategoryName = ""
                     }
                 }) {
-                    Text("Create")
+                    Text(UiText.StringResourceId(Res.string.create_button).asString())
                 }
             },
             dismissButton = {

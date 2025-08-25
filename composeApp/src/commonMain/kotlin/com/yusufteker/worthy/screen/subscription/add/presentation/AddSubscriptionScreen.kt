@@ -14,11 +14,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -46,29 +43,24 @@ import com.yusufteker.worthy.core.presentation.capitalizeWords
 import com.yusufteker.worthy.core.presentation.components.AppButton
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
 import com.yusufteker.worthy.core.presentation.components.CardSelector
-import com.yusufteker.worthy.core.presentation.components.DateSelector
 import com.yusufteker.worthy.core.presentation.components.DayOfMonthSelector
+import com.yusufteker.worthy.core.presentation.components.ErrorText
 import com.yusufteker.worthy.core.presentation.components.MoneyInput
-import com.yusufteker.worthy.core.presentation.components.WheelDatePicker
 import com.yusufteker.worthy.core.presentation.components.WheelDatePickerV2
 import com.yusufteker.worthy.screen.subscription.add.presentation.components.ColorPicker
 import com.yusufteker.worthy.screen.subscription.add.presentation.components.SubscriptionCategorySelector
 import com.yusufteker.worthy.screen.subscription.add.presentation.components.toComposeColor
 import com.yusufteker.worthy.screen.subscription.add.presentation.components.toHexString
 import com.yusufteker.worthy.screen.subscription.list.presentation.components.SubscriptionItem
-import com.yusufteker.worthy.screen.wishlist.list.presentation.WishlistAction
-import com.yusufteker.worthy.screen.wishlist.list.presentation.WishlistFab
 import org.koin.compose.viewmodel.koinViewModel
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.add
 import worthy.composeapp.generated.resources.monthly_price
-import worthy.composeapp.generated.resources.repeat_day
+import worthy.composeapp.generated.resources.payment_day
 import worthy.composeapp.generated.resources.screen_title_add_new_subscription
 import worthy.composeapp.generated.resources.service_name
 import worthy.composeapp.generated.resources.subscription_end_date
 import worthy.composeapp.generated.resources.subscription_start_date
-import worthy.composeapp.generated.resources.toggle_card_details_show
-import worthy.composeapp.generated.resources.toggle_card_details_skip
 import worthy.composeapp.generated.resources.toggle_optional_info_hide
 import worthy.composeapp.generated.resources.toggle_optional_info_show
 
@@ -138,19 +130,28 @@ fun AddSubscriptionScreen(
             )
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                OutlinedTextField(
-                    modifier = Modifier.weight(1f),
-                    value = state.subscriptionName,
-                    onValueChange = { name ->
-                        onAction(
-                            AddSubscriptionAction.OnNameChanged(
-                                name.capitalizeWords()
+
+                Column(Modifier.weight(1f)) {
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(1f),
+                        value = state.subscriptionName,
+                        onValueChange = { name ->
+                            onAction(
+                                AddSubscriptionAction.OnNameChanged(
+                                    name.capitalizeWords()
+                                )
                             )
-                        )
-                    },
-                    label = { Text(UiText.StringResourceId(Res.string.service_name).asString()) },
-                    singleLine = true
-                )
+                        },
+                        isError = state.errorName != null,
+                        label = { Text(UiText.StringResourceId(Res.string.service_name).asString()) },
+                        singleLine = true
+                    )
+                    ErrorText(
+                        message = state.errorName?.asString(),
+                    )
+                }
+
+
                 ColorPicker(
                     modifier = Modifier.padding(8.dp),
                     selectedColor = state.subscriptionPrev.color?.toComposeColor(),
@@ -162,6 +163,7 @@ fun AddSubscriptionScreen(
 
 
 
+
             SubscriptionCategorySelector(
                 categories = state.categories,
                 selectedCategory = state.selectedCategory,
@@ -170,7 +172,8 @@ fun AddSubscriptionScreen(
                 },
                 onNewCategoryCreated = {
                     onAction(AddSubscriptionAction.OnNewCategoryCreated(it))
-                }
+                },
+                error = state.errorCategory,
             )
 
             MoneyInput(
@@ -183,6 +186,8 @@ fun AddSubscriptionScreen(
                         )
                     )
                 },
+                isError = state.errorPrice != null,
+                errorMessage = state.errorPrice,
                 label = UiText.StringResourceId(Res.string.monthly_price)
             )
 
@@ -199,7 +204,7 @@ fun AddSubscriptionScreen(
             DayOfMonthSelector(
                 selectedDay = state.scheduledDay,
                 onDayChange = { onAction(AddSubscriptionAction.OnScheduledDayChanged(it?:1)) },
-                label = UiText.StringResourceId(Res.string.repeat_day)
+                label = UiText.StringResourceId(Res.string.payment_day)
             )
 
             Row(

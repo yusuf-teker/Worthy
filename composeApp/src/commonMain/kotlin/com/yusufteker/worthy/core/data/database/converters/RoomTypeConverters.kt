@@ -7,6 +7,7 @@ import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.TransactionType
 import com.yusufteker.worthy.screen.subscription.domain.model.SubscriptionCategory
+import kotlinx.serialization.json.Json
 
 class RoomTypeConverters {
     @TypeConverter
@@ -52,12 +53,12 @@ class RoomTypeConverters {
 
     @TypeConverter
     fun fromCategory(category: SubscriptionCategory?): String? {
-        return category?.name
+        return category?.let { Json.encodeToString(SubscriptionCategory.serializer(), it) }
     }
 
     @TypeConverter
     fun toCategory(value: String?): SubscriptionCategory? {
-        return value?.let { SubscriptionCategory.valueOf(it) }
+        return value?.let { Json.decodeFromString(SubscriptionCategory.serializer(), it) }
     }
 
 }

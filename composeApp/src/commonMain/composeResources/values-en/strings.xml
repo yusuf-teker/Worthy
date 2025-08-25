@@ -338,6 +338,7 @@
     <string name="toggle_card_details_show">Enter card details (optional)</string>
     <string name="toggle_card_details_skip">Skip entering card details</string>
     <string name="statement_day">Statement Day</string>
+    <string name="add_your_first_card">Add your first card 💳</string>
 
 
     <!-- Analytics -->
@@ -385,5 +386,11 @@
     <string name="subscription_end_date">Subscription End</string>
     <string name="toggle_optional_info_show">Show optional informations</string>
     <string name="toggle_optional_info_hide">Hide optional informations</string>
+    <string name="payment_day">Payment Day</string>
+    <string name="error_empty_service_name">Service name cannot be empty</string>
+    <string name="error_empty_category">Category must be selected</string>
+    <string name="error_empty_price">Price cannot be empty</string>
+    <string name="error_empty_start_date">Start date cannot be empty</string>
+    <string name="error_empty_payment_day">Payment day must be selected</string>
 
 </resources>

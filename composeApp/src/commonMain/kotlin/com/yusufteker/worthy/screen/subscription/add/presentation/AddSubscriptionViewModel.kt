@@ -1,31 +1,58 @@
 package com.yusufteker.worthy.screen.subscription.add.presentation
 
 import androidx.lifecycle.viewModelScope
-import com.yusufteker.worthy.app.navigation.Routes
-import com.yusufteker.worthy.core.domain.model.emojiOptions
 import com.yusufteker.worthy.core.domain.model.emptyMoney
+import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
+import com.yusufteker.worthy.screen.settings.domain.UserPrefsManager
 import com.yusufteker.worthy.screen.subscription.domain.repository.SubscriptionRepository
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import worthy.composeapp.generated.resources.Res
+import worthy.composeapp.generated.resources.error_empty_category
+import worthy.composeapp.generated.resources.error_empty_name
+import worthy.composeapp.generated.resources.error_empty_price
+import worthy.composeapp.generated.resources.error_empty_service_name
 
 class AddSubscriptionViewModel(
-    private val subscriptionRepository: SubscriptionRepository
+    private val subscriptionRepository: SubscriptionRepository,
+    private val userPrefsManager: UserPrefsManager
 ) : BaseViewModel<AddSubscriptionState>(AddSubscriptionState()) {
 
 //TODO VALIDATION LAR EKLENECEK
 
 
     init {
-        observeData()
-    }
-    fun observeData(){
-        launchWithLoading {
-            subscriptionRepository.getCards() .onEach { cards ->
-                _state.update { currentState ->
-                    currentState.copy(cards = cards)
+
+        viewModelScope.launch {
+            userPrefsManager.isSubscriptionCategoryInitialized.collect { initialized ->
+                if (!initialized) {
+                    subscriptionRepository.initializeDefaultCategories()
+                    userPrefsManager.setSubscriptionCategoryInitialized(true)
                 }
+            }
+        }
+        observeData()
+
+    }
+
+    fun observeData(){
+
+        launchWithLoading {
+            combine(
+                subscriptionRepository.getCards(),
+                subscriptionRepository.getCategories(),
+            ) {  cards, categories->
+                _state.update { currentState ->
+                    currentState.copy(
+                        cards = cards,
+                        categories = categories
+                    )
+                }
+
             }.launchIn(viewModelScope)
         }
 
@@ -40,7 +67,8 @@ class AddSubscriptionViewModel(
                 _state.update {
                     it.copy(
                         subscriptionName = action.name,
-                        subscriptionPrev = state.value.subscriptionPrev.copy(name = action.name)
+                        subscriptionPrev = state.value.subscriptionPrev.copy(name = action.name),
+                        errorName = null
                     )
                 }
             }
@@ -50,22 +78,13 @@ class AddSubscriptionViewModel(
                         selectedCategory = action.category,
                         subscriptionPrev = state.value.subscriptionPrev.copy(
                             category = action.category,
-                            icon = action.category?.defaultIcon ?: ""
-                        )
+                            icon = action.category?.icon ?: ""
+                        ),
+                        errorCategory = null
 
                     )
                 }
             }
-            is AddSubscriptionAction.OnCustomCategoryChanged -> {
-                _state.update {
-                    it.copy(
-                        customCategoryName = action.name,
-                        subscriptionPrev = state.value.subscriptionPrev.copy(customCategoryName = action.name)
-
-                    )
-                }
-            }
-
             is AddSubscriptionAction.OnEmojiSelected -> {
                 _state.update {
                     it.copy(
@@ -79,8 +98,8 @@ class AddSubscriptionViewModel(
                 _state.update {
                     it.copy(
                         price = action.price,
-                        subscriptionPrev = state.value.subscriptionPrev.copy(money = action.price)
-
+                        subscriptionPrev = state.value.subscriptionPrev.copy(money = action.price),
+                        errorPrice = null
                     )
                 }
             }
@@ -119,7 +138,9 @@ class AddSubscriptionViewModel(
                 navigateBack()
             }
             is AddSubscriptionAction.OnNewCategoryCreated -> {
-
+                launchWithLoading {
+                    subscriptionRepository.addCategory(action.category)
+                }
             }
 
             is AddSubscriptionAction.OnColorChanged -> {
@@ -147,29 +168,29 @@ class AddSubscriptionViewModel(
         // validation ve kaydetme işlemleri
         launchWithLoading {
             val state = state.value
+            val validated = validate(state)
+            if (validated.hasError()) {
+                _state.value = validated
+            } else {
+                subscriptionRepository.addSubscription(state.subscriptionPrev)
 
-            val error = when { // TODO ERROR HANDLING SONRA EKLENECEK
-                state.subscriptionName.isBlank() -> "Abonelik adı boş olamaz"
-                state.selectedCategory == null ->
-                    "Bir kategori seçmelisiniz"
-                state.price == emptyMoney() -> "Fiyat boş olamaz"
-                state.startDate == null -> "Başlangıç tarihi seçilmelidir"
-                state.endDate != null && state.startDate != null && state.endDate < state.startDate ->
-                    "Bitiş tarihi başlangıç tarihinden önce olamaz"
-                else -> null
+                navigateBack()
+
             }
 
-            if (error != null) {
-                _state.update {
-                    it.copy(errorMessage = error)
-                }
-                return@launchWithLoading
-            }
-            subscriptionRepository.addSubscription(state.subscriptionPrev)
 
-            navigateBack()
 
         }
     }
+    private fun validate(state: AddSubscriptionState): AddSubscriptionState {
+        return state.copy(
+            errorName = if (state.subscriptionName.isBlank()) UiText.StringResourceId(Res.string.error_empty_service_name) else null,
+            errorCategory = if (state.selectedCategory == null) UiText.StringResourceId(Res.string.error_empty_category) else null,
+            errorPrice = if (state.price == null || state.price.amount <= 0) UiText.StringResourceId(Res.string.error_empty_price) else null,
+        )
+    }
+
+
+
 }
 

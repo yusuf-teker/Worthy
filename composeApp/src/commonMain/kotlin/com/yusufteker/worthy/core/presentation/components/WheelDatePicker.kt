@@ -338,11 +338,10 @@ fun WheelDatePickerV2(
             }
         }
 
-        if (errorMessage != null) {
-            Text(
-                text = errorMessage, color =AppColors.error
-            )
-        }
+        ErrorText(
+            errorMessage
+        )
+
     }
 }
 

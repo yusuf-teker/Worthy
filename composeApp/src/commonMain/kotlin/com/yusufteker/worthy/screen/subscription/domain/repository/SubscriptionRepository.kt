@@ -2,10 +2,12 @@ package com.yusufteker.worthy.screen.subscription.domain.repository
 
 import com.yusufteker.worthy.screen.card.domain.model.Card
 import com.yusufteker.worthy.screen.subscription.domain.model.Subscription
+import com.yusufteker.worthy.screen.subscription.domain.model.SubscriptionCategory
 import kotlinx.coroutines.flow.Flow
 
 interface SubscriptionRepository {
 
+    suspend fun initializeDefaultCategories()
     suspend fun addSubscription(subscription: Subscription)
 
     suspend fun updateSubscription(subscription: Subscription)
@@ -21,5 +23,9 @@ interface SubscriptionRepository {
     fun getActiveSubscriptions(): Flow<List<Subscription>>
 
     fun getCards(): Flow<List<Card>>
+
+    fun getCategories(): Flow<List<SubscriptionCategory>>
+
+    suspend fun addCategory(category: SubscriptionCategory)
 
 }

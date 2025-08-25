@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 class CategoryRepositoryImpl(
-    private val categoryDao: CategoryDao
+    private val categoryDao: CategoryDao,
 ) : CategoryRepository {
 
     override suspend fun initializeDefaultCategories() {

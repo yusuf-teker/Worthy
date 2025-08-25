@@ -77,6 +77,7 @@ val sharedModule = module {
     single { get<WorthyDatabase>().recurringFinancialItemDao }
     single { get<WorthyDatabase>().cardDao }
     single { get<WorthyDatabase>().subscriptionDao }
+    single { get<WorthyDatabase>().subscriptionCategoryDao }
 
     // Repository implementasyonlarını bind et
     single<CurrencyRatesRepository> { CurrencyRatesRepositoryImpl(get(), get()) }
@@ -91,7 +92,7 @@ val sharedModule = module {
     single<CurrencyRatesRemoteDataSource> { CurrencyRatesRemoteDataSourceImpl() }
     single<CardRepository> { CardRepositoryImpl(get()) }
     single<AnalyticsRepository> { AnalyticsRepositoryImpl(get(), get(), get(), get()) }
-    single<SubscriptionRepository> { SubscriptionRepositoryImpl(get(), get()) }
+    single<SubscriptionRepository> { SubscriptionRepositoryImpl(get(), get(),get()) }
 
     viewModel { OnboardingViewModel(get()) }
     viewModel { DashboardViewModel(get(),get(), get()) }
@@ -104,5 +105,5 @@ val sharedModule = module {
     viewModel { WishlistDetailViewModel() }
     viewModel { AnalyticsViewModel(get(), get()) }
     viewModel { SubscriptionListViewModel(get()) }
-    viewModel { AddSubscriptionViewModel(get()) }
+    viewModel { AddSubscriptionViewModel(get(), get()) }
 }
