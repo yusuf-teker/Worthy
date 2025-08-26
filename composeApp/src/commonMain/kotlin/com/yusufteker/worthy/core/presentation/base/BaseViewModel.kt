@@ -31,7 +31,7 @@ open class BaseViewModel<S : BaseState>(
     }
 
     fun sendUiEventSafe(event: UiEvent) {
-        viewModelScope.launch {
+        launchWithLoading {
             _uiEvent.emit(event)
         }
     }
@@ -41,8 +41,9 @@ open class BaseViewModel<S : BaseState>(
     }
 
     fun sendNavigationEventSafe(event: UiEvent) {
-        viewModelScope.launch {
+        launchWithLoading {
             _uiEvent.emit(event)
+
         }
     }
 

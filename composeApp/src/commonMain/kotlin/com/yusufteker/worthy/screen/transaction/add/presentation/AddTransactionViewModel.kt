@@ -227,7 +227,7 @@ class AddTransactionViewModel(
                         )
                     }
 
-                    TransactionFormAction.SaveClicked -> {
+                    is TransactionFormAction.SaveClicked -> {
 
                         launchWithLoading {
                             if (validateIncomeForm(state.value).successful){
@@ -251,7 +251,7 @@ class AddTransactionViewModel(
 
 
                     }
-                    TransactionFormAction.AddNewCardClicked -> {
+                    is TransactionFormAction.AddNewCardClicked -> {
 
                     }
 
@@ -261,7 +261,7 @@ class AddTransactionViewModel(
                 }
             }
 
-            AddTransactionAction.OnBackClick -> {
+            is AddTransactionAction.OnBackClick -> {
                 navigateBack()
             }
         }

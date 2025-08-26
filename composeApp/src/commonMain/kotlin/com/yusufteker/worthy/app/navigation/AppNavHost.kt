@@ -302,7 +302,8 @@ fun AppNavHost(
             }
             AddFabMenu(
                 showMenu = showAddFabMenu,
-                modifier = Modifier.padding(innerPadding).align(Alignment.BottomCenter)
+                modifier = Modifier.padding(innerPadding).align(Alignment.BottomCenter),
+                enabled = showAddFabMenu
             ) { fabItem ->
                 showAddFabMenu = false
 
@@ -310,7 +311,6 @@ fun AppNavHost(
                     expenseLabel -> {
                         navController.navigateTo(
                             NavigationModel(route = Routes.AddTransaction(false))
-
                         )
                     }
 
@@ -323,10 +323,11 @@ fun AppNavHost(
                     }
 
                     else -> {
-                        showAddFabMenu = false
+                        Napier.w("Unknown FAB item: ${fabItem.label}", tag = "FabNavigation")
                     }
                 }
             }
+
         }
     }
 }
