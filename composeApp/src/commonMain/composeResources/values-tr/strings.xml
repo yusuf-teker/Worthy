@@ -344,7 +344,7 @@
 
     <string name="chart_category_analysis_income">📊 Kategori Analizi - Gelir</string>
     <string name="chart_category_analysis_expense">📊 Kategori Analizi - Gider</string>
-    <string name="chart_category_analysis_refund">📊 Category Analysis - İade</string>
+    <string name="chart_category_analysis_refund">📊 Kategori Analizi - İade</string>
 
     <string name="period_none">Yok</string>
     <string name="period_week">Hafta</string>
@@ -386,4 +386,6 @@
     <string name="error_empty_start_date">Başlangıç tarihi boş olamaz</string>
     <string name="error_empty_payment_day">Ödeme günü seçilmelidir</string>
 
+    <string name="active_subscriptions">Aktif Abonelikler</string>
+    <string name="inactive_subscriptions">Pasif Abonelikler</string>
 </resources>

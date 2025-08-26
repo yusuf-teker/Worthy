@@ -1,5 +1,6 @@
 package com.yusufteker.worthy.screen.subscription.domain.model
 
+import com.yusufteker.worthy.core.domain.getCurrentAppDate
 import com.yusufteker.worthy.core.domain.getCurrentMonth
 import com.yusufteker.worthy.core.domain.getCurrentYear
 import com.yusufteker.worthy.core.domain.model.AppDate
@@ -17,14 +18,15 @@ data class Subscription(
     val endDate: AppDate? = null,
     val scheduledDay: Int? = 1,          // her ay ödeme günü
     val cardId: Int? = null,             // opsiyonel, bağlı olduğu kart
-    val isActive: Boolean = false        // aktif mi?
 )
 
+fun Subscription.isActive(currentDate: AppDate = getCurrentAppDate()): Boolean {
+    return currentDate >= startDate && (endDate == null || currentDate <= endDate)
+}
 val emptySubscription = Subscription(
     name = "",
     icon = "",
     startDate = AppDate(getCurrentYear(),getCurrentMonth()),
-    isActive = true,
     color = null,
     money = emptyMoney()
 )

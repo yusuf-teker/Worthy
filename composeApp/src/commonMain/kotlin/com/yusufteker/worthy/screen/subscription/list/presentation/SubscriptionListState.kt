@@ -6,7 +6,8 @@ import com.yusufteker.worthy.screen.subscription.domain.model.Subscription
 data class SubscriptionListState(
     override val isLoading: Boolean = false,
     val errorMessage: String? = null,
-    val subscriptions: List<Subscription> = emptyList()
+    val activeSubscriptions: List<Subscription> = emptyList(),
+    val inactiveSubscriptions: List<Subscription> = emptyList()
 ) : BaseState {
     override fun copyWithLoading(isLoading: Boolean): BaseState {
         return this.copy(isLoading = isLoading)

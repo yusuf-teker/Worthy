@@ -3,6 +3,7 @@ package com.yusufteker.worthy.screen.subscription.list.presentation
 import androidx.lifecycle.viewModelScope
 import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
+import com.yusufteker.worthy.screen.subscription.domain.model.isActive
 import com.yusufteker.worthy.screen.subscription.domain.repository.SubscriptionRepository
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -17,9 +18,12 @@ class SubscriptionListViewModel(
     }
     fun observeData(){
         launchWithLoading {
-            subscriptionRepository.getActiveSubscriptions() .onEach { subscriptions ->
+            subscriptionRepository.getAllSubscriptions() .onEach { subscriptions ->
                 _state.update { currentState ->
-                    currentState.copy(subscriptions = subscriptions)
+                    currentState.copy(
+                        activeSubscriptions = subscriptions.filter { it.isActive() },
+                        inactiveSubscriptions = subscriptions.filter { !it.isActive() }
+                    )
                 }
             }.launchIn(viewModelScope)
         }

@@ -393,4 +393,6 @@
     <string name="error_empty_start_date">Start date cannot be empty</string>
     <string name="error_empty_payment_day">Payment day must be selected</string>
 
+    <string name="active_subscriptions">Active Subscriptions</string>
+    <string name="inactive_subscriptions">Inactive Subscriptions</string>
 </resources>

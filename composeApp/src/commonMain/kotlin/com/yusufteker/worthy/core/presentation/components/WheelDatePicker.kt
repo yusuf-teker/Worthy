@@ -198,7 +198,7 @@ fun WheelDatePicker(
 }
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
-fun WheelDatePickerV2(
+fun WheelDatePickerV2( // TODO MİN GİRİNCE MİNİMİNN ALTINDA GÖZÜKÜYOR AMA SETLEMİYOR
     initialDate: AppDate = AppDate(
         year = Clock.System.todayIn(TimeZone.currentSystemDefault()).year,
         month = Clock.System.todayIn(TimeZone.currentSystemDefault()).month.number,
@@ -238,8 +238,9 @@ fun WheelDatePickerV2(
     }
 
     fun emitDate() {
-        adjustSelection()
         onDateSelected(AppDate(selectedYear, selectedMonth, selectedDay))
+        adjustSelection()
+
     }
 
     LaunchedEffect(selectedYear, selectedMonth, selectedDay) {

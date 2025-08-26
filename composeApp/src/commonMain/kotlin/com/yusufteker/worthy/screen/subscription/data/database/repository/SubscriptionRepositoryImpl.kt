@@ -44,7 +44,7 @@ class SubscriptionRepositoryImpl(
     }
 
     override fun getAllSubscriptions(): Flow<List<Subscription>> {
-        TODO("Not yet implemented")
+        return dao.getAll().map { entities -> entities.map { it.toDomain() } }
     }
 
     override fun getSubscriptionsByCardId(cardId: Int): Flow<List<Subscription>> {
