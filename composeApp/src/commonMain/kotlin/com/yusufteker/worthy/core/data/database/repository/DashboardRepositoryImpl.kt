@@ -8,6 +8,7 @@ import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.TransactionType
 import com.yusufteker.worthy.core.domain.model.generateMonthlyAmounts
+import com.yusufteker.worthy.core.domain.model.toAppDate
 import com.yusufteker.worthy.core.domain.repository.CategoryRepository
 import com.yusufteker.worthy.core.domain.repository.RecurringFinancialItemRepository
 import com.yusufteker.worthy.core.domain.repository.TransactionRepository
@@ -93,6 +94,8 @@ class DashboardRepositoryImpl(
             }
     }
 
+    // Satın alınmayan wishlist seçili ay veya daha öncesinde eklenmiş ise döndürür
+    // 6.ayda eklenmişse 6 7 8 9 10 11 12. aylarda gözükür
     override fun getAllWishlistMonthlyAmount(
         monthCount: Int, currentDate: LocalDate
     ): Flow<List<DashboardMonthlyAmount>> {
@@ -112,7 +115,9 @@ class DashboardRepositoryImpl(
                     val yearMonth = monthDate.year to monthDate.month.number
 
                     for (item in unpurchased) {
-                        if (item.addedDate <= monthDate.toEpochMillis()) {
+                        val itemFirstDayOfMonth = item.addedDate.toLocalDate().let { LocalDate(it.year, it.month.number, 1) }
+
+                        if (itemFirstDayOfMonth <= monthDate) {
                             result.getOrPut(yearMonth) { mutableListOf() }.add(item.price)
                         }
                     }

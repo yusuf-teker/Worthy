@@ -32,7 +32,7 @@ class SubscriptionListViewModel(
     fun onAction(action: SubscriptionListAction) {
         when (action) {
             is SubscriptionListAction.Init -> {
-                // TODO
+
             }
 
             is SubscriptionListAction.OnNavigateBack -> {

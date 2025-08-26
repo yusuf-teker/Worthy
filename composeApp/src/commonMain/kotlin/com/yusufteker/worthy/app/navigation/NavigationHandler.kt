@@ -9,17 +9,30 @@ import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 @Composable
 fun <S : BaseState, VM : BaseViewModel<S>> NavigationHandler(
     viewModel: VM,
-    onNavigate: (Routes, data: Any? ) -> Unit,
+    onNavigate: (NavigationModel) -> Unit,
 ) {
     LaunchedEffect(Unit) {
         viewModel.uiEvent.collect { event ->
-            if (event is UiEvent.NavigateTo) {
-                onNavigate(event.route, null)
-            }
-            if (event is UiEvent.NavigateWithData<*>){
-                onNavigate(event.route, event.data)
-
+            when (event) {
+                is UiEvent.NavigateTo -> {
+                    onNavigate(event.toModel())
+                }
+                is UiEvent.NavigateWithData<*> -> {
+                    onNavigate(
+                        event.toModel()
+                    )
+                }
+                else -> Unit
             }
         }
     }
 }
+
+
+data class NavigationModel(
+    val route: Routes,
+    val data: Any? = null,
+    val popUpToRoute: Routes? = null,
+    val inclusive: Boolean = false,
+    val isBack: Boolean = false // Back stack pop için
+)

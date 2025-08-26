@@ -36,16 +36,46 @@ open class BaseViewModel<S : BaseState>(
         }
     }
 
-    fun navigateTo(route: Routes) {
-        sendUiEventSafe(UiEvent.NavigateTo(route))
+    suspend fun sendNavigationEvent(event: UiEvent) {
+        _uiEvent.emit(event)
     }
 
-    fun navigateBack(){
-        sendUiEventSafe(UiEvent.NavigateTo(Routes.Back))
+    fun sendNavigationEventSafe(event: UiEvent) {
+        viewModelScope.launch {
+            _uiEvent.emit(event)
+        }
     }
 
-    fun <T>navigateWithData(route: Routes, data: T) {
-        sendUiEventSafe(UiEvent.NavigateWithData(route, data))
+    // Simple navigate
+    fun navigateTo(route: Routes, popUpToRoute: Routes? = null, inclusive: Boolean = false) {
+        sendNavigationEventSafe(
+            UiEvent.NavigateTo(
+                route = route, popUpToRoute = popUpToRoute, inclusive = inclusive
+            )
+        )
+
+    }
+
+    // Navigate with data
+    fun <T> navigateWithData(
+        route: Routes, data: T, popUpToRoute: Routes? = null, inclusive: Boolean = false
+    ) {
+        sendNavigationEventSafe(
+            UiEvent.NavigateWithData(
+                route = route, data = data, popUpToRoute = popUpToRoute, inclusive = inclusive
+
+            )
+        )
+    }
+
+    // Back navigation
+    fun navigateBack() {
+        sendNavigationEventSafe(
+            event = UiEvent.NavigateTo(
+                route = Routes.Back, isBack = true
+
+            )
+        )
     }
 
     private var activeLoadingJobs = 0

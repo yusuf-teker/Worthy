@@ -145,7 +145,7 @@ class DashboardViewModel(
         }
 
         is DashboardAction.AddRecurringClicked -> {
-            sendUiEventSafe(NavigateTo(Routes.Settings))
+            sendNavigationEventSafe(NavigateTo(Routes.Settings))
         }
 
         is DashboardAction.AddTransactionClicked -> {

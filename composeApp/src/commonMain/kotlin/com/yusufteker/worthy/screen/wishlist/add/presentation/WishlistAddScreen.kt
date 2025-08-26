@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yusufteker.worthy.app.navigation.NavigationHandler
+import com.yusufteker.worthy.app.navigation.NavigationModel
 import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.domain.model.CategoryType
 import com.yusufteker.worthy.core.presentation.UiText
@@ -51,12 +52,12 @@ import worthy.composeapp.generated.resources.wishlist_label_product_name
 fun WishlistAddScreenRoot(
     viewModel: WishlistAddViewModel = koinViewModel(),
     contentPadding: PaddingValues = PaddingValues(),
-    onNavigateTo: (route: Routes) -> Unit = {}
+    onNavigateTo: (NavigationModel) -> Unit = {}
 
     ) {
 
-    NavigationHandler(viewModel){route, data ->
-        onNavigateTo(route)
+    NavigationHandler(viewModel){ model ->
+        onNavigateTo(model)
     }
 
     val state by viewModel.state.collectAsStateWithLifecycle()

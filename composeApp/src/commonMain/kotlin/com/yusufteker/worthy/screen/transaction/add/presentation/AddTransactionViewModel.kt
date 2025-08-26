@@ -140,7 +140,7 @@ class AddTransactionViewModel(
 
                                 transactionRepository.insert(transaction)
 
-                                navigateTo(Routes.Dashboard)
+                                navigateTo(Routes.AnalyticsGraph)
                             }
 
                         }
@@ -244,7 +244,7 @@ class AddTransactionViewModel(
 
                                 transactionRepository.insert(transaction)
 
-                                navigateTo(Routes.Dashboard)
+                                navigateTo(Routes.AnalyticsGraph)
                             }
 
                         }
@@ -262,7 +262,7 @@ class AddTransactionViewModel(
             }
 
             AddTransactionAction.OnBackClick -> {
-                sendUiEventSafe(UiEvent.NavigateTo(Routes.Back))
+                navigateBack()
             }
         }
     }

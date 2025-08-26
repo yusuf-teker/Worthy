@@ -13,7 +13,7 @@ class AddCardViewModel(
                 // TODO
             }
 
-            AddCardAction.OnNavigateBack -> {
+            is AddCardAction.OnNavigateBack -> {
                 navigateBack()
             }
 

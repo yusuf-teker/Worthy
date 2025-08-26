@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yusufteker.worthy.app.navigation.NavigationHandler
+import com.yusufteker.worthy.app.navigation.NavigationModel
 import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
@@ -42,12 +43,12 @@ import worthy.composeapp.generated.resources.subscription
 fun SubscriptionListScreenRoot(
     viewModel: SubscriptionListViewModel = koinViewModel(),
     contentPadding: PaddingValues = PaddingValues(),
-    onNavigateTo: (route: Routes) -> Unit
+    onNavigateTo: (NavigationModel) -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    NavigationHandler(viewModel){ route, data ->
-        onNavigateTo(route)
+    NavigationHandler(viewModel){ model ->
+        onNavigateTo(model)
     }
     BaseContentWrapper(state = state) {
         SubscriptionListScreen(

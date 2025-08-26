@@ -218,8 +218,8 @@ fun AppNavHost(
                         composable<Routes.CardList> {
                             CardListScreenRoot(
                                 contentPadding = innerPadding,
-                                onNavigateTo = { route ->
-                                    navController.navigateTo(route)
+                                onNavigateTo = { model ->
+                                    navController.navigateTo(model)
                                 }
                             )
                         }
@@ -254,8 +254,8 @@ fun AppNavHost(
                     composable<Routes.Settings> {
                         SettingsScreenRoot(
                             contentPadding = innerPadding,
-                            onNavigateTo = { route ->
-                                navController.navigateTo(route)
+                            onNavigateTo = { model ->
+                                navController.navigateTo(model)
                             }
                         )
                     }
@@ -308,15 +308,18 @@ fun AppNavHost(
 
                 when (fabItem.label) {
                     expenseLabel -> {
-                        navController.navigateTo(Routes.AddTransaction(false))
+                        navController.navigateTo(
+                            NavigationModel(route = Routes.AddTransaction(false))
+
+                        )
                     }
 
                     incomeLabel -> {
-                        navController.navigateTo(Routes.AddTransaction(true))
+                        navController.navigateTo(NavigationModel(route =Routes.AddTransaction(true)))
                     }
 
                     cardLabel -> {
-                        navController.navigateTo(Routes.AddCard)
+                        navController.navigateTo(NavigationModel(route =Routes.AddCard))
                     }
 
                     else -> {

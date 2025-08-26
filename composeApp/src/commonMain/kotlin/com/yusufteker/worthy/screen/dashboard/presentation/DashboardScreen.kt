@@ -22,6 +22,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.yusufteker.worthy.app.navigation.NavigationModel
 import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.presentation.UiEvent
 import com.yusufteker.worthy.core.presentation.UiText
@@ -44,7 +45,7 @@ import worthy.composeapp.generated.resources.dashboard_overview
 @Composable
 fun DashboardScreenRoot(
     contentPadding: PaddingValues = PaddingValues(),
-    onNavigateTo: (Routes) -> Unit,
+    onNavigateTo: (NavigationModel) -> Unit,
     viewModel: DashboardViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -53,7 +54,7 @@ fun DashboardScreenRoot(
         viewModel.uiEvent.collect { event ->
             when (event) {
                 is UiEvent.NavigateTo -> {
-                    onNavigateTo(event.route)
+                    onNavigateTo(event.toModel())
                 }
 
                 else -> Unit

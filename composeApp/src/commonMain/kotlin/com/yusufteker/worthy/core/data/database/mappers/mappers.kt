@@ -59,7 +59,7 @@ fun WishlistItem.toEntity(): WishlistItemEntity {
         priority = priority,
         isPurchased = isPurchased,
         purchasedDate = purchasedDate,
-        addedDate = if (newItem) Clock.System.now().epochSeconds else addedDate,
+        addedDate = if (newItem) Clock.System.now().toEpochMilliseconds() else addedDate,
         note = note,
         imageUri = imageUri
     )

@@ -6,6 +6,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -38,6 +39,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yusufteker.worthy.app.navigation.NavigationHandler
+import com.yusufteker.worthy.app.navigation.NavigationModel
 import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.screen.card.domain.model.Card
 import com.yusufteker.worthy.core.presentation.UiText
@@ -76,12 +78,12 @@ import worthy.composeapp.generated.resources.toggle_card_details_skip
 fun AddCardScreenRoot(
     viewModel: AddCardViewModel = koinViewModel(),
     contentPadding: PaddingValues = PaddingValues(),
-    onNavigateTo: (Routes) -> Unit = {}
+    onNavigateTo: (NavigationModel) -> Unit = {}
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    NavigationHandler(viewModel){ route, data ->
-        onNavigateTo(route)
+    NavigationHandler(viewModel){ model ->
+        onNavigateTo(model)
     }
     BaseContentWrapper(
         state = state
@@ -167,7 +169,7 @@ fun AddCardScreen(
             }
 
             Row(
-                modifier = Modifier.fillMaxWidth().padding(start = 4.dp),
+                modifier = Modifier.fillMaxWidth().clickable{showCardDetailInputs = !showCardDetailInputs }.padding(start = 4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(

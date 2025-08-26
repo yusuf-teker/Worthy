@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yusufteker.worthy.app.navigation.NavigationHandler
+import com.yusufteker.worthy.app.navigation.NavigationModel
 import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
@@ -63,12 +64,12 @@ import worthy.composeapp.generated.resources.subscription
 fun SettingsScreenRoot(
     viewModel: SettingsViewModel = koinViewModel(),
     contentPadding: PaddingValues = PaddingValues(),
-    onNavigateTo: (Routes) -> Unit = {}
+    onNavigateTo: (NavigationModel) -> Unit = {}
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    NavigationHandler(viewModel) { route, _ ->
-        onNavigateTo(route)
+    NavigationHandler(viewModel) { model ->
+        onNavigateTo(model)
     }
     BaseContentWrapper(
         state = state

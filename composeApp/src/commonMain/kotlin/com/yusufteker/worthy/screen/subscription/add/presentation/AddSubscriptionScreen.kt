@@ -32,6 +32,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yusufteker.worthy.app.navigation.NavigationHandler
+import com.yusufteker.worthy.app.navigation.NavigationModel
 import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.domain.getCurrentAppDate
 import com.yusufteker.worthy.core.domain.getCurrentYear
@@ -69,13 +70,13 @@ import worthy.composeapp.generated.resources.toggle_optional_info_show
 fun AddSubscriptionScreenRoot( // TODO BASTAN SONRA TEKRAR BAKILACAK DUMMY YAZILDI
     viewModel: AddSubscriptionViewModel = koinViewModel(),
     contentPadding: PaddingValues = PaddingValues(),
-    onNavigateTo: (route: Routes) -> Unit
+    onNavigateTo: (NavigationModel) -> Unit
 
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    NavigationHandler(viewModel) { route, data ->
-        onNavigateTo(route)
+    NavigationHandler(viewModel) { model ->
+        onNavigateTo(model)
     }
 
     BaseContentWrapper(state = state) {
