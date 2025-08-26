@@ -1,7 +1,7 @@
 package com.yusufteker.worthy.screen.onboarding.domain
 
 import com.yusufteker.worthy.core.domain.model.Money
-import com.yusufteker.worthy.core.domain.model.RecurringFinancialItem
+import com.yusufteker.worthy.core.domain.model.RecurringItem
 
 interface OnboardingRepository {
 
@@ -9,7 +9,7 @@ interface OnboardingRepository {
 
     suspend fun addSpendingLimit(spendingLimit: Money?)
 
-    suspend fun addMonthlySalary(monthlySalary: RecurringFinancialItem?)
+    suspend fun addMonthlySalary(monthlySalary: RecurringItem.Generic?)
 
     suspend fun addWeeklyWorkHours(weeklyWorkHours: Int)
 

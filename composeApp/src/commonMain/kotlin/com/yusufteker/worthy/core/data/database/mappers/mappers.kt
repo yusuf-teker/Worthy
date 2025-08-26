@@ -7,13 +7,12 @@ import com.yusufteker.worthy.core.data.database.entities.TransactionEntity
 import com.yusufteker.worthy.core.domain.getCurrentEpochMillis
 import com.yusufteker.worthy.screen.card.domain.model.Card
 import com.yusufteker.worthy.core.domain.model.Category
-import com.yusufteker.worthy.core.domain.model.RecurringFinancialItem
+import com.yusufteker.worthy.core.domain.model.RecurringItem
 import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.TransactionType
 import com.yusufteker.worthy.screen.subscription.data.database.entities.SubscriptionCategoryEntity
 import com.yusufteker.worthy.screen.subscription.data.database.entities.SubscriptionEntity
 import com.yusufteker.worthy.screen.subscription.domain.model.Default
-import com.yusufteker.worthy.screen.subscription.domain.model.Subscription
 import com.yusufteker.worthy.screen.subscription.domain.model.SubscriptionCategory
 import com.yusufteker.worthy.screen.wishlist.list.data.database.entities.WishlistItemEntity
 import com.yusufteker.worthy.screen.wishlist.list.data.database.relation.WishlistWithCategory
@@ -95,29 +94,33 @@ fun Category.toEntity(): CategoryEntity {
     )
 }
 
-fun RecurringFinancialItemEntity.toDomain(): RecurringFinancialItem = RecurringFinancialItem(
+// DB entity → Domain model (RecurringItem.Generic)
+fun RecurringFinancialItemEntity.toDomain(): RecurringItem.Generic = RecurringItem.Generic(
     id = id,
     groupId = groupId,
     name = name,
     amount = amount,
     isIncome = isIncome,
     needType = needType,
-    scheduledDay = scheduledDay,
     startDate = startDate,
     endDate = endDate,
+    scheduledDay = scheduledDay,
 )
 
-fun RecurringFinancialItem.toEntity(): RecurringFinancialItemEntity = RecurringFinancialItemEntity(
+// Domain model → DB entity (RecurringItem.Generic)
+fun RecurringItem.Generic.toEntity(): RecurringFinancialItemEntity = RecurringFinancialItemEntity(
     id = id,
     groupId = groupId,
     name = name,
     amount = amount,
-    isIncome = isIncome,
     needType = needType,
-    scheduledDay = scheduledDay,
+    isIncome = isIncome,
     startDate = startDate,
     endDate = endDate,
+    scheduledDay = scheduledDay
 )
+
+
 
 fun CardEntity.toDomain(): Card = Card(
     id = id,
@@ -190,36 +193,6 @@ fun WishlistItem.toExpenseTransaction(): Transaction {
     )
 }
 
-
-fun SubscriptionEntity.toDomain(): Subscription {
-    return Subscription(
-        id = id,
-        name = name,
-        icon = icon,
-        category = category,
-        money = money,
-        startDate = startDate,
-        endDate = endDate,
-        scheduledDay = scheduledDay,
-        cardId = cardId,
-        color = color
-    )
-}
-
-fun Subscription.toEntity(): SubscriptionEntity {
-    return SubscriptionEntity(
-        id = id,
-        name = name,
-        icon = icon,
-        category = category?: SubscriptionCategory.Default,
-        money = money,
-        startDate = startDate,
-        endDate = endDate,
-        scheduledDay = scheduledDay,
-        cardId = cardId,
-        color = color
-    )
-}
 fun SubscriptionCategoryEntity.toDomain(): SubscriptionCategory {
     return SubscriptionCategory(
         id = id,
@@ -239,3 +212,33 @@ fun SubscriptionCategory.toEntity(): SubscriptionCategoryEntity {
         colorHex = color
     )
 }
+
+// SubscriptionEntity -> RecurringItem.Subscription
+fun SubscriptionEntity.toDomain(): RecurringItem.Subscription = RecurringItem.Subscription(
+    id = this.id,
+    name = this.name,
+    amount = this.money,
+    startDate = this.startDate,
+    endDate = this.endDate,
+    scheduledDay = this.scheduledDay,
+    cardId = this.cardId,
+    icon = this.icon,
+    colorHex = this.color,
+    groupId = this.groupId,
+    category = this.category
+)
+
+// RecurringItem.Subscription -> SubscriptionEntity
+fun RecurringItem.Subscription.toEntity(): SubscriptionEntity = SubscriptionEntity(
+    id = this.id,
+    groupId = this.groupId,
+    name = this.name,
+    icon = this.icon,
+    color = this.colorHex,
+    category = this.category,
+    money = this.amount,
+    startDate = this.startDate,
+    endDate = this.endDate,
+    scheduledDay = this.scheduledDay,
+    cardId = this.cardId
+)

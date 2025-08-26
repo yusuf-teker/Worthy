@@ -1,7 +1,7 @@
 package com.yusufteker.worthy.core.data.database.repository
 
 import com.yusufteker.worthy.core.domain.model.Money
-import com.yusufteker.worthy.core.domain.model.RecurringFinancialItem
+import com.yusufteker.worthy.core.domain.model.RecurringItem
 import com.yusufteker.worthy.core.domain.repository.RecurringFinancialItemRepository
 import com.yusufteker.worthy.screen.onboarding.domain.OnboardingManager
 import com.yusufteker.worthy.screen.onboarding.domain.OnboardingRepository
@@ -25,7 +25,7 @@ class OnboardingRepositoryImpl(
 
     }
 
-    override suspend fun addMonthlySalary(monthlySalary: RecurringFinancialItem?) {
+    override suspend fun addMonthlySalary(monthlySalary: RecurringItem.Generic?) {
         monthlySalary?.let {
             recurringRepository.add(it)
         }

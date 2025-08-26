@@ -98,7 +98,7 @@ class AddSubscriptionViewModel(
                 _state.update {
                     it.copy(
                         price = action.price,
-                        subscriptionPrev = state.value.subscriptionPrev.copy(money = action.price),
+                        subscriptionPrev = state.value.subscriptionPrev.copy(amount = action.price),
                         errorPrice = null
                     )
                 }
@@ -147,7 +147,7 @@ class AddSubscriptionViewModel(
                 _state.update {
                     it.copy(
                         color = action.color,
-                        subscriptionPrev = state.value.subscriptionPrev.copy(color = action.color)
+                        subscriptionPrev = state.value.subscriptionPrev.copy(colorHex = action.color)
                     )
                 }
             }

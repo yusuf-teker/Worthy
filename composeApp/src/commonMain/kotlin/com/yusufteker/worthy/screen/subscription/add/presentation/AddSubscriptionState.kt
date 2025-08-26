@@ -4,13 +4,13 @@ import com.yusufteker.worthy.core.domain.getCurrentMonth
 import com.yusufteker.worthy.core.domain.getCurrentYear
 import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.core.domain.model.Money
+import com.yusufteker.worthy.core.domain.model.RecurringItem
 import com.yusufteker.worthy.core.domain.model.emptyMoney
+import com.yusufteker.worthy.core.domain.model.emptySubscription
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.base.BaseState
 import com.yusufteker.worthy.screen.card.domain.model.Card
-import com.yusufteker.worthy.screen.subscription.domain.model.Subscription
 import com.yusufteker.worthy.screen.subscription.domain.model.SubscriptionCategory
-import com.yusufteker.worthy.screen.subscription.domain.model.emptySubscription
 
 data class AddSubscriptionState(
     override val isLoading: Boolean = false,
@@ -33,7 +33,7 @@ data class AddSubscriptionState(
     val errorPrice: UiText? = null,
 
 
-    val subscriptionPrev: Subscription = emptySubscription
+    val subscriptionPrev: RecurringItem.Subscription = emptySubscription
 ) : BaseState {
     override fun copyWithLoading(isLoading: Boolean): BaseState {
         return this.copy(isLoading = isLoading)

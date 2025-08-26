@@ -154,7 +154,7 @@ fun AddSubscriptionScreen(
 
                 ColorPicker(
                     modifier = Modifier.padding(8.dp),
-                    selectedColor = state.subscriptionPrev.color?.toComposeColor(),
+                    selectedColor = state.subscriptionPrev.colorHex?.toComposeColor(),
                     onColorSelected = {
                         onAction(AddSubscriptionAction.OnColorChanged(it.toHexString()))
                     }

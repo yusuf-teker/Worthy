@@ -3,15 +3,15 @@ package com.yusufteker.worthy.screen.settings.presentation
 import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Money
-import com.yusufteker.worthy.core.domain.model.RecurringFinancialItem
+import com.yusufteker.worthy.core.domain.model.RecurringItem
 import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.presentation.base.BaseState
 
 data class SettingsState(
-    val incomeRecurringItems: List<RecurringFinancialItem> = emptyList(),
-    val uniqueIncomeRecurringItems: List<RecurringFinancialItem> = emptyList(),
-    val uniqueExpenseRecurringItems: List<RecurringFinancialItem> = emptyList(),
-    val expenseRecurringItems: List<RecurringFinancialItem> = emptyList(),
+    val incomeRecurringItems: List<RecurringItem.Generic> = emptyList(),
+    val uniqueIncomeRecurringItems: List<RecurringItem.Generic> = emptyList(),
+    val uniqueExpenseRecurringItems: List<RecurringItem.Generic> = emptyList(),
+    val expenseRecurringItems: List<RecurringItem.Generic> = emptyList(),
     val categories: List<Category> = emptyList(),
     val budgetAmount: Money = emptyMoney(),
     val convertedBudgetAmount: Double = 0.0,

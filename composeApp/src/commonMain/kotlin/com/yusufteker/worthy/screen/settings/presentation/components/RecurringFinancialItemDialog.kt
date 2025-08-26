@@ -32,7 +32,6 @@ import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -54,7 +53,8 @@ import com.yusufteker.worthy.core.domain.getCurrentYear
 import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Money
-import com.yusufteker.worthy.core.domain.model.RecurringFinancialItem
+import com.yusufteker.worthy.core.domain.model.RecurringItem
+
 import com.yusufteker.worthy.core.domain.model.currentAppDate
 import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.domain.model.endDate
@@ -106,18 +106,18 @@ import kotlin.time.ExperimentalTime
 @Composable
 fun RecurringFinancialItemDialog(
     title: String,
-    items: List<RecurringFinancialItem>,
+    items: List<RecurringItem.Generic>,
     isIncome: Boolean = false,
     onDismiss: () -> Unit,
     onClose: () -> Unit,
-    onUpdateGroup: (List<RecurringFinancialItem>) -> Unit = {},
+    onUpdateGroup: (List<RecurringItem.Generic>) -> Unit = {},
     onDeleteGroup: (String) -> Unit = {},
-    onDelete: (RecurringFinancialItem) -> Unit = {},
-    onAddNew: (RecurringFinancialItem) -> Unit = {},
+    onDelete: (RecurringItem.Generic) -> Unit = {},
+    onAddNew: (RecurringItem.Generic) -> Unit = {},
 
     ) {
     var showAddDialog by remember { mutableStateOf(false) }
-    var editingItem by remember { mutableStateOf<RecurringFinancialItem?>(null) }
+    var editingItem by remember { mutableStateOf<RecurringItem.Generic?>(null) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -229,8 +229,8 @@ fun RecurringFinancialItemDialog(
 @Composable
 fun RecurringItemRow(
     name: String,
-    versions: List<RecurringFinancialItem>,
-    onEdit: (RecurringFinancialItem) -> Unit,
+    versions: List<RecurringItem.Generic>,
+    onEdit: (RecurringItem.Generic) -> Unit,
     onDelete: (String) -> Unit
 ) {
     Column(Modifier.padding(vertical = 8.dp)) {
@@ -259,7 +259,7 @@ fun RecurringItemRow(
 @Composable
 fun RecurringItemAddDialog(
     onDismiss: () -> Unit,
-    onAdd: (RecurringFinancialItem) -> Unit,
+    onAdd: (RecurringItem.Generic) -> Unit,
     isIncome: Boolean
 ) {
     var name by remember { mutableStateOf("") }
@@ -376,7 +376,7 @@ fun RecurringItemAddDialog(
         },
         confirmButton = {
             Button(onClick = {
-                val item = RecurringFinancialItem(
+                val item = RecurringItem.Generic(
                     id = 0,
                     groupId = createTimestampId(),
                     name = name,
@@ -420,7 +420,7 @@ fun RecurringItemAddDialog(
 @Composable
 fun RecurringFinancialItemDialogPreview() {
     val items = listOf(
-        RecurringFinancialItem(
+        RecurringItem.Generic(
             id = 1,
             groupId = "3",
             name = "Kira",
@@ -432,7 +432,7 @@ fun RecurringFinancialItemDialogPreview() {
             endDate = null
 
         ),
-        RecurringFinancialItem(
+        RecurringItem.Generic(
             id = 2,
             groupId = "4",
             name = "Elektrik",
@@ -456,18 +456,18 @@ fun RecurringFinancialItemDialogPreview() {
 
 @Composable
 fun RecurringItemGroupEditDialog(
-    initialItems: List<RecurringFinancialItem>,
+    initialItems: List<RecurringItem.Generic>,
     onDismiss: () -> Unit,
-    onSaveGroup: (List<RecurringFinancialItem>) -> Unit,
-    onDelete: (RecurringFinancialItem) -> Unit = { },
-    onUpdateItem: (RecurringFinancialItem) -> Unit = { },
+    onSaveGroup: (List<RecurringItem.Generic>) -> Unit,
+    onDelete: (RecurringItem.Generic) -> Unit = { },
+    onUpdateItem: (RecurringItem.Generic) -> Unit = { },
 
     ) {
     val months = (1..12).toList()
     val years = (getCurrentYear() - 5..getCurrentYear() + 5).toList()
 
     var name by remember { mutableStateOf(initialItems.firstOrNull()?.name ?: "") }
-    //val items = remember { mutableStateListOf<RecurringFinancialItem>().apply { addAll(initialItems) } }
+    //val items = remember { mutableStateListOf<RecurringItem.Generic>().apply { addAll(initialItems) } }
 
     // Temporary item (her zaman gösterilir)
     var tempAmount by remember { mutableStateOf<Money?>(null) }
@@ -532,7 +532,7 @@ fun RecurringItemGroupEditDialog(
                         months = months,
                         years = years,
                         onSave = {
-                            val newItem = RecurringFinancialItem(
+                            val newItem = RecurringItem.Generic(
                                 id = 0,
                                 name = name,
                                 amount = Money(
@@ -602,7 +602,7 @@ fun RecurringItemGroupEditDialog(
                 // Eğer temp input anlamlıysa onu da ekle
                 val amount = tempAmount
                 if (amount != null && amount.amount > 0.0) {
-                    val newItem = RecurringFinancialItem(
+                    val newItem = RecurringItem.Generic(
                         id = 0,
                         name = name,
                         amount = amount,
@@ -642,7 +642,7 @@ fun RecurringItemGroupEditDialog(
 }
 
 @OptIn(ExperimentalTime::class)
-fun hasDateConflict(items: List<RecurringFinancialItem>): Pair<Int, UiText>? {
+fun hasDateConflict(items: List<RecurringItem.Generic>): Pair<Int, UiText>? {
     val sorted = items.sortedBy { it.startDate() }
 
     for (i in 0 until sorted.size - 1) {
@@ -747,10 +747,10 @@ fun hasDateConflict(items: List<RecurringFinancialItem>): Pair<Int, UiText>? {
 
 @Composable
 fun ExistingRecurringItemCard(
-    item: RecurringFinancialItem,
+    item: RecurringItem.Generic,
     months: List<Int>,
     years: List<Int>,
-    onUpdate: (RecurringFinancialItem) -> Unit,
+    onUpdate: (RecurringItem.Generic) -> Unit,
     validationError: String? = null
 ) {
     Card(
@@ -931,7 +931,7 @@ fun NewRecurringItemInput(
     }
 }
 
-fun adjustOpenEndedRecurringItems(items: List<RecurringFinancialItem>): List<RecurringFinancialItem> {
+fun adjustOpenEndedRecurringItems(items: List<RecurringItem.Generic>): List<RecurringItem.Generic> {
     val sorted = items.sortedBy { it.startDate() }
 
     return sorted.mapIndexed { index, current ->

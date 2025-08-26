@@ -20,12 +20,13 @@ import com.yusufteker.worthy.screen.subscription.domain.model.SubscriptionCatego
         )
     ]
 )
-data class SubscriptionEntity(
+data class  SubscriptionEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val groupId: String = "",
     val name: String,
     val icon: String,
     val color: String?,
-    val category: SubscriptionCategory,  // artık string değil domain modeli
+    val category: SubscriptionCategory?,
     val money: Money = emptyMoney(),
     val startDate: AppDate,
     val endDate: AppDate? = null,

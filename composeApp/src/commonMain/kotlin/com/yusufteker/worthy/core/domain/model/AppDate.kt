@@ -1,6 +1,7 @@
 package com.yusufteker.worthy.core.domain.model
 
 import com.yusufteker.worthy.core.domain.getCurrentMonth
+import com.yusufteker.worthy.core.domain.toEpochMillis
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.number
@@ -58,6 +59,9 @@ fun AppDate.toRoomInt(): Int {
     return this.year * 100 + this.month
 }
 
+fun AppDate.toEpochMillis(): Long {
+    return LocalDate(year, month, day ?: 1).toEpochMillis()
+}
 fun getLastSixMonths(): List<Int> {
     return (0 until 6).map { offset ->
         val month = (getCurrentMonth() - 5 + offset)

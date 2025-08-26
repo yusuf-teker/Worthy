@@ -3,13 +3,13 @@ package com.yusufteker.worthy.screen.subscription.data.database.repository
 import com.yusufteker.worthy.core.data.database.mappers.toDomain
 import com.yusufteker.worthy.core.data.database.mappers.toEntity
 import com.yusufteker.worthy.core.domain.getCurrentAppDate
+import com.yusufteker.worthy.core.domain.model.RecurringItem
 import com.yusufteker.worthy.core.domain.model.toRoomInt
 import com.yusufteker.worthy.screen.card.domain.model.Card
 import com.yusufteker.worthy.screen.card.domain.repository.CardRepository
 import com.yusufteker.worthy.screen.subscription.data.database.entities.defaultSubscriptionCategoriesEntities
 import com.yusufteker.worthy.screen.subscription.data.database.model.SubscriptionCategoryDao
 import com.yusufteker.worthy.screen.subscription.data.database.model.SubscriptionDao
-import com.yusufteker.worthy.screen.subscription.domain.model.Subscription
 import com.yusufteker.worthy.screen.subscription.domain.model.SubscriptionCategory
 import com.yusufteker.worthy.screen.subscription.domain.repository.SubscriptionRepository
 import kotlinx.coroutines.flow.Flow
@@ -27,11 +27,11 @@ class SubscriptionRepositoryImpl(
             subscriptionCategoryDao.insertAll(defaultSubscriptionCategoriesEntities)
         }
     }
-    override suspend fun addSubscription(subscription: Subscription) {
+    override suspend fun addSubscription(subscription: RecurringItem.Subscription) {
         dao.insert(subscription.toEntity())
     }
 
-    override suspend fun updateSubscription(subscription: Subscription) {
+    override suspend fun updateSubscription(subscription: RecurringItem.Subscription) {
         TODO("Not yet implemented")
     }
 
@@ -39,19 +39,19 @@ class SubscriptionRepositoryImpl(
         dao.deleteById(subscriptionId)
     }
 
-    override suspend fun getSubscriptionById(id: Int): Subscription? {
+    override suspend fun getSubscriptionById(id: Int): RecurringItem.Subscription? {
         TODO("Not yet implemented")
     }
 
-    override fun getAllSubscriptions(): Flow<List<Subscription>> {
+    override fun getAllSubscriptions(): Flow<List<RecurringItem.Subscription>> {
         return dao.getAll().map { entities -> entities.map { it.toDomain() } }
     }
 
-    override fun getSubscriptionsByCardId(cardId: Int): Flow<List<Subscription>> {
+    override fun getSubscriptionsByCardId(cardId: Int): Flow<List<RecurringItem.Subscription>> {
         TODO("Not yet implemented")
     }
 
-    override fun getActiveSubscriptions(): Flow<List<Subscription>> {
+    override fun getActiveSubscriptions(): Flow<List<RecurringItem.Subscription>> {
         // year * 100 + month -> Roomda int olarak bu şekilde saklanıyor
         return dao.getActiveSubscriptions(getCurrentAppDate().toRoomInt()).map { list -> list.map { it.toDomain() } }
     }

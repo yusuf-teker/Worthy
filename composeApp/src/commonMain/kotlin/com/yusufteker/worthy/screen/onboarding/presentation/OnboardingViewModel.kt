@@ -2,8 +2,9 @@ package com.yusufteker.worthy.screen.onboarding.presentation
 
 import androidx.lifecycle.viewModelScope
 import com.yusufteker.worthy.core.domain.createTimestampId
-import com.yusufteker.worthy.core.domain.model.RecurringFinancialItem
+import com.yusufteker.worthy.core.domain.model.RecurringItem
 import com.yusufteker.worthy.core.domain.model.currentAppDate
+import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import com.yusufteker.worthy.screen.onboarding.domain.OnboardingRepository
 import com.yusufteker.worthy.screen.onboarding.presentation.components.UserOnboardingData
@@ -20,16 +21,19 @@ class OnboardingViewModel(
                     if (action.userData.isValid()) {
                         action.userData.let {
                             onboardingRepository.addName(it.name)
-                            onboardingRepository.addMonthlySalary(
-                                monthlySalary = RecurringFinancialItem(
-                                    name = it.salaryString,
-                                    isIncome = true,
-                                    amount = it.monthlySalary!!,
-                                    startDate = currentAppDate(),
-                                    endDate = null,
-                                    groupId = createTimestampId(),
+                            if (it.monthlySalary != emptyMoney()){
+                                onboardingRepository.addMonthlySalary(
+                                    monthlySalary = RecurringItem.Generic(
+                                        name = it.salaryString,
+                                        isIncome = true,
+                                        amount = it.monthlySalary!!,
+                                        startDate = currentAppDate(),
+                                        endDate = null,
+                                        groupId = createTimestampId(),
+                                    )
                                 )
-                            )
+                            }
+
                             onboardingRepository.addSpendingLimit(it.spendingLimit)
                             onboardingRepository.addSavingsGoal(it.savingGoalMoney)
                             onboardingRepository.addWeeklyWorkHours(it.weeklyWorkHours)
