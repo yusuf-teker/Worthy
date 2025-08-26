@@ -3,6 +3,7 @@ package com.yusufteker.worthy.screen.subscription.add.presentation
 import com.yusufteker.worthy.core.domain.getCurrentMonth
 import com.yusufteker.worthy.core.domain.getCurrentYear
 import com.yusufteker.worthy.core.domain.model.AppDate
+import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.RecurringItem
 import com.yusufteker.worthy.core.domain.model.emptyMoney
@@ -10,15 +11,14 @@ import com.yusufteker.worthy.core.domain.model.emptySubscription
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.base.BaseState
 import com.yusufteker.worthy.screen.card.domain.model.Card
-import com.yusufteker.worthy.screen.subscription.domain.model.SubscriptionCategory
 
 data class AddSubscriptionState(
     override val isLoading: Boolean = false,
     val errorMessage: String? = null,
 
     var subscriptionName: String = "",
-    val selectedCategory: SubscriptionCategory? = null,
-    val categories: List<SubscriptionCategory> = emptyList(),
+    val selectedCategory: Category? = null,
+    val categories: List<Category> = emptyList(),
     val color: String? = "",
     val customCategoryName: String = "",
     val selectedEmoji: String? = null,

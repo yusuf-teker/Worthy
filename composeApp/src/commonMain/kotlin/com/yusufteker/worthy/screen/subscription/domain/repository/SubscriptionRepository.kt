@@ -1,8 +1,9 @@
 package com.yusufteker.worthy.screen.subscription.domain.repository
 
+import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.RecurringItem
 import com.yusufteker.worthy.screen.card.domain.model.Card
-import com.yusufteker.worthy.screen.subscription.domain.model.SubscriptionCategory
+
 import kotlinx.coroutines.flow.Flow
 
 interface SubscriptionRepository {
@@ -24,8 +25,8 @@ interface SubscriptionRepository {
 
     fun getCards(): Flow<List<Card>>
 
-    fun getCategories(): Flow<List<SubscriptionCategory>>
+    fun getCategories(): Flow<List<Category>>
 
-    suspend fun addCategory(category: SubscriptionCategory)
+    suspend fun addCategory(category: Category)
 
 }

@@ -3,6 +3,7 @@ package com.yusufteker.worthy.core.data.database.entities
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.yusufteker.worthy.core.domain.model.AppDate
+import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.presentation.UiText
 import worthy.composeapp.generated.resources.Res
@@ -33,5 +34,6 @@ data class RecurringFinancialItemEntity @OptIn(ExperimentalTime::class) construc
     val scheduledDay: Int? = 1, // 1-28
     val startDate: AppDate,
     val endDate: AppDate? = null,
-    val createdAt: Long = Clock.System.now().epochSeconds
+    val createdAt: Long = Clock.System.now().epochSeconds,
+    val category: Category?
 )

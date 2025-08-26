@@ -2,14 +2,17 @@ package com.yusufteker.worthy.core.data.database.converters
 
 import androidx.room.TypeConverter
 import com.yusufteker.worthy.core.domain.model.AppDate
+import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.CategoryType
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.TransactionType
-import com.yusufteker.worthy.screen.subscription.domain.model.SubscriptionCategory
 import kotlinx.serialization.json.Json
 
 class RoomTypeConverters {
+
+    private val json = Json { encodeDefaults = true }
+
     @TypeConverter
     fun fromCategoryType(value: CategoryType): String = value.name
 
@@ -51,14 +54,11 @@ class RoomTypeConverters {
         return TransactionType.valueOf(value)
     }
 
-    @TypeConverter
-    fun fromCategory(category: SubscriptionCategory?): String? {
-        return category?.let { Json.encodeToString(SubscriptionCategory.serializer(), it) }
-    }
 
     @TypeConverter
-    fun toCategory(value: String?): SubscriptionCategory? {
-        return value?.let { Json.decodeFromString(SubscriptionCategory.serializer(), it) }
-    }
+    fun fromCategory(category: Category?): String? = category?.let { json.encodeToString(it) }
+
+    @TypeConverter
+    fun toCategory(value: String?): Category? = value?.let { json.decodeFromString(it) }
 
 }

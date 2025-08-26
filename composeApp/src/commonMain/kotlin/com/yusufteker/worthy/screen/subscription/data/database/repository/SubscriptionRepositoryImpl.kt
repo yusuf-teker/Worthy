@@ -1,30 +1,33 @@
 package com.yusufteker.worthy.screen.subscription.data.database.repository
 
+import com.yusufteker.worthy.core.data.database.entities.defaultCategoryEntities
 import com.yusufteker.worthy.core.data.database.mappers.toDomain
 import com.yusufteker.worthy.core.data.database.mappers.toEntity
+import com.yusufteker.worthy.core.data.database.model.CategoryDao
 import com.yusufteker.worthy.core.domain.getCurrentAppDate
+import com.yusufteker.worthy.core.domain.model.Category
+import com.yusufteker.worthy.core.domain.model.CategoryType
 import com.yusufteker.worthy.core.domain.model.RecurringItem
+import com.yusufteker.worthy.core.domain.model.defaultCategories
 import com.yusufteker.worthy.core.domain.model.toRoomInt
 import com.yusufteker.worthy.screen.card.domain.model.Card
 import com.yusufteker.worthy.screen.card.domain.repository.CardRepository
-import com.yusufteker.worthy.screen.subscription.data.database.entities.defaultSubscriptionCategoriesEntities
-import com.yusufteker.worthy.screen.subscription.data.database.model.SubscriptionCategoryDao
 import com.yusufteker.worthy.screen.subscription.data.database.model.SubscriptionDao
-import com.yusufteker.worthy.screen.subscription.domain.model.SubscriptionCategory
 import com.yusufteker.worthy.screen.subscription.domain.repository.SubscriptionRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 
 class SubscriptionRepositoryImpl(
 
     private val dao: SubscriptionDao,
-    private val subscriptionCategoryDao: SubscriptionCategoryDao,
+    private val categoryDao: CategoryDao,
     private val cardRepository: CardRepository
 ): SubscriptionRepository {
 
     override suspend fun initializeDefaultCategories() {
-        if (subscriptionCategoryDao.getCategoryCount() == 0) {
-            subscriptionCategoryDao.insertAll(defaultSubscriptionCategoriesEntities)
+        if (categoryDao.getCategoryCount() == 0) {
+            categoryDao.insertAll(defaultCategoryEntities)
         }
     }
     override suspend fun addSubscription(subscription: RecurringItem.Subscription) {
@@ -60,11 +63,11 @@ class SubscriptionRepositoryImpl(
         return cardRepository.getAll()
     }
 
-    override fun getCategories(): Flow<List<SubscriptionCategory>> {
-        return subscriptionCategoryDao.getAll().map { list -> list.map { it.toDomain() } }
+    override fun getCategories(): Flow<List<Category>> {
+        return categoryDao.getAll().map { list -> list.filter { it.type == CategoryType.SUBSCRIPTION }.map { it.toDomain() } }
     }
-    override suspend fun addCategory(category: SubscriptionCategory) {
-        subscriptionCategoryDao.insert(category.toEntity())
+    override suspend fun addCategory(category: Category) {
+        categoryDao.insert(category.toEntity())
     }
 
 }

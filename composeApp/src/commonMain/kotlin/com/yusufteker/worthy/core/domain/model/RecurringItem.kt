@@ -4,7 +4,6 @@ import com.yusufteker.worthy.core.data.database.entities.ExpenseNeedType
 import com.yusufteker.worthy.core.domain.getCurrentAppDate
 import com.yusufteker.worthy.core.domain.getCurrentMonth
 import com.yusufteker.worthy.core.domain.getCurrentYear
-import com.yusufteker.worthy.screen.subscription.domain.model.SubscriptionCategory
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.number
@@ -22,6 +21,9 @@ sealed class RecurringItem {
     abstract val endDate: AppDate?
 
     abstract val scheduledDay: Int?
+
+    abstract val category: Category?
+
 
     // 🔁 Ortak Transaction üretim fonksiyonu
     fun toTransaction(forDate: AppDate): Transaction {
@@ -46,7 +48,8 @@ sealed class RecurringItem {
         override val startDate: AppDate,
         override val endDate: AppDate? = null,
         override val scheduledDay: Int? = 1,
-        val needType: ExpenseNeedType = ExpenseNeedType.NONE
+        val needType: ExpenseNeedType = ExpenseNeedType.NONE,
+        override val category: Category? = null
 
         ) : RecurringItem()
 
@@ -63,7 +66,7 @@ sealed class RecurringItem {
         val icon: String = "📦",
         val colorHex: String? = null,
         override val scheduledDay: Int? = 1,
-        val category: SubscriptionCategory? = null
+        override val category: Category? = null
 
         ) : RecurringItem()
 }

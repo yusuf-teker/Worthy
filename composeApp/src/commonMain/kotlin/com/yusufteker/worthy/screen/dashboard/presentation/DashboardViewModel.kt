@@ -305,7 +305,8 @@ class DashboardViewModel(
                     normalizeLast6Month(emptyList()),
                     normalizeLast6Month(expenses)
                 ),
-                miniBarsMonths = List(4) { last6Months }// todo napcam bilmiyorum her türlü 6 ayı ver
+                miniBarsMonths = List(4) { last6Months },// todo napcam bilmiyorum her türlü 6 ayı ver
+                incomeChangeRatio = calculateSelectedMonthIncomeChangeRatio(state.value.selectedMonthYear)
 
             )
         }

@@ -14,9 +14,7 @@ import com.yusufteker.worthy.screen.card.data.database.model.CardDao
 import com.yusufteker.worthy.core.data.database.model.CategoryDao
 import com.yusufteker.worthy.core.data.database.model.RecurringFinancialItemDao
 import com.yusufteker.worthy.core.data.database.model.TransactionDao
-import com.yusufteker.worthy.screen.subscription.data.database.entities.SubscriptionCategoryEntity
 import com.yusufteker.worthy.screen.subscription.data.database.entities.SubscriptionEntity
-import com.yusufteker.worthy.screen.subscription.data.database.model.SubscriptionCategoryDao
 import com.yusufteker.worthy.screen.subscription.data.database.model.SubscriptionDao
 import com.yusufteker.worthy.screen.wishlist.list.data.database.entities.WishlistItemEntity
 import com.yusufteker.worthy.screen.wishlist.list.data.database.model.WishlistItemDao
@@ -29,7 +27,6 @@ import com.yusufteker.worthy.screen.wishlist.list.data.database.model.WishlistIt
         TransactionEntity::class,
         CardEntity::class,
         SubscriptionEntity::class,
-        SubscriptionCategoryEntity::class,
     ], version = 2, exportSchema = false
 )
 @TypeConverters(RoomTypeConverters::class)
@@ -48,7 +45,6 @@ abstract class WorthyDatabase : RoomDatabase() {
 
     abstract val subscriptionDao: SubscriptionDao
 
-    abstract val subscriptionCategoryDao: SubscriptionCategoryDao
 
     companion object {
         const val DATABASE_NAME = "app_database"

@@ -10,10 +10,7 @@ import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.RecurringItem
 import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.TransactionType
-import com.yusufteker.worthy.screen.subscription.data.database.entities.SubscriptionCategoryEntity
 import com.yusufteker.worthy.screen.subscription.data.database.entities.SubscriptionEntity
-import com.yusufteker.worthy.screen.subscription.domain.model.Default
-import com.yusufteker.worthy.screen.subscription.domain.model.SubscriptionCategory
 import com.yusufteker.worthy.screen.wishlist.list.data.database.entities.WishlistItemEntity
 import com.yusufteker.worthy.screen.wishlist.list.data.database.relation.WishlistWithCategory
 import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistItem
@@ -105,6 +102,7 @@ fun RecurringFinancialItemEntity.toDomain(): RecurringItem.Generic = RecurringIt
     startDate = startDate,
     endDate = endDate,
     scheduledDay = scheduledDay,
+    category = category
 )
 
 // Domain model → DB entity (RecurringItem.Generic)
@@ -117,7 +115,8 @@ fun RecurringItem.Generic.toEntity(): RecurringFinancialItemEntity = RecurringFi
     isIncome = isIncome,
     startDate = startDate,
     endDate = endDate,
-    scheduledDay = scheduledDay
+    scheduledDay = scheduledDay,
+    category = category
 )
 
 
@@ -190,26 +189,6 @@ fun WishlistItem.toExpenseTransaction(): Transaction {
         relatedTransactionId = null,
         installmentCount = null,
         installmentStartDate = null
-    )
-}
-
-fun SubscriptionCategoryEntity.toDomain(): SubscriptionCategory {
-    return SubscriptionCategory(
-        id = id,
-        name = name,
-        nameResourceKey = nameResourceKey,
-        icon = icon,
-        color = colorHex
-    )
-}
-
-fun SubscriptionCategory.toEntity(): SubscriptionCategoryEntity {
-    return SubscriptionCategoryEntity(
-        id = id,
-        name = name ?: "", // name null olmasın DB'de
-        nameResourceKey = nameResourceKey,
-        icon = icon,
-        colorHex = color
     )
 }
 

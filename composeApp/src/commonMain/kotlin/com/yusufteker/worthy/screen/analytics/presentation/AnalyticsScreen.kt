@@ -185,7 +185,7 @@ fun AnalyticsScreen(
                             contentPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            items(state.filteredTransactions) { transaction ->
+                            items(state.filteredTransactions, key = { it.id }) { transaction ->
                                 SwipeToDeleteWrapper(
                                     modifier = Modifier.fillMaxWidth(),
                                     shape = CardDefaults.shape,

@@ -3,6 +3,7 @@ package com.yusufteker.worthy.core.domain.model
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import com.yusufteker.worthy.core.presentation.UiText
+import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.StringResource
 
 import worthy.composeapp.generated.resources.Res
@@ -18,9 +19,12 @@ import worthy.composeapp.generated.resources.category_fashion
 import worthy.composeapp.generated.resources.category_food
 import worthy.composeapp.generated.resources.category_freelance
 import worthy.composeapp.generated.resources.category_furniture
+import worthy.composeapp.generated.resources.category_game
 import worthy.composeapp.generated.resources.category_gift
 import worthy.composeapp.generated.resources.category_health
 import worthy.composeapp.generated.resources.category_investment
+import worthy.composeapp.generated.resources.category_music
+import worthy.composeapp.generated.resources.category_other
 import worthy.composeapp.generated.resources.category_other_expense
 import worthy.composeapp.generated.resources.category_other_income
 import worthy.composeapp.generated.resources.category_pets
@@ -31,12 +35,15 @@ import worthy.composeapp.generated.resources.category_salary
 import worthy.composeapp.generated.resources.category_sales_income
 import worthy.composeapp.generated.resources.category_saving_interest
 import worthy.composeapp.generated.resources.category_shopping
+import worthy.composeapp.generated.resources.category_software
 import worthy.composeapp.generated.resources.category_subscriptions
 import worthy.composeapp.generated.resources.category_technology
 import worthy.composeapp.generated.resources.category_transport
 import worthy.composeapp.generated.resources.category_travel
+import worthy.composeapp.generated.resources.category_video
 import kotlin.time.ExperimentalTime
 
+@Serializable
 data class Category @OptIn(ExperimentalTime::class) constructor(
     val id: Int = 0,
     val name: String,
@@ -48,8 +55,9 @@ data class Category @OptIn(ExperimentalTime::class) constructor(
     val colorHex: String? = null,
 )
 
+@Serializable
 enum class CategoryType {
-    INCOME, EXPENSE, WISHLIST
+    INCOME, EXPENSE, WISHLIST, SUBSCRIPTION
 }
 
 
@@ -103,6 +111,11 @@ fun getResourceByKey(key: String): StringResource {
         "category_fashion" -> Res.string.category_fashion
         "category_books" -> Res.string.category_books
         "category_furniture" -> Res.string.category_furniture
+        "category_video" -> Res.string.category_video
+        "category_music" -> Res.string.category_music
+        "category_software" -> Res.string.category_software
+        "category_game" -> Res.string.category_game
+        "category_other" -> Res.string.category_other
         "category_travel" -> {
             Res.string.category_travel
         }
@@ -338,7 +351,48 @@ val defaultCategories = listOf(
         type = CategoryType.WISHLIST,
         nameResourceKey = "category_travel",
         userCreated = false
+    ),
+    Category(
+        id = 31,
+        name = "Video",
+        icon = "🎬",
+        type = CategoryType.SUBSCRIPTION,
+        nameResourceKey = "category_video",
+        userCreated = false
+    ),
+    Category(
+        id = 32,
+        name = "Müzik",
+        icon = "🎵",
+        type = CategoryType.SUBSCRIPTION,
+        nameResourceKey = "category_music",
+        userCreated = false
+    ),
+    Category(
+        id = 33,
+        name = "Yazılım",
+        icon = "💻",
+        type = CategoryType.SUBSCRIPTION,
+        nameResourceKey = "category_software",
+        userCreated = false
+    ),
+    Category(
+        id = 34,
+        name = "Oyun",
+        icon = "🎮",
+        type = CategoryType.SUBSCRIPTION,
+        nameResourceKey = "category_game",
+        userCreated = false
+    ),
+    Category(
+        id = 35,
+        name = "Diğer",
+        icon = "📦",
+        type = CategoryType.SUBSCRIPTION,
+        nameResourceKey = "category_other",
+        userCreated = false
     )
+
 )
 
 val emojiOptions = listOf(

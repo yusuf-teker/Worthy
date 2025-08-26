@@ -36,6 +36,7 @@ import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.domain.getCurrentAppDate
 import com.yusufteker.worthy.core.domain.getCurrentYear
 import com.yusufteker.worthy.core.domain.model.AppDate
+import com.yusufteker.worthy.core.domain.model.CategoryType
 import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
@@ -43,12 +44,12 @@ import com.yusufteker.worthy.core.presentation.capitalizeWords
 import com.yusufteker.worthy.core.presentation.components.AppButton
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
 import com.yusufteker.worthy.core.presentation.components.CardSelector
+import com.yusufteker.worthy.core.presentation.components.CategorySelector
 import com.yusufteker.worthy.core.presentation.components.DayOfMonthSelector
 import com.yusufteker.worthy.core.presentation.components.ErrorText
 import com.yusufteker.worthy.core.presentation.components.MoneyInput
 import com.yusufteker.worthy.core.presentation.components.WheelDatePickerV2
 import com.yusufteker.worthy.screen.subscription.add.presentation.components.ColorPicker
-import com.yusufteker.worthy.screen.subscription.add.presentation.components.SubscriptionCategorySelector
 import com.yusufteker.worthy.screen.subscription.add.presentation.components.toComposeColor
 import com.yusufteker.worthy.screen.subscription.add.presentation.components.toHexString
 import com.yusufteker.worthy.screen.subscription.list.presentation.components.SubscriptionItem
@@ -164,7 +165,7 @@ fun AddSubscriptionScreen(
 
 
 
-            SubscriptionCategorySelector(
+            CategorySelector(
                 categories = state.categories,
                 selectedCategory = state.selectedCategory,
                 onCategorySelected = {
@@ -173,7 +174,7 @@ fun AddSubscriptionScreen(
                 onNewCategoryCreated = {
                     onAction(AddSubscriptionAction.OnNewCategoryCreated(it))
                 },
-                error = state.errorCategory,
+                categoryType = CategoryType.SUBSCRIPTION
             )
 
             MoneyInput(

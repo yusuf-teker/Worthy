@@ -178,7 +178,10 @@ fun PieChartPager(
     backgroundColor: Color = AppColors.secondaryContainer,
     labels: List<String> = emptyList()
 ) {
-    val pagerState = rememberPagerState(pageCount = { transactionsList.size })
+    val filteredList = transactionsList.filter { it.isNotEmpty() }
+
+    val pagerState = rememberPagerState(pageCount = { filteredList.size })
+
 
     Column(
         modifier = Modifier.fillMaxSize().background(backgroundColor),
@@ -189,7 +192,7 @@ fun PieChartPager(
         ) { page ->
             // Her sayfada bir PieChart
             PieChart(
-                transactions = transactionsList[page],
+                transactions = filteredList[page],
                 categories = categories,
                 backgroundColor = backgroundColor,
                 label = labels.getOrNull(page) ?: ""
@@ -202,7 +205,7 @@ fun PieChartPager(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(8.dp)
         ) {
-            repeat(transactionsList.size) { index ->
+            repeat(filteredList.size) { index ->
                 val isSelected = pagerState.currentPage == index
                 Box(
                     modifier = Modifier.size(if (isSelected) 12.dp else 8.dp).clip(CircleShape)
