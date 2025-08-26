@@ -63,6 +63,21 @@ fun Money.formatted(): String {
 
     return "${currency.symbol} $integerStr$decimalSeparator${fractionalPart.toString().padStart(2,'0')}"
 }
+fun Money.formattedWithoutDecimals(): String {
+    val locale: Locale = Locale.current
+    val thousandSeparator = if (locale.language.lowercase() == "tr") "." else ","
+
+    val integerPart = floor(amount).toLong()
+
+    val integerStr = integerPart.toString()
+        .reversed()
+        .chunked(3)
+        .joinToString(thousandSeparator)
+        .reversed()
+
+    return "${currency.symbol} $integerStr"
+}
+
 
 fun Double.formatMoneyText(): String {
     val locale: Locale = Locale.current

@@ -34,6 +34,7 @@ import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppDimens.Spacing16
 import com.yusufteker.worthy.core.presentation.theme.AppDimens.Spacing8
 import com.yusufteker.worthy.core.presentation.util.formatted
+import com.yusufteker.worthy.core.presentation.util.formattedWithoutDecimals
 import com.yusufteker.worthy.screen.dashboard.presentation.components.BottomSheetContent
 import com.yusufteker.worthy.screen.dashboard.presentation.components.DashboardOverviewCard
 import io.github.aakira.napier.Napier
@@ -113,6 +114,13 @@ fun DashboardScreen(
                 state.desiresSpentFraction,
                 state.remainingFraction,
                 state.expensesFraction
+            ),
+            barsAmount = listOf(
+                state.fixedExpenseMoney.formattedWithoutDecimals(),
+                state.desiresSpentMoney.formattedWithoutDecimals(),
+                state.remainingMoney.formattedWithoutDecimals(),
+                state.expensesMoney.formattedWithoutDecimals()
+
             ),
             miniBarsFractions = state.selectedMiniBarsFraction,
             miniBarsMonths = state.selectedMiniBarsMonths,

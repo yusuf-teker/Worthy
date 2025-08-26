@@ -1,5 +1,6 @@
 package com.yusufteker.worthy.screen.addtransaction.presentation
 
+import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.base.BaseState
 import com.yusufteker.worthy.screen.transaction.add.presentation.components.AddTransactionFormState
 
@@ -10,7 +11,9 @@ data class AddTransactionState(
     val expenseForm: AddTransactionFormState = AddTransactionFormState(isLoading = isLoading),
     val incomeForm: AddTransactionFormState = AddTransactionFormState(isLoading = isLoading)
 
-) : BaseState {
+
+
+    ) : BaseState {
     override fun copyWithLoading(isLoading: Boolean) = copy(isLoading = isLoading)
 
 }

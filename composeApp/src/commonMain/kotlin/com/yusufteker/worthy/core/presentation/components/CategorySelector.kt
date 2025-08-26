@@ -55,7 +55,8 @@ fun CategorySelector(
     modifier: Modifier = Modifier,
     onCategorySelected: (Category) -> Unit,
     onNewCategoryCreated: (Category) -> Unit,
-    categoryType: CategoryType
+    categoryType: CategoryType,
+    errorMessage: UiText? = null
 ) {
     var expanded by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
@@ -65,21 +66,26 @@ fun CategorySelector(
     ExposedDropdownMenuBox(
         expanded = expanded, onExpandedChange = { expanded = !expanded }, modifier = modifier
     ) {
-        OutlinedTextField(
-            value = selectedCategory?.getNameResource() ?: "",
-            onValueChange = {},
-            readOnly = true,
-            label = { Text(UiText.StringResourceId(Res.string.category_label).asString()) },
-            trailingIcon = {
-                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-            },
-            leadingIcon = if (selectedCategory != null) {
-                {
-                    CategoryIcon(selectedCategory.icon)
-                }
-            } else null,
-            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true)
-                .fillMaxWidth())
+        Column(modifier = Modifier.fillMaxWidth()) {
+            OutlinedTextField(
+                value = selectedCategory?.getNameResource() ?: "",
+                onValueChange = {},
+                readOnly = true,
+                label = { Text(UiText.StringResourceId(Res.string.category_label).asString()) },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                },
+                isError = errorMessage?.asString() != null,
+                leadingIcon = if (selectedCategory != null) {
+                    {
+                        CategoryIcon(selectedCategory.icon)
+                    }
+                } else null,
+                modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true)
+                    .fillMaxWidth())
+            ErrorText(errorMessage?.asString())
+        }
+
 
         ExposedDropdownMenu(
             expanded = expanded, onDismissRequest = { expanded = false }) {

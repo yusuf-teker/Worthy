@@ -277,7 +277,14 @@ class DashboardViewModel(
         val wishlistRatio = (totalWishlistMoney.amount / totalExpense) // Desires
         val remainingRatio = (totalIncome - totalExpense) / totalExpense // Remaining
         val expensesRatio = (totalExpenseMoney.amount / totalExpense) // Expenses
-
+        _state.update {
+            it.copy(
+                fixedExpenseMoney = totalExpenseMoney,
+                desiresSpentMoney = totalWishlistMoney,
+                remainingMoney = Money(totalIncome - totalExpense, state.value.selectedCurrency),
+                expensesMoney = totalExpenseMoney
+            )
+        }
         val normalizedRatios = adjustValuesForBarChart(
             normalizeRatios(
                 expensesRatio,

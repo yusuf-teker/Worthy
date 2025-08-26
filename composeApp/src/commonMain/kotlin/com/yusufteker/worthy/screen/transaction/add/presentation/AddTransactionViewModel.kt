@@ -8,7 +8,6 @@ import com.yusufteker.worthy.core.domain.model.toAppDate
 import com.yusufteker.worthy.core.domain.repository.TransactionRepository
 import com.yusufteker.worthy.core.presentation.UiEvent
 import com.yusufteker.worthy.core.presentation.UiText
-import com.yusufteker.worthy.core.presentation.ValidationResult
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
@@ -60,7 +59,8 @@ class AddTransactionViewModel(
                     is TransactionFormAction.NameChanged -> {
                         _state.value = _state.value.copy(
                             expenseForm = _state.value.expenseForm.copy(
-                                name = action.action.name
+                                name = action.action.name,
+                                errorName = null,
                             )
                         )
                     }
@@ -75,7 +75,8 @@ class AddTransactionViewModel(
                     is TransactionFormAction.CategoryChanged -> {
                         _state.value = _state.value.copy(
                             expenseForm = _state.value.expenseForm.copy(
-                                selectedCategory = action.action.category
+                                selectedCategory = action.action.category,
+                                errorCategory = null
                             )
                         )
                     }
@@ -83,7 +84,8 @@ class AddTransactionViewModel(
                     is TransactionFormAction.DateChanged -> {
                         _state.value = _state.value.copy(
                             expenseForm = _state.value.expenseForm.copy(
-                                transactionDate = action.action.date
+                                transactionDate = action.action.date,
+                                errorDate = null
                             )
                         )
                     }
@@ -107,7 +109,8 @@ class AddTransactionViewModel(
                     is TransactionFormAction.MoneyChanged -> {
                         _state.value = _state.value.copy(
                             expenseForm = _state.value.expenseForm.copy(
-                                money = action.action.money
+                                money = action.action.money,
+                                errorMoney = null
                             )
                         )
                     }
@@ -124,22 +127,26 @@ class AddTransactionViewModel(
                     is TransactionFormAction.SaveClicked -> {
 
                         launchWithLoading {
-                            if (validateExpenseForm(state.value).successful){
+                            val validated = validateExpenseForm(state.value)
+                            if (validated.expenseForm.errorName != null ||
+                                validated.expenseForm.errorMoney != null ||
+                                validated.expenseForm.errorCategory != null ||
+                                validated.expenseForm.errorDate != null
+                            ) {
+                                _state.value = validated
+                            } else {
                                 val transaction = Transaction(
                                     id = 0,
-                                    name = _state.value.expenseForm.name,
-                                    amount = _state.value.expenseForm.money!!,
-                                    categoryId = _state.value.expenseForm.selectedCategory!!.id,
-                                    transactionDate = _state.value.expenseForm.transactionDate,
-                                    note = _state.value.expenseForm.note,
-                                    installmentCount = _state.value.expenseForm.installmentCount,
-                                    installmentStartDate = _state.value.expenseForm.installmentStartDate.toAppDate(),
+                                    name = validated.expenseForm.name,
+                                    amount = validated.expenseForm.money!!,
+                                    categoryId = validated.expenseForm.selectedCategory!!.id,
+                                    transactionDate = validated.expenseForm.transactionDate,
+                                    note = validated.expenseForm.note,
+                                    installmentCount = validated.expenseForm.installmentCount,
+                                    installmentStartDate = validated.expenseForm.installmentStartDate.toAppDate(),
                                     transactionType = TransactionType.EXPENSE,
-
-                                    )
-
+                                )
                                 transactionRepository.insert(transaction)
-
                                 navigateTo(Routes.AnalyticsGraph)
                             }
 
@@ -167,7 +174,8 @@ class AddTransactionViewModel(
                     is TransactionFormAction.NameChanged -> {
                         _state.value = _state.value.copy(
                             incomeForm = _state.value.incomeForm.copy(
-                                name = action.action.name
+                                name = action.action.name,
+                                errorMoney = null
                             )
                         )
                     }
@@ -183,7 +191,8 @@ class AddTransactionViewModel(
                     is TransactionFormAction.CategoryChanged -> {
                         _state.value = _state.value.copy(
                             incomeForm = _state.value.incomeForm.copy(
-                                selectedCategory = action.action.category
+                                selectedCategory = action.action.category,
+                                errorCategory = null
                             )
                         )
                     }
@@ -191,7 +200,8 @@ class AddTransactionViewModel(
                     is TransactionFormAction.DateChanged -> {
                         _state.value = _state.value.copy(
                             incomeForm = _state.value.incomeForm.copy(
-                                transactionDate = action.action.date
+                                transactionDate = action.action.date,
+                                errorDate = null
                             )
                         )
                     }
@@ -199,7 +209,8 @@ class AddTransactionViewModel(
                     is TransactionFormAction.MoneyChanged -> {
                         _state.value = _state.value.copy(
                             incomeForm = _state.value.incomeForm.copy(
-                                money = action.action.money
+                                money = action.action.money,
+                                errorMoney = null
                             )
                         )
                     }
@@ -230,7 +241,14 @@ class AddTransactionViewModel(
                     is TransactionFormAction.SaveClicked -> {
 
                         launchWithLoading {
-                            if (validateIncomeForm(state.value).successful){
+                            val validated = validateIncomeForm(state.value)
+                            if (validated.incomeForm.errorName != null ||
+                                validated.incomeForm.errorMoney != null ||
+                                validated.incomeForm.errorCategory != null ||
+                                validated.incomeForm.errorDate != null
+                            ) {
+                                _state.value = validated
+                            } else {
                                 val transaction = Transaction(
                                     id = 0,
                                     name = _state.value.incomeForm.name,
@@ -267,65 +285,28 @@ class AddTransactionViewModel(
         }
     }
 }
-
-private fun validateExpenseForm(state: AddTransactionState): ValidationResult {
+private fun validateExpenseForm(state: AddTransactionState): AddTransactionState {
     val form = state.expenseForm
-
-    if (form.name.isBlank()) {
-        return ValidationResult(
-            successful = false,
-            errorMessage = UiText.StringResourceId(Res.string.validation_name_empty)
+    return state.copy(
+        expenseForm = form.copy(
+            errorName = if (form.name.isBlank()) UiText.StringResourceId(Res.string.validation_name_empty) else null,
+            errorMoney = if (form.money == null) UiText.StringResourceId(Res.string.validation_amount_empty) else null,
+            errorCategory = if (form.selectedCategory == null) UiText.StringResourceId(Res.string.validation_category_empty) else null,
+            errorDate = if (form.transactionDate == 0L) UiText.StringResourceId(Res.string.validation_date_empty) else null
         )
-    }
-    if (form.money == null) {
-        return ValidationResult(
-            successful = false,
-            errorMessage = UiText.StringResourceId(Res.string.validation_amount_empty)
-        )
-    }
-    if (form.selectedCategory == null) {
-        return ValidationResult(
-            successful = false,
-            errorMessage = UiText.StringResourceId(Res.string.validation_category_empty)
-        )
-    }
-    if (form.transactionDate == 0L) {
-        return ValidationResult(
-            successful = false,
-            errorMessage = UiText.StringResourceId(Res.string.validation_date_empty)
-        )
-    }
-
-    return ValidationResult(true)
+    )
 }
 
-private fun validateIncomeForm(state: AddTransactionState): ValidationResult {
+
+
+private fun validateIncomeForm(state: AddTransactionState): AddTransactionState {
     val form = state.incomeForm
-
-    if (form.name.isBlank()) {
-        return ValidationResult(
-            successful = false,
-            errorMessage = UiText.StringResourceId(Res.string.validation_name_empty)
+    return state.copy(
+        incomeForm = form.copy(
+            errorName = if (form.name.isBlank()) UiText.StringResourceId(Res.string.validation_name_empty) else null,
+            errorMoney = if (form.money == null) UiText.StringResourceId(Res.string.validation_amount_empty) else null,
+            errorCategory = if (form.selectedCategory == null) UiText.StringResourceId(Res.string.validation_category_empty) else null,
+            errorDate = if (form.transactionDate == 0L) UiText.StringResourceId(Res.string.validation_date_empty) else null
         )
-    }
-    if (form.money == null) {
-        return ValidationResult(
-            successful = false,
-            errorMessage = UiText.StringResourceId(Res.string.validation_amount_empty)
-        )
-    }
-    if (form.selectedCategory == null) {
-        return ValidationResult(
-            successful = false,
-            errorMessage = UiText.StringResourceId(Res.string.validation_category_empty)
-        )
-    }
-    if (form.transactionDate == 0L) {
-        return ValidationResult(
-            successful = false,
-            errorMessage = UiText.StringResourceId(Res.string.validation_date_empty)
-        )
-    }
-
-    return ValidationResult(true)
+    )
 }

@@ -26,16 +26,20 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.getMonthName
 import com.yusufteker.worthy.core.presentation.theme.AppColors
@@ -46,11 +50,13 @@ import worthy.composeapp.generated.resources.add_recurring_item
 import worthy.composeapp.generated.resources.add_transaction
 import worthy.composeapp.generated.resources.add_wish
 import worthy.composeapp.generated.resources.no_data
+import kotlin.collections.forEachIndexed
 
 @Composable
 fun ColumnBarChart(
     values: List<Float>, // 0f–1f oranlar
     labels: List<String>,
+    amounts: List<String>,
     modifier: Modifier = Modifier,
     selectedIndex: Int?,
     onBarClick: (Int) -> Unit,
@@ -94,6 +100,7 @@ fun ColumnBarChart(
                         ),
                         label = "barColor"
                     )
+                    var fontSize by remember { mutableStateOf(22.sp) }
 
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -111,7 +118,22 @@ fun ColumnBarChart(
                                     if (isSelected) Modifier.shadow(
                                         6.dp, RoundedCornerShape(4.dp)
                                     ) else Modifier
-                                ).background(barColor).align(Alignment.BottomCenter))
+                                ).background(barColor).align(Alignment.BottomCenter)){
+
+                                if (selectedIndex == i){
+                                    ResponsiveText(
+                                        text = amounts.get(i),
+                                        color = AppColors.onPrimary,
+                                        textStyle = TextStyle.Default.copy(
+                                            color = AppColors.onPrimary,
+                                            fontSize = fontSize
+                                        ),
+                                        modifier = Modifier.align(Alignment.BottomCenter),
+                                        onTextSizeChanged = {fontSize = it}
+                                    )
+                                }
+
+                            }
                             if (animatedHeight.value <= 0) {
                                 IconButton(
                                     onClick = { onBarClick.invoke(i) }) {
@@ -287,6 +309,7 @@ fun ColumnBarChartPreview() {
         ColumnBarChart(
             values = listOf(0.25f, 0.5f, 0.75f),
             labels = listOf("Label 1", "Label 2", "Label 3"),
+            amounts = listOf("Amount 1", "Amount 2", "Amount 3"),
             selectedIndex = 1,
             onBarClick = {},
 

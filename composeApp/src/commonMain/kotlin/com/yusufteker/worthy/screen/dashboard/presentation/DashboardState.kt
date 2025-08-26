@@ -26,9 +26,13 @@ data class DashboardState(
     var bottomSheetUiState: BottomSheetUiState = BottomSheetUiState(),
 
     val fixedExpenseFraction: Float = 0f,
+    val fixedExpenseMoney: Money = emptyMoney(selectedCurrency),
     val desiresSpentFraction: Float = 0f,
+    val desiresSpentMoney: Money = emptyMoney(selectedCurrency),
     val remainingFraction: Float = 0f,
+    val remainingMoney: Money = emptyMoney(selectedCurrency),
     val expensesFraction: Float = 0f,
+    val expensesMoney: Money = emptyMoney(selectedCurrency),
 
     // Mini Bar
     val miniBarsFractions: List<List<Float?>> = emptyList(),
@@ -48,17 +52,12 @@ data class DashboardState(
     val dashboardRecurringData: DashboardRecurringData? = null,
 
     val recurringIncomeMonthlyAmountList: List<DashboardMonthlyAmount> = emptyList(),
-    val filteredRecurringIncomeMonthlyAmountList: List<DashboardMonthlyAmount> = emptyList(),
     val recurringExpenseMonthlyAmountList: List<DashboardMonthlyAmount> = emptyList(),
-    val filteredRecurringExpenseMonthlyAmountList: List<DashboardMonthlyAmount> = emptyList(),
 
     val expenseMonthlyAmountList: List<DashboardMonthlyAmount> = emptyList(),
     val incomeMonthlyAmountList: List<DashboardMonthlyAmount> = emptyList(),
-    val filteredExpenseMonthlyAmountList: List<DashboardMonthlyAmount> = emptyList(),
-    val filteredIncomeMonthlyAmountList: List<DashboardMonthlyAmount> = emptyList(),
 
     val wishlistMonthlyAmountList: List<DashboardMonthlyAmount> = emptyList(),
-    val filteredWishlistMonthlyAmountList: List<DashboardMonthlyAmount> = emptyList(),
 
     val selectedMonthYear: AppDate = currentAppDate(),
     val selectableMonths: List<AppDate> = getRecentYearMonths(

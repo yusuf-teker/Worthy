@@ -64,6 +64,7 @@ fun DashboardOverviewCard(
     amountText: String = "",
     incomeChangeRatio: Double = 0.0,
     barsFractions: List<Float>,
+    barsAmount: List<String>,
     miniBarsFractions: List<Float?>,
     miniBarsMonths: List<Int>,
     modifier: Modifier = Modifier,
@@ -151,6 +152,7 @@ fun DashboardOverviewCard(
                     UiText.StringResourceId(Res.string.chart_remaining).asString(),
                     UiText.StringResourceId(Res.string.chart_expenses).asString()
                 ),
+                amounts = barsAmount,
                 selectedIndex = selectedChartIndex,
                 onBarClick = {
                     Napier.d("Chart selected: $it")
@@ -220,6 +222,7 @@ fun IncomeAllocationCardPreview() {
             ),
             selectedMonth = AppDate(2023, 1),
             miniBarsFractions = emptyList(),
+            barsAmount = emptyList(),
             miniBarsMonths = emptyList()
         )
     }

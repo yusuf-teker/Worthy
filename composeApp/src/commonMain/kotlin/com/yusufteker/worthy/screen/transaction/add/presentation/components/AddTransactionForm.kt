@@ -35,6 +35,7 @@ import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.components.AppButton
 import com.yusufteker.worthy.core.presentation.components.CardSelector
 import com.yusufteker.worthy.core.presentation.components.CategorySelector
+import com.yusufteker.worthy.core.presentation.components.ErrorText
 import com.yusufteker.worthy.core.presentation.components.MoneyInput
 import com.yusufteker.worthy.core.presentation.components.NumberPickerInput
 import com.yusufteker.worthy.core.presentation.components.WheelDatePicker
@@ -62,7 +63,12 @@ data class AddTransactionFormState(
     val isCardPayment: Boolean = false,
     val cards: List<Card>? = null,
     val installmentCount: Int = 0,
-    val installmentStartDate: Long = getCurrentEpochMillis()
+    val installmentStartDate: Long = getCurrentEpochMillis(),
+
+    val errorName: UiText? = null,
+    val errorMoney: UiText? = null,
+    val errorCategory: UiText? = null,
+    val errorDate: UiText? = null,
 )
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
@@ -103,15 +109,18 @@ fun AddTransactionForm(
                     UiText.StringResourceId(Res.string.wishlist_label_product_name).asString()
                 )
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            isError = state.errorName != null
         )
+        ErrorText(state.errorName?.asString())
         // 2 AMOUNT
         MoneyInput(
             money = state.money ?: emptyMoney(),
             onValueChange = {
                 onAmountChange(it!!)
             },
-
+            errorMessage = state.errorMoney,
+            isError =  state.errorMoney != null
             )
         // 3 CATEGORY
         CategorySelector(
@@ -124,6 +133,7 @@ fun AddTransactionForm(
                 onNewCategoryCreated.invoke(it)
             },
             categoryType = if (isExpense) CategoryType.EXPENSE else CategoryType.INCOME,
+            errorMessage = state.errorCategory
         )
 
 
@@ -137,7 +147,8 @@ fun AddTransactionForm(
                 onTransactionDateChange(epochSeconds)
             },
             modifier = Modifier.fillMaxWidth().height(56.dp),
-            title = "Date Added"
+            title = "Date Added",
+            errorMessage = state.errorDate?.asString()
         )
         val targetWeight by animateFloatAsState(
             targetValue = if (state.installmentCount > 0) 2f else 0f,
@@ -234,7 +245,7 @@ fun AddTransactionForm(
             modifier = Modifier.fillMaxWidth(),
             text = UiText.StringResourceId(Res.string.add).asString(),
             loading = state.isLoading,
-            onClick = onSaveClick
+            onClick = onSaveClick,
         )
     }
 }
