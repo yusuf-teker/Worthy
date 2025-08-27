@@ -59,7 +59,7 @@ class AnalyticsViewModel(
                 // TODO
             }
 
-            AnalyticsAction.ClearFilters -> {
+            is AnalyticsAction.ClearFilters -> {
                 _state.update {
                     it.copy(
                         selectedCategories = emptyList(),
@@ -91,7 +91,7 @@ class AnalyticsViewModel(
                 }
             }
 
-            AnalyticsAction.NavigateBack -> {
+            is AnalyticsAction.NavigateBack -> {
                 navigateBack()
             }
 
@@ -128,7 +128,7 @@ class AnalyticsViewModel(
                 }
             }
 
-            AnalyticsAction.OnAddTransactionClicked -> {
+            is AnalyticsAction.OnAddTransactionClicked -> {
                 navigateTo(Routes.AddTransaction())
             }
         }

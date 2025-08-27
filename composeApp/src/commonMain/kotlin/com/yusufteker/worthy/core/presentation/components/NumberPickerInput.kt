@@ -114,7 +114,7 @@ fun NumberPickerInput(
                 }
             }
         }
-        ErrorText(errorMessage?.asString(), Modifier.padding(start = 16.dp, top = 4.dp))
+        MessageText(errorMessage?.let {  UiMessage.Error(it.asString()) }, Modifier.padding(start = 16.dp, top = 4.dp))
 
     }
 }

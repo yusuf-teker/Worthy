@@ -8,6 +8,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
+import kotlinx.serialization.Serializable
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -53,6 +54,7 @@ sealed class RecurringItem {
 
         ) : RecurringItem()
 
+    @Serializable
     data class Subscription(
         override val id: Int = 0,
         override val name: String,
@@ -101,7 +103,7 @@ fun RecurringItem.Generic.isValidFor(year: Int, month: Int): Boolean {
     val end = if (this.endDate?.year != null && this.endDate.month != null) {
         this.endDate.year * 100 + this.endDate.month!!
     } else { //
-        currentAppDate().let { it.year * 100 + it.month } // 🔁 Şu anki tarih
+        getCurrentAppDate().let { it.year * 100 + it.month } // 🔁 Şu anki tarih
     }
     val given = year * 100 + month
 

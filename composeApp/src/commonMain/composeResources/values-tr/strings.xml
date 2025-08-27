@@ -128,7 +128,7 @@
     <string name="last_day">Son gün</string>
     <string name="day_of_month">Gün</string>
     <string name="day_input_hint">Gün (1–28)</string>
-    <string name="start_date">Baş. Tar.</string>
+    <string name="start_date_shortened">Baş. Tar.</string>
 
 
     <string name="update">Güncelle</string>
@@ -388,4 +388,17 @@
 
     <string name="active_subscriptions">Aktif Abonelikler</string>
     <string name="inactive_subscriptions">Pasif Abonelikler</string>
+
+
+    <string name="pick_end_date">Sonlandırma Tarihi Seçin</string>
+    <string name="pick_start_date">Başlangıç Tarihi Seçin</string>
+
+    <string name="activate">Aktifleştir</string>
+    <string name="terminate">Sonlandır</string>
+    <string name="start_date">Başlangıç Tarihi</string>
+    <string name="end_date">Bitiş Tarihi</string>
+    <string name="card_id">Bağlı Kart ID</string>
+    <string name="info_start_end_different">Başlangıç ve bitiş tarihi farklı olmalı.</string>
+
+
 </resources>

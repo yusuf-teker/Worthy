@@ -40,13 +40,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yusufteker.worthy.app.navigation.NavigationHandler
 import com.yusufteker.worthy.app.navigation.NavigationModel
-import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.screen.card.domain.model.Card
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
 import com.yusufteker.worthy.core.presentation.components.DayOfMonthSelector
-import com.yusufteker.worthy.core.presentation.components.ErrorText
+import com.yusufteker.worthy.core.presentation.components.MessageText
+import com.yusufteker.worthy.core.presentation.components.UiMessage
 import com.yusufteker.worthy.core.presentation.util.CardNumberGroupingTransformation
 import com.yusufteker.worthy.core.presentation.util.CardValidator
 import com.yusufteker.worthy.core.presentation.util.ExpiryVisualTransformation
@@ -231,7 +231,7 @@ fun AddCardScreen(
                                 } else null
                             }
                         })
-                    ErrorText(holderError?.asString())
+                    MessageText(holderError?.let {  UiMessage.Error(it.asString()) })
 
                     // Kart Numarası
                     var cardNumberError by remember { mutableStateOf<UiText?>(null) }
@@ -266,7 +266,7 @@ fun AddCardScreen(
                                 } else null
                             }
                         })
-                    ErrorText(cardNumberError?.asString())
+                    MessageText(cardNumberError?.let {  UiMessage.Error(it.asString()) })
 
                     // Son Kullanma (MM/YY)
                     var expiryErrorMessage by remember { mutableStateOf<UiText?>(null) }
@@ -311,7 +311,7 @@ fun AddCardScreen(
                                 } else null
                             }
                         })
-                    ErrorText(expiryErrorMessage?.asString())
+                    MessageText(expiryErrorMessage?.let {  UiMessage.Error(it.asString()) })
 
                     // CVV
                     var cvvErrorMessage by remember { mutableStateOf<UiText?>(null) }
@@ -340,7 +340,7 @@ fun AddCardScreen(
                                 } else null
                             }
                         })
-                    ErrorText(cvvErrorMessage?.asString())
+                    MessageText(cvvErrorMessage?.let {  UiMessage.Error(it.asString()) })
 
                     DayOfMonthSelector(
                         selectedDay = statementDay,

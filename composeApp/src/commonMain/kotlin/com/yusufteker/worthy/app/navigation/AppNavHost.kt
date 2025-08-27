@@ -45,6 +45,7 @@ import com.yusufteker.worthy.screen.onboarding.presentation.OnboardingScreenRoot
 import com.yusufteker.worthy.screen.settings.presentation.SettingsScreenRoot
 import com.yusufteker.worthy.screen.subscription.add.presentation.AddSubscriptionScreenRoot
 import com.yusufteker.worthy.screen.subscription.list.presentation.SubscriptionListScreenRoot
+import com.yusufteker.worthy.screen.subscriptiondetail.presentation.SubscriptionDetailScreenRoot
 import com.yusufteker.worthy.screen.transaction.add.presentation.components.AddFabMenu
 import com.yusufteker.worthy.screen.wallet.presentation.WalletScreenRoot
 import com.yusufteker.worthy.screen.wishlist.add.presentation.WishlistAddScreenRoot
@@ -156,8 +157,8 @@ fun AppNavHost(
                 ) {
                     composable<Routes.Dashboard> {
                         DashboardScreenRoot(
-                            contentPadding = innerPadding, onNavigateTo = { route ->
-                                navController.navigateTo(route)
+                            contentPadding = innerPadding, onNavigateTo = { navModel ->
+                                navController.navigateTo(navModel)
                             })
                     }
 
@@ -168,8 +169,8 @@ fun AppNavHost(
                         composable<Routes.Analytics> {
                             AnalyticsScreenRoot(
                                 contentPadding = innerPadding,
-                                onNavigateTo = { route ->
-                                    navController.navigateTo(route)
+                                onNavigateTo = { navModel ->
+                                    navController.navigateTo(navModel)
                                 }
                             )
                         }
@@ -182,8 +183,8 @@ fun AppNavHost(
 
                             WishlistScreenRoot(
                                 contentPadding = innerPadding,
-                                onNavigateTo = { route ->
-                                    navController.navigateTo(route)
+                                onNavigateTo = { navModel ->
+                                    navController.navigateTo(navModel)
                                 }
                             )
 
@@ -192,8 +193,8 @@ fun AppNavHost(
                         composable<Routes.WishlistAdd> {
                             WishlistAddScreenRoot(
                                 contentPadding = innerPadding,
-                                onNavigateTo = { route ->
-                                    navController.navigateTo(route)
+                                onNavigateTo = { navModel ->
+                                    navController.navigateTo(navModel)
                                 }
                             )
                         }
@@ -204,8 +205,8 @@ fun AppNavHost(
                             WishlistDetailScreenRoot(
                                 contentPadding = innerPadding,
                                 wishlistId = wishlistId,
-                                onNavigateTo = { route ->
-                                    navController.navigateTo(route)
+                                onNavigateTo = { navModel ->
+                                    navController.navigateTo(navModel)
                                 }
                             )
                         }
@@ -218,8 +219,8 @@ fun AppNavHost(
                         composable<Routes.CardList> {
                             CardListScreenRoot(
                                 contentPadding = innerPadding,
-                                onNavigateTo = { model ->
-                                    navController.navigateTo(model)
+                                onNavigateTo = { navModel ->
+                                    navController.navigateTo(navModel)
                                 }
                             )
                         }
@@ -231,15 +232,15 @@ fun AppNavHost(
                         AddTransactionScreenRoot(
                             isIncomeByDefault = isIncomeByDefault,
                             contentPadding = innerPadding,
-                            onNavigateTo = { route ->
-                                navController.navigateTo(route)
+                            onNavigateTo = { navModel ->
+                                navController.navigateTo(navModel)
                             })
                     }
 
                     composable<Routes.AddCard> {
                         AddCardScreenRoot(
-                            contentPadding = innerPadding, onNavigateTo = { route ->
-                                navController.navigateTo(route)
+                            contentPadding = innerPadding, onNavigateTo = { navModel ->
+                                navController.navigateTo(navModel)
                             }
                         )
                     }
@@ -254,8 +255,8 @@ fun AppNavHost(
                     composable<Routes.Settings> {
                         SettingsScreenRoot(
                             contentPadding = innerPadding,
-                            onNavigateTo = { model ->
-                                navController.navigateTo(model)
+                            onNavigateTo = { navModel ->
+                                navController.navigateTo(navModel)
                             }
                         )
                     }
@@ -267,8 +268,8 @@ fun AppNavHost(
                         composable<Routes.SubscriptionList> {
                             SubscriptionListScreenRoot(
                                 contentPadding = innerPadding,
-                                onNavigateTo = { route ->
-                                    navController.navigateTo(route)
+                                onNavigateTo = { navModel ->
+                                    navController.navigateTo(navModel)
                                 }
                             )
                         }
@@ -276,11 +277,25 @@ fun AppNavHost(
                         composable<Routes.AddSubscription> {
                             AddSubscriptionScreenRoot(
                                 contentPadding = innerPadding,
-                                onNavigateTo = { route ->
-                                    navController.navigateTo(route)
+                                onNavigateTo = { navModel ->
+                                    navController.navigateTo(navModel)
                                 }
                             )
                         }
+                        composable<Routes.SubscriptionDetail> { backStackEntry ->
+
+                            val args = backStackEntry.toRoute<Routes.SubscriptionDetail>()
+
+                            SubscriptionDetailScreenRoot(
+                                subscriptionId = args.subscriptionId,
+                                contentPadding = innerPadding,
+                                onNavigateTo = { navModel ->
+                                    navController.navigateTo(navModel)
+                                }
+                            )
+                        }
+
+
                     }
                 }
             }

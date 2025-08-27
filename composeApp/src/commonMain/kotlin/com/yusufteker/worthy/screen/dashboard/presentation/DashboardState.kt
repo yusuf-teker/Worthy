@@ -1,12 +1,12 @@
 package com.yusufteker.worthy.screen.dashboard.presentation
 
+import com.yusufteker.worthy.core.domain.getCurrentAppDate
 import com.yusufteker.worthy.core.domain.getCurrentMonth
 import com.yusufteker.worthy.core.domain.getCurrentYear
 import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.DashboardMonthlyAmount
 import com.yusufteker.worthy.core.domain.model.Money
-import com.yusufteker.worthy.core.domain.model.currentAppDate
 import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.presentation.base.BaseState
 import com.yusufteker.worthy.screen.dashboard.domain.DashboardRecurringData
@@ -59,7 +59,7 @@ data class DashboardState(
 
     val wishlistMonthlyAmountList: List<DashboardMonthlyAmount> = emptyList(),
 
-    val selectedMonthYear: AppDate = currentAppDate(),
+    val selectedMonthYear: AppDate = getCurrentAppDate(),
     val selectableMonths: List<AppDate> = getRecentYearMonths(
         currentMonth = getCurrentMonth(),
         currentYear = getCurrentYear()

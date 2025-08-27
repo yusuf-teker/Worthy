@@ -51,9 +51,10 @@ import androidx.compose.ui.unit.dp
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.presentation.UiText
-import com.yusufteker.worthy.core.presentation.components.ErrorText
+import com.yusufteker.worthy.core.presentation.components.MessageText
 import com.yusufteker.worthy.core.presentation.components.MoneyInput
 import com.yusufteker.worthy.core.presentation.components.NumberPickerInput
+import com.yusufteker.worthy.core.presentation.components.UiMessage
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
 import com.yusufteker.worthy.core.presentation.theme.Constants.WEEKLY_MAX_HOURS
@@ -392,7 +393,7 @@ fun QuestionInput(
 
         )
 
-    ErrorText(errorMessage?.asString(),Modifier.padding(start = 16.dp, top = 4.dp))
+    MessageText(errorMessage?.let {  UiMessage.Error(it.asString()) },Modifier.padding(start = 16.dp, top = 4.dp))
 }
 
 @Composable

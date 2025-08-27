@@ -1,5 +1,6 @@
 package com.yusufteker.worthy.core.domain.model
 
+import com.yusufteker.worthy.core.domain.getCurrentAppDate
 import com.yusufteker.worthy.core.domain.service.CurrencyConverter
 
 data class MonthlyAmount(
@@ -28,7 +29,7 @@ suspend fun List<DashboardMonthlyAmount>.sumConvertedAmount(
 
 fun List<DashboardMonthlyAmount>.getCurrent(): DashboardMonthlyAmount? {
     return this.find {
-        it.appDate == currentAppDate()
+        it.appDate == getCurrentAppDate()
     }
 }
 

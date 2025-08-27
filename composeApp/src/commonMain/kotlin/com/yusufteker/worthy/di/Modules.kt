@@ -41,6 +41,7 @@ import com.yusufteker.worthy.screen.subscription.add.presentation.AddSubscriptio
 import com.yusufteker.worthy.screen.subscription.data.database.repository.SubscriptionRepositoryImpl
 import com.yusufteker.worthy.screen.subscription.domain.repository.SubscriptionRepository
 import com.yusufteker.worthy.screen.subscription.list.presentation.SubscriptionListViewModel
+import com.yusufteker.worthy.screen.subscriptiondetail.presentation.SubscriptionDetailViewModel
 import com.yusufteker.worthy.screen.wishlist.add.presentation.WishlistAddViewModel
 import com.yusufteker.worthy.screen.wishlist.detail.presentation.WishlistDetailViewModel
 import com.yusufteker.worthy.screen.wishlist.list.data.database.repository.WishlistRepositoryImpl
@@ -105,4 +106,5 @@ val sharedModule = module {
     viewModel { AnalyticsViewModel(get(), get()) }
     viewModel { SubscriptionListViewModel(get()) }
     viewModel { AddSubscriptionViewModel(get(), get()) }
+    viewModel { SubscriptionDetailViewModel(get()) }
 }

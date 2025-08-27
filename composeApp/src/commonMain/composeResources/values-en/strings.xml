@@ -122,7 +122,7 @@
     <string name="add_new">Add New</string>
     <string name="amount_with_currency">%1$s%2$s</string>
     <string name="screen_title_settings">Budget &amp; Settings</string>
-    <string name="start_date">Start Date</string>
+    <string name="start_date_shortened">Start Date</string>
 
 
     <string name="last_day">Last day</string>
@@ -395,4 +395,15 @@
 
     <string name="active_subscriptions">Active Subscriptions</string>
     <string name="inactive_subscriptions">Inactive Subscriptions</string>
+
+    <string name="pick_end_date">Select End Date</string>
+    <string name="pick_start_date">Select Start Date</string>
+
+    <string name="activate">Activate</string>
+    <string name="terminate">Terminate</string>
+    <string name="start_date">Start Date</string>
+    <string name="end_date">End Date</string>
+    <string name="card_id">Linked Card ID</string>
+    <string name="info_start_end_different">Start and end dates should be different.</string>
+
 </resources>

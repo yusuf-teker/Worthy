@@ -26,6 +26,11 @@ open class BaseViewModel<S : BaseState>(
     val _uiEvent = MutableSharedFlow<UiEvent>()
     val uiEvent = _uiEvent.asSharedFlow()
 
+    fun setState(reducer: S.() -> S) {
+        _state.update(reducer)
+
+    }
+
     suspend fun sendUiEvent(event: UiEvent) {
         _uiEvent.emit(event)
     }

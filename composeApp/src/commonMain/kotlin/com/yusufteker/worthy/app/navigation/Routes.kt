@@ -1,5 +1,6 @@
 package com.yusufteker.worthy.app.navigation
 
+import com.yusufteker.worthy.core.domain.model.RecurringItem
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
@@ -68,6 +69,9 @@ sealed class Routes(
 
     @Serializable
     data object AddSubscription : Routes("AddSubscription")
+
+    @Serializable
+    data class SubscriptionDetail(val subscriptionId: Int): Routes("SubscriptionDetail")
 
 }
 

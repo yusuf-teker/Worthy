@@ -49,13 +49,13 @@ import androidx.compose.ui.unit.dp
 import com.yusufteker.worthy.core.data.database.entities.ExpenseNeedType
 import com.yusufteker.worthy.core.data.database.entities.toText
 import com.yusufteker.worthy.core.domain.createTimestampId
+import com.yusufteker.worthy.core.domain.getCurrentAppDate
 import com.yusufteker.worthy.core.domain.getCurrentYear
 import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.RecurringItem
 
-import com.yusufteker.worthy.core.domain.model.currentAppDate
 import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.domain.model.endDate
 import com.yusufteker.worthy.core.domain.model.startDate
@@ -95,7 +95,7 @@ import worthy.composeapp.generated.resources.missing_month_or_year
 import worthy.composeapp.generated.resources.new_amount
 import worthy.composeapp.generated.resources.repeat_day
 import worthy.composeapp.generated.resources.save
-import worthy.composeapp.generated.resources.start_date
+import worthy.composeapp.generated.resources.start_date_shortened
 import worthy.composeapp.generated.resources.start_date_after_end_date
 import worthy.composeapp.generated.resources.start_date_must_be_before
 import worthy.composeapp.generated.resources.start_dates_cannot_be_same
@@ -270,7 +270,7 @@ fun RecurringItemAddDialog(
     var needType by remember { mutableStateOf(ExpenseNeedType.NONE) }
     var scheduledDay by remember { mutableStateOf<Int?>(null) }
 
-    var startDate by remember { mutableStateOf<AppDate>(currentAppDate()) }
+    var startDate by remember { mutableStateOf<AppDate>(getCurrentAppDate()) }
 
     val months = (1..12).toList()
     val years = (getCurrentYear() - 5..getCurrentYear() + 5).toList()
@@ -471,7 +471,7 @@ fun RecurringItemGroupEditDialog(
 
     // Temporary item (her zaman gösterilir)
     var tempAmount by remember { mutableStateOf<Money?>(null) }
-    var tempStartDate by remember { mutableStateOf<AppDate>(currentAppDate()) }
+    var tempStartDate by remember { mutableStateOf<AppDate>(getCurrentAppDate()) }
     var tempEndDate by remember { mutableStateOf<AppDate?>(null) }
     var validationErrors by remember { mutableStateOf<Pair<Int, UiText>?>(null) }
 
@@ -616,7 +616,7 @@ fun RecurringItemGroupEditDialog(
 
                     // Temp alanlar resetleniyor
                     tempAmount = null
-                    tempStartDate = currentAppDate()
+                    tempStartDate = getCurrentAppDate()
                     tempEndDate = null
                 }
 
@@ -775,7 +775,7 @@ fun ExistingRecurringItemCard(
 
             Row {
                 DateSelector(
-                    title = UiText.StringResourceId(id = Res.string.start_date).asString(),
+                    title = UiText.StringResourceId(id = Res.string.start_date_shortened).asString(),
                     month = item.startDate.month,
                     onMonthChanged = {
                         onUpdate(

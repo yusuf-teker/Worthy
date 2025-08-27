@@ -95,7 +95,7 @@ fun MoneyInput( // TODO KÜSÜRAT KISMINDA EKSIKLIKLER VAR
             },
             singleLine = true
         )
-        ErrorText(errorMessage?.asString())
+        MessageText(errorMessage?.let {  UiMessage.Error(it.asString()) })
     }
 
 }

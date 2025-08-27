@@ -33,8 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yusufteker.worthy.app.navigation.NavigationHandler
 import com.yusufteker.worthy.app.navigation.NavigationModel
-import com.yusufteker.worthy.app.navigation.Routes
-import com.yusufteker.worthy.core.domain.getCurrentAppDate
+import com.yusufteker.worthy.core.domain.getCurrentMonth
 import com.yusufteker.worthy.core.domain.getCurrentYear
 import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.core.domain.model.CategoryType
@@ -47,9 +46,10 @@ import com.yusufteker.worthy.core.presentation.components.AppTopBar
 import com.yusufteker.worthy.core.presentation.components.CardSelector
 import com.yusufteker.worthy.core.presentation.components.CategorySelector
 import com.yusufteker.worthy.core.presentation.components.DayOfMonthSelector
-import com.yusufteker.worthy.core.presentation.components.ErrorText
+import com.yusufteker.worthy.core.presentation.components.MessageText
 import com.yusufteker.worthy.core.presentation.components.MoneyInput
-import com.yusufteker.worthy.core.presentation.components.WheelDatePickerV2
+import com.yusufteker.worthy.core.presentation.components.UiMessage
+import com.yusufteker.worthy.core.presentation.components.WheelDatePickerV3
 import com.yusufteker.worthy.screen.subscription.add.presentation.components.ColorPicker
 import com.yusufteker.worthy.screen.subscription.add.presentation.components.toComposeColor
 import com.yusufteker.worthy.screen.subscription.add.presentation.components.toHexString
@@ -57,6 +57,7 @@ import com.yusufteker.worthy.screen.subscription.list.presentation.components.Su
 import org.koin.compose.viewmodel.koinViewModel
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.add
+import worthy.composeapp.generated.resources.info_start_end_different
 import worthy.composeapp.generated.resources.monthly_price
 import worthy.composeapp.generated.resources.payment_day
 import worthy.composeapp.generated.resources.screen_title_add_new_subscription
@@ -148,8 +149,8 @@ fun AddSubscriptionScreen(
                         label = { Text(UiText.StringResourceId(Res.string.service_name).asString()) },
                         singleLine = true
                     )
-                    ErrorText(
-                        message = state.errorName?.asString(),
+                    MessageText(
+                        message = state.errorName?.let {  UiMessage.Error(it.asString()) },
                     )
                 }
 
@@ -193,14 +194,18 @@ fun AddSubscriptionScreen(
                 label = UiText.StringResourceId(Res.string.monthly_price)
             )
 
-            WheelDatePickerV2(
+            WheelDatePickerV3(
                 title =   UiText.StringResourceId(Res.string.subscription_start_date).asString(),
-                initialDate = state.startDate,
+                selectedYear = state.startDate.year,
+                selectedMonth = state.startDate.month,
+                selectedDay = 1,
                 onDateSelected = {
                     onAction(AddSubscriptionAction.OnStartDateChanged(it))
                 },
                 maxDate = state.endDate?: AppDate(2100, 12, 31),
                 modifier = Modifier.fillMaxWidth(),
+                showDay = false,
+                infoMessage = if (state.startDate == (state.endDate ?: AppDate(2100, 12, 31))) UiText.StringResourceId(Res.string.info_start_end_different).asString() else null
             )
             // todo odeme gunu lableı olacak
             DayOfMonthSelector(
@@ -252,14 +257,18 @@ fun AddSubscriptionScreen(
                         }
                     )
                     Spacer(Modifier.height(16.dp))
-                    WheelDatePickerV2(
+                    WheelDatePickerV3(
                         title =   UiText.StringResourceId(Res.string.subscription_end_date).asString(),
-                        initialDate = state.endDate ?: getCurrentAppDate(),
+                        selectedDay = 1,
+                        selectedMonth =  state.endDate?.month ?: getCurrentMonth(),
+                        selectedYear = state.endDate?.year ?: getCurrentYear(),
                         onDateSelected = {
                             onAction(AddSubscriptionAction.OnEndDateChanged(it))
                         },
                         modifier = Modifier.fillMaxWidth(),
-                        minDate = state.startDate
+                        minDate = state.startDate,
+                        showDay = false,
+                        infoMessage = if (state.endDate == state.startDate) UiText.StringResourceId(Res.string.info_start_end_different).asString() else null
 
                     )
                 }

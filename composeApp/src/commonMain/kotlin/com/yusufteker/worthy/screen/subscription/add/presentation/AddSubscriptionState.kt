@@ -1,5 +1,6 @@
 package com.yusufteker.worthy.screen.subscription.add.presentation
 
+import com.yusufteker.worthy.core.domain.getCurrentAppDate
 import com.yusufteker.worthy.core.domain.getCurrentMonth
 import com.yusufteker.worthy.core.domain.getCurrentYear
 import com.yusufteker.worthy.core.domain.model.AppDate
@@ -23,7 +24,7 @@ data class AddSubscriptionState(
     val customCategoryName: String = "",
     val selectedEmoji: String? = null,
     val price: Money? = emptyMoney(),
-    val startDate: AppDate = AppDate(getCurrentYear(), getCurrentMonth()),
+    val startDate: AppDate = getCurrentAppDate().copy(day = 1),
     val endDate: AppDate? = null,
     val scheduledDay: Int = 1,
     val cards: List<Card> = emptyList(),

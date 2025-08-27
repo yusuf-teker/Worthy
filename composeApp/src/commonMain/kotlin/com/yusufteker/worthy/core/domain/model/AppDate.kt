@@ -7,10 +7,12 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.todayIn
+import kotlinx.serialization.Serializable
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
+@Serializable
 data class AppDate(
     val year: Int, val month: Int, val day: Int? = null
 ): Comparable<AppDate> {
@@ -37,16 +39,6 @@ data class AppDate(
     }
 
 }
-
-
-@OptIn(ExperimentalTime::class)
-fun currentAppDate(includeDay: Boolean = false): AppDate {
-    val today: LocalDate = Clock.System.todayIn(TimeZone.currentSystemDefault())
-    return AppDate(
-        year = today.year, month = today.month.number, day = if (includeDay) today.day else null
-    )
-}
-
 fun AppDate.getLastMonth(): AppDate {
     if (this.month > 1) {
         return this.copy(month = month - 1)
@@ -77,6 +69,10 @@ fun Long.toAppDate(): AppDate {
         month = localDateTime.month.number,
         day = localDateTime.day
     )
+}
+
+fun AppDate.format(): String {
+    return "${this.day}/${this.month}/${this.year}"
 }
 
 

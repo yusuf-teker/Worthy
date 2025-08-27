@@ -43,7 +43,7 @@ class SubscriptionRepositoryImpl(
     }
 
     override suspend fun getSubscriptionById(id: Int): RecurringItem.Subscription? {
-        TODO("Not yet implemented")
+        return dao.getById(id)?.toDomain()
     }
 
     override fun getAllSubscriptions(): Flow<List<RecurringItem.Subscription>> {

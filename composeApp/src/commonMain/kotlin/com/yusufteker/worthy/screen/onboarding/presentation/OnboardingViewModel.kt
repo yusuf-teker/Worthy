@@ -2,8 +2,8 @@ package com.yusufteker.worthy.screen.onboarding.presentation
 
 import androidx.lifecycle.viewModelScope
 import com.yusufteker.worthy.core.domain.createTimestampId
+import com.yusufteker.worthy.core.domain.getCurrentAppDate
 import com.yusufteker.worthy.core.domain.model.RecurringItem
-import com.yusufteker.worthy.core.domain.model.currentAppDate
 import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import com.yusufteker.worthy.screen.onboarding.domain.OnboardingRepository
@@ -27,7 +27,7 @@ class OnboardingViewModel(
                                         name = it.salaryString,
                                         isIncome = true,
                                         amount = it.monthlySalary!!,
-                                        startDate = currentAppDate(),
+                                        startDate = getCurrentAppDate(),
                                         endDate = null,
                                         groupId = createTimestampId(),
                                     )

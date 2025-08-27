@@ -35,9 +35,10 @@ import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.components.AppButton
 import com.yusufteker.worthy.core.presentation.components.CardSelector
 import com.yusufteker.worthy.core.presentation.components.CategorySelector
-import com.yusufteker.worthy.core.presentation.components.ErrorText
+import com.yusufteker.worthy.core.presentation.components.MessageText
 import com.yusufteker.worthy.core.presentation.components.MoneyInput
 import com.yusufteker.worthy.core.presentation.components.NumberPickerInput
+import com.yusufteker.worthy.core.presentation.components.UiMessage
 import com.yusufteker.worthy.core.presentation.components.WheelDatePicker
 import com.yusufteker.worthy.core.presentation.theme.Constants.MAX_INSTALLMENT_COUNT
 import kotlinx.datetime.TimeZone
@@ -112,7 +113,7 @@ fun AddTransactionForm(
             modifier = Modifier.fillMaxWidth(),
             isError = state.errorName != null
         )
-        ErrorText(state.errorName?.asString())
+        MessageText(state.errorName?.let {  UiMessage.Error(it.asString()) })
         // 2 AMOUNT
         MoneyInput(
             money = state.money ?: emptyMoney(),

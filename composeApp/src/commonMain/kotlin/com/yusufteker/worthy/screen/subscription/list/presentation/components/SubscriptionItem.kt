@@ -33,6 +33,7 @@ import worthy.composeapp.generated.resources.service_name
 fun SubscriptionItem(
     subscription: RecurringItem.Subscription,
     modifier: Modifier = Modifier,
+    onItemClicked: (RecurringItem.Subscription) -> Unit = {},
     isPreview: Boolean = false
 ) {
     Box(modifier = modifier.fillMaxWidth()) {
@@ -48,7 +49,9 @@ fun SubscriptionItem(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { },
+                .clickable {
+                    onItemClicked.invoke(subscription)
+                },
             shape = CardDefaults.shape,
             elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
             colors = CardDefaults.cardColors(

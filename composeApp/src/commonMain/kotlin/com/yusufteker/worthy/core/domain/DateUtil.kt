@@ -28,6 +28,11 @@ fun getCurrentMonth(): Int {
 }
 
 @OptIn(ExperimentalTime::class)
+fun getCurrentDay(): Int {
+    return Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).day
+}
+
+@OptIn(ExperimentalTime::class)
 fun createTimestampId(): String {
     val timestamp = Clock.System.now().toEpochMilliseconds()
     val random = Random.nextInt(1000, 9999)
@@ -50,7 +55,7 @@ fun getCurrentYear(): Int {
 }
 
 fun getCurrentAppDate(): AppDate{
-    return AppDate(getCurrentYear(), getCurrentMonth())
+    return AppDate(getCurrentYear(), getCurrentMonth(), getCurrentDay())
 }
 
 fun isLeapYear(year: Int) = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)

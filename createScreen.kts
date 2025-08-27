@@ -3,7 +3,7 @@
 import java.io.File
 
 
-val screenName = "AddSubscription"//args.getOrNull(0) ?: error("Ekran adı girilmedi")
+val screenName = "SubscriptionDetail"//args.getOrNull(0) ?: error("Ekran adı girilmedi")
 val packageName = screenName.lowercase()
 val baseDir = File("composeApp/src/commonMain/kotlin/com/yusufteker/worthy/screen/$packageName/presentation")
 
@@ -13,6 +13,7 @@ val files = listOf(
 
         sealed interface ${screenName}Action {
             object Init : ${screenName}Action
+            object NavigateBack : ${screenName}Action
         }
     """.trimIndent(),
 
@@ -45,6 +46,9 @@ val files = listOf(
                     is ${screenName}Action.Init -> {
                         // TODO
                     }
+                    is ${screenName}Action.NavigateBack -> {
+                        navigateBack()
+                    }
                 }
             }
         }
@@ -67,20 +71,20 @@ val files = listOf(
     import worthy.composeapp.generated.resources.Res
     import worthy.composeapp.generated.resources.add_new_card
     import com.yusufteker.worthy.app.navigation.NavigationHandler
-    import com.yusufteker.worthy.app.navigation.Routes
+        
 
 
     @Composable
     fun ${screenName}ScreenRoot(
         viewModel: ${screenName}ViewModel = koinViewModel(),
         contentPadding: PaddingValues = PaddingValues(),
-        onNavigateTo: (route: Routes) -> Unit
+        onNavigateTo: (NavigationModel) -> Unit
 
     ) {
         val state by viewModel.state.collectAsStateWithLifecycle()
         
-        NavigationHandler(viewModel){ route, data ->
-            onNavigateTo(route)
+        NavigationHandler(viewModel){ model ->
+            onNavigateTo(model)
         }
         
         BaseContentWrapper(state = state) {

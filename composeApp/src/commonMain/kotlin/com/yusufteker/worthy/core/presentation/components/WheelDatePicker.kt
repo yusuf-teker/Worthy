@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,7 +21,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,6 +39,7 @@ import com.yusufteker.worthy.core.domain.isLeapYear
 import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
+import io.github.aakira.napier.Napier
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
@@ -212,6 +213,7 @@ fun WheelDatePickerV2( // TODO MİN GİRİNCE MİNİMİNN ALTINDA GÖZÜKÜYOR A
     title: String? = null,
     maxDate: AppDate = AppDate(2100, 12, 31),
     minDate: AppDate = AppDate(1970, 1, 1),
+    showDay : Boolean = true,
 
 
     ) {
@@ -284,15 +286,18 @@ fun WheelDatePickerV2( // TODO MİN GİRİNCE MİNİMİNN ALTINDA GÖZÜKÜYOR A
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                WheelPicker(
-                    items = (1..daysInMonth).map { it.toString().padStart(2, '0') },
-                    startIndex = selectedDay - 1,
-                    onSelected = {
-                        selectedDay = it + 1
-                        emitDate()
-                    },
-                    modifier = Modifier.width(30.dp)
-                )
+                if (showDay){
+                    WheelPicker(
+                        items = (1..daysInMonth).map { it.toString().padStart(2, '0') },
+                        startIndex = selectedDay - 1,
+                        onSelected = {
+                            selectedDay = it + 1
+                            emitDate()
+                        },
+                        modifier = Modifier.width(30.dp)
+                    )
+                }
+
 
                 WheelPicker(
                     items = (1..12).map { it.toString().padStart(2, '0') },
@@ -339,13 +344,220 @@ fun WheelDatePickerV2( // TODO MİN GİRİNCE MİNİMİNN ALTINDA GÖZÜKÜYOR A
             }
         }
 
-        ErrorText(
-            errorMessage
+        MessageText(
+            errorMessage?.let {UiMessage.Error(text = it)}
+
         )
 
     }
 }
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
+@Composable
+fun WheelDatePickerV3(
+    selectedYear: Int,
+    selectedMonth : Int,
+    selectedDay :Int,
 
+    onDateSelected: (AppDate) -> Unit,
+    modifier: Modifier = Modifier,
+    showBorder: Boolean = true,
+    showIcon: Boolean = true,
+    errorMessage: String? = null,
+    infoMessage: String? = null,
+    title: String? = null,
+    maxDate: AppDate = AppDate(2100, 12, 31),
+    minDate: AppDate = AppDate(1970, 1, 1),
+    showDay: Boolean = true,
+    debugTag: String = "WheelDatePicker" // Debug için tag ekledim
+) {
+
+    // Debug için başlangıç değerlerini log'la
+    LaunchedEffect(Unit) {
+        Napier.d("[$debugTag] INIT - Year: $selectedYear, Month: $selectedMonth, Day: $selectedDay")
+        Napier.d("[$debugTag] INIT - MinDate: ${minDate.year}-${minDate.month}-${minDate.day}")
+        Napier.d("[$debugTag] INIT - MaxDate: ${maxDate.year}-${maxDate.month}-${maxDate.day}")
+    }
+
+    // Geçerli aralıkları hesapla
+    val validYearRange = remember(minDate, maxDate) {
+        val range = minDate.year..maxDate.year
+        Napier.d("[$debugTag] YEAR_RANGE_CHANGED - Range: $range")
+        range
+    }
+
+    val validMonthRange = remember(selectedYear, minDate, maxDate) {
+        val minMonth = if (selectedYear == minDate.year) minDate.month else 1
+        val maxMonth = if (selectedYear == maxDate.year) maxDate.month else 12
+        val range = minMonth..maxMonth
+        Napier.d("[$debugTag] MONTH_RANGE_CHANGED - Year: $selectedYear, Range: $range")
+        range
+    }
+
+    val daysInMonth = remember(selectedYear, selectedMonth) {
+        val days = monthLength(selectedYear, selectedMonth)
+        Napier.d("[$debugTag] DAYS_IN_MONTH_CHANGED - Year: $selectedYear, Month: $selectedMonth, Days: $days")
+        days
+    }
+
+    val validDayRange = remember(selectedYear, selectedMonth, minDate, maxDate, daysInMonth) {
+        val minDay = if (selectedYear == minDate.year && selectedMonth == minDate.month)
+            (minDate.day ?: 1) else 1
+        val maxDay = if (selectedYear == maxDate.year && selectedMonth == maxDate.month)
+            (maxDate.day ?: daysInMonth) else daysInMonth
+        val range = minDay..maxDay
+        Napier.d("[$debugTag] DAY_RANGE_CHANGED - Year: $selectedYear, Month: $selectedMonth, Range: $range")
+        range
+    }
+
+    // Seçili değerlerin geçerli aralıklarda olup olmadığını kontrol et
+    val isCurrentSelectionValid = remember(selectedYear, selectedMonth, selectedDay, validYearRange, validMonthRange, validDayRange) {
+        selectedYear in validYearRange &&
+                selectedMonth in validMonthRange &&
+                selectedDay in validDayRange
+    }
+
+    fun adjustAndEmitSelection() {
+        // Sadece mevcut seçim geçersizse düzelt
+        if (!isCurrentSelectionValid) {
+            val adjustedYear = selectedYear.coerceIn(validYearRange)
+            val adjustedMonth = selectedMonth.coerceIn(validMonthRange)
+            val adjustedDay = selectedDay.coerceIn(validDayRange)
+
+            onDateSelected(AppDate(adjustedYear, adjustedMonth, adjustedDay))
+
+        }
+    }
+
+    // Sadece selection değiştiğinde veya geçersiz hale geldiğinde emit et
+    LaunchedEffect(selectedYear, selectedMonth, selectedDay) {
+        adjustAndEmitSelection()
+    }
+
+    // Min/max değerleri değiştiğinde sadece geçersiz hale geldiyse düzelt
+    LaunchedEffect(isCurrentSelectionValid) {
+        if (!isCurrentSelectionValid) {
+            adjustAndEmitSelection()
+        }
+    }
+
+    val border = if (showBorder) {
+        BorderStroke(
+            1.dp, color = if (errorMessage != null) AppColors.error else AppColors.outline
+        )
+    } else {
+        BorderStroke(0.dp, Color.Transparent)
+    }
+
+    Column(Modifier.fillMaxWidth()) {
+        Box(modifier = modifier) {
+        Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .border(border, shape = RoundedCornerShape(4.dp))
+                .height(56.dp)
+                .padding(top = 8.dp, start = 8.dp, end = 8.dp, bottom = 4.dp)
+                .background(Color.Transparent),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            if (showIcon) {
+                Spacer(modifier = Modifier.width(8.dp))
+                Icon(
+                    painter = painterResource(Res.drawable.ic_calendar),
+                    contentDescription = "Takvim",
+                    tint = AppColors.primary,
+                    modifier = Modifier.size(32.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+            }
+
+            Row(
+                modifier = Modifier.weight(1f),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (showDay) {
+                    WheelPicker(
+                        items = (validDayRange.first..validDayRange.last).map {
+                            it.toString().padStart(2, '0')
+                        },
+                        startIndex = if (selectedDay in validDayRange) {
+                            selectedDay - validDayRange.first
+                        } else {
+                            0
+                        },
+                        onSelected = { index ->
+                            onDateSelected(AppDate(selectedYear, selectedMonth, validDayRange.first + index))
+                        },
+                        modifier = Modifier.width(30.dp)
+                    )
+                }
+
+                WheelPicker(
+                    items = (validMonthRange.first..validMonthRange.last).map {
+                        it.toString().padStart(2, '0')
+                    },
+                    startIndex = if (selectedMonth in validMonthRange) {
+                        selectedMonth - validMonthRange.first
+                    } else {
+                        0
+                    },
+                    onSelected = { index ->
+                        onDateSelected(AppDate(selectedYear, validMonthRange.first + index, selectedDay))
+                        // Ay değiştiğinde günü de kontrol et
+                        val newDaysInMonth = monthLength(selectedYear, selectedMonth)
+                        if (selectedDay > newDaysInMonth) {
+                            onDateSelected(AppDate(selectedYear, selectedMonth, selectedDay))
+                        }
+                    },
+                    modifier = Modifier.width(30.dp)
+                )
+
+                WheelPicker(
+                    items = (validYearRange.first..validYearRange.last).map { it.toString() },
+                    startIndex = if (selectedYear in validYearRange) {
+                        selectedYear - validYearRange.first
+                    } else {
+                        0
+                    },
+                    onSelected = { index ->
+                        onDateSelected(AppDate(validYearRange.first + index, selectedMonth, selectedDay))
+                        // Yıl değiştiğinde ay ve günü de kontrol et
+                        val newDaysInMonth = monthLength(selectedYear, selectedMonth)
+                        if (selectedDay > newDaysInMonth) {
+                            onDateSelected(AppDate(selectedYear, newDaysInMonth, selectedDay))
+
+                        }
+                    },
+                    modifier = Modifier.width(60.dp)
+                )
+            }
+        }
+
+        if (title != null) {
+            Box(
+                modifier = Modifier.align(Alignment.TopStart).zIndex(2f)
+                    .offset(x = 8.dp, y = (-8).dp)
+            ) {
+                Text(
+                    text = title,
+                    style = AppTypography.bodySmall.copy(
+                        fontSize = 12.sp,
+                        color = if (errorMessage != null) AppColors.error else AppColors.onSurfaceVariant
+                    ),
+                    modifier = Modifier.background(AppColors.background)
+                        .padding(horizontal = 2.dp)
+                )
+            }
+        }
+
+    }
+
+        MessageText(errorMessage?.let { UiMessage.Error(it) })
+        MessageText(infoMessage?.let { UiMessage.Info(it) })
+    }
+
+}
 @Composable
 fun WheelPicker(
     items: List<String>,
@@ -366,7 +578,7 @@ fun WheelPicker(
         modifier = modifier.height(40.dp), // sadece 1 satır görünsün
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        itemsIndexed(items) { index, item ->
+        itemsIndexed(items, key = { index, _ -> items.get(index) }) { index, item ->
             Box(
                 modifier = Modifier.fillMaxWidth().height(40.dp).background(Color.Transparent),
                 contentAlignment = Alignment.Center

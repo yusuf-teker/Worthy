@@ -51,6 +51,9 @@ class SubscriptionListViewModel(
                 }
 
             }
+            is SubscriptionListAction.OnItemClicked -> {
+                navigateTo(Routes.SubscriptionDetail(action.subscriptionId))
+            }
 
         }
     }

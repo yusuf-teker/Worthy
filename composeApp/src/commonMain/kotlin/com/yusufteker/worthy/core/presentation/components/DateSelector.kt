@@ -14,12 +14,12 @@ import com.yusufteker.worthy.core.domain.getCurrentYear
 import com.yusufteker.worthy.core.presentation.UiText
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.month
-import worthy.composeapp.generated.resources.start_date
+import worthy.composeapp.generated.resources.start_date_shortened
 import worthy.composeapp.generated.resources.year
 
 @Composable
 fun DateSelector(
-    title: String = UiText.StringResourceId(Res.string.start_date).asString(),
+    title: String = UiText.StringResourceId(Res.string.start_date_shortened).asString(),
     month: Int?,
     onMonthChanged: (Int) -> Unit,
     year: Int?,
