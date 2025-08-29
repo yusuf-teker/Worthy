@@ -59,7 +59,7 @@ data class DashboardState(
 
     val wishlistMonthlyAmountList: List<DashboardMonthlyAmount> = emptyList(),
 
-    val selectedMonthYear: AppDate = getCurrentAppDate(),
+    val selectedMonthYear: AppDate = AppDate(year = getCurrentYear(), month = getCurrentMonth()),
     val selectableMonths: List<AppDate> = getRecentYearMonths(
         currentMonth = getCurrentMonth(),
         currentYear = getCurrentYear()

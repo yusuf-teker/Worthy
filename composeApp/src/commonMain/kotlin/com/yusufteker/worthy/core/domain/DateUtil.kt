@@ -54,8 +54,8 @@ fun getCurrentYear(): Int {
     return Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year
 }
 
-fun getCurrentAppDate(): AppDate{
-    return AppDate(getCurrentYear(), getCurrentMonth(), getCurrentDay())
+fun getCurrentAppDate(day: Int? = null): AppDate{
+    return AppDate(getCurrentYear(), getCurrentMonth(), day ?: getCurrentDay())
 }
 
 fun isLeapYear(year: Int) = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)

@@ -399,6 +399,7 @@
     <string name="end_date">Bitiş Tarihi</string>
     <string name="card_id">Bağlı Kart ID</string>
     <string name="info_start_end_different">Başlangıç ve bitiş tarihi farklı olmalı.</string>
+    <string name="end_date_required_for_past_start">Güncel olmayan aboneliklerin bitiş tarihi boş olamaz</string>
 
 
 </resources>

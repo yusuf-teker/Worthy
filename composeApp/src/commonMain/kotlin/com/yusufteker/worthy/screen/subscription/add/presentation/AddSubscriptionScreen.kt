@@ -50,6 +50,7 @@ import com.yusufteker.worthy.core.presentation.components.MessageText
 import com.yusufteker.worthy.core.presentation.components.MoneyInput
 import com.yusufteker.worthy.core.presentation.components.UiMessage
 import com.yusufteker.worthy.core.presentation.components.WheelDatePickerV3
+import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.screen.subscription.add.presentation.components.ColorPicker
 import com.yusufteker.worthy.screen.subscription.add.presentation.components.toComposeColor
 import com.yusufteker.worthy.screen.subscription.add.presentation.components.toHexString
@@ -205,7 +206,8 @@ fun AddSubscriptionScreen(
                 maxDate = state.endDate?: AppDate(2100, 12, 31),
                 modifier = Modifier.fillMaxWidth(),
                 showDay = false,
-                infoMessage = if (state.startDate == (state.endDate ?: AppDate(2100, 12, 31))) UiText.StringResourceId(Res.string.info_start_end_different).asString() else null
+                infoMessage = if (state.startDate == (state.endDate ?: AppDate(2100, 12, 31))) UiText.StringResourceId(Res.string.info_start_end_different).asString() else null,
+                backgroundColor = AppColors.background
             )
             // todo odeme gunu lableı olacak
             DayOfMonthSelector(
@@ -253,22 +255,8 @@ fun AddSubscriptionScreen(
                         },
                         modifier = Modifier.fillMaxWidth(),
                         onAddNewCard = {
-                            //onAddNewCardClicked.invoke()
+                            onAction(AddSubscriptionAction.AddNewCardClicked)
                         }
-                    )
-                    Spacer(Modifier.height(16.dp))
-                    WheelDatePickerV3(
-                        title =   UiText.StringResourceId(Res.string.subscription_end_date).asString(),
-                        selectedDay = 1,
-                        selectedMonth =  state.endDate?.month ?: getCurrentMonth(),
-                        selectedYear = state.endDate?.year ?: getCurrentYear(),
-                        onDateSelected = {
-                            onAction(AddSubscriptionAction.OnEndDateChanged(it))
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        minDate = state.startDate,
-                        showDay = false,
-                        infoMessage = if (state.endDate == state.startDate) UiText.StringResourceId(Res.string.info_start_end_different).asString() else null
 
                     )
                 }
@@ -282,3 +270,4 @@ fun AddSubscriptionScreen(
     }
 
 }
+

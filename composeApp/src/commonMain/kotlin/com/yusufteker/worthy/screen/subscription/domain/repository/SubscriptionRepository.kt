@@ -12,12 +12,15 @@ interface SubscriptionRepository {
     suspend fun addSubscription(subscription: RecurringItem.Subscription)
 
     suspend fun updateSubscription(subscription: RecurringItem.Subscription)
+    suspend fun updateGroup(subscriptions: List<RecurringItem.Subscription>, oldSubscriptions: List<RecurringItem.Subscription>)
 
     suspend fun deleteSubscription(subscriptionId: Int)
 
     suspend fun getSubscriptionById(id: Int): RecurringItem.Subscription?
 
+
     fun getAllSubscriptions(): Flow<List<RecurringItem.Subscription>>
+     fun getAllSubscriptionsByGroupId(groupId: String): Flow<List<RecurringItem.Subscription>>
 
     fun getSubscriptionsByCardId(cardId: Int): Flow<List<RecurringItem.Subscription>>
 
@@ -28,5 +31,7 @@ interface SubscriptionRepository {
     fun getCategories(): Flow<List<Category>>
 
     suspend fun addCategory(category: Category)
+
+    suspend fun deleteByGroupId(groupId: String)
 
 }

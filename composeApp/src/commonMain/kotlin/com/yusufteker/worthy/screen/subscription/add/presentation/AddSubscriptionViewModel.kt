@@ -1,6 +1,7 @@
 package com.yusufteker.worthy.screen.subscription.add.presentation
 
 import androidx.lifecycle.viewModelScope
+import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
@@ -85,15 +86,7 @@ class AddSubscriptionViewModel(
                     )
                 }
             }
-            is AddSubscriptionAction.OnEmojiSelected -> {
-                _state.update {
-                    it.copy(
-                        selectedEmoji = action.emoji,
-                        subscriptionPrev = state.value.subscriptionPrev.copy(icon = action.emoji)
 
-                    )
-                }
-            }
             is AddSubscriptionAction.OnPriceChanged -> {
                 _state.update {
                     it.copy(
@@ -112,15 +105,7 @@ class AddSubscriptionViewModel(
                     )
                 }
             }
-            is AddSubscriptionAction.OnEndDateChanged -> {
-                _state.update {
-                    it.copy(
-                        endDate = action.date,
-                        subscriptionPrev = state.value.subscriptionPrev.copy(endDate = action.date)
 
-                    )
-                }
-            }
             is AddSubscriptionAction.OnScheduledDayChanged -> {
                 _state.update {
                     it.copy(
@@ -159,6 +144,9 @@ class AddSubscriptionViewModel(
                         subscriptionPrev = state.value.subscriptionPrev.copy(cardId = action.card.id)
                     )
                 }
+            }
+            is AddSubscriptionAction.AddNewCardClicked -> {
+                navigateTo(Routes.AddCard)
             }
 
         }

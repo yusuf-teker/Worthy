@@ -406,4 +406,8 @@
     <string name="card_id">Linked Card ID</string>
     <string name="info_start_end_different">Start and end dates should be different.</string>
 
+    <string name="end_date_required_for_past_start">Inactive subscriptions must have an end date</string>
+
+
+
 </resources>

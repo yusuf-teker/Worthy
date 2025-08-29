@@ -45,7 +45,7 @@ import com.yusufteker.worthy.screen.onboarding.presentation.OnboardingScreenRoot
 import com.yusufteker.worthy.screen.settings.presentation.SettingsScreenRoot
 import com.yusufteker.worthy.screen.subscription.add.presentation.AddSubscriptionScreenRoot
 import com.yusufteker.worthy.screen.subscription.list.presentation.SubscriptionListScreenRoot
-import com.yusufteker.worthy.screen.subscriptiondetail.presentation.SubscriptionDetailScreenRoot
+import com.yusufteker.worthy.screen.subscription.detail.presentation.SubscriptionDetailScreenRoot
 import com.yusufteker.worthy.screen.transaction.add.presentation.components.AddFabMenu
 import com.yusufteker.worthy.screen.wallet.presentation.WalletScreenRoot
 import com.yusufteker.worthy.screen.wishlist.add.presentation.WishlistAddScreenRoot

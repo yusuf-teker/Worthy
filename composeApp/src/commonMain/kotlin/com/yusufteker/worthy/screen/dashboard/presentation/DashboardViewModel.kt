@@ -177,7 +177,7 @@ class DashboardViewModel(
             _state.update {
                 it.copy(
                     // TODO : repository’den gerçek veriyi çek prefden değil
-                    userName = "Yusuf",
+                    userName = userPrefsManager.userName.first() ?: "",
                     selectedCurrency = userPrefsManager.selectedCurrency.first(),
                     monthlyWorkHours = userPrefsManager.weeklyWorkHours.first() * 4.33f,
                     desireBudget = userPrefsManager.desireBudget.first() ?: emptyMoney(

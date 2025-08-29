@@ -71,8 +71,8 @@ fun Long.toAppDate(): AppDate {
     )
 }
 
-fun AppDate.format(): String {
-    return "${this.day}/${this.month}/${this.year}"
+fun AppDate.format(showDay: Boolean = true): String {
+    return "${if (showDay)this.day.toString() + "/" else ""}${this.month}/${this.year}"
 }
 
 

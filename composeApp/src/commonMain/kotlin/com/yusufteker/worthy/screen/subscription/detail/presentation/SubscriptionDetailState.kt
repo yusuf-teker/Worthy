@@ -9,9 +9,12 @@
             override val isLoading: Boolean = false,
             val errorMessage: String? = null,
             val subscription: RecurringItem.Subscription? = null,
-            val pickedDate: AppDate = getCurrentAppDate()
+            val subscriptions: List<RecurringItem.Subscription> = emptyList(),
+
+            val pickedDate: AppDate = getCurrentAppDate(day = 1)
         ): BaseState{
             override fun copyWithLoading(isLoading: Boolean): BaseState {
             return this.copy(isLoading = isLoading)
+
         }
 }

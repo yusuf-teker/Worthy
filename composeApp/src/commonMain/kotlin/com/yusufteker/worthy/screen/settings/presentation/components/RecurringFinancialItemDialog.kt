@@ -799,7 +799,7 @@ fun ExistingRecurringItemCard(
 
             Row {
                 DateSelector(
-                    title = "Bit. Tar.",
+                    title = UiText.StringResourceId(Res.string.start_date_shortened).asString(),
                     month = item.endDate?.month,
                     onMonthChanged = {
                         onUpdate(

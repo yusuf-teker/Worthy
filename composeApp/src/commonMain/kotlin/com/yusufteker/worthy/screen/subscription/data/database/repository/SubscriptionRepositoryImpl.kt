@@ -17,6 +17,8 @@ import com.yusufteker.worthy.screen.subscription.domain.repository.SubscriptionR
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
+import kotlin.collections.filter
+import kotlin.collections.map
 
 class SubscriptionRepositoryImpl(
 
@@ -35,7 +37,19 @@ class SubscriptionRepositoryImpl(
     }
 
     override suspend fun updateSubscription(subscription: RecurringItem.Subscription) {
-        TODO("Not yet implemented")
+        dao.update(subscription.toEntity())
+    }
+    override suspend fun updateGroup(subscriptions: List<RecurringItem.Subscription>, oldSubscriptions: List<RecurringItem.Subscription>) {
+        if (subscriptions.isEmpty()) return
+
+        val currentEntities = oldSubscriptions.map { it.toEntity() }
+        val newIds = subscriptions.map { it.id }.toSet()
+
+        val toDelete = currentEntities.filter { it.id !in newIds }
+        val toUpsert = subscriptions.map { it.toEntity() }
+
+        dao.deleteAll(toDelete)
+        dao.upsertAll(toUpsert)
     }
 
     override suspend fun deleteSubscription(subscriptionId: Int) {
@@ -48,6 +62,9 @@ class SubscriptionRepositoryImpl(
 
     override fun getAllSubscriptions(): Flow<List<RecurringItem.Subscription>> {
         return dao.getAll().map { entities -> entities.map { it.toDomain() } }
+    }
+     override fun getAllSubscriptionsByGroupId(groupId: String): Flow<List<RecurringItem.Subscription>> {
+        return dao.getAllByGroupId(groupId).map { entitiy -> entitiy.map{it.toDomain()} }
     }
 
     override fun getSubscriptionsByCardId(cardId: Int): Flow<List<RecurringItem.Subscription>> {
@@ -68,6 +85,10 @@ class SubscriptionRepositoryImpl(
     }
     override suspend fun addCategory(category: Category) {
         categoryDao.insert(category.toEntity())
+    }
+
+    override suspend fun deleteByGroupId(groupId: String) {
+        dao.deleteByGroupId(groupId)
     }
 
 }

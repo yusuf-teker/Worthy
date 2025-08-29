@@ -35,6 +35,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import com.yusufteker.worthy.core.domain.getCurrentDay
+import com.yusufteker.worthy.core.domain.getCurrentMonth
+import com.yusufteker.worthy.core.domain.getCurrentYear
 import com.yusufteker.worthy.core.domain.isLeapYear
 import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.core.presentation.theme.AppColors
@@ -354,9 +357,10 @@ fun WheelDatePickerV2( // TODO MİN GİRİNCE MİNİMİNN ALTINDA GÖZÜKÜYOR A
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
 fun WheelDatePickerV3(
-    selectedYear: Int,
-    selectedMonth : Int,
-    selectedDay :Int,
+    initialDate: AppDate? = null,
+    selectedYear: Int = initialDate?.year?: getCurrentYear(),
+    selectedMonth : Int = initialDate?.month ?: getCurrentMonth(),
+    selectedDay :Int = initialDate?.day ?: getCurrentDay(),
 
     onDateSelected: (AppDate) -> Unit,
     modifier: Modifier = Modifier,
@@ -368,7 +372,8 @@ fun WheelDatePickerV3(
     maxDate: AppDate = AppDate(2100, 12, 31),
     minDate: AppDate = AppDate(1970, 1, 1),
     showDay: Boolean = true,
-    debugTag: String = "WheelDatePicker" // Debug için tag ekledim
+    debugTag: String = "WheelDatePicker", // Debug için tag ekledim,
+    backgroundColor: Color = AppColors.transparent,
 ) {
 
     // Debug için başlangıç değerlerini log'la
@@ -456,7 +461,7 @@ fun WheelDatePickerV3(
                 .border(border, shape = RoundedCornerShape(4.dp))
                 .height(56.dp)
                 .padding(top = 8.dp, start = 8.dp, end = 8.dp, bottom = 4.dp)
-                .background(Color.Transparent),
+                .background(backgroundColor),
             verticalAlignment = Alignment.CenterVertically
         ) {
 
@@ -545,7 +550,7 @@ fun WheelDatePickerV3(
                         fontSize = 12.sp,
                         color = if (errorMessage != null) AppColors.error else AppColors.onSurfaceVariant
                     ),
-                    modifier = Modifier.background(AppColors.background)
+                    modifier = Modifier.background(backgroundColor)
                         .padding(horizontal = 2.dp)
                 )
             }

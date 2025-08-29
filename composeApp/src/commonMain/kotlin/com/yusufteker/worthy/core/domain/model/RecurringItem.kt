@@ -1,6 +1,7 @@
 package com.yusufteker.worthy.core.domain.model
 
 import com.yusufteker.worthy.core.data.database.entities.ExpenseNeedType
+import com.yusufteker.worthy.core.domain.createTimestampId
 import com.yusufteker.worthy.core.domain.getCurrentAppDate
 import com.yusufteker.worthy.core.domain.getCurrentMonth
 import com.yusufteker.worthy.core.domain.getCurrentYear
@@ -58,7 +59,7 @@ sealed class RecurringItem {
     data class Subscription(
         override val id: Int = 0,
         override val name: String,
-        override val groupId: String, // kullanıalcağı zaman createTime uniequ id ile olustur yoksa
+        override val groupId: String = createTimestampId(), // kullanıalcağı zaman createTime uniequ id ile olustur yoksa
         override val amount: Money = emptyMoney(),
         override val isIncome: Boolean = false, // abonelikler genelde gider
         override val startDate: AppDate,
@@ -78,10 +79,11 @@ fun RecurringItem.Subscription.isActive(currentDate: AppDate = getCurrentAppDate
 val emptySubscription = RecurringItem.Subscription(
     name = "",
     icon = "",
+    groupId = createTimestampId(),
     startDate = AppDate(getCurrentYear(),getCurrentMonth()),
     colorHex = null,
     amount = emptyMoney(),
-    groupId = ""
+
 
 )
 
