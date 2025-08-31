@@ -17,3 +17,6 @@ data class Transaction(
     val installmentStartDate: AppDate? = null,
     val note: String? = null
 )
+fun List<Transaction>.distinctCategoryIds(): List<Int> {
+    return this.mapNotNull { it.categoryId }.distinct()
+}

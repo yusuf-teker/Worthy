@@ -407,6 +407,9 @@
     <string name="info_start_end_different">Start and end dates should be different.</string>
 
     <string name="end_date_required_for_past_start">Inactive subscriptions must have an end date</string>
+    <string name="streak_text">🔥 %1$d-Month Streak!</string>
+  <string name="bar_daily_label">Each bar shows the total transactions of one day</string>
+    <string name="bar_weekly_label">Each bar shows the total transactions of one week</string>
 
 
 

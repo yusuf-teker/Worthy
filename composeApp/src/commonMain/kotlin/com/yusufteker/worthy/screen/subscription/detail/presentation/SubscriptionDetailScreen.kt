@@ -1,6 +1,7 @@
 package com.yusufteker.worthy.screen.subscription.detail.presentation
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
@@ -25,8 +26,13 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import com.yusufteker.worthy.core.domain.createTimestampId
 import com.yusufteker.worthy.core.domain.getCurrentAppDate
 import com.yusufteker.worthy.core.domain.getCurrentMonth
@@ -39,20 +45,21 @@ import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.domain.model.format
 import com.yusufteker.worthy.core.domain.model.getLastMonth
 import com.yusufteker.worthy.core.domain.model.isActive
+import com.yusufteker.worthy.core.domain.model.toEpochMillis
+import com.yusufteker.worthy.core.domain.model.toMonthlyData
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.components.AppButton
 import com.yusufteker.worthy.core.presentation.components.MoneyInput
 import com.yusufteker.worthy.core.presentation.components.SwipeToDeleteWrapper
 import com.yusufteker.worthy.core.presentation.components.WheelDatePickerV2
 import com.yusufteker.worthy.core.presentation.components.WheelDatePickerV3
+import com.yusufteker.worthy.core.presentation.getMonthShortName
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppColors.primaryButtonColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
 import com.yusufteker.worthy.core.presentation.util.formatted
-import com.yusufteker.worthy.screen.dashboard.presentation.components.validateAmount
 import com.yusufteker.worthy.screen.subscription.add.presentation.components.toComposeColor
 import com.yusufteker.worthy.screen.subscriptiondetail.presentation.SubscriptionDetailAction
-import com.yusufteker.worthy.screen.subscriptiondetail.presentation.SubscriptionDetailState
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.activate
 import worthy.composeapp.generated.resources.amount_must_be_greater_than_zero
@@ -73,8 +80,10 @@ import worthy.composeapp.generated.resources.start_date
 import worthy.composeapp.generated.resources.start_date_after_end_date
 import worthy.composeapp.generated.resources.start_date_must_be_before
 import worthy.composeapp.generated.resources.start_dates_cannot_be_same
+import worthy.composeapp.generated.resources.streak_text
 import worthy.composeapp.generated.resources.terminate
 import worthy.composeapp.generated.resources.update
+import kotlin.let
 import kotlin.time.ExperimentalTime
 
 @Composable
@@ -173,6 +182,7 @@ fun SubscriptionDetailScreen(
                                 )
                             }
                         }
+
                     }
                 }
 
@@ -209,6 +219,11 @@ fun SubscriptionDetailScreen(
                         modifier = Modifier.padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
+
+                        state.activeStreak?.let {
+                            SubscriptionStreakBadge(it, Modifier.align(Alignment.End))
+                        }
+
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -241,8 +256,12 @@ fun SubscriptionDetailScreen(
                         }
 
 
+
                     }
                 }
+                Spacer(Modifier.height(20.dp))
+
+                MiniSubscriptionChart(state.subscriptions.toMonthlyData())
 
                 Spacer(Modifier.weight(1f))
                 AppButton( // EDIT
@@ -316,6 +335,7 @@ private fun DetailRow(label: String, value: String) {
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
+
         Text(label, style = MaterialTheme.typography.bodyLarge, color = Color.Gray)
         Text(value, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
     }
@@ -392,6 +412,7 @@ fun SubscriptionHistoryEditor(
             }
         }
     }
+
     ModalBottomSheet(onDismissRequest = onDismiss) {
         Column(Modifier.padding(16.dp)) {
             LazyColumn(
@@ -459,7 +480,7 @@ fun SubscriptionHistoryEditor(
 
                                     val tempItems = items.toMutableList()
                                     tempItems.add(newItem)
-                                    errorMessageNew = hasDateConflict(tempItems)?.second
+                                    errorMessageNew = hasDateConflict(tempItems, newItem)?.second
                                     if (errorMessageNew == null) {
                                         onSave(adjustOpenEndedRecurringItems(tempItems))
                                     }
@@ -727,24 +748,26 @@ fun ExistingSubscription(
 }
 
 @OptIn(ExperimentalTime::class)
-fun hasDateConflict(items: List<RecurringItem.Subscription>): Pair<Int, UiText>? {
+fun hasDateConflict(items: List<RecurringItem.Subscription>, newItem: RecurringItem.Subscription? = null): Pair<Int, UiText>? {
     val sorted = items.sortedBy { it.startDate }
     val sortedMaxEnd = items.sortedBy { it.endDate }
+    val lastUpdatedBeforeNew = items.find { it.endDate == null && it.id != newItem?.id }
+    lastUpdatedBeforeNew?.let {
+        newItem?.let {  item ->
+            if (it.startDate >= item.startDate){
+                return Pair(
+                    it.id, UiText.StringResourceId(
+                        id = Res.string.end_date_required_for_past_start,
+                    )
+                )
+            }
 
+        }
+    }
     for (i in 0 until sorted.size - 1) {
         val current = sorted[i]
         val next = sorted[i + 1]
-        // güncel versiyonun başlangıcı eskilerinin en dateinden sonra olmalı
-        if (current.endDate == null) {
-           if ( current.startDate < (sortedMaxEnd.first().endDate ?: AppDate(year = 3000, month = 12))){
-               return Pair(
-                   current.id, UiText.StringResourceId(
-                       id = Res.string.end_date_required_for_past_start,
-                   )
-               )
-           }
 
-        }
 
         val currentStart = current.startDate
         val currentEnd = current.endDate ?: current.startDate
@@ -862,4 +885,137 @@ fun adjustOpenEndedRecurringItems(items: List<RecurringItem.Subscription>): List
         }
     }
 }
+
+@Composable
+fun SubscriptionStreakBadge(
+    activeMonths: Int,
+    modifier: Modifier = Modifier
+) {
+    if (activeMonths > 0) {
+        Surface(
+            color = AppColors.primary.copy(alpha = 0.1f),
+            shape = RoundedCornerShape(50),
+            modifier = modifier.padding(top = 8.dp)
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = UiText.StringResourceId(Res.string.streak_text, arrayOf(activeMonths)).asString(),
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = AppColors.primary
+                )
+            }
+        }
+    }
+}
+
+
+@Composable
+fun MiniSubscriptionChart(
+    data: List<Pair<AppDate, Money>>,
+    modifier: Modifier = Modifier,
+    lineColor: Color = AppColors.primary,
+    height: Dp = 120.dp
+) {
+    if (data.isEmpty()) return
+
+    val sortedData = data.sortedBy { it.first.toEpochMillis() }
+    val minY = sortedData.minOf { it.second.amount.toDouble() }
+    val maxY = sortedData.maxOf { it.second.amount.toDouble() }
+
+    Card(
+
+        modifier = Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(containerColor = AppColors.secondaryContainer),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(modifier = modifier.padding(start = 8.dp,end = 16.dp, top = 16.dp)) {
+            Box(modifier = Modifier.height(height).fillMaxWidth()) {
+                Canvas(modifier = Modifier.fillMaxSize()) {
+                    val widthPx = size.width
+                    val heightPx = size.height
+                    val paddingX = 40f
+                    val paddingY = 20f
+
+                    val chartWidth = widthPx - paddingX
+                    val chartHeight = heightPx - paddingY
+
+                    fun mapX(index: Int): Float {
+                        return paddingX + (chartWidth / (sortedData.size - 1).coerceAtLeast(1)) * index
+                    }
+
+                    fun mapY(amount: Double): Float {
+                        return heightPx - paddingY - ((amount - minY) / (maxY - minY) * chartHeight).toFloat()
+                    }
+
+                    // Kesintisiz çizgiler çiz
+                    var currentPath = Path()
+                    var pathStarted = false
+
+                    sortedData.forEachIndexed { index, (date, money) ->
+                        val x = mapX(index)
+                        val y = mapY(money.amount)
+
+                        // Önceki nokta ile bu nokta arasında kesinti var mı kontrol et
+                        val shouldBreakLine = if (index > 0) {
+                            val previousDate = sortedData[index - 1].first
+                            !isConsecutiveMonth(previousDate, date)
+                        } else false
+
+                        if (shouldBreakLine && pathStarted) {
+                            // Önceki path'i çiz ve yeni path başlat
+                            drawPath(currentPath, color = lineColor, style = Stroke(width = 4f, cap = StrokeCap.Round))
+                            currentPath = Path()
+                            pathStarted = false
+                        }
+
+                        // Path'e nokta ekle
+                        if (!pathStarted) {
+                            currentPath.moveTo(x, y)
+                            pathStarted = true
+                        } else {
+                            currentPath.lineTo(x, y)
+                        }
+                    }
+
+                    // Son path'i çiz
+                    if (pathStarted) {
+                        drawPath(currentPath, color = lineColor, style = Stroke(width = 4f, cap = StrokeCap.Round))
+                    }
+
+                    // Noktalar (tüm noktaları çiz, çizgi olsun olmasın)
+                    sortedData.forEachIndexed { index, (_, money) ->
+                        val x = mapX(index)
+                        val y = mapY(money.amount)
+                        drawCircle(color = lineColor, radius = 4f, center = androidx.compose.ui.geometry.Offset(x, y))
+                    }
+                }
+            }
+
+            // X ekseni etiketleri
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                sortedData.forEach { (date, _) ->
+                    Text(getMonthShortName(date.month), fontSize = MaterialTheme.typography.bodySmall.fontSize)
+                }
+            }
+        }
+    }
+
+}
+
+/**
+ * İki AppDate'in ardışık aylar olup olmadığını kontrol eder
+ */
+private fun isConsecutiveMonth(date1: AppDate, date2: AppDate): Boolean {
+    val nextMonth = date1.nextMonth()
+    return nextMonth.year == date2.year && nextMonth.month == date2.month
+}
+
+
+
+
 

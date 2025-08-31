@@ -60,7 +60,7 @@ fun SubscriptionItem(
             ),
         ) {
             Row(
-                modifier = Modifier.padding(12.dp),
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 24.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(

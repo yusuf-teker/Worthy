@@ -1,15 +1,19 @@
 package com.yusufteker.worthy.core.data.database.mappers
 
+import androidx.compose.material3.HorizontalDivider
 import com.yusufteker.worthy.screen.card.data.database.entities.CardEntity
 import com.yusufteker.worthy.core.data.database.entities.CategoryEntity
 import com.yusufteker.worthy.core.data.database.entities.RecurringFinancialItemEntity
 import com.yusufteker.worthy.core.data.database.entities.TransactionEntity
+import com.yusufteker.worthy.core.domain.getCurrentAppDate
 import com.yusufteker.worthy.core.domain.getCurrentEpochMillis
+import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.screen.card.domain.model.Card
 import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.RecurringItem
 import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.TransactionType
+import com.yusufteker.worthy.core.domain.model.toEpochMillis
 import com.yusufteker.worthy.screen.subscription.data.database.entities.SubscriptionEntity
 import com.yusufteker.worthy.screen.wishlist.list.data.database.entities.WishlistItemEntity
 import com.yusufteker.worthy.screen.wishlist.list.data.database.relation.WishlistWithCategory
@@ -221,3 +225,53 @@ fun RecurringItem.Subscription.toEntity(): SubscriptionEntity = SubscriptionEnti
     scheduledDay = this.scheduledDay,
     cardId = this.cardId
 )
+
+fun RecurringItem.Subscription.toTransactions(): List<Transaction> {
+    val transactions = mutableListOf<Transaction>()
+
+    val start = this.startDate
+    val end = this.endDate ?: getCurrentAppDate(day = 1) // endDate null ise bugünü kullan
+
+    var currentYear = start.year
+    var currentMonth = start.month
+
+    while (currentYear < end.year || (currentYear == end.year && currentMonth <= end.month)) {
+        val transactionDate = AppDate(
+            year = currentYear,
+            month = currentMonth,
+            day = this.scheduledDay ?: start.day
+        )
+
+        transactions.add(
+            Transaction(
+                id ="${this.id}-${currentYear}-${currentMonth}".hashCode(),
+                name = this.name,
+                amount = this.amount,
+                transactionType = if (this.isIncome) TransactionType.INCOME else TransactionType.EXPENSE,
+                categoryId = this.category?.id,
+                cardId = this.cardId,
+                transactionDate = transactionDate.toEpochMillis(),
+                relatedTransactionId = null,
+                installmentCount = null,
+                installmentStartDate = null,
+                note = null
+            )
+        )
+
+        // sonraki aya geç
+        if (currentMonth == 12) {
+            currentMonth = 1
+            currentYear++
+        } else {
+            currentMonth++
+        }
+    }
+
+    return transactions
+}
+
+// Listeyi çevirmek için
+fun List<RecurringItem.Subscription>.toTransactions(): List<Transaction> {
+    return this.flatMap { it.toTransactions() }
+}
+

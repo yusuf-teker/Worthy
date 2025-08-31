@@ -171,3 +171,16 @@ val items2 = listOf(
     )
 )
 
+fun List<RecurringItem.Subscription>.toMonthlyData(): List<Pair<AppDate, Money>> {
+    val result = mutableListOf<Pair<AppDate, Money>>()
+    forEach { sub ->
+        val start = sub.startDate
+        val end = sub.endDate ?: getCurrentAppDate()
+        var current = start
+        while (current <= end) {
+            result.add(current to sub.amount)
+            current = current.nextMonth()
+        }
+    }
+    return result
+}

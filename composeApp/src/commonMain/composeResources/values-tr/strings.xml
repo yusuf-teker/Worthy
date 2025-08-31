@@ -400,6 +400,9 @@
     <string name="card_id">Bağlı Kart ID</string>
     <string name="info_start_end_different">Başlangıç ve bitiş tarihi farklı olmalı.</string>
     <string name="end_date_required_for_past_start">Güncel olmayan aboneliklerin bitiş tarihi boş olamaz</string>
+    <string name="streak_text">🔥 %1$d aylık seri!</string>
+    <string name="bar_daily_label">Her bar 1 günlük işlemler toplamını gösterir</string>
+    <string name="bar_weekly_label">Her bar 1 haftalık işlemler toplamını gösterir</string>
 
 
 </resources>

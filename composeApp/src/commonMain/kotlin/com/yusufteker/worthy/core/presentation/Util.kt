@@ -1,6 +1,7 @@
 package com.yusufteker.worthy.core.presentation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.text.intl.Locale
 import com.yusufteker.worthy.core.domain.model.AppDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.number
@@ -128,7 +129,11 @@ fun getMonthShortName(month: Int): String {
     return getMonthName(month).asString().take(3)
 }
 
-fun getMonthShortNameByLocale(month: Int, isTurkish: Boolean = true): String {
+fun getMonthShortNameByLocale(month: Int): String {
+
+    val locale = Locale.current
+    val isTurkish = locale.language.lowercase() == "tr"
+
     val trShort = listOf("Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara")
     val enShort = listOf("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec")
 

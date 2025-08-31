@@ -3,14 +3,21 @@ package com.yusufteker.worthy.screen.analytics.presentation
 import androidx.lifecycle.viewModelScope
 import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.domain.getCurrentEpochMillis
+import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.Currency
+import com.yusufteker.worthy.core.domain.model.Transaction
+import com.yusufteker.worthy.core.domain.model.distinctCategoryIds
 import com.yusufteker.worthy.core.domain.service.CurrencyConverter
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import com.yusufteker.worthy.screen.analytics.domain.repository.AnalyticsRepository
 import com.yusufteker.worthy.screen.analytics.domain.model.TimePeriod
+import com.yusufteker.worthy.screen.card.domain.model.Card
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.map
 
 class AnalyticsViewModel(
     private val analyticsRepository: AnalyticsRepository,
@@ -21,10 +28,17 @@ class AnalyticsViewModel(
         launchWithLoading {
             combine(
                 analyticsRepository.getTransactions(),
-                analyticsRepository.getCategories(),
                 analyticsRepository.getCards(),
                 analyticsRepository.getUserPrefCurrency()
-            ) { transactions, categories, cards, currency ->
+            ) { transactions, cards, currency ->
+
+                val distinctCategoryIds = transactions.distinctCategoryIds()
+
+                // repository’den tüm kategorileri alıp filtrele
+                val categories = analyticsRepository.getCategories()
+                    .first() // Flow ise ilk değeri almak için
+                    .filter { it.id in distinctCategoryIds }
+
                 _state.update {
                     it.copy(
                         transactions = transactions,
@@ -44,6 +58,8 @@ class AnalyticsViewModel(
                         state.value.selectedCurrency
                     )
                 }
+
+                applyFilters()
             }.launchIn(viewModelScope)
         }
 
@@ -52,6 +68,28 @@ class AnalyticsViewModel(
     init {
         observeData()
     }
+    private fun applyFilters() {
+        val s = state.value
+        val currentTime = getCurrentEpochMillis()
+
+        val filtered = s.transactions
+            .filter { tx ->
+                if (s.selectedTimePeriod == TimePeriod.NONE) true
+                else tx.transactionDate >= currentTime - (s.selectedTimePeriod.days * 24L * 60L * 60L * 1000L)
+            }
+            .filter { tx ->
+                if (s.selectedCategories.isEmpty()) true
+                else tx.categoryId in s.selectedCategories.map { it.id }
+            }
+            .filter { tx ->
+                if (s.selectedCards.isEmpty()) true
+                else tx.cardId in s.selectedCards.map { it.id }
+            }
+
+        _state.update { it.copy(filteredTransactions = filtered) }
+    }
+
+
 
     fun onAction(action: AnalyticsAction) {
         when (action) {
@@ -75,6 +113,8 @@ class AnalyticsViewModel(
                         selectedCards = if (action.isSelected) it.selectedCards + action.card else it.selectedCards - action.card
                     )
                 }
+                applyFilters()
+
             }
 
             is AnalyticsAction.OnCategorySelected -> {
@@ -83,6 +123,7 @@ class AnalyticsViewModel(
                         selectedCategories = if (action.isSelected) it.selectedCategories + action.category else it.selectedCategories - action.category
                     )
                 }
+                applyFilters()
             }
 
             is AnalyticsAction.OnItemDelete -> {
@@ -111,12 +152,7 @@ class AnalyticsViewModel(
                         selectedTimePeriod = action.period,
                     )
                 }
-                launchWithLoading {
-                    filterTransactionsWithCurrencyConverter(
-                        currencyConverter,
-                        state.value.selectedCurrency
-                    )
-                }
+                applyFilters()
 
             }
 
@@ -138,26 +174,21 @@ class AnalyticsViewModel(
         currencyConverter: CurrencyConverter,
         targetCurrency: Currency
     ) {
-        val currentTime = getCurrentEpochMillis()
-        val periodStart =
-            currentTime - (state.value.selectedTimePeriod.days.toDouble() * 24 * 60 * 60 * 1000)
 
-        val filtered = if (state.value.selectedTimePeriod == TimePeriod.NONE) {
-            state.value.transactions
-        } else {
-            state.value.transactions.filter { it.transactionDate >= periodStart }
-        }
-
-        val convertedTransactions = filtered.map { tx ->
+        val convertedTransactions = state.value.transactions.map { tx ->
             tx.copy(
                 amount = currencyConverter.convert(tx.amount, targetCurrency)
             )
         }
 
         _state.update {
-            it.copy(filteredTransactions = convertedTransactions)
+            it.copy(transactions = convertedTransactions)
         }
+
     }
+
+
+
 
     suspend fun calculateMonthlyComparisonTransactions(
         currencyConverter: CurrencyConverter,

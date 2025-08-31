@@ -92,17 +92,45 @@ fun TransactionFilter(
         Spacer(modifier = Modifier.height(16.dp))
 
         // Kategori filtreleme
+        // TransactionFilter içindeki kategori kısmını şu şekilde değiştir:
+
+// Kategori filtreleme
         ExpandableFilterSection(
             title = "Kategori",
             isExpanded = isCategoryExpanded,
             onToggleExpanded = { isCategoryExpanded = !isCategoryExpanded }
         ) {
 
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = 100.dp), // minimum genişlik 100dp
-                modifier = Modifier.padding(8.dp),
-                contentPadding = PaddingValues(8.dp)
+            // "Hiçbiri" seçeneği
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .toggleable(
+                        value = selectedCategories.isEmpty(),
+                        onValueChange = {
+                            if (!selectedCategories.isEmpty()) {
+                                // boşalt
+                                selectedCategories.forEach { cat -> onCategorySelected(cat, false) }
+                            }
+                        }
+                    )
+                    .padding(vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Checkbox(checked = selectedCategories.isEmpty(), onCheckedChange = null)
+                Spacer(Modifier.width(8.dp))
+                Text(text = "Hiçbiri")
+            }
 
+            Spacer(Modifier.height(4.dp))
+
+            // kategori listesi
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = 120.dp), // daha düzenli görünmesi için 120
+                modifier = Modifier.padding(8.dp),
+                contentPadding = PaddingValues(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 items(categories) { category ->
                     val checked = selectedCategories.contains(category)
@@ -118,11 +146,15 @@ fun TransactionFilter(
                     ) {
                         Checkbox(checked = checked, onCheckedChange = null)
                         Spacer(Modifier.width(8.dp))
-                        Text(text = category.getNameResource())
+                        Text(
+                            text = category.getNameResource(),
+                            style = AppTypography.bodyMedium
+                        )
                     }
                 }
             }
         }
+
         Spacer(modifier = Modifier.height(8.dp))
 
         // Kart filtreleme

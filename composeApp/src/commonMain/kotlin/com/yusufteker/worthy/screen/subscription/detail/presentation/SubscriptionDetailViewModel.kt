@@ -1,11 +1,15 @@
 package com.yusufteker.worthy.screen.subscription.detail.presentation
 
 import androidx.lifecycle.viewModelScope
+import com.yusufteker.worthy.core.data.database.mappers.toTransactions
 import com.yusufteker.worthy.core.domain.getCurrentAppDate
+import com.yusufteker.worthy.core.domain.model.AppDate
+import com.yusufteker.worthy.core.domain.model.RecurringItem
+import com.yusufteker.worthy.core.domain.model.isActive
+import com.yusufteker.worthy.core.domain.model.monthsBetween
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import com.yusufteker.worthy.screen.subscription.domain.repository.SubscriptionRepository
 import com.yusufteker.worthy.screen.subscriptiondetail.presentation.SubscriptionDetailAction
-import com.yusufteker.worthy.screen.subscriptiondetail.presentation.SubscriptionDetailState
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -25,10 +29,80 @@ class SubscriptionDetailViewModel(
                         subscriptions = subscriptions
                     ) }
 
+                    state.value.subscription?.let {
+                        if (it.isActive()){
+                            setState { copy(
+                                activeStreak = calculateSubscriptionStreak(subscriptions)
+
+                            ) }
+                        }
+                    }
+
             }.launchIn(viewModelScope)
         }
 
     }
+
+
+    fun calculateSubscriptionStreak(subscriptions: List<RecurringItem.Subscription>): Int {
+        if (subscriptions.isEmpty()) return 0
+
+        // Abonelikleri başlangıç tarihine göre sırala (en yeniden eskiye)
+        val sortedSubscriptions = subscriptions.sortedByDescending { it.startDate }
+
+        var totalStreakMonths = 0
+        val currentDate = getCurrentAppDate() // Şu anki tarihi al
+
+        // En son aktif aboneliği bul
+        val latestSubscription = sortedSubscriptions.firstOrNull { subscription ->
+            subscription.endDate == null || subscription.endDate!! >= currentDate
+        }
+
+        if (latestSubscription == null) {
+            // Aktif abonelik yok, streak 0
+            return 0
+        }
+
+        // Son aktif aboneliğin end date'ini belirle
+        val latestEndDate = latestSubscription.endDate ?: currentDate
+
+        // Geriye doğru kesintisiz streak hesapla
+        var checkDate = latestEndDate
+
+        for (subscription in sortedSubscriptions) {
+            val subEndDate = subscription.endDate ?: currentDate
+            val subStartDate = subscription.startDate
+
+            // Bu abonelik check date ile kesintisiz bağlantılı mı?
+            if (isMonthContinuous(subEndDate, checkDate)) {
+                // Bu aboneliğin ay sayısını hesapla
+                val monthsInSubscription = monthsBetween(subStartDate, subEndDate)
+                totalStreakMonths += monthsInSubscription
+
+                // Bir sonraki kontrol için check date'i güncelle
+                checkDate = subStartDate
+            } else {
+                // Kesinti var, streak burada bitiyor
+                break
+            }
+        }
+
+        return totalStreakMonths
+    }
+
+
+    private fun isMonthContinuous(endDate: AppDate, checkDate: AppDate): Boolean {
+        // Aynı ay/yıl ise kesintisiz
+        if (endDate.year == checkDate.year && endDate.month == checkDate.month) {
+            return true
+        }
+
+        // End date'in bir sonraki ayı check date ile aynı mı?
+        val nextMonth = endDate.nextMonth()
+        return nextMonth.year == checkDate.year && nextMonth.month == checkDate.month
+    }
+
+
 
     fun onAction(action: SubscriptionDetailAction) {
         when (action) {

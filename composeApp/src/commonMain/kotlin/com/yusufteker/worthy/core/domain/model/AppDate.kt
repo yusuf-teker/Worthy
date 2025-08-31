@@ -76,3 +76,6 @@ fun AppDate.format(showDay: Boolean = true): String {
 }
 
 
+fun monthsBetween(start: AppDate, end: AppDate): Int {
+    return (end.year - start.year) * 12 + (end.month - start.month)
+}

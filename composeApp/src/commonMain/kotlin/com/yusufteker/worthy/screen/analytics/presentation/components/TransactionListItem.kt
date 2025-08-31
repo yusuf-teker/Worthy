@@ -16,6 +16,7 @@ import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.TransactionType
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
+import com.yusufteker.worthy.core.presentation.util.formatMoneyText
 import kotlinx.datetime.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.time.ExperimentalTime
@@ -77,7 +78,7 @@ fun TransactionListItem(
             Spacer(modifier = Modifier.width(8.dp))
 
             Text(
-                text = "${if (transaction.transactionType == TransactionType.EXPENSE) "-" else "+"} ${transaction.amount.amount} ${transaction.amount.currency.symbol}",
+                text = "${if (transaction.transactionType == TransactionType.EXPENSE) "-" else "+"} ${transaction.amount.amount.formatMoneyText()} ${transaction.amount.currency.symbol}",
                 color = amountColor,
                 fontSize = 16.sp,
                 style = AppTypography.titleMedium

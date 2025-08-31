@@ -138,7 +138,6 @@ fun LineChart(
         val displayDays = maxOf(dailyData.size, minDays)
         val dataWidth = displayDays * baseWidthPerDay
         val canvasWidth = maxOf(screenWidth, dataWidth)
-        val language = Locale.current.language
 
 
         if (dailyData.isNotEmpty()) {
@@ -250,7 +249,7 @@ fun LineChart(
 
                         val appDate = dailyData[index].first.toAppDate()
                         val dayText = appDate.day.toString() + getMonthShortNameByLocale(
-                            appDate.month, language.lowercase() == "tr"
+                            appDate.month
                         )
 
                         val dayTextLayoutResult = textMeasurer.measure(dayText, textStyle)

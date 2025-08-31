@@ -27,10 +27,15 @@ import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.TransactionType
 import com.yusufteker.worthy.core.domain.model.toAppDate
 import com.yusufteker.worthy.core.domain.toEpochMillis
+import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.getMonthShortNameByLocale
+import com.yusufteker.worthy.core.presentation.theme.AppTypography
 import com.yusufteker.worthy.core.presentation.util.formatMoneyText
 import com.yusufteker.worthy.screen.analytics.domain.model.TimePeriod
 import kotlinx.datetime.*
+import worthy.composeapp.generated.resources.Res
+import worthy.composeapp.generated.resources.bar_daily_label
+import worthy.composeapp.generated.resources.bar_weekly_label
 import kotlin.time.ExperimentalTime
 
 data class BarRect(val xStart: Float, val xEnd: Float, val yTop: Float, val yBottom: Float)
@@ -88,8 +93,8 @@ fun BarChart(transactions: List<Transaction>, selectedPeriod: TimePeriod) {
         }
     }
 
-    // Minimum 7 slot
-    val minSlots = 7
+    // Minimum 4 slot
+    val minSlots = 4
     val totalSlots = maxOf(minSlots, groupedData.size)
 
     val filledData = buildList {
@@ -108,8 +113,9 @@ fun BarChart(transactions: List<Transaction>, selectedPeriod: TimePeriod) {
 
             // Bar açıklama
             Text(
-                text = if (timeLap == TimeLap.DAY) "Her bar 1 günlük işlemler toplamını gösterir" else "Her bar 1 haftalık işlemler toplamını gösterir",
-                modifier = Modifier.widthIn(max = 240.dp)
+                text = if (timeLap == TimeLap.DAY) UiText.StringResourceId(Res.string.bar_daily_label).asString() else UiText.StringResourceId(Res.string.bar_weekly_label).asString(),
+                modifier = Modifier.widthIn(max = 240.dp),
+                style = AppTypography.bodySmall
             )
 
             Canvas(
@@ -144,7 +150,13 @@ fun BarChart(transactions: List<Transaction>, selectedPeriod: TimePeriod) {
 
                 // Barlar
                 filledData.forEachIndexed { index, entry ->
-                    val x = index * (size.width / totalSlots) + barWidth / 2
+                    //val x = index * (size.width / totalSlots) + barWidth / 2
+                    val horizontalPadding = 16.dp.toPx() // Canvas padding
+                    val availableWidth = size.width - 2 * horizontalPadding
+                    val barSpacing = availableWidth / totalSlots
+
+                    val x = horizontalPadding + index * barSpacing + barWidth / 2
+                    //----------------------- üstteki 4 satır
                     val incomeHeight =
                         (entry.second.first / maxValue * size.height * 0.7f * animationProgress).toFloat()
                     val expenseHeight =
@@ -208,13 +220,10 @@ fun Long.toLocalDateLabel(timeLap: TimeLap): String {
     val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
     val date = localDateTime.date
     val appDate = this.toAppDate()
-    val locale = Locale.current
     return when (timeLap) {
         TimeLap.DAY -> "${appDate.day} ${
             getMonthShortNameByLocale(
-                appDate.month,
-                locale.language.lowercase() == "tr"
-            )
+                appDate.month,)
         }"
 
         TimeLap.WEEK -> {
@@ -223,7 +232,6 @@ fun Long.toLocalDateLabel(timeLap: TimeLap): String {
             "${startOfWeek.day}–${endOfWeek.day} ${
                 getMonthShortNameByLocale(
                     appDate.month,
-                    locale.language.lowercase() == "tr"
                 )
             }"
         }

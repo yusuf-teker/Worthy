@@ -166,9 +166,8 @@ fun getLast6MonthsComparison(transactions: List<Transaction>): List<Triple<Strin
             .filter { it.transactionType == TransactionType.EXPENSE }
             .sumOf { it.amount.amount }
 
-        val locale = Locale.current
         val monthName =
-            getMonthShortNameByLocale(targetMonth.month.number, locale.language.lowercase() == "tr")
+            getMonthShortNameByLocale(targetMonth.month.number)
         result.add(0, Triple(monthName, income, expense))
     }
 
