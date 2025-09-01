@@ -1,36 +1,28 @@
 package com.yusufteker.worthy.core.media
 
 import android.Manifest
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Color
-import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.yalantis.ucrop.UCrop
-import com.yalantis.ucrop.UCropActivity
-import com.yusufteker.worthy.R
 import io.github.aakira.napier.Napier
 import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
-import androidx.core.graphics.toColorInt
-import com.yusufteker.worthy.core.presentation.UiText
-import org.jetbrains.compose.resources.getString
-import org.jetbrains.compose.resources.stringResource
 
+import java.io.IOException
 @Composable
 actual fun rememberImagePicker(): ImagePicker {
     val context = LocalContext.current
@@ -40,7 +32,7 @@ actual fun rememberImagePicker(): ImagePicker {
         contract = ActivityResultContracts.PickVisualMedia()
     ) { uri: Uri? ->
         val bitmap = uri?.let { loadImageFromUri(context, it) }
-        bitmap?.let { galleryCallback?.invoke(PlatformImage(bitmap)) }
+        galleryCallback?.invoke(PlatformImage(bitmap!!))
         galleryCallback = null
     }
 
@@ -52,7 +44,7 @@ actual fun rememberImagePicker(): ImagePicker {
         val bitmap = if (success) {
             currentPhotoUri?.let { loadImageFromUri(context, it) }
         } else null
-        bitmap?.let {         cameraCallback?.invoke(PlatformImage(bitmap)) }
+        cameraCallback?.invoke(PlatformImage(bitmap!!))
         cameraCallback = null
     }
 
@@ -66,7 +58,7 @@ actual fun rememberImagePicker(): ImagePicker {
             val uri = UCrop.getOutput(result.data!!)
             val bitmap = uri?.let { loadImageFromUri(context, it) }
             //callback imagepicker da cropImage çalıştığında  tanımlanıyor
-            bitmap?.let { cropCallback?.invoke(PlatformImage(bitmap)) }
+            cropCallback?.invoke(PlatformImage(bitmap!!))
         } else {
             cropCallback?.invoke(null)
         }
@@ -97,7 +89,7 @@ actual suspend fun loadImageBitmapFromPath(path: String): ImageBitmap? {
         val file = File(path)
         val bitmap = BitmapFactory.decodeFile(file.absolutePath)
         bitmap?.asImageBitmap()
-    } catch (_: Exception) {
+    } catch (e: Exception) {
         null
     }
 }
@@ -127,7 +119,8 @@ class AndroidImagePicker(
 
         // PickVisualMedia kullan - izin gerekmez
         val request = PickVisualMediaRequest.Builder()
-            .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly).build()
+            .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly)
+            .build()
 
         visualMediaLauncher.launch(request)
     }
@@ -174,35 +167,7 @@ class AndroidImagePicker(
         }
     }
 
-
-    val options = UCrop.Options().apply {
-        setToolbarTitle(context.getString(R.string.crop_toolbar_title))
-        setToolbarWidgetColor(Color.WHITE)
-        setToolbarColor(Color.BLACK)
-
-        setStatusBarColor(Color.BLACK)
-        setRootViewBackgroundColor(Color.BLACK)
-
-        setStatusBarColor(Color.BLACK)
-        setToolbarColor(Color.BLACK)
-
-        setShowCropFrame(true)
-        setShowCropGrid(true)
-
-        setToolbarCropDrawable(R.drawable.done)
-
-
-        setCompressionFormat(Bitmap.CompressFormat.JPEG)
-        setCompressionQuality(90)
-        setRootViewBackgroundColor(Color.BLACK)
-
-        setActiveControlsWidgetColor(Color.WHITE)
-        setDimmedLayerColor("#99000000".toColorInt())
-    }
-
-    override fun cropImage(
-        image: PlatformImage, aspectRatio: AspectRatio, onCropped: (PlatformImage?) -> Unit
-    ) {
+    override fun cropImage(image: PlatformImage, aspectRatio: Float, onCropped: (PlatformImage?) -> Unit) {
         cropCallback = onCropped // önce call back setliyoruz.
 
         // ImageBitmap → Bitmap → File
@@ -215,14 +180,15 @@ class AndroidImagePicker(
         }
 
         val inputUri = FileProvider.getUriForFile(
-            context, "${context.packageName}.provider", inputFile
+            context,
+            "${context.packageName}.provider",
+            inputFile
         )
         val outputUri = Uri.fromFile(outputFile)
 
         val uCrop = UCrop.of(inputUri, outputUri)
-            .withAspectRatio(aspectRatio.widthRatio, aspectRatio.heightRatio)
+            .withAspectRatio(aspectRatio, 1f)
             .withMaxResultSize(1080, 1080)
-            .withOptions(options)
 
         // Ucrop başlıyor arka planda uCropActivity açılıyor
         // Sonuc cropLauncher'da yakalanıyor //cropLauncher tanımlandıgı yerde
@@ -232,26 +198,24 @@ class AndroidImagePicker(
 
     private fun hasCameraPermission(): Boolean {
         return ContextCompat.checkSelfPermission(
-            context, Manifest.permission.CAMERA
+            context,
+            Manifest.permission.CAMERA
         ) == PackageManager.PERMISSION_GRANTED
     }
 
     private fun createImageUri(): Uri {
         val imageFile = File(
-            context.filesDir, "camera_image_${System.currentTimeMillis()}.jpg"
+            context.filesDir,
+            "camera_image_${System.currentTimeMillis()}.jpg"
         )
 
         return FileProvider.getUriForFile(
-            context, "${context.packageName}.provider", imageFile
+            context,
+            "${context.packageName}.provider",
+            imageFile
         )
     }
 
-    override fun cancelPendingCallbacks() {
-        galleryCallback = null
-        cameraCallback = null
-        cropCallback = null
-        permissionCallback = null
-    }
 
 }
 

@@ -1,3 +1,4 @@
+
 package com.yusufteker.worthy.core.media
 
 import androidx.compose.runtime.Composable
@@ -64,8 +65,9 @@ actual suspend fun loadImageBitmapFromPath(path: String): ImageBitmap? {
         // NSData oluştur
         val nsData = NSData.dataWithContentsOfFile(currentPath) ?: return null
 
+        // ImageBitmap'e çevir
         val byteArray = nsData.toByteArray()
-        val skiaImage = Image.makeFromEncoded(byteArray)
+        val skiaImage = org.jetbrains.skia.Image.makeFromEncoded(byteArray) ?: return null
         val imageBitmap = skiaImage.toComposeImageBitmap()
 
         Napier.d("Image loaded successfully: ${imageBitmap.width}x${imageBitmap.height}")
@@ -83,22 +85,23 @@ class IOSImagePicker : ImagePicker {
     private var cropDelegate: CropViewControllerDelegate? = null
 
     @OptIn(ExperimentalForeignApi::class)
-    private fun presentCropViewController(image: UIImage, aspectRatio: AspectRatio, finalCallback: (PlatformImage?) -> Unit) {
+    private fun presentCropViewController(image: UIImage, aspectRatio: Float, finalCallback: (PlatformImage?) -> Unit) {
 
         NSOperationQueue.mainQueue.addOperationWithBlock {
             try {
                 val cropViewController = TOCropViewController(image)
 
+                // Aspect ratio ayarı: TOCropViewController presetleri sınırlı, float oranına göre en yakın preset seçiyoruz
                 cropViewController.aspectRatioLockEnabled = true
                 cropViewController.aspectRatioPickerButtonHidden = true
                 cropViewController.resetButtonHidden = true
                 cropViewController.rotateButtonsHidden = false
 
                 cropViewController.aspectRatioPreset = when {
-                    aspectRatio == AspectRatio.SQUARE -> TOCropViewControllerAspectRatioPreset.TOCropViewControllerAspectRatioPresetSquare
-                    aspectRatio > AspectRatio.RATIO_16x9 -> TOCropViewControllerAspectRatioPreset.TOCropViewControllerAspectRatioPreset16x9
-                    aspectRatio > AspectRatio.RATIO_4x3 -> TOCropViewControllerAspectRatioPreset.TOCropViewControllerAspectRatioPreset4x3
-                    aspectRatio > AspectRatio.RATIO_3x2 -> TOCropViewControllerAspectRatioPreset.TOCropViewControllerAspectRatioPreset3x2
+                    aspectRatio == 1f -> TOCropViewControllerAspectRatioPreset.TOCropViewControllerAspectRatioPresetSquare
+                    aspectRatio > 1.7f -> TOCropViewControllerAspectRatioPreset.TOCropViewControllerAspectRatioPreset16x9
+                    aspectRatio > 1.3f -> TOCropViewControllerAspectRatioPreset.TOCropViewControllerAspectRatioPreset4x3
+                    aspectRatio > 1.1f -> TOCropViewControllerAspectRatioPreset.TOCropViewControllerAspectRatioPreset3x2
                     else -> TOCropViewControllerAspectRatioPreset.TOCropViewControllerAspectRatioPresetOriginal
                 }
 
@@ -163,19 +166,27 @@ class IOSImagePicker : ImagePicker {
 
     override fun cropImage(
         image: PlatformImage,
-        aspectRatio: AspectRatio,
+        aspectRatio: Float,
         onCropped: (PlatformImage?) -> Unit
     ) {
+        // Basit çözüm: Sadece TOCropViewController kullan
         val uiImage = image.uiImage
+        if (uiImage == null) {
+            onCropped(null)
+            return
+        }
         presentCropViewController(uiImage, aspectRatio, onCropped)
     }
 
     internal fun handleGalleryImage(image: UIImage) {
+        // Optimized conversion kullan
+        //val bitmap = image.toImageBitmap()
         mainGalleryCallback?.invoke(PlatformImage(image))
         mainGalleryCallback = null
     }
 
     internal fun handleCameraImage(image: UIImage) {
+        //val bitmap = image.toImageBitmap()
         mainCameraCallback?.invoke(PlatformImage(image))
         mainCameraCallback = null
     }
@@ -198,14 +209,6 @@ class IOSImagePicker : ImagePicker {
         }
 
         return topViewController
-    }
-
-    override fun cancelPendingCallbacks() {
-        handleGalleryCancel()
-        handleCameraCancel()
-
-        //cropCallback = null
-        //permissionCallback = null
     }
 }
 
@@ -246,7 +249,7 @@ class CameraPickerDelegate(
         picker: UIImagePickerController,
         didFinishPickingMediaWithInfo: Map<Any?, *>
     ) {
-       // NSOperationQueue.mainQueue.addOperationWithBlock {
+        NSOperationQueue.mainQueue.addOperationWithBlock {
             val image = didFinishPickingMediaWithInfo[UIImagePickerControllerOriginalImage] as? UIImage
             if (image == null) {
                 picker.dismissViewControllerAnimated(true) {
@@ -257,7 +260,7 @@ class CameraPickerDelegate(
                     imagePicker.handleCameraImage(image)
                 }
             }
-      //  }
+        }
     }
 
     override fun imagePickerControllerDidCancel(picker: UIImagePickerController) {
@@ -278,6 +281,8 @@ class CropViewControllerDelegate(
         withRect: CValue<CGRect>,
         angle: Long
     ) {
+        // Optimized conversion kullan
+        //val bitmap = didCropToImage.toImageBitmapOptimized() ?: didCropToImage.toImageBitmap()
         cropViewController.dismissViewControllerAnimated(true) {
             onResult(PlatformImage(didCropToImage))
         }
@@ -293,6 +298,7 @@ class CropViewControllerDelegate(
     }
 }
 
+// Extension functions for conversion
 @OptIn(ExperimentalForeignApi::class)
 fun UIImage.toImageBitmap(): ImageBitmap? {
     return try {
@@ -307,11 +313,29 @@ fun UIImage.toImageBitmap(): ImageBitmap? {
     }
 }
 
+@OptIn(ExperimentalForeignApi::class)
+fun ImageBitmap.toUIImage(): UIImage? {
+    return try {
+        val skiaImage = Image.makeFromBitmap(this.asSkiaBitmap())
+        val encodedData = skiaImage.encodeToData(org.jetbrains.skia.EncodedImageFormat.PNG)
+            ?: return null
+
+        val byteArray = encodedData.bytes
+
+        val nsData = byteArray.usePinned { pinned ->
+            NSData.create(bytes = pinned.addressOf(0), length = byteArray.size.toULong())
+        }
+
+        UIImage.imageWithData(nsData)
+    } catch (e: Exception) {
+        null
+    }
+}
 
 actual class PlatformImage(val uiImage: UIImage)
 
 actual fun PlatformImage.toImageBitmap(): ImageBitmap {
     Napier.d("Converting UIImage to ImageBitmap")
     // UIKit UIImage -> Compose ImageBitmap dönüşümü için
-    return uiImage.toImageBitmap()!!
+    return uiImage.toImageBitmap()!! // Burada iOS için extension yazman gerekebilir
 }

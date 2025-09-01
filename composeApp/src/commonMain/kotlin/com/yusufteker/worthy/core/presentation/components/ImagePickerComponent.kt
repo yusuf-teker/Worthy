@@ -3,32 +3,14 @@ package com.yusufteker.worthy.core.presentation.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,7 +19,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.yusufteker.worthy.core.media.AspectRatio
 import com.yusufteker.worthy.core.media.PlatformImage
 import com.yusufteker.worthy.core.media.rememberImagePicker
 import com.yusufteker.worthy.core.media.rememberPermissionChecker
@@ -65,7 +46,7 @@ fun ImagePickerComponent(
     modifier: Modifier = Modifier,
     imageSize: Dp = 200.dp,
     enabled: Boolean = true,
-    cropAspectRatio: AspectRatio = AspectRatio.SQUARE
+    cropAspectRatio: Float? = 1f
 
 ) {
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -75,11 +56,7 @@ fun ImagePickerComponent(
 
     val permissionChecker = rememberPermissionChecker()
 
-    LaunchedEffect(showBottomSheet) {
-        if (!showBottomSheet) {
-            imagePicker.cancelPendingCallbacks()
-        }
-    }
+
 
     Box(
         modifier = modifier
@@ -88,7 +65,7 @@ fun ImagePickerComponent(
             .border(
                 width = 2.dp,
                 color = if (selectedImage != null) Color.Transparent
-                else AppColors.outline,
+                else  AppColors.outline,
                 shape = RoundedCornerShape(12.dp)
             )
             .clickable(enabled = enabled) {
@@ -99,8 +76,7 @@ fun ImagePickerComponent(
         if (selectedImage != null) {
             Image(
                 bitmap = selectedImage.toImageBitmap(),
-                contentDescription = UiText.StringResourceId(Res.string.image_picker_selected_image_desc)
-                    .asString(),
+                contentDescription = UiText.StringResourceId(Res.string.image_picker_selected_image_desc).asString(),
                 modifier = Modifier.fillMaxSize().aspectRatio(1f),
                 contentScale = ContentScale.Crop,
 
@@ -115,14 +91,14 @@ fun ImagePickerComponent(
                     contentDescription = null,
                     modifier = Modifier.size(48.dp),
                     tint = if (enabled) AppColors.outline
-                    else AppColors.outline.copy(alpha = 0.5f)
+                    else  AppColors.outline.copy(alpha = 0.5f)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = placeholder.asString(),
                     style = AppTypography.bodyMedium,
-                    color = if (enabled) AppColors.outline
-                    else AppColors.outline.copy(alpha = 0.5f),
+                    color = if (enabled)  AppColors.outline
+                    else  AppColors.outline.copy(alpha = 0.5f),
                     textAlign = TextAlign.Center
                 )
             }
@@ -134,33 +110,25 @@ fun ImagePickerComponent(
         permissionChecker.requestCameraPermission { granted ->
             if (granted) {
                 imagePicker.pickFromCamera { bitmap ->
-                    bitmap?.let {
-                        imagePicker.cropImage(
-                            it,
-                            aspectRatio = cropAspectRatio
-                        ) { cropped ->
 
+                    bitmap?.let {
+                        imagePicker.cropImage(it) { cropped ->
                             cropped?.let { onImageSelected(it) }
                         }
                     }
                     showCameraPermissionDialog = false
 
                 }
-            } else {
+            }else{
                 showCameraPermissionDialog = false
             }
         }
     }
 
-    val bottomSheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true
-    )
-
     // Bottom Sheet
     if (showBottomSheet) {
         ModalBottomSheet(
-            onDismissRequest = { showBottomSheet = false },
-            sheetState = bottomSheetState,
+            onDismissRequest = { showBottomSheet = false }
         ) {
             Column(
                 modifier = Modifier
@@ -178,19 +146,17 @@ fun ImagePickerComponent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
-                            showBottomSheet = false
+
                             imagePicker.pickFromGallery { bitmap ->
                                 bitmap?.let {
-                                    imagePicker.cropImage(
-                                        it,
-                                        aspectRatio = cropAspectRatio
-                                    ) { cropped ->
+                                    imagePicker.cropImage(it) { cropped ->
 
                                         cropped?.let { onImageSelected(it) }
                                     }
                                 }
 
                             }
+                            showBottomSheet = false
 
                         }
                         .padding(vertical = 12.dp),
@@ -218,11 +184,7 @@ fun ImagePickerComponent(
                                 if (permissionChecker.hasCameraPermission()) {
                                     imagePicker.pickFromCamera { bitmap ->
                                         bitmap?.let {
-                                            imagePicker.cropImage(
-                                                it,
-                                                aspectRatio = cropAspectRatio
-                                            ) { cropped ->
-
+                                            imagePicker.cropImage(it) { cropped ->
                                                 cropped?.let { onImageSelected(it) }
                                             }
                                         }
@@ -248,8 +210,7 @@ fun ImagePickerComponent(
                     Text(
                         text = if (imagePicker.isCameraAvailable())
                             UiText.StringResourceId(Res.string.image_picker_camera).asString()
-                        else UiText.StringResourceId(Res.string.image_picker_camera_unavailable)
-                            .asString(),
+                        else UiText.StringResourceId(Res.string.image_picker_camera_unavailable).asString(),
                         style = AppTypography.bodyLarge,
                         color = if (imagePicker.isCameraAvailable())
                             AppColors.onSurface
