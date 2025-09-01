@@ -30,6 +30,7 @@ import com.yusufteker.worthy.core.domain.model.TransactionType
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
+import com.yusufteker.worthy.core.presentation.theme.Constants.ONE_DAY_MILLIS
 import com.yusufteker.worthy.screen.analytics.domain.model.TimePeriod
 import kotlinx.coroutines.delay
 import worthy.composeapp.generated.resources.Res
@@ -45,7 +46,7 @@ import kotlin.time.ExperimentalTime
 @Composable
 fun SummaryCards(transactions: List<Transaction>, selectedPeriod: TimePeriod) {
     val currentTime = Clock.System.now().toEpochMilliseconds()
-    val periodStart = currentTime - (selectedPeriod.days.toDouble() * 24 * 60 * 60 * 1000)
+    val periodStart = currentTime - (selectedPeriod.days.toDouble() * ONE_DAY_MILLIS)
 
     val currency = transactions.firstOrNull()?.amount?.currency ?: Currency.TRY
     val filteredTransactions = transactions.filter {

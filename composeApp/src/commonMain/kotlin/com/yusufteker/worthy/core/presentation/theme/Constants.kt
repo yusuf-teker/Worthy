@@ -2,6 +2,9 @@ package com.yusufteker.worthy.core.presentation.theme
 import androidx.compose.ui.unit.dp
 
 object Constants {
+
+   const val ONE_DAY_MILLIS = 24 * 60 * 60 * 1000L
+
     const val WEEKLY_MAX_HOURS = 84
     const val MAX_INSTALLMENT_COUNT = 36
 

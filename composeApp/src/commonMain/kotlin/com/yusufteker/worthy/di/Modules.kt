@@ -1,6 +1,7 @@
 package com.yusufteker.worthy.di
 
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import com.yusufteker.worthy.core.data.createHttpClient
 import com.yusufteker.worthy.core.data.database.db.DatabaseFactory
 import com.yusufteker.worthy.core.data.database.db.WorthyDatabase
 import com.yusufteker.worthy.core.data.database.repository.CategoryRepositoryImpl
@@ -9,7 +10,7 @@ import com.yusufteker.worthy.core.data.database.repository.OnboardingRepositoryI
 import com.yusufteker.worthy.core.data.database.repository.RecurringFinancialItemRepositoryImpl
 import com.yusufteker.worthy.core.data.database.repository.SearchHistoryRepositoryImpl
 import com.yusufteker.worthy.core.data.database.repository.TransactionRepositoryImpl
-import com.yusufteker.worthy.core.data.service.DefaultCurrencyConverter
+import com.yusufteker.worthy.core.data.service.CurrencyConverterImpl
 import com.yusufteker.worthy.core.data.service.datasource.CurrencyRatesCacheDataSourceImpl
 import com.yusufteker.worthy.core.data.service.datasource.CurrencyRatesRemoteDataSourceImpl
 import com.yusufteker.worthy.core.data.service.repository.CurrencyRatesRepositoryImpl
@@ -46,6 +47,7 @@ import com.yusufteker.worthy.screen.wishlist.add.presentation.WishlistAddViewMod
 import com.yusufteker.worthy.screen.wishlist.detail.presentation.WishlistDetailViewModel
 import com.yusufteker.worthy.screen.wishlist.list.data.database.repository.WishlistRepositoryImpl
 import com.yusufteker.worthy.screen.wishlist.list.presentation.WishlistViewModel
+import io.ktor.client.engine.HttpClientEngine
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -71,6 +73,7 @@ val sharedModule = module {
             .build()
     }
 
+    single { createHttpClient(get<HttpClientEngine>()) }
     // DAO'ları veritabanından çek
     single { get<WorthyDatabase>().transactionDao }
     single { get<WorthyDatabase>().wishlistItemDao }
@@ -81,15 +84,15 @@ val sharedModule = module {
 
     // Repository implementasyonlarını bind et
     single<CurrencyRatesRepository> { CurrencyRatesRepositoryImpl(get(), get()) }
-    single<CurrencyConverter> { DefaultCurrencyConverter(get()) }
+    single<CurrencyConverter> { CurrencyConverterImpl(get()) }
     single<OnboardingRepository> { OnboardingRepositoryImpl(get(), get(), get()) }
     single<TransactionRepository> { TransactionRepositoryImpl(get(),get(),get()) }
     single<WishlistRepository> { WishlistRepositoryImpl(get(),get()) }
     single<CategoryRepository> { CategoryRepositoryImpl(get()) }
     single<RecurringFinancialItemRepository> { RecurringFinancialItemRepositoryImpl(get()) }
     single<DashboardRepository> { DashboardRepositoryImpl(get(), get(),get(),get()) }
-    single<CurrencyRatesCacheDataSource> { CurrencyRatesCacheDataSourceImpl() }
-    single<CurrencyRatesRemoteDataSource> { CurrencyRatesRemoteDataSourceImpl() }
+    single<CurrencyRatesCacheDataSource> { CurrencyRatesCacheDataSourceImpl(get()) }
+    single<CurrencyRatesRemoteDataSource> { CurrencyRatesRemoteDataSourceImpl(get()) }
     single<CardRepository> { CardRepositoryImpl(get()) }
     single<AnalyticsRepository> { AnalyticsRepositoryImpl(get(), get(), get(), get(), get()) }
     single<SubscriptionRepository> { SubscriptionRepositoryImpl(get(), get(), get()) }

@@ -3,21 +3,17 @@ package com.yusufteker.worthy.screen.analytics.presentation
 import androidx.lifecycle.viewModelScope
 import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.domain.getCurrentEpochMillis
-import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.Currency
-import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.distinctCategoryIds
 import com.yusufteker.worthy.core.domain.service.CurrencyConverter
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
-import com.yusufteker.worthy.screen.analytics.domain.repository.AnalyticsRepository
+import com.yusufteker.worthy.core.presentation.theme.Constants.ONE_DAY_MILLIS
 import com.yusufteker.worthy.screen.analytics.domain.model.TimePeriod
-import com.yusufteker.worthy.screen.card.domain.model.Card
+import com.yusufteker.worthy.screen.analytics.domain.repository.AnalyticsRepository
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.flow.map
 
 class AnalyticsViewModel(
     private val analyticsRepository: AnalyticsRepository,
@@ -68,6 +64,7 @@ class AnalyticsViewModel(
     init {
         observeData()
     }
+
     private fun applyFilters() {
         val s = state.value
         val currentTime = getCurrentEpochMillis()
@@ -88,8 +85,6 @@ class AnalyticsViewModel(
 
         _state.update { it.copy(filteredTransactions = filtered) }
     }
-
-
 
     fun onAction(action: AnalyticsAction) {
         when (action) {
@@ -187,16 +182,13 @@ class AnalyticsViewModel(
 
     }
 
-
-
-
     suspend fun calculateMonthlyComparisonTransactions(
         currencyConverter: CurrencyConverter,
         targetCurrency: Currency
     ) {
         val currentTime = getCurrentEpochMillis()
         val periodStart =
-            currentTime - (TimePeriod.SIX_MONTHS.days.toDouble() * 24 * 60 * 60 * 1000)
+            currentTime - (TimePeriod.SIX_MONTHS.days.toDouble() * ONE_DAY_MILLIS)
 
         val filtered = state.value.transactions.filter { it.transactionDate >= periodStart }
 

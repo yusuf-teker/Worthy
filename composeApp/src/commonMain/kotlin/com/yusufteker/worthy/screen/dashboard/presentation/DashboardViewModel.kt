@@ -394,7 +394,11 @@ class DashboardViewModel(
                 month
             ).amount
 
-        return (selectedMonthIncome - lastMonthIncome) / selectedMonthIncome * 100
+        return if (lastMonthIncome != 0.0) {
+            (selectedMonthIncome - lastMonthIncome) / lastMonthIncome * 100
+        } else {
+            100.0
+        }
     }
 
     // Son 6 ayın (daha fazla veya azda verilebilir) aylık toplam tutarını 0-1f aralıgına dönüştürüp liste veriyor

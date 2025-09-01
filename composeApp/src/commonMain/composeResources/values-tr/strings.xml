@@ -154,8 +154,15 @@
     <string name="currency_usd">Amerikan Doları</string>
     <string name="currency_eur">Euro</string>
     <string name="currency_gbp">İngiliz Sterlini</string>
+    <string name="currency_jpy">Japon Yeni</string>
     <string name="currency_gram_gold">Gram Altın</string>
     <string name="currency_btc">Bitcoin</string>
+    <string name="currency_aud">Avustralya Doları</string>
+    <string name="currency_cad">Kanada Doları</string>
+    <string name="currency_chf">İsviçre Frangı</string>
+    <string name="currency_cny">Çin Yuanı</string>
+    <string name="currency_sek">İsveç Kronu</string>
+    <string name="currency_nzd">Yeni Zelanda Doları</string>
 
     <!-- Wishlist -->
     <string name="wishlist_label_product_name">Ürün Adı</string>

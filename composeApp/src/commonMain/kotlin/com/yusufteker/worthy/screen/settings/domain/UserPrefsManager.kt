@@ -12,6 +12,7 @@ import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Money
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
@@ -34,6 +35,9 @@ class UserPrefsManager(private val dataStore: DataStore<Preferences>) {
 
         val CURRENCY = stringPreferencesKey("currency")
 
+        val CURRENCY_RATES_JSON = stringPreferencesKey("currency_rates_json")
+        val CURRENCY_RATES_TIMESTAMP = stringPreferencesKey("currency_rates_timestamp")
+
         val SPENDING_LIMIT = stringPreferencesKey("spending_limit")
         val SAVING_GOAL = stringPreferencesKey("saving_goal")
 
@@ -45,44 +49,43 @@ class UserPrefsManager(private val dataStore: DataStore<Preferences>) {
     /* ******** Flows ******** */
     /** GELİR */
     val incomeItems: Flow<List<IncomeItem>> = dataStore.data.catch { exception ->
-            // IOException durumunda emptyPreferences() emit et
-            if (exception is IOException) {
-                emit(emptyPreferences())
-            } else {
-                throw exception
-            }
-        }.map { prefs ->
-            try {
-                prefs[INCOME_ITEMS]?.let { json.decodeFromString<List<IncomeItem>>(it) }
-                    ?: emptyList()
-            } catch (e: SerializationException) {
-                // Corrupt data durumunda boş liste döner
-                emptyList()
-            }
+        // IOException durumunda emptyPreferences() emit et
+        if (exception is IOException) {
+            emit(emptyPreferences())
+        } else {
+            throw exception
         }
+    }.map { prefs ->
+        try {
+            prefs[INCOME_ITEMS]?.let { json.decodeFromString<List<IncomeItem>>(it) } ?: emptyList()
+        } catch (e: SerializationException) {
+            // Corrupt data durumunda boş liste döner
+            emptyList()
+        }
+    }
 
     /** HAFTALIK ÇALIŞMA SAATİ */
     val weeklyWorkHours: Flow<Int> = dataStore.data.catch { exception ->
-            if (exception is IOException) {
-                emit(emptyPreferences())
-            } else {
-                throw exception
-            }
-        }.map { prefs ->
-            prefs[WEEKLY_WORK_HOURS] ?: 0
+        if (exception is IOException) {
+            emit(emptyPreferences())
+        } else {
+            throw exception
         }
+    }.map { prefs ->
+        prefs[WEEKLY_WORK_HOURS] ?: 0
+    }
 
     /** SEÇİLEN PARA BİRİMİ */
     val selectedCurrency: Flow<Currency> = dataStore.data.catch { exception ->
-            if (exception is IOException) {
-                emit(emptyPreferences())
-            } else {
-                throw exception
-            }
-        }.map { prefs ->
-            val savedCode = prefs[CURRENCY] ?: Currency.TRY.name
-            Currency.entries.find { it.name == savedCode } ?: Currency.TRY
+        if (exception is IOException) {
+            emit(emptyPreferences())
+        } else {
+            throw exception
         }
+    }.map { prefs ->
+        val savedCode = prefs[CURRENCY] ?: Currency.TRY.name
+        Currency.entries.find { it.name == savedCode } ?: Currency.TRY
+    }
 
     /** BÜTÇE */
     suspend fun setBudgetMoney(money: Money) {
@@ -158,11 +161,9 @@ class UserPrefsManager(private val dataStore: DataStore<Preferences>) {
         prefs[USER_NAME]
     }
 
-    val isCategoryInitialized: Flow<Boolean> = dataStore.data
-        .catch { exception ->
+    val isCategoryInitialized: Flow<Boolean> = dataStore.data.catch { exception ->
             if (exception is IOException) emit(emptyPreferences()) else throw exception
-        }
-        .map { prefs ->
+        }.map { prefs ->
             prefs[IS_CATEGORY_INITIALIZED] ?: false
         }
 
@@ -172,11 +173,9 @@ class UserPrefsManager(private val dataStore: DataStore<Preferences>) {
         }
     }
 
-    val isSubscriptionCategoryInitialized: Flow<Boolean> = dataStore.data
-        .catch { exception ->
+    val isSubscriptionCategoryInitialized: Flow<Boolean> = dataStore.data.catch { exception ->
             if (exception is IOException) emit(emptyPreferences()) else throw exception
-        }
-        .map { prefs ->
+        }.map { prefs ->
             prefs[IS_SUBSCRIPTION_CATEGORY_INITIALIZED] ?: false
         }
 
@@ -186,4 +185,23 @@ class UserPrefsManager(private val dataStore: DataStore<Preferences>) {
         }
     }
 
+    suspend fun setCachedCurrencyRates(cachedRatesJson: String, timestampMillis: Long) {
+        dataStore.edit { prefs ->
+            prefs[CURRENCY_RATES_JSON] = cachedRatesJson
+            prefs[CURRENCY_RATES_TIMESTAMP] = timestampMillis.toString()
+        }
+    }
+
+    suspend fun getCachedCurrencyRates(): CachedCurrencyRates? {
+        val prefs = dataStore.data.first()
+        val json = prefs[CURRENCY_RATES_JSON] ?: return null
+        val tsString = prefs[CURRENCY_RATES_TIMESTAMP] ?: return null
+        val ts = tsString.toLongOrNull() ?: return null
+        return CachedCurrencyRates(json, ts)
+    }
+
 }
+
+data class CachedCurrencyRates(
+    val json: String, val timestampMillis: Long
+)

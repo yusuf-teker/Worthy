@@ -30,6 +30,7 @@ import com.yusufteker.worthy.core.domain.toEpochMillis
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.getMonthShortNameByLocale
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
+import com.yusufteker.worthy.core.presentation.theme.Constants.ONE_DAY_MILLIS
 import com.yusufteker.worthy.core.presentation.util.formatMoneyText
 import com.yusufteker.worthy.screen.analytics.domain.model.TimePeriod
 import kotlinx.datetime.*
@@ -66,7 +67,7 @@ fun BarChart(transactions: List<Transaction>, selectedPeriod: TimePeriod) {
     // Gruplama
     val groupedData: List<Pair<Long, Pair<Double, Double>>> = when (timeLap) {
         TimeLap.DAY -> {
-            val dayMillis = 24 * 60 * 60 * 1000
+            val dayMillis = ONE_DAY_MILLIS
             transactions.groupBy { txn -> (txn.transactionDate / dayMillis) * dayMillis }
                 .map { (key, txns) ->
                     val income = txns.filter { it.transactionType == TransactionType.INCOME }

@@ -48,6 +48,7 @@ import com.yusufteker.worthy.core.domain.model.TransactionType
 import com.yusufteker.worthy.core.domain.model.toAppDate
 import com.yusufteker.worthy.core.presentation.getMonthShortNameByLocale
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
+import com.yusufteker.worthy.core.presentation.theme.Constants.ONE_DAY_MILLIS
 import com.yusufteker.worthy.core.presentation.util.formatMoneyText
 import com.yusufteker.worthy.screen.analytics.domain.model.TimePeriod
 import kotlin.math.abs
@@ -77,7 +78,7 @@ fun LineChart(
     }
 
     val currentTime = getCurrentEpochMillis()
-    val periodStart = currentTime - (selectedPeriod.days.toDouble() * 24 * 60 * 60 * 1000)
+    val periodStart = currentTime - (selectedPeriod.days.toDouble() * ONE_DAY_MILLIS)
     val currency = transactions.firstOrNull()?.amount?.currency ?: Currency.TRY
 
     // SADECE TRANSACTİON DEĞERLERİ
@@ -107,7 +108,7 @@ fun LineChart(
         if (selectedPeriod == TimePeriod.NONE) true
         else it.transactionDate >= periodStart
     }.groupBy {
-        val dayMillis = 24 * 60 * 60 * 1000
+        val dayMillis = ONE_DAY_MILLIS
         (it.transactionDate / dayMillis) * dayMillis
     }.map { entry ->
         val dailyTotal = entry.value.fold(0.0) { acc, transaction ->

@@ -155,8 +155,15 @@
     <string name="currency_usd">US Dollar</string>
     <string name="currency_eur">Euro</string>
     <string name="currency_gbp">British Pound</string>
+    <string name="currency_jpy">Japanese Yen</string>
     <string name="currency_gram_gold">Gram Gold</string>
     <string name="currency_btc">Bitcoin</string>
+    <string name="currency_aud">Australian Dollar</string>
+    <string name="currency_cad">Canadian Dollar</string>
+    <string name="currency_chf">Swiss Franc</string>
+    <string name="currency_cny">Chinese Yuan</string>
+    <string name="currency_sek">Swedish Krona</string>
+    <string name="currency_nzd">New Zealand Dollar</string>
 
     <!-- Wishlist -->
 
