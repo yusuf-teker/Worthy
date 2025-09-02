@@ -1,5 +1,6 @@
 package com.yusufteker.worthy.screen.analytics.presentation
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
@@ -30,6 +32,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yusufteker.worthy.app.navigation.NavigationHandler
@@ -51,10 +54,12 @@ import com.yusufteker.worthy.screen.analytics.presentation.components.ChartTypeS
 import com.yusufteker.worthy.screen.analytics.presentation.components.LineChart
 import com.yusufteker.worthy.screen.analytics.presentation.components.MonthlyComparisonCard
 import com.yusufteker.worthy.screen.analytics.presentation.components.PieChartPager
+import com.yusufteker.worthy.screen.analytics.presentation.components.ScrollAwareButtons
 import com.yusufteker.worthy.screen.analytics.presentation.components.SummaryCards
 import com.yusufteker.worthy.screen.analytics.presentation.components.TopTransactionsCard
 import com.yusufteker.worthy.screen.analytics.presentation.components.TransactionFilter
 import com.yusufteker.worthy.screen.analytics.presentation.components.TransactionListItem
+import com.yusufteker.worthy.screen.analytics.presentation.components.TransactionSortSheet
 import com.yusufteker.worthy.screen.analytics.presentation.components.TrendAnalysisCard
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -100,6 +105,7 @@ fun AnalyticsScreen(
 ) {
 
     var showFilter by remember { mutableStateOf(false) }
+    var showSort by remember { mutableStateOf(false) }
 
 
     Scaffold(
@@ -112,15 +118,6 @@ fun AnalyticsScreen(
                     onAction(AnalyticsAction.NavigateBack)
                 },
                 actions = {
-                    IconButton(
-                        onClick = {
-                            showFilter = !showFilter
-                        }) {
-                        Icon(
-                            painter = painterResource(resource = Res.drawable.filter),
-                            contentDescription = "filter",
-                        )
-                    }
                     IconButton(onClick = {
                         val newMode =
                             if (state.viewMode == AnalyticsViewMode.LIST) AnalyticsViewMode.CHART
@@ -129,8 +126,8 @@ fun AnalyticsScreen(
                     }) {
                         Icon(
                             painter = painterResource(
-                                resource = if (state.viewMode == AnalyticsViewMode.CHART) Res.drawable.chart_view
-                                else Res.drawable.list_view
+                                resource = if (state.viewMode == AnalyticsViewMode.CHART) Res.drawable.list_view
+                                else Res.drawable.chart_view
                             ), contentDescription = "switch view"
                         )
                     }
@@ -138,7 +135,6 @@ fun AnalyticsScreen(
         }) { paddingValues ->
         Column(
             modifier = modifier.fillMaxWidth().padding(paddingValues),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
             if (state.transactions.isEmpty()) {
@@ -156,38 +152,21 @@ fun AnalyticsScreen(
                         onAction(AnalyticsAction.OnAddTransactionClicked)
                     })
             } else {
-                // TARİH FİLTRESİ // TODO FİLTER KISMINA ALINACAK
-                LazyRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
 
-                    //  contentPadding = PaddingValues(horizontal = 16.dp)
-                ) {
-                    items(TimePeriod.entries.toTypedArray()) { period ->
-                        FilterChip(
-                            onClick = {
-                                onAction(AnalyticsAction.OnPeriodSelected(period))
-                            },
-                            label = { Text(period.label.asString()) },
-                            selected = state.selectedTimePeriod == period,
-                            colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = AppColors.onPrimary,
-                                selectedLabelColor = AppColors.primary
-                            ),
-                            border = FilterChipDefaults.filterChipBorder(
-                                selectedBorderColor = AppColors.onPrimary,
-                                selectedBorderWidth = 1.dp,
-                                enabled = true,
-                                selected = state.selectedTimePeriod == period
-                            )
-                        )
-                    }
-                }
 
                 when (state.viewMode) {
+
                     AnalyticsViewMode.LIST -> {
+                        val listState = rememberLazyListState()
+
+                        ScrollAwareButtons(
+                            onSortClick = { showSort = true },
+                            onFilterClick = { showFilter = true },
+                            lazyListState = listState
+                        )
                         LazyColumn(
                             modifier = Modifier.fillMaxSize(),
+                            state = listState,
                             contentPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
@@ -206,8 +185,13 @@ fun AnalyticsScreen(
                     }
 
                     AnalyticsViewMode.CHART -> {
-
-                        Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
+                        val scrollState = rememberScrollState()
+                        ScrollAwareButtons(
+                            onSortClick = { showSort = true },
+                            onFilterClick = { showFilter = true },
+                            scrollState = scrollState
+                        )
+                        Column(Modifier.fillMaxWidth().verticalScroll(scrollState)) {
 
                             ChartTypeSelector(
                                 selectedChart = state.selectedChart,
@@ -294,6 +278,7 @@ fun AnalyticsScreen(
                     selectedCategories = state.selectedCategories,
                     selectedCards = state.selectedCards,
                     selectedTimePeriod = state.selectedTimePeriod,
+                    selectedTransactionType = state.selectedTransactionType,
                     onSelectedTimePeriodSelected = { onAction(AnalyticsAction.OnPeriodSelected(it)) },
                     onCategorySelected = { category, isSelected ->
                         onAction(AnalyticsAction.OnCategorySelected(category, isSelected))
@@ -302,10 +287,25 @@ fun AnalyticsScreen(
                     onCardSelected = { card, isSelected ->
                         onAction(AnalyticsAction.OnCardSelected(card, isSelected))
                     },
+                    onTransactionTypeSelected = {
+                        onAction(AnalyticsAction.OnTransactionTypeSelected(it))
+                    },
                     clearFilters = {
                         onAction(AnalyticsAction.ClearFilters)
-                    })
+                    }
+                )
             }
+        }
+
+        if (showSort) {
+            TransactionSortSheet(
+                selectedSort = state.selectedSortOption,
+                onSortSelected = { sortOption ->
+                    onAction(AnalyticsAction.OnSortSelected(sortOption))
+                    showSort = false
+                },
+                onDismiss = { showSort = false }
+            )
         }
     }
 

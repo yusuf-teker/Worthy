@@ -2,8 +2,10 @@ package com.yusufteker.worthy.screen.analytics.presentation
 
 import com.yusufteker.worthy.screen.card.domain.model.Card
 import com.yusufteker.worthy.core.domain.model.Category
+import com.yusufteker.worthy.core.domain.model.TransactionType
 import com.yusufteker.worthy.screen.analytics.domain.model.TimePeriod
 import com.yusufteker.worthy.screen.analytics.presentation.components.ChartType
+import com.yusufteker.worthy.screen.analytics.presentation.components.SortOption
 
 sealed interface AnalyticsAction {
     object Init : AnalyticsAction
@@ -20,5 +22,10 @@ sealed interface AnalyticsAction {
     data class OnChangeChartType(val chartType: ChartType) : AnalyticsAction
 
     object OnAddTransactionClicked : AnalyticsAction
+
+    data class OnSortSelected(val sortOption: SortOption) : AnalyticsAction
+
+    data class OnTransactionTypeSelected(val transactionType: TransactionType?) : AnalyticsAction
+
 
 }

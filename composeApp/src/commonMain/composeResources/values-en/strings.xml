@@ -349,7 +349,7 @@
 
 
     <!-- Analytics -->
-    <string name="screen_name_analytics">İşlemlerim</string>
+    <string name="screen_name_analytics">Transactions</string>
     <string name="analytics_empty_screen_button">Add your first transaction</string>
 
     <string name="summary_income">Total Income</string>
@@ -376,6 +376,22 @@
     <string name="chart_type_bar">Bar Chart</string>
     <string name="monthly_comparison_title">📅 Monthly Comparison</string>
     <string name="top_transactions_title">🔝 Top Transactions</string>
+    <string name="sort">Sort</string>
+    <string name="filter">Filter</string>
+
+    <string name="filter_date">Date</string>
+    <string name="filter_category">Category</string>
+    <string name="filter_card">Card</string>
+    <string name="filter_none">None</string>
+    <string name="filter_refund">Refund</string>
+
+    <string name="filter_transaction_type">Transaction Type</string>
+
+
+    <string name="sort_date_desc">By Date (Newest → Oldest)</string>
+    <string name="sort_date_asc">By Date (Oldest → Newest)</string>
+    <string name="sort_amount_desc">By Amount (High → Low)</string>
+    <string name="sort_amount_asc">By Amount (Low → High)</string>
 
     <!-- Subscription -->
     <string name="screen_title_subscription_list">My Subscriptions</string>

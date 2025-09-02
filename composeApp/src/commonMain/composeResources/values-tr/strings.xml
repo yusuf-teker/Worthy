@@ -366,7 +366,20 @@
     <string name="chart_type_bar">Çubuk Grafiği</string>
     <string name="monthly_comparison_title">📅 Aylık Karşılaştırma</string>
     <string name="top_transactions_title">🔝 En Büyük İşlemler</string>
+    <string name="sort">Sırala</string>
+    <string name="filter">Filtrele</string>
 
+    <string name="filter_date">Tarih</string>
+    <string name="filter_category">Kategori</string>
+    <string name="filter_card">Kart</string>
+    <string name="filter_none">Hiçbiri</string>
+    <string name="filter_transaction_type">İşlem Türü</string>
+    <string name="filter_refund">İade</string>
+
+    <string name="sort_date_desc">Tarihe göre (Yeni → Eski)</string>
+    <string name="sort_date_asc">Tarihe göre (Eski → Yeni)</string>
+    <string name="sort_amount_desc">Miktara göre (Büyük → Küçük)</string>
+    <string name="sort_amount_asc">Miktara göre (Küçük → Büyük)</string>
 
     <!-- Subscription -->
     <string name="screen_title_subscription_list">Aboneliklerim</string>

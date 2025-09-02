@@ -1,5 +1,12 @@
 package com.yusufteker.worthy.core.domain.model
 
+import org.jetbrains.compose.resources.StringResource
+import worthy.composeapp.generated.resources.Res
+import worthy.composeapp.generated.resources.expense
+import worthy.composeapp.generated.resources.filter_none
+import worthy.composeapp.generated.resources.filter_refund
+import worthy.composeapp.generated.resources.income
+
 enum class TransactionType {
     INCOME, EXPENSE, REFUND,
 }
@@ -20,3 +27,11 @@ data class Transaction(
 fun List<Transaction>.distinctCategoryIds(): List<Int> {
     return this.mapNotNull { it.categoryId }.distinct()
 }
+
+val TransactionType.labelRes: StringResource
+    get() = when (this) {
+        TransactionType.INCOME -> Res.string.income
+        TransactionType.EXPENSE -> Res.string.expense
+        TransactionType.REFUND -> Res.string.filter_refund
+        else -> Res.string.filter_none
+    }

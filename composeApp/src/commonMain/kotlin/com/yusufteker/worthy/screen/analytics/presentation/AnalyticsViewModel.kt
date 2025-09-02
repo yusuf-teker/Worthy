@@ -10,6 +10,7 @@ import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import com.yusufteker.worthy.core.presentation.theme.Constants.ONE_DAY_MILLIS
 import com.yusufteker.worthy.screen.analytics.domain.model.TimePeriod
 import com.yusufteker.worthy.screen.analytics.domain.repository.AnalyticsRepository
+import com.yusufteker.worthy.screen.analytics.presentation.components.SortOption
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
@@ -82,10 +83,25 @@ class AnalyticsViewModel(
                 if (s.selectedCards.isEmpty()) true
                 else tx.cardId in s.selectedCards.map { it.id }
             }
+            .filter { tx ->
+                if (s.selectedTransactionType == null) true
+                else tx.transactionType == s.selectedTransactionType
+            }
 
         _state.update { it.copy(filteredTransactions = filtered) }
     }
 
+    private fun applySort() {
+        val s = state.value
+        val sorted =  when (s.selectedSortOption) {
+            SortOption.DATE_DESC -> s.filteredTransactions.sortedByDescending { it.transactionDate }
+            SortOption.DATE_ASC -> s.transactions.sortedBy { it.transactionDate }
+            SortOption.AMOUNT_DESC -> s.transactions.sortedByDescending { it.amount.amount }
+            SortOption.AMOUNT_ASC -> s.transactions.sortedBy { it.amount.amount }
+        }
+
+        _state.update { it.copy(filteredTransactions = sorted) }
+    }
     fun onAction(action: AnalyticsAction) {
         when (action) {
             is AnalyticsAction.Init -> {
@@ -161,6 +177,22 @@ class AnalyticsViewModel(
 
             is AnalyticsAction.OnAddTransactionClicked -> {
                 navigateTo(Routes.AddTransaction())
+            }
+            is AnalyticsAction.OnSortSelected -> {
+                _state.update {
+                    it.copy(
+                        selectedSortOption = action.sortOption
+                    )
+                }
+                applySort()
+            }
+            is AnalyticsAction.OnTransactionTypeSelected -> {
+                _state.update {
+                    it.copy(
+                        selectedTransactionType = action.transactionType
+                    )
+                }
+                applyFilters()
             }
         }
     }
