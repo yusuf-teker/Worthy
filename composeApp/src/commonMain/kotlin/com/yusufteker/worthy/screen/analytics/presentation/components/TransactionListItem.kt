@@ -1,5 +1,6 @@
 package com.yusufteker.worthy.screen.analytics.presentation.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,6 +15,7 @@ import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.TransactionType
+import com.yusufteker.worthy.core.presentation.theme.AppBrushes
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
 import com.yusufteker.worthy.core.presentation.util.formatMoneyText
@@ -36,28 +38,25 @@ fun TransactionListItem(
 
     val localDateTime = Instant.fromEpochMilliseconds(transaction.transactionDate)
         .toLocalDateTime(TimeZone.currentSystemDefault())
-    val dateString = "${localDateTime.day.toString().padStart(2, '0')}/" +
-            "${localDateTime.month.number.toString().padStart(2, '0')}/" +
-            "${localDateTime.year}"
+    val dateString = "${
+        localDateTime.day.toString().padStart(2, '0')
+    }/" + "${localDateTime.month.number.toString().padStart(2, '0')}/" + "${localDateTime.year}"
 
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable { onItemClicked(transaction) },
+        modifier = modifier.fillMaxWidth().clickable { onItemClicked(transaction) },
         shape = CardDefaults.shape,
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier = Modifier.fillMaxWidth().background(
+                AppBrushes.cardItemBrushWithBorder
+            ).padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = transaction.name,
-                    style = AppTypography.titleMedium
+                    text = transaction.name, style = AppTypography.titleMedium
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
@@ -101,8 +100,7 @@ fun TransactionListPreview() {
             cardId = 1,
             transactionDate = kotlin.time.Clock.System.now().toEpochMilliseconds(),
             note = "Aylık maaş"
-        ),
-        Transaction(
+        ), Transaction(
             id = 2,
             name = "Market Alışverişi",
             amount = Money(250.0, Currency.TRY),
@@ -112,8 +110,7 @@ fun TransactionListPreview() {
             transactionDate = kotlin.time.Clock.System.now().toEpochMilliseconds()
                 .minus(2_592_000_000), // 30 gün önce
             note = "Gıda ve temizlik"
-        ),
-        Transaction(
+        ), Transaction(
             id = 3,
             name = "İade",
             amount = Money(100.0, Currency.TRY),

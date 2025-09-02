@@ -19,22 +19,19 @@ fun TransactionListScreenRoot(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     TransactionListScreen(
-        state = state,
-        onAction = viewModel::onAction,
-        contentPadding = contentPadding
+        state = state, onAction = viewModel::onAction, contentPadding = contentPadding
     )
 }
 
 @Composable
 fun TransactionListScreen(
+    modifier: Modifier = Modifier,
     state: TransactionListState,
     onAction: (action: TransactionListAction) -> Unit,
     contentPadding: PaddingValues = PaddingValues()
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(contentPadding),
+        modifier = Modifier.fillMaxSize().padding(contentPadding),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         // TODO

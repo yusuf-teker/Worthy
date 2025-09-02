@@ -1,19 +1,23 @@
 package com.yusufteker.worthy.screen.card.list.presentation
 
-
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yusufteker.worthy.app.navigation.NavigationHandler
 import com.yusufteker.worthy.app.navigation.NavigationModel
-import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
@@ -26,7 +30,6 @@ import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.add_new_card
 import worthy.composeapp.generated.resources.add_your_first_card
 import worthy.composeapp.generated.resources.empty_credit_card
-import worthy.composeapp.generated.resources.my_cards
 import worthy.composeapp.generated.resources.screen_title_my_cards
 
 @Composable
@@ -37,12 +40,13 @@ fun CardListScreenRoot(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    NavigationHandler(viewModel){ model ->
+    NavigationHandler(viewModel) { model ->
         onNavigateTo(model)
     }
 
-    BaseContentWrapper(state = state) {
+    BaseContentWrapper(state = state) { modifier ->
         CardListScreen(
+            modifier = modifier,
             state = state,
             onAction = viewModel::onAction,
             contentPadding = contentPadding
@@ -52,65 +56,60 @@ fun CardListScreenRoot(
 
 @Composable
 fun CardListScreen(
+    modifier: Modifier = Modifier,
     state: CardListState,
     onAction: (action: CardListAction) -> Unit,
     contentPadding: PaddingValues = PaddingValues()
 ) {
 
-Scaffold(
-    modifier = Modifier.fillMaxSize().padding(contentPadding),
-    topBar = {
-        AppTopBar(
-            title = UiText.StringResourceId(Res.string.screen_title_my_cards).asString(),
-            onNavIconClick = {
-                onAction(CardListAction.NavigateBack)
-            },
-            actions = {
-                IconButton(
-                    onClick = {
-                        onAction(CardListAction.AddNewCard)
+    Scaffold(
+        modifier = modifier.padding(contentPadding), topBar = {
+            AppTopBar(
+                title = UiText.StringResourceId(Res.string.screen_title_my_cards).asString(),
+                onNavIconClick = {
+                    onAction(CardListAction.NavigateBack)
+                },
+                actions = {
+                    IconButton(
+                        onClick = {
+                            onAction(CardListAction.AddNewCard)
+                        }) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = UiText.StringResourceId(Res.string.add_new_card)
+                                .asString(),
+                        )
                     }
-                ){
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = UiText.StringResourceId(Res.string.add_new_card).asString(),
-                    )
+
+                })
+        }) {
+        Column(
+            modifier = modifier.padding(contentPadding),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+
+            if (state.cards.isNotEmpty()) {
+                CreditCardCarousel(
+                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp), cards = state.cards
+                )
+            } else {
+                EmptyScreen(
+                    icon = {
+                        Icon(
+                            painter = painterResource(Res.drawable.empty_credit_card),
+                            contentDescription = UiText.StringResourceId(Res.string.add_new_card)
+                                .asString(),
+                            modifier = Modifier.size(EMPTY_SCREEN_SIZE)
+                        )
+                    },
+                    buttonText = UiText.StringResourceId(Res.string.add_your_first_card).asString()
+                ) {
+                    onAction(CardListAction.AddNewCard)
                 }
 
             }
-        )
+
+        }
     }
-){
-  Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(contentPadding),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
 
-      if (state.cards.isNotEmpty()){
-          CreditCardCarousel(
-              modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-              cards = state.cards
-          )
-      }else{
-          EmptyScreen(
-              icon = {
-                  Icon(
-                      painter = painterResource(Res.drawable.empty_credit_card),
-                      contentDescription = UiText.StringResourceId(Res.string.add_new_card).asString(),
-                      modifier = Modifier.size(EMPTY_SCREEN_SIZE)
-                  )
-              },
-              buttonText = UiText.StringResourceId(Res.string.add_your_first_card).asString()
-          ){
-            onAction(CardListAction.AddNewCard)
-          }
-
-      }
-
-
-    }
-}
-  
 }

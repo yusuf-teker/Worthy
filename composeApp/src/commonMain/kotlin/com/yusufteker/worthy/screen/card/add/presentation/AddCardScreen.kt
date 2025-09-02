@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -40,7 +39,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yusufteker.worthy.app.navigation.NavigationHandler
 import com.yusufteker.worthy.app.navigation.NavigationModel
-import com.yusufteker.worthy.screen.card.domain.model.Card
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
@@ -55,6 +53,7 @@ import com.yusufteker.worthy.core.presentation.util.detectCardBrand
 import com.yusufteker.worthy.core.presentation.util.groupEvery4
 import com.yusufteker.worthy.core.presentation.util.parseExpiry
 import com.yusufteker.worthy.screen.card.add.presentation.components.CreditCardPreview
+import com.yusufteker.worthy.screen.card.domain.model.Card
 import org.koin.compose.viewmodel.koinViewModel
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.card_expiry_label
@@ -82,20 +81,24 @@ fun AddCardScreenRoot(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    NavigationHandler(viewModel){ model ->
+    NavigationHandler(viewModel) { model ->
         onNavigateTo(model)
     }
     BaseContentWrapper(
         state = state
-    ) {
+    ) { modifier ->
         AddCardScreen(
-            state = state, onAction = viewModel::onAction, contentPadding = contentPadding
+            modifier = modifier,
+            state = state,
+            onAction = viewModel::onAction,
+            contentPadding = contentPadding
         )
     }
 }
 
 @Composable
 fun AddCardScreen(
+    modifier: Modifier = Modifier,
     state: AddCardState,
     onAction: (action: AddCardAction) -> Unit,
     contentPadding: PaddingValues = PaddingValues(),
@@ -115,16 +118,17 @@ fun AddCardScreen(
     var showCardDetailInputs by remember { mutableStateOf(false) }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize().padding(contentPadding), topBar = {
+        modifier = modifier, topBar = {
             AppTopBar(
+                modifier = Modifier.padding(top = contentPadding.calculateTopPadding()),
                 title = UiText.StringResourceId(Res.string.screen_title_add_new_card).asString(),
                 onNavIconClick = {
                     onAction(AddCardAction.OnNavigateBack)
                 })
-        }) {
+        }) { paddingValues ->
         val scrollState = rememberScrollState()
         Column(
-            modifier = Modifier.fillMaxSize().padding(contentPadding).verticalScroll(scrollState),
+            modifier = modifier.padding(paddingValues).verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
 
@@ -169,7 +173,9 @@ fun AddCardScreen(
             }
 
             Row(
-                modifier = Modifier.fillMaxWidth().clickable{showCardDetailInputs = !showCardDetailInputs }.padding(start = 4.dp),
+                modifier = Modifier.fillMaxWidth()
+                    .clickable { showCardDetailInputs = !showCardDetailInputs }
+                    .padding(start = 4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
@@ -231,7 +237,7 @@ fun AddCardScreen(
                                 } else null
                             }
                         })
-                    MessageText(holderError?.let {  UiMessage.Error(it.asString()) })
+                    MessageText(holderError?.let { UiMessage.Error(it.asString()) })
 
                     // Kart Numarası
                     var cardNumberError by remember { mutableStateOf<UiText?>(null) }
@@ -266,7 +272,7 @@ fun AddCardScreen(
                                 } else null
                             }
                         })
-                    MessageText(cardNumberError?.let {  UiMessage.Error(it.asString()) })
+                    MessageText(cardNumberError?.let { UiMessage.Error(it.asString()) })
 
                     // Son Kullanma (MM/YY)
                     var expiryErrorMessage by remember { mutableStateOf<UiText?>(null) }
@@ -311,7 +317,7 @@ fun AddCardScreen(
                                 } else null
                             }
                         })
-                    MessageText(expiryErrorMessage?.let {  UiMessage.Error(it.asString()) })
+                    MessageText(expiryErrorMessage?.let { UiMessage.Error(it.asString()) })
 
                     // CVV
                     var cvvErrorMessage by remember { mutableStateOf<UiText?>(null) }
@@ -340,7 +346,7 @@ fun AddCardScreen(
                                 } else null
                             }
                         })
-                    MessageText(cvvErrorMessage?.let {  UiMessage.Error(it.asString()) })
+                    MessageText(cvvErrorMessage?.let { UiMessage.Error(it.asString()) })
 
                     DayOfMonthSelector(
                         selectedDay = statementDay,

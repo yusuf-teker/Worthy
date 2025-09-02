@@ -3,14 +3,31 @@ package com.yusufteker.worthy.core.presentation.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,52 +72,52 @@ fun ImagePickerComponent(
     val imagePicker = rememberImagePicker()
 
     val permissionChecker = rememberPermissionChecker()
+    var loading by remember { mutableStateOf(false) }
 
 
 
     Box(
-        modifier = modifier
-            .size(imageSize)
-            .clip(RoundedCornerShape(12.dp))
-            .border(
-                width = 2.dp,
-                color = if (selectedImage != null) Color.Transparent
-                else  AppColors.outline,
-                shape = RoundedCornerShape(12.dp)
-            )
-            .clickable(enabled = enabled) {
+        modifier = modifier.size(imageSize).clip(RoundedCornerShape(12.dp)).border(
+                width = 2.dp, color = if (selectedImage != null) Color.Transparent
+                else AppColors.outline, shape = RoundedCornerShape(12.dp)
+            ).clickable(enabled = enabled) {
                 showBottomSheet = true
-            },
-        contentAlignment = Alignment.Center
+            }, contentAlignment = Alignment.Center
     ) {
-        if (selectedImage != null) {
-            Image(
-                bitmap = selectedImage.toImageBitmap(),
-                contentDescription = UiText.StringResourceId(Res.string.image_picker_selected_image_desc).asString(),
-                modifier = Modifier.fillMaxSize().aspectRatio(1f),
-                contentScale = ContentScale.Crop,
+        when {
+            loading -> { // 👈 Loading ekranı
+                CircularProgressIndicator()
+            }
 
+            selectedImage != null -> {
+                Image(
+                    bitmap = selectedImage.toImageBitmap(),
+                    contentDescription = UiText.StringResourceId(Res.string.image_picker_selected_image_desc)
+                        .asString(),
+                    modifier = Modifier.fillMaxSize().aspectRatio(1f),
+                    contentScale = ContentScale.Crop,
                 )
-        } else {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = null,
-                    modifier = Modifier.size(48.dp),
-                    tint = if (enabled) AppColors.outline
-                    else  AppColors.outline.copy(alpha = 0.5f)
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = placeholder.asString(),
-                    style = AppTypography.bodyMedium,
-                    color = if (enabled)  AppColors.outline
-                    else  AppColors.outline.copy(alpha = 0.5f),
-                    textAlign = TextAlign.Center
-                )
+            }
+
+            else -> {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = null,
+                        modifier = Modifier.size(48.dp),
+                        tint = if (enabled) AppColors.outline else AppColors.outline.copy(alpha = 0.5f)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = placeholder.asString(),
+                        style = AppTypography.bodyMedium,
+                        color = if (enabled) AppColors.outline else AppColors.outline.copy(alpha = 0.5f),
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
         }
     }
@@ -110,16 +127,17 @@ fun ImagePickerComponent(
         permissionChecker.requestCameraPermission { granted ->
             if (granted) {
                 imagePicker.pickFromCamera { bitmap ->
-
+                    loading = true
                     bitmap?.let {
                         imagePicker.cropImage(it) { cropped ->
+                            loading = false
                             cropped?.let { onImageSelected(it) }
                         }
                     }
                     showCameraPermissionDialog = false
 
                 }
-            }else{
+            } else {
                 showCameraPermissionDialog = false
             }
         }
@@ -128,12 +146,9 @@ fun ImagePickerComponent(
     // Bottom Sheet
     if (showBottomSheet) {
         ModalBottomSheet(
-            onDismissRequest = { showBottomSheet = false }
-        ) {
+            onDismissRequest = { showBottomSheet = false }) {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
+                modifier = Modifier.fillMaxWidth().padding(16.dp)
             ) {
                 Text(
                     text = UiText.StringResourceId(Res.string.image_picker_title).asString(),
@@ -142,26 +157,21 @@ fun ImagePickerComponent(
                 )
 
                 // Galeri seçeneği - Artık izin gerekmez
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
+                Row(modifier = Modifier.fillMaxWidth().clickable {
 
-                            imagePicker.pickFromGallery { bitmap ->
-                                bitmap?.let {
-                                    imagePicker.cropImage(it) { cropped ->
-
-                                        cropped?.let { onImageSelected(it) }
-                                    }
+                        imagePicker.pickFromGallery { bitmap ->
+                            bitmap?.let {
+                                loading = true
+                                imagePicker.cropImage(it) { cropped ->
+                                    loading = false
+                                    cropped?.let { onImageSelected(it) }
                                 }
-
                             }
-                            showBottomSheet = false
 
                         }
-                        .padding(vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                        showBottomSheet = false
+
+                    }.padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         painter = painterResource(resource = Res.drawable.gallery),
                         contentDescription = null,
@@ -175,45 +185,40 @@ fun ImagePickerComponent(
                 }
 
                 // Kamera seçeneği - İzin kontrolüyle
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            showBottomSheet = false
-                            if (imagePicker.isCameraAvailable()) {
-                                if (permissionChecker.hasCameraPermission()) {
-                                    imagePicker.pickFromCamera { bitmap ->
-                                        bitmap?.let {
-                                            imagePicker.cropImage(it) { cropped ->
-                                                cropped?.let { onImageSelected(it) }
-                                            }
+                Row(modifier = Modifier.fillMaxWidth().clickable {
+                        showBottomSheet = false
+                        if (imagePicker.isCameraAvailable()) {
+                            if (permissionChecker.hasCameraPermission()) {
+                                imagePicker.pickFromCamera { bitmap ->
+                                    loading = true
+                                    bitmap?.let {
+                                        imagePicker.cropImage(it) { cropped ->
+                                            loading = false
+                                            cropped?.let { onImageSelected(it) }
                                         }
-
                                     }
-                                } else {
-                                    showCameraPermissionDialog = true
+
                                 }
+                            } else {
+                                showCameraPermissionDialog = true
                             }
                         }
-                        .padding(vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                    }.padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         painter = painterResource(resource = Res.drawable.camera),
                         contentDescription = null,
                         modifier = Modifier.size(24.dp),
-                        tint = if (imagePicker.isCameraAvailable())
-                            AppColors.onSurface
+                        tint = if (imagePicker.isCameraAvailable()) AppColors.onSurface
                         else AppColors.onSurface.copy(alpha = 0.5f)
                     )
                     Spacer(modifier = Modifier.width(16.dp))
                     Text(
-                        text = if (imagePicker.isCameraAvailable())
-                            UiText.StringResourceId(Res.string.image_picker_camera).asString()
-                        else UiText.StringResourceId(Res.string.image_picker_camera_unavailable).asString(),
+                        text = if (imagePicker.isCameraAvailable()) UiText.StringResourceId(Res.string.image_picker_camera)
+                            .asString()
+                        else UiText.StringResourceId(Res.string.image_picker_camera_unavailable)
+                            .asString(),
                         style = AppTypography.bodyLarge,
-                        color = if (imagePicker.isCameraAvailable())
-                            AppColors.onSurface
+                        color = if (imagePicker.isCameraAvailable()) AppColors.onSurface
                         else AppColors.onSurface.copy(alpha = 0.5f)
                     )
                 }

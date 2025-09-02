@@ -34,7 +34,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yusufteker.worthy.app.navigation.NavigationHandler
 import com.yusufteker.worthy.app.navigation.NavigationModel
-import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.domain.model.TransactionType
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
@@ -81,9 +80,12 @@ fun AnalyticsScreenRoot(
         onNavigateTo(navigationModel)
     }
 
-    BaseContentWrapper(state = state) {
+    BaseContentWrapper(state = state) { modifier ->
         AnalyticsScreen(
-            state = state, onAction = viewModel::onAction, contentPadding = contentPadding
+            modifier = modifier,
+            state = state,
+            onAction = viewModel::onAction,
+            contentPadding = contentPadding
         )
     }
 }
@@ -93,15 +95,18 @@ fun AnalyticsScreenRoot(
 fun AnalyticsScreen(
     state: AnalyticsState,
     onAction: (action: AnalyticsAction) -> Unit,
-    contentPadding: PaddingValues = PaddingValues()
+    contentPadding: PaddingValues = PaddingValues(),
+    modifier: Modifier = Modifier
 ) {
 
     var showFilter by remember { mutableStateOf(false) }
 
 
     Scaffold(
-        modifier = Modifier.fillMaxSize().padding(contentPadding), topBar = {
+        modifier = modifier, topBar = {
             AppTopBar(
+                modifier = Modifier.fillMaxWidth()
+                    .padding(top = contentPadding.calculateTopPadding()),
                 title = UiText.StringResourceId(Res.string.screen_name_analytics).asString(),
                 onNavIconClick = {
                     onAction(AnalyticsAction.NavigateBack)
@@ -132,7 +137,7 @@ fun AnalyticsScreen(
                 })
         }) { paddingValues ->
         Column(
-            modifier = Modifier.fillMaxWidth().padding(paddingValues),
+            modifier = modifier.fillMaxWidth().padding(paddingValues),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
@@ -154,12 +159,12 @@ fun AnalyticsScreen(
                 // TARİH FİLTRESİ // TODO FİLTER KISMINA ALINACAK
                 LazyRow(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+
                     //  contentPadding = PaddingValues(horizontal = 16.dp)
                 ) {
                     items(TimePeriod.entries.toTypedArray()) { period ->
                         FilterChip(
-                            modifier = Modifier.padding(end = 8.dp),
                             onClick = {
                                 onAction(AnalyticsAction.OnPeriodSelected(period))
                             },
@@ -242,8 +247,7 @@ fun AnalyticsScreen(
 
                                     ChartType.BAR_CHART -> {
                                         BarChart(
-                                            state.filteredTransactions,
-                                            state.selectedTimePeriod
+                                            state.filteredTransactions, state.selectedTimePeriod
                                         )
                                     }
                                 }

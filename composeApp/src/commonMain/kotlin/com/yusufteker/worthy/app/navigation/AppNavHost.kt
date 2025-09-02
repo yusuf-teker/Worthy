@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalDensity
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavBackStackEntry
@@ -32,7 +33,6 @@ import androidx.navigation.toRoute
 import com.yusufteker.worthy.core.presentation.BottomNavigationBar
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.theme.AppColors
-import com.yusufteker.worthy.core.presentation.theme.AppDimens.ScreenPadding
 import com.yusufteker.worthy.core.presentation.util.isOnCurrentDestination
 import com.yusufteker.worthy.core.presentation.util.navigateTo
 import com.yusufteker.worthy.screen.addtransaction.presentation.AddTransactionScreenRoot
@@ -44,8 +44,8 @@ import com.yusufteker.worthy.screen.onboarding.domain.OnboardingManager
 import com.yusufteker.worthy.screen.onboarding.presentation.OnboardingScreenRoot
 import com.yusufteker.worthy.screen.settings.presentation.SettingsScreenRoot
 import com.yusufteker.worthy.screen.subscription.add.presentation.AddSubscriptionScreenRoot
-import com.yusufteker.worthy.screen.subscription.list.presentation.SubscriptionListScreenRoot
 import com.yusufteker.worthy.screen.subscription.detail.presentation.SubscriptionDetailScreenRoot
+import com.yusufteker.worthy.screen.subscription.list.presentation.SubscriptionListScreenRoot
 import com.yusufteker.worthy.screen.transaction.add.presentation.components.AddFabMenu
 import com.yusufteker.worthy.screen.wallet.presentation.WalletScreenRoot
 import com.yusufteker.worthy.screen.wishlist.add.presentation.WishlistAddScreenRoot
@@ -104,15 +104,18 @@ fun AppNavHost(
 
 
     Scaffold(
-        modifier = Modifier.background(AppColors.background).padding(horizontal = ScreenPadding),
-        bottomBar = {
+        modifier = Modifier.background(
+            Brush.linearGradient(
+                colors = AppColors.gradientBackgroundColors
+            )
+        ), bottomBar = {
             if (showBottomBar) {
                 BottomNavigationBar(
                     modifier = Modifier.padding(bottom = bottomPadding),
                     currentRoute = currentRoute ?: "",
                     onItemSelected = { route ->
 
-                        if (isOnCurrentDestination(route.toString(),currentDestination)){
+                        if (isOnCurrentDestination(route.toString(), currentDestination)) {
                             return@BottomNavigationBar
                         }
                         if (route.isAddTransaction()) {
@@ -129,7 +132,13 @@ fun AppNavHost(
             }
         }) { innerPadding ->
 
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier.fillMaxSize().background(
+                Brush.linearGradient(
+                    colors = AppColors.gradientBackgroundColors
+                )
+            )
+        ) {
 
             NavHost(navController = navController, startDestination = startDestination) {
 
@@ -168,11 +177,9 @@ fun AppNavHost(
 
                         composable<Routes.Analytics> {
                             AnalyticsScreenRoot(
-                                contentPadding = innerPadding,
-                                onNavigateTo = { navModel ->
+                                contentPadding = innerPadding, onNavigateTo = { navModel ->
                                     navController.navigateTo(navModel)
-                                }
-                            )
+                                })
                         }
                     }
 
@@ -182,21 +189,16 @@ fun AppNavHost(
                         composable<Routes.Wishlist> { entry ->
 
                             WishlistScreenRoot(
-                                contentPadding = innerPadding,
-                                onNavigateTo = { navModel ->
+                                contentPadding = innerPadding, onNavigateTo = { navModel ->
                                     navController.navigateTo(navModel)
-                                }
-                            )
-
+                                })
 
                         }
                         composable<Routes.WishlistAdd> {
                             WishlistAddScreenRoot(
-                                contentPadding = innerPadding,
-                                onNavigateTo = { navModel ->
+                                contentPadding = innerPadding, onNavigateTo = { navModel ->
                                     navController.navigateTo(navModel)
-                                }
-                            )
+                                })
                         }
 
                         composable<Routes.WishlistDetail> { // Todo Wishlist Detay ekranı eklenecek
@@ -207,8 +209,7 @@ fun AppNavHost(
                                 wishlistId = wishlistId,
                                 onNavigateTo = { navModel ->
                                     navController.navigateTo(navModel)
-                                }
-                            )
+                                })
                         }
                     }
 
@@ -218,11 +219,9 @@ fun AppNavHost(
 
                         composable<Routes.CardList> {
                             CardListScreenRoot(
-                                contentPadding = innerPadding,
-                                onNavigateTo = { navModel ->
+                                contentPadding = innerPadding, onNavigateTo = { navModel ->
                                     navController.navigateTo(navModel)
-                                }
-                            )
+                                })
                         }
                     }
 
@@ -241,8 +240,7 @@ fun AppNavHost(
                         AddCardScreenRoot(
                             contentPadding = innerPadding, onNavigateTo = { navModel ->
                                 navController.navigateTo(navModel)
-                            }
-                        )
+                            })
                     }
 
                     composable<Routes.Wallet> {
@@ -254,11 +252,9 @@ fun AppNavHost(
 
                     composable<Routes.Settings> {
                         SettingsScreenRoot(
-                            contentPadding = innerPadding,
-                            onNavigateTo = { navModel ->
+                            contentPadding = innerPadding, onNavigateTo = { navModel ->
                                 navController.navigateTo(navModel)
-                            }
-                        )
+                            })
                     }
 
                     navigation<Routes.SubscriptionGraph>(
@@ -267,20 +263,16 @@ fun AppNavHost(
 
                         composable<Routes.SubscriptionList> {
                             SubscriptionListScreenRoot(
-                                contentPadding = innerPadding,
-                                onNavigateTo = { navModel ->
+                                contentPadding = innerPadding, onNavigateTo = { navModel ->
                                     navController.navigateTo(navModel)
-                                }
-                            )
+                                })
                         }
 
                         composable<Routes.AddSubscription> {
                             AddSubscriptionScreenRoot(
-                                contentPadding = innerPadding,
-                                onNavigateTo = { navModel ->
+                                contentPadding = innerPadding, onNavigateTo = { navModel ->
                                     navController.navigateTo(navModel)
-                                }
-                            )
+                                })
                         }
                         composable<Routes.SubscriptionDetail> { backStackEntry ->
 
@@ -291,15 +283,12 @@ fun AppNavHost(
                                 contentPadding = innerPadding,
                                 onNavigateTo = { navModel ->
                                     navController.navigateTo(navModel)
-                                }
-                            )
+                                })
                         }
-
 
                     }
                 }
             }
-
 
             val expenseLabel = UiText.StringResourceId(Res.string.expenses).asString()
             val incomeLabel = UiText.StringResourceId(Res.string.income).asString()
@@ -307,13 +296,10 @@ fun AppNavHost(
 
             if (showAddFabMenu) {
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(AppColors.background.copy(alpha = 0.3f))
-                        .clickable {
+                    modifier = Modifier.fillMaxSize()
+                        .background(AppColors.background.copy(alpha = 0.3f)).clickable {
                             showAddFabMenu = false
-                        }
-                )
+                        })
             }
             AddFabMenu(
                 showMenu = showAddFabMenu,
@@ -330,11 +316,11 @@ fun AppNavHost(
                     }
 
                     incomeLabel -> {
-                        navController.navigateTo(NavigationModel(route =Routes.AddTransaction(true)))
+                        navController.navigateTo(NavigationModel(route = Routes.AddTransaction(true)))
                     }
 
                     cardLabel -> {
-                        navController.navigateTo(NavigationModel(route =Routes.AddCard))
+                        navController.navigateTo(NavigationModel(route = Routes.AddCard))
                     }
 
                     else -> {

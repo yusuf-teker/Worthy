@@ -1,6 +1,7 @@
 package com.yusufteker.worthy.screen.wishlist.list.presentation.components
 
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -28,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -35,12 +36,13 @@ import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.getNameResource
 import com.yusufteker.worthy.core.media.loadImageBitmapFromPath
+import com.yusufteker.worthy.core.presentation.theme.AppBrushes
+import com.yusufteker.worthy.core.presentation.theme.AppBrushes.cardBorderColor
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
 import com.yusufteker.worthy.core.presentation.toFormattedDate
 import com.yusufteker.worthy.core.presentation.util.formatted
 import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistItem
-import com.yusufteker.worthy.screen.wishlist.list.domain.priorityColor
 import io.github.aakira.napier.Napier
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.time.Clock
@@ -58,12 +60,24 @@ fun WishlistItemCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
             .clickable { onClick() },
         shape = CardDefaults.shape,
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        border = BorderStroke(1.dp, item.priorityColor)
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        //border = BorderStroke(1.dp, item.priorityColor),
+        colors = CardDefaults.cardColors().copy(
+            containerColor = Color.Transparent
+        )
     ) {
         Row(
+            Modifier.background(
+                AppBrushes.cardItemBrushWithBorder
+            ).border(
+                width = 2.dp,
+                color = cardBorderColor,
+                shape = RoundedCornerShape(12.dp)
+            ),
+
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -88,12 +102,12 @@ fun WishlistItemCard(
                         .size(100.dp)
                         .clip(RoundedCornerShape(8.dp))
                 )
+
             }
 
-            Spacer(modifier = Modifier.width(8.dp))
 
             Column(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.padding(start = 8.dp, bottom = 8.dp, top = 8.dp).weight(1f)
             ) {
                 Text(
                     text = item.name,

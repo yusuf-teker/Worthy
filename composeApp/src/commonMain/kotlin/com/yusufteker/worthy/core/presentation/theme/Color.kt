@@ -1,19 +1,14 @@
 package com.yusufteker.worthy.core.presentation.theme
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-val ColorScheme.customColor: Color
-    @Composable get() = if (background == Color(0xFF1C1B1F)) {
-        Color(0xFF4CAF50) // Dark tema
-    } else {
-        Color(0xFF8BC34A) // Light tema
-    }
 object AppColors {
+
     val primary: Color @Composable get() = MaterialTheme.colorScheme.primary
     val onPrimary: Color @Composable get() = MaterialTheme.colorScheme.onPrimary
     val primaryContainer: Color @Composable get() = MaterialTheme.colorScheme.primaryContainer
@@ -58,41 +53,48 @@ object AppColors {
     val surfaceContainerHigh: Color @Composable get() = MaterialTheme.colorScheme.surfaceContainerHigh
     val surfaceContainerHighest: Color @Composable get() = MaterialTheme.colorScheme.surfaceContainerHighest
 
-
-
     // >>>>>>> Custom Color  <<<<<<<<
 
-    val darkModeBackground = Color(0xFF1C1B1F)
-
+    val gradientBackgroundColors: List<Color>
+        @Composable get() = if (isSystemInDarkTheme()) {
+            listOf(
+                Color(0xFF0A1116), // Neredeyse siyah-mavi
+                Color(0xFF131D29), // Derin gece mavisi
+                Color(0xFF1C2A3C),  // Hafif açık gece mavisi
+                Color(0xFF131D29),
+            )
+        } else {
+            listOf(
+                Color(0xFFF7F9FC), // Çok açık gri-mavi
+                Color(0xFFE8F4F8), // Açık mavi-gri
+                Color(0xFFD6EAF8)
+            )
+        }
     val savingsGreen: Color
-        @Composable get() = if (MaterialTheme.colorScheme.background == darkModeBackground) {
+        @Composable get() = if (isSystemInDarkTheme()) {
             Color(0xFF4CAF50) // Dark - classic green
         } else {
             Color(0xFF8BC34A) // Light - lime green
         }
 
     val fixedExpenseGray: Color
-        @Composable get() = if (MaterialTheme.colorScheme.background == darkModeBackground) {
+        @Composable get() = if (isSystemInDarkTheme()) {
             Color(0xFF9E9E9E) // Dark - medium gray
         } else {
             Color(0xFFBDBDBD) // Light - light gray
         }
 
     val budgetBlue: Color
-        @Composable get() = if (MaterialTheme.colorScheme.background == darkModeBackground) {
+        @Composable get() = if (isSystemInDarkTheme()) {
             Color(0xFF03A9F4) // Dark - light blue
         } else {
             Color(0xFF81D4FA) // Light - soft sky blue
         }
 
-
     // >>>>>>> Color Lists <<<<<<<<
     val screenBackgroundColors: List<Color>
-        @Composable
-        get() =  listOf(
-            background,
-            surface,
-            background
+        @Composable get() = listOf(
+            background, surface, background
         )
 
     val icon_red = Color(0xFFFF5722)
@@ -106,35 +108,29 @@ object AppColors {
         Color(0xFFFF5722)  // Kırmızı
     )
 
-
-
     // >>>>>>> Static Color  <<<<<<<<
     val transparent: Color @Composable get() = Color.Transparent
 
     val primaryButtonColors: ButtonColors
-    @Composable
-    get() = ButtonDefaults.buttonColors(
-        containerColor = AppColors.primary,
-        contentColor   = AppColors.onPrimary,
-        disabledContainerColor = AppColors.primary.copy(alpha = 0.3f),
-        disabledContentColor   = AppColors.onPrimary.copy(alpha = 0.3f)
-    )
-
-    val secondaryButtonColors: ButtonColors
-        @Composable
-        get() = ButtonDefaults.buttonColors(
-            containerColor = AppColors.secondary,
-            contentColor   = AppColors.onSecondary,
-            disabledContainerColor = AppColors.secondary.copy(alpha = 0.3f),
-            disabledContentColor   = AppColors.onSecondary.copy(alpha = 0.3f)
+        @Composable get() = ButtonDefaults.buttonColors(
+            containerColor = AppColors.primary,
+            contentColor = AppColors.onPrimary,
+            disabledContainerColor = AppColors.primary.copy(alpha = 0.3f),
+            disabledContentColor = AppColors.onPrimary.copy(alpha = 0.3f)
         )
 
+    val secondaryButtonColors: ButtonColors
+        @Composable get() = ButtonDefaults.buttonColors(
+            containerColor = AppColors.secondary,
+            contentColor = AppColors.onSecondary,
+            disabledContainerColor = AppColors.secondary.copy(alpha = 0.3f),
+            disabledContentColor = AppColors.onSecondary.copy(alpha = 0.3f)
+        )
 
     val transactionIncomeColor = Color(0xFF4CAF50)
     val transactionExpenseColor = Color(0xFFF44336)
     val transactionRefundColor = Color(0xFF2196F3)
 }
-
 
 val primaryLight = Color(0xFF2D638B)
 val onPrimaryLight = Color(0xFFFFFFFF)

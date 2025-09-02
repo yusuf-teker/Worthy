@@ -3,7 +3,6 @@ package com.yusufteker.worthy.screen.wallet.presentation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -24,25 +23,30 @@ fun WalletScreenRoot(
     BaseContentWrapper(
         state = state
     ) {
-        WalletScreen(state = state, onAction = viewModel::onAction, contentPadding = contentPadding)
+        WalletScreen(
+            modifier = it,
+            state = state,
+            onAction = viewModel::onAction,
+            contentPadding = contentPadding
+        )
     }
 }
 
 @Composable
 fun WalletScreen(
+    modifier: Modifier = Modifier,
     state: WalletState,
     onAction: (action: WalletAction) -> Unit,
     contentPadding: PaddingValues = PaddingValues()
 ) {
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier,
         topBar = {
             // TODO
         }
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
+            modifier = modifier
                 .padding(contentPadding),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {

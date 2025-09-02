@@ -3,7 +3,6 @@ package com.yusufteker.worthy.screen.wishlist.detail.presentation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -13,7 +12,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yusufteker.worthy.app.navigation.NavigationHandler
 import com.yusufteker.worthy.app.navigation.NavigationModel
-import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -26,7 +24,7 @@ fun WishlistDetailScreenRoot(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     viewModel.onAction(WishlistDetailAction.Init(wishlistId))
-    NavigationHandler(viewModel){ model ->
+    NavigationHandler(viewModel) { model ->
         onNavigateTo(model)
     }
 
@@ -34,6 +32,7 @@ fun WishlistDetailScreenRoot(
         state = state
     ) {
         WishlistDetailScreen(
+            modifier = it,
             state = state,
             onAction = viewModel::onAction,
             contentPadding = contentPadding
@@ -43,13 +42,13 @@ fun WishlistDetailScreenRoot(
 
 @Composable
 fun WishlistDetailScreen(
+    modifier: Modifier = Modifier,
     state: WishlistDetailState,
     onAction: (action: WishlistDetailAction) -> Unit,
     contentPadding: PaddingValues = PaddingValues()
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = modifier
             .padding(contentPadding),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {

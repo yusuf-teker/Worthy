@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
@@ -23,13 +22,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.yusufteker.worthy.app.navigation.NavigationModel
-import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.presentation.UiEvent
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
 import com.yusufteker.worthy.core.presentation.components.AppButton
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
-import com.yusufteker.worthy.core.presentation.theme.AppBrushes.screenBackground
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppDimens.Spacing16
 import com.yusufteker.worthy.core.presentation.theme.AppDimens.Spacing8
@@ -64,8 +61,9 @@ fun DashboardScreenRoot(
     }
     BaseContentWrapper(
         state = state
-    ) {
+    ) { modifier ->
         DashboardScreen(
+            modifier = modifier,
             state = state,
             contentPadding = contentPadding,
             onAction = { action ->
@@ -79,20 +77,13 @@ fun DashboardScreenRoot(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
+    modifier: Modifier = Modifier,
     state: DashboardState,
     contentPadding: PaddingValues = PaddingValues(),
     onAction: (DashboardAction) -> Unit,
 ) {
 
-    Column(
-        Modifier.fillMaxSize()
-            .background(
-                //color = AppColors.background
-                brush = screenBackground
-            )
-            .padding(contentPadding)
-    )
-    {
+    Column(modifier.padding(contentPadding)) {
 
         AppTopBar(
             title = UiText.StringResourceId(Res.string.dashboard_overview).asString(),
@@ -148,8 +139,9 @@ fun DashboardScreen(
             AppButton(
                 text = UiText.StringResourceId(Res.string.dashboard_evaluate_purchase).asString(),
                 onClick = { onAction(DashboardAction.EvaluateButtonClicked) },
-                textModifier = Modifier.widthIn(max = 85.dp)
-            )
+                textModifier = Modifier.widthIn(max = 85.dp),
+
+                )
         }
         Spacer(Modifier.height(Spacing16))
 
@@ -172,8 +164,7 @@ fun DashboardScreen(
             containerColor = AppColors.surface,
             tonalElevation = 6.dp,
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-            contentWindowInsets = { WindowInsets.ime }
-        ) {
+            contentWindowInsets = { WindowInsets.ime }) {
             BottomSheetContent(
                 sheetState = bottomSheetState,
                 onClose = {

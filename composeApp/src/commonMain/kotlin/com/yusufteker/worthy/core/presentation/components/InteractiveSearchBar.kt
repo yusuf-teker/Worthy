@@ -110,16 +110,14 @@ fun InteractiveSearchBar(
     ) {
         // Ana arama barı
         Box(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = horizontalPadding)
-                .clip(RoundedCornerShape(cornerRadius)).background(
-                    if (!isFocused) AppColors.surface
-                    else Color.Transparent
-                )
+            modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(cornerRadius)).background(
+                if (!isFocused) AppColors.surface
+                else Color.Transparent
+            )
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth().padding(
-                    // horizontal = if (!isFocused) 16.dp else 0.dp,
-                    vertical = 12.dp
+                    horizontal = horizontalPadding, vertical = 12.dp
                 ), verticalAlignment = Alignment.CenterVertically
             ) {
                 // Arama ikonu

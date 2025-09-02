@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.yusufteker.worthy.core.presentation.theme.AppColors.primaryButtonColors
 import com.yusufteker.worthy.core.presentation.theme.AppDimens
@@ -38,7 +39,6 @@ fun AppButton(
         shape = shape,
         colors = colors,
         modifier = modifier
-        //.height(height)
     ) {
         if (loading) {
             androidx.compose.material3.CircularProgressIndicator(
@@ -54,11 +54,12 @@ fun AppButton(
             }
 
             Text(
-                modifier = textModifier,//.padding(4.dp),
+                modifier = textModifier,
                 text = text,
                 style = textStyle,
                 softWrap = true,
                 maxLines = 2,
+                textAlign = TextAlign.Center
             )
 
             if (trailingIcon != null) {

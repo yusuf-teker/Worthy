@@ -2,19 +2,19 @@ package com.yusufteker.worthy.screen.subscription.detail.presentation
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
-import com.yusufteker.worthy.core.presentation.components.AppTopBar
-import org.koin.compose.viewmodel.koinViewModel
-import com.yusufteker.worthy.app.navigation.NavigationHandler
-import com.yusufteker.worthy.app.navigation.NavigationModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -23,16 +23,39 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.yusufteker.worthy.app.navigation.NavigationHandler
+import com.yusufteker.worthy.app.navigation.NavigationModel
 import com.yusufteker.worthy.core.domain.createTimestampId
 import com.yusufteker.worthy.core.domain.getCurrentAppDate
 import com.yusufteker.worthy.core.domain.getCurrentMonth
@@ -48,7 +71,9 @@ import com.yusufteker.worthy.core.domain.model.isActive
 import com.yusufteker.worthy.core.domain.model.toEpochMillis
 import com.yusufteker.worthy.core.domain.model.toMonthlyData
 import com.yusufteker.worthy.core.presentation.UiText
+import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
 import com.yusufteker.worthy.core.presentation.components.AppButton
+import com.yusufteker.worthy.core.presentation.components.AppTopBar
 import com.yusufteker.worthy.core.presentation.components.MoneyInput
 import com.yusufteker.worthy.core.presentation.components.SwipeToDeleteWrapper
 import com.yusufteker.worthy.core.presentation.components.WheelDatePickerV2
@@ -60,6 +85,7 @@ import com.yusufteker.worthy.core.presentation.theme.AppTypography
 import com.yusufteker.worthy.core.presentation.util.formatted
 import com.yusufteker.worthy.screen.subscription.add.presentation.components.toComposeColor
 import com.yusufteker.worthy.screen.subscriptiondetail.presentation.SubscriptionDetailAction
+import org.koin.compose.viewmodel.koinViewModel
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.activate
 import worthy.composeapp.generated.resources.amount_must_be_greater_than_zero
@@ -83,7 +109,6 @@ import worthy.composeapp.generated.resources.start_dates_cannot_be_same
 import worthy.composeapp.generated.resources.streak_text
 import worthy.composeapp.generated.resources.terminate
 import worthy.composeapp.generated.resources.update
-import kotlin.let
 import kotlin.time.ExperimentalTime
 
 @Composable
@@ -95,7 +120,7 @@ fun SubscriptionDetailScreenRoot(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    NavigationHandler(viewModel){ model ->
+    NavigationHandler(viewModel) { model ->
         onNavigateTo(model)
     }
 
@@ -103,6 +128,7 @@ fun SubscriptionDetailScreenRoot(
 
     BaseContentWrapper(state = state) {
         SubscriptionDetailScreen(
+            modifier = it,
             state = state,
             onAction = viewModel::onAction,
             contentPadding = contentPadding
@@ -113,6 +139,7 @@ fun SubscriptionDetailScreenRoot(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SubscriptionDetailScreen(
+    modifier: Modifier = Modifier,
     state: SubscriptionDetailState,
     onAction: (action: SubscriptionDetailAction) -> Unit,
     contentPadding: PaddingValues = PaddingValues()
@@ -121,27 +148,19 @@ fun SubscriptionDetailScreen(
     var showHistoryEditor by remember { mutableStateOf(false) }
 
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize().padding(contentPadding).clickable{
-            showTerminateActivateBottomSheet = false
-            showHistoryEditor = false
-        },
-        topBar = {
-            AppTopBar(
-                title = state.subscription?.name ?: "",
-                onNavIconClick = { onAction(SubscriptionDetailAction.NavigateBack) }
-            )
-        }
-    ) { innerPadding ->
+    Scaffold(modifier = modifier.padding(contentPadding).clickable {
+        showTerminateActivateBottomSheet = false
+        showHistoryEditor = false
+    }, topBar = {
+        AppTopBar(
+            title = state.subscription?.name ?: "",
+            onNavIconClick = { onAction(SubscriptionDetailAction.NavigateBack) })
+    }) { innerPadding ->
         state.subscription?.let { subscription ->
             Column(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .fillMaxSize()
-                    .background(AppColors.background)
-                    .padding(16.dp),
+                modifier = modifier.padding(innerPadding).fillMaxSize().padding(16.dp),
 
-            ) {
+                ) {
                 // Header Card: Icon + Name + Category
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -155,13 +174,10 @@ fun SubscriptionDetailScreen(
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         Box(
-                            modifier = Modifier
-                                .size(64.dp)
-                                .background(
-                                    subscription.colorHex?.toComposeColor() ?: AppColors.primary,
-                                    CircleShape
-                                ),
-                            contentAlignment = Alignment.Center
+                            modifier = Modifier.size(64.dp).background(
+                                subscription.colorHex?.toComposeColor() ?: AppColors.primary,
+                                CircleShape
+                            ), contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = subscription.icon,
@@ -198,8 +214,11 @@ fun SubscriptionDetailScreen(
                         modifier = Modifier.padding(20.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(UiText.StringResourceId(Res.string.monthly_price).asString(),
-                            style = MaterialTheme.typography.bodyLarge, color = Color.Gray)
+                        Text(
+                            UiText.StringResourceId(Res.string.monthly_price).asString(),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color.Gray
+                        )
                         Text(
                             text = subscription.amount.formatted(),
                             style = MaterialTheme.typography.headlineLarge,
@@ -244,18 +263,21 @@ fun SubscriptionDetailScreen(
                         }
 
                         state.subscription.endDate?.let {
-                            DetailRow(UiText.StringResourceId(Res.string.end_date).asString(), it.format(showDay = false))
+                            DetailRow(
+                                UiText.StringResourceId(Res.string.end_date).asString(),
+                                it.format(showDay = false)
+                            )
                         }
 
                         state.subscription.scheduledDay?.let {
-                            DetailRow(UiText.StringResourceId(Res.string.payment_day).asString(), "$it")
+                            DetailRow(
+                                UiText.StringResourceId(Res.string.payment_day).asString(), "$it"
+                            )
                         }
 
                         state.subscription.cardId?.let {
                             DetailRow(UiText.StringResourceId(Res.string.card_id).asString(), "$it")
                         }
-
-
 
                     }
                 }
@@ -265,26 +287,22 @@ fun SubscriptionDetailScreen(
 
                 Spacer(Modifier.weight(1f))
                 AppButton( // EDIT
-                    text = UiText.StringResourceId(Res.string.edit).asString(),
-                    onClick = {
+                    text = UiText.StringResourceId(Res.string.edit).asString(), onClick = {
                         showHistoryEditor = true
-                    },
-                    trailingIcon = {
+                    }, trailingIcon = {
                         Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = "Edit history"
+                            imageVector = Icons.Default.Edit, contentDescription = "Edit history"
                         )
 
-                    },
-                    loading = state.isLoading,
-                    modifier = Modifier.fillMaxWidth()
+                    }, loading = state.isLoading, modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(Modifier.height(8.dp))
                 AppButton( // ACTIVATION
-                    text = if (subscription.isActive()) UiText.StringResourceId(Res.string.terminate).asString() else UiText.StringResourceId(Res.string.activate).asString(),
+                    text = if (subscription.isActive()) UiText.StringResourceId(Res.string.terminate)
+                        .asString() else UiText.StringResourceId(Res.string.activate).asString(),
                     onClick = {
                         showTerminateActivateBottomSheet = true
-                     },
+                    },
                     loading = state.isLoading,
                     modifier = Modifier.fillMaxWidth(),
                     colors = primaryButtonColors.copy(
@@ -328,12 +346,10 @@ fun SubscriptionDetailScreen(
     }
 }
 
-
 @Composable
 private fun DetailRow(label: String, value: String) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+        modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
     ) {
 
         Text(label, style = MaterialTheme.typography.bodyLarge, color = Color.Gray)
@@ -351,13 +367,10 @@ fun ActivationEditor(
     onDismiss: () -> Unit
 ) {
     ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        sheetState = rememberModalBottomSheetState()
+        onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState()
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
@@ -373,8 +386,7 @@ fun ActivationEditor(
             )
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
+                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End
             ) {
                 TextButton(onClick = onDismiss) {
                     Text(UiText.StringResourceId(Res.string.cancel).asString())
@@ -423,11 +435,9 @@ fun SubscriptionHistoryEditor(
                 // 🔹 Header - Yeni Abonelik Ekleme Bölümü
                 item {
                     Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
+                        modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(
                             containerColor = AppColors.primary.copy(alpha = 0.1f)
-                        ),
-                        border = BorderStroke(2.dp, AppColors.primary.copy(alpha = 0.3f))
+                        ), border = BorderStroke(2.dp, AppColors.primary.copy(alpha = 0.3f))
                     ) {
                         Column(
                             modifier = Modifier.padding(16.dp),
@@ -485,8 +495,7 @@ fun SubscriptionHistoryEditor(
                                         onSave(adjustOpenEndedRecurringItems(tempItems))
                                     }
                                     onDismiss.invoke()
-                                }
-                            )
+                                })
                         }
                     }
                 }
@@ -495,8 +504,7 @@ fun SubscriptionHistoryEditor(
                 item {
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         HorizontalDivider(
-                            thickness = 2.dp,
-                            color = AppColors.outline.copy(alpha = 0.3f)
+                            thickness = 2.dp, color = AppColors.outline.copy(alpha = 0.3f)
                         )
                         Text(
                             "Subscription History",
@@ -515,20 +523,16 @@ fun SubscriptionHistoryEditor(
                     SwipeToDeleteWrapper(
                         onDelete = {
                             items = items.filterIndexed { i, _ -> i != index }
-                        }
-                    ) {
+                        }) {
                         ExistingSubscription(
-                            subscription = sub,
-                            onUpdate = { newItem ->
+                            subscription = sub, onUpdate = { newItem ->
                                 items = items.map {
                                     if (it.id == newItem.id) newItem
                                     else it
                                 }
-                            },
-                            validationError = if (validationErrors?.first == sub.id) {
+                            }, validationError = if (validationErrors?.first == sub.id) {
                                 validationErrors?.second?.asString()
-                            } else null,
-                            isLast = isCurrentSubscription
+                            } else null, isLast = isCurrentSubscription
                         )
                     }
                 }
@@ -538,8 +542,7 @@ fun SubscriptionHistoryEditor(
 
             // 🔹 Save butonu
             Button(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = {
+                modifier = Modifier.fillMaxWidth(), onClick = {
                     validationErrors = hasDateConflict(items)
                     if (validationErrors != null) {
                         return@Button
@@ -547,8 +550,7 @@ fun SubscriptionHistoryEditor(
                         onSave(items.sortedBy { it.startDate })
                         onDismiss()
                     }
-                }
-            ) {
+                }) {
                 Text("Save Changes")
             }
         }
@@ -567,8 +569,7 @@ fun NewSubscription(
     var amountError by remember { mutableStateOf<UiText?>(null) }
 
     Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         MoneyInput(
             label = UiText.StringResourceId(Res.string.new_amount),
@@ -583,11 +584,9 @@ fun NewSubscription(
         )
 
         WheelDatePickerV2(
-            initialDate = starDate,
-            onDateSelected = { date ->
+            initialDate = starDate, onDateSelected = { date ->
                 onStarDateChange(date)
-            },
-            showDay = false
+            }, showDay = false
         )
 
         if (!errorMessage.isNullOrBlank()) {
@@ -602,13 +601,12 @@ fun NewSubscription(
         Button(
             onClick = {
                 if ((amount?.amount ?: 0.0) <= 0.0) {
-                    amountError = UiText.StringResourceId(Res.string.amount_must_be_greater_than_zero)
+                    amountError =
+                        UiText.StringResourceId(Res.string.amount_must_be_greater_than_zero)
                 } else {
                     onSave()
                 }
-            },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
+            }, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(
                 containerColor = AppColors.primary
             )
         ) {
@@ -628,17 +626,13 @@ fun ExistingSubscription(
     isLast: Boolean = false
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors().copy(
+        modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors().copy(
             containerColor = AppColors.secondaryContainer
-        ),
-        border = if (isLast)
-            BorderStroke(1.dp, AppColors.secondary.copy(alpha = 0.5f))
+        ), border = if (isLast) BorderStroke(1.dp, AppColors.secondary.copy(alpha = 0.5f))
         else null
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.padding(16.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.padding(16.dp)
         ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -690,14 +684,12 @@ fun ExistingSubscription(
                         fontWeight = FontWeight.Medium
                     )
                     Checkbox(
-                        checked = hasEndDate,
-                        onCheckedChange = { isChecked ->
+                        checked = hasEndDate, onCheckedChange = { isChecked ->
                             hasEndDate = isChecked
                             if (!isChecked) {
                                 onUpdate(subscription.copy(endDate = null))
                             }
-                        }
-                    )
+                        })
                     Text("Has end date", style = MaterialTheme.typography.bodySmall)
                 }
             }
@@ -733,8 +725,7 @@ fun ExistingSubscription(
                 money = subscription.amount,
                 onValueChange = { amount ->
                     onUpdate(subscription.copy(amount = amount ?: emptyMoney()))
-                }
-            )
+                })
 
             validationError?.let {
                 Text(
@@ -748,13 +739,15 @@ fun ExistingSubscription(
 }
 
 @OptIn(ExperimentalTime::class)
-fun hasDateConflict(items: List<RecurringItem.Subscription>, newItem: RecurringItem.Subscription? = null): Pair<Int, UiText>? {
+fun hasDateConflict(
+    items: List<RecurringItem.Subscription>, newItem: RecurringItem.Subscription? = null
+): Pair<Int, UiText>? {
     val sorted = items.sortedBy { it.startDate }
     val sortedMaxEnd = items.sortedBy { it.endDate }
     val lastUpdatedBeforeNew = items.find { it.endDate == null && it.id != newItem?.id }
     lastUpdatedBeforeNew?.let {
-        newItem?.let {  item ->
-            if (it.startDate >= item.startDate){
+        newItem?.let { item ->
+            if (it.startDate >= item.startDate) {
                 return Pair(
                     it.id, UiText.StringResourceId(
                         id = Res.string.end_date_required_for_past_start,
@@ -767,7 +760,6 @@ fun hasDateConflict(items: List<RecurringItem.Subscription>, newItem: RecurringI
     for (i in 0 until sorted.size - 1) {
         val current = sorted[i]
         val next = sorted[i + 1]
-
 
         val currentStart = current.startDate
         val currentEnd = current.endDate ?: current.startDate
@@ -802,8 +794,7 @@ fun hasDateConflict(items: List<RecurringItem.Subscription>, newItem: RecurringI
         if (nextStart > currentStart && nextStart < currentEnd) {
             return Pair(
                 next.id, UiText.StringResourceId(
-                    id = Res.string.date_ranges_conflict,
-                    args = arrayOf(
+                    id = Res.string.date_ranges_conflict, args = arrayOf(
                         next.name,
                         nextStart.month,
                         nextStart.year,
@@ -818,20 +809,18 @@ fun hasDateConflict(items: List<RecurringItem.Subscription>, newItem: RecurringI
         }
 
         // 3. current'ın endDate'i, sonraki startDate'den önce olmalı (== de dahil değil)
-        if (currentEnd >= nextStart)
-            return Pair(
-                current.id, UiText.StringResourceId(
-                    id = Res.string.date_ranges_conflict,
-                    args = arrayOf(
-                        current.name,
-                        currentStart.month,
-                        currentStart.year,
-                        next.name,
-                        nextStart.month,
-                        nextStart.year
-                    )
+        if (currentEnd >= nextStart) return Pair(
+            current.id, UiText.StringResourceId(
+                id = Res.string.date_ranges_conflict, args = arrayOf(
+                    current.name,
+                    currentStart.month,
+                    currentStart.year,
+                    next.name,
+                    nextStart.month,
+                    nextStart.year
                 )
             )
+        )
 
     }
     for (item in sorted) {
@@ -841,13 +830,8 @@ fun hasDateConflict(items: List<RecurringItem.Subscription>, newItem: RecurringI
         if (end != null && start > end) {
             return Pair(
                 item.id, UiText.StringResourceId(
-                    id = Res.string.start_date_after_end_date,
-                    args = arrayOf(
-                        item.name,
-                        start.month,
-                        start.year,
-                        end.month,
-                        end.year
+                    id = Res.string.start_date_after_end_date, args = arrayOf(
+                        item.name, start.month, start.year, end.month, end.year
                     )
                 )
             )
@@ -864,7 +848,6 @@ fun hasDateConflict(items: List<RecurringItem.Subscription>, newItem: RecurringI
 
     return null
 }
-
 
 fun adjustOpenEndedRecurringItems(items: List<RecurringItem.Subscription>): List<RecurringItem.Subscription> {
     val sorted = items.sortedBy { it.startDate }
@@ -888,8 +871,7 @@ fun adjustOpenEndedRecurringItems(items: List<RecurringItem.Subscription>): List
 
 @Composable
 fun SubscriptionStreakBadge(
-    activeMonths: Int,
-    modifier: Modifier = Modifier
+    activeMonths: Int, modifier: Modifier = Modifier
 ) {
     if (activeMonths > 0) {
         Surface(
@@ -902,7 +884,8 @@ fun SubscriptionStreakBadge(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = UiText.StringResourceId(Res.string.streak_text, arrayOf(activeMonths)).asString(),
+                    text = UiText.StringResourceId(Res.string.streak_text, arrayOf(activeMonths))
+                        .asString(),
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold,
                     color = AppColors.primary
@@ -911,7 +894,6 @@ fun SubscriptionStreakBadge(
         }
     }
 }
-
 
 @Composable
 fun MiniSubscriptionChart(
@@ -933,7 +915,7 @@ fun MiniSubscriptionChart(
         colors = CardDefaults.cardColors(containerColor = AppColors.secondaryContainer),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(modifier = modifier.padding(start = 8.dp,end = 16.dp, top = 16.dp)) {
+        Column(modifier = modifier.padding(start = 8.dp, end = 16.dp, top = 16.dp)) {
             Box(modifier = Modifier.height(height).fillMaxWidth()) {
                 Canvas(modifier = Modifier.fillMaxSize()) {
                     val widthPx = size.width
@@ -949,7 +931,11 @@ fun MiniSubscriptionChart(
                     }
 
                     fun mapY(amount: Double): Float {
-                        return heightPx - paddingY - ((amount - minY) / (maxY - minY) * chartHeight).toFloat()
+                        return if (maxY == minY) { //eşit olunca sıkıntı oluyordu
+                            heightPx / 2f // tüm noktalar aynı yatay çizgi üzerinde
+                        } else {
+                            heightPx - paddingY - ((amount - minY) / (maxY - minY) * chartHeight).toFloat()
+                        }
                     }
 
                     // Kesintisiz çizgiler çiz
@@ -968,7 +954,11 @@ fun MiniSubscriptionChart(
 
                         if (shouldBreakLine && pathStarted) {
                             // Önceki path'i çiz ve yeni path başlat
-                            drawPath(currentPath, color = lineColor, style = Stroke(width = 4f, cap = StrokeCap.Round))
+                            drawPath(
+                                currentPath,
+                                color = lineColor,
+                                style = Stroke(width = 4f, cap = StrokeCap.Round)
+                            )
                             currentPath = Path()
                             pathStarted = false
                         }
@@ -984,22 +974,35 @@ fun MiniSubscriptionChart(
 
                     // Son path'i çiz
                     if (pathStarted) {
-                        drawPath(currentPath, color = lineColor, style = Stroke(width = 4f, cap = StrokeCap.Round))
+                        drawPath(
+                            currentPath,
+                            color = lineColor,
+                            style = Stroke(width = 4f, cap = StrokeCap.Round)
+                        )
                     }
 
                     // Noktalar (tüm noktaları çiz, çizgi olsun olmasın)
                     sortedData.forEachIndexed { index, (_, money) ->
                         val x = mapX(index)
                         val y = mapY(money.amount)
-                        drawCircle(color = lineColor, radius = 4f, center = androidx.compose.ui.geometry.Offset(x, y))
+                        drawCircle(
+                            color = lineColor,
+                            radius = 4f,
+                            center = androidx.compose.ui.geometry.Offset(x, y)
+                        )
                     }
                 }
             }
 
             // X ekseni etiketleri
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Row(
+                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
+            ) {
                 sortedData.forEach { (date, _) ->
-                    Text(getMonthShortName(date.month), fontSize = MaterialTheme.typography.bodySmall.fontSize)
+                    Text(
+                        getMonthShortName(date.month),
+                        fontSize = MaterialTheme.typography.bodySmall.fontSize
+                    )
                 }
             }
         }

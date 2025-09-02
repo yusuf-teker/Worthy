@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -28,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yusufteker.worthy.app.navigation.NavigationHandler
 import com.yusufteker.worthy.app.navigation.NavigationModel
-import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
@@ -39,7 +37,6 @@ import com.yusufteker.worthy.core.presentation.components.PieChart
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
 import com.yusufteker.worthy.core.presentation.theme.Constants.WEEKLY_MAX_HOURS
-import com.yusufteker.worthy.core.presentation.toFormattedWithThousandsSeparator
 import com.yusufteker.worthy.core.presentation.util.formatMoneyText
 import com.yusufteker.worthy.screen.settings.presentation.components.BudgetSlider
 import com.yusufteker.worthy.screen.settings.presentation.components.FinancialWidget
@@ -73,8 +70,10 @@ fun SettingsScreenRoot(
     }
     BaseContentWrapper(
         state = state
-    ) {
+    ) { modifier ->
         SettingsScreen(
+            modifier = modifier,
+
             state = state, onAction = { action ->
                 when (action) {
                     else -> Unit
@@ -89,6 +88,7 @@ fun SettingsScreenRoot(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
+    modifier: Modifier = Modifier,
     state: SettingsState,
     onAction: (SettingsAction) -> Unit,
     contentPadding: PaddingValues = PaddingValues(),
@@ -99,8 +99,7 @@ fun SettingsScreen(
     var showFixedExpenseDialog by remember { mutableStateOf(false) }
 
     Column(
-        Modifier.fillMaxSize().padding(contentPadding),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+        modifier.padding(contentPadding), verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         AppTopBar(
             title = UiText.StringResourceId(Res.string.screen_title_settings).asString(),
@@ -223,18 +222,13 @@ fun SettingsScreen(
         MenuRow(
             iconPainter = painterResource(Res.drawable.card),
             text = UiText.StringResourceId(Res.string.my_cards).asString(),
-            onClick = { onAction(SettingsAction.OnMyCardsClick) }
-        )
+            onClick = { onAction(SettingsAction.OnMyCardsClick) })
         MenuRow(
             iconPainter = painterResource(Res.drawable.subscription),
             text = UiText.StringResourceId(Res.string.menu_subscriptions).asString(),
-            onClick = { onAction(SettingsAction.OnSubscriptionsClick) }
-        )
-
+            onClick = { onAction(SettingsAction.OnSubscriptionsClick) })
 
     }
-
-
 
     // INCOME DIALOG
     if (showIncomeDialog) {
@@ -302,8 +296,7 @@ private fun ReadOnlyRow(label: String, amount: Double, color: Color, currencySym
         )
         Spacer(Modifier.width(8.dp))
         Text(
-            "$label: ${amount.formatMoneyText()} $currencySymbol",
-            style = AppTypography.bodyMedium
+            "$label: ${amount.formatMoneyText()} $currencySymbol", style = AppTypography.bodyMedium
         )
     }
 }

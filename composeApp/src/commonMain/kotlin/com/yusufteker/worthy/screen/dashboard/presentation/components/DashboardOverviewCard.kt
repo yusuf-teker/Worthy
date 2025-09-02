@@ -86,14 +86,11 @@ fun DashboardOverviewCard(
         Napier.d("IncomeAllocationCard Chart selected: $selectedChartIndex")
     }
     Card(
-        modifier = modifier,
-        colors = colors,
-        border = BorderStroke(1.dp, AppColors.surfaceVariant)
+        modifier = modifier, colors = colors, border = BorderStroke(1.dp, AppColors.surfaceVariant)
     ) {
         Column(Modifier.padding(24.dp)) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = UiText.StringResourceId(Res.string.income_allocation_title).asString(),
@@ -110,9 +107,7 @@ fun DashboardOverviewCard(
                         Icon(Icons.Default.ArrowDropDown, contentDescription = null)
                     }
                     DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }
-                    ) {
+                        expanded = expanded, onDismissRequest = { expanded = false }) {
                         selectableMonths.forEach { monthYear ->
 
                             DropdownMenuItem(
@@ -120,17 +115,14 @@ fun DashboardOverviewCard(
                                 onClick = {
                                     onSelectedMonthChanged(monthYear)
                                     expanded = false
-                                }
-                            )
+                                })
                         }
                     }
                 }
             }
             Spacer(Modifier.height(16.dp))
             Text(
-                amountText,
-                style = AppTypography.displaySmall,
-                color = AppColors.onSurface
+                amountText, style = AppTypography.displaySmall, color = AppColors.onSurface
             )
             Spacer(Modifier.height(4.dp))
             Text(
@@ -160,19 +152,15 @@ fun DashboardOverviewCard(
                 },
                 onAddWishlistClicked = { onAddWishlistClicked.invoke() },
                 onAddRecurringClicked = { onAddRecurringClicked.invoke() },
-                onAddTransactionClicked = { onAddTransactionClicked.invoke() }
-            )
+                onAddTransactionClicked = { onAddTransactionClicked.invoke() })
 
             // IncomeAllocationCard içinde
             AnimatedVisibility(
-                visible = selectedChartIndex != null,
-                enter = fadeIn() + expandVertically(
+                visible = selectedChartIndex != null, enter = fadeIn() + expandVertically(
                     expandFrom = Alignment.Top,   // üstten açılma hissi
                     animationSpec = tween(300)
-                ),
-                exit = shrinkVertically(
-                    shrinkTowards = Alignment.Top,
-                    animationSpec = tween(300)
+                ), exit = shrinkVertically(
+                    shrinkTowards = Alignment.Top, animationSpec = tween(300)
                 ) + fadeOut()
             ) {
 
@@ -185,13 +173,11 @@ fun DashboardOverviewCard(
                         painter = painterResource(resource = Res.drawable.history),
                         contentDescription = "gecmis",
                         tint = AppColors.onBackground,
-                        modifier = Modifier
-                            .size(AppIconSizeSmall)
+                        modifier = Modifier.size(AppIconSizeSmall)
                     )
                     Spacer(Modifier.width(Spacing16))
                     MiniBarChart(
-                        values = miniBarsFractions,
-                        labels = miniBarsMonths
+                        values = miniBarsFractions, labels = miniBarsMonths
                     )
 
                 }

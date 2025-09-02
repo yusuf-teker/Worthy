@@ -53,6 +53,7 @@ fun SwipeToDeleteWrapper(
 
     SwipeToDismissBox(
         state = swipeState, backgroundContent = {
+
             Box(
                 modifier = Modifier.clip(shape).fillMaxSize()
                     .background(Color.Red.copy(alpha = 0.8f)),

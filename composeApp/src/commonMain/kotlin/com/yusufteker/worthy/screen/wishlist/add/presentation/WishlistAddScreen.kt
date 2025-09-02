@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -29,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yusufteker.worthy.app.navigation.NavigationHandler
 import com.yusufteker.worthy.app.navigation.NavigationModel
-import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.domain.model.CategoryType
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
@@ -54,9 +52,9 @@ fun WishlistAddScreenRoot(
     contentPadding: PaddingValues = PaddingValues(),
     onNavigateTo: (NavigationModel) -> Unit = {}
 
-    ) {
+) {
 
-    NavigationHandler(viewModel){ model ->
+    NavigationHandler(viewModel) { model ->
         onNavigateTo(model)
     }
 
@@ -65,7 +63,10 @@ fun WishlistAddScreenRoot(
         state = state
     ) {
         WishlistAddScreen(
-            state = state, onAction = viewModel::onAction, contentPadding = contentPadding
+            modifier = it,
+            state = state,
+            onAction = viewModel::onAction,
+            contentPadding = contentPadding
         )
 
     }
@@ -73,12 +74,13 @@ fun WishlistAddScreenRoot(
 
 @Composable
 fun WishlistAddScreen(
+    modifier: Modifier = Modifier,
     state: WishlistAddState,
     onAction: (action: WishlistAddAction) -> Unit,
     contentPadding: PaddingValues = PaddingValues()
 ) {
 
-    Column(Modifier.fillMaxSize().padding(contentPadding).padding(horizontal = 16.dp)) {
+    Column(modifier.padding(contentPadding).padding(horizontal = 16.dp)) {
         Column(
             modifier = Modifier.verticalScroll(rememberScrollState())
 

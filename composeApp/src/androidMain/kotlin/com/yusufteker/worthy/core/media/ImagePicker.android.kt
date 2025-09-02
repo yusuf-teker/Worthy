@@ -1,28 +1,28 @@
 package com.yusufteker.worthy.core.media
 
 import android.Manifest
-import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
-import androidx.compose.runtime.*
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.yalantis.ucrop.UCrop
 import io.github.aakira.napier.Napier
 import java.io.File
 import java.io.FileOutputStream
-
 import java.io.IOException
+
 @Composable
 actual fun rememberImagePicker(): ImagePicker {
     val context = LocalContext.current
@@ -32,7 +32,10 @@ actual fun rememberImagePicker(): ImagePicker {
         contract = ActivityResultContracts.PickVisualMedia()
     ) { uri: Uri? ->
         val bitmap = uri?.let { loadImageFromUri(context, it) }
-        galleryCallback?.invoke(PlatformImage(bitmap!!))
+        bitmap?.let {
+            galleryCallback?.invoke(PlatformImage(it))
+
+        }
         galleryCallback = null
     }
 
@@ -44,7 +47,10 @@ actual fun rememberImagePicker(): ImagePicker {
         val bitmap = if (success) {
             currentPhotoUri?.let { loadImageFromUri(context, it) }
         } else null
-        cameraCallback?.invoke(PlatformImage(bitmap!!))
+        bitmap?.let {
+            cameraCallback?.invoke(PlatformImage(it))
+
+        }
         cameraCallback = null
     }
 
@@ -58,7 +64,10 @@ actual fun rememberImagePicker(): ImagePicker {
             val uri = UCrop.getOutput(result.data!!)
             val bitmap = uri?.let { loadImageFromUri(context, it) }
             //callback imagepicker da cropImage çalıştığında  tanımlanıyor
-            cropCallback?.invoke(PlatformImage(bitmap!!))
+            bitmap?.let {
+                cropCallback?.invoke(PlatformImage(bitmap))
+
+            }
         } else {
             cropCallback?.invoke(null)
         }
@@ -105,7 +114,6 @@ private fun loadImageFromUri(context: Context, uri: Uri): ImageBitmap? {
     }
 }
 
-
 class AndroidImagePicker(
     private val context: Context,
     private val visualMediaLauncher: ActivityResultLauncher<PickVisualMediaRequest>,
@@ -119,8 +127,7 @@ class AndroidImagePicker(
 
         // PickVisualMedia kullan - izin gerekmez
         val request = PickVisualMediaRequest.Builder()
-            .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly)
-            .build()
+            .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly).build()
 
         visualMediaLauncher.launch(request)
     }
@@ -167,7 +174,9 @@ class AndroidImagePicker(
         }
     }
 
-    override fun cropImage(image: PlatformImage, aspectRatio: Float, onCropped: (PlatformImage?) -> Unit) {
+    override fun cropImage(
+        image: PlatformImage, aspectRatio: Float, onCropped: (PlatformImage?) -> Unit
+    ) {
         cropCallback = onCropped // önce call back setliyoruz.
 
         // ImageBitmap → Bitmap → File
@@ -180,14 +189,11 @@ class AndroidImagePicker(
         }
 
         val inputUri = FileProvider.getUriForFile(
-            context,
-            "${context.packageName}.provider",
-            inputFile
+            context, "${context.packageName}.provider", inputFile
         )
         val outputUri = Uri.fromFile(outputFile)
 
-        val uCrop = UCrop.of(inputUri, outputUri)
-            .withAspectRatio(aspectRatio, 1f)
+        val uCrop = UCrop.of(inputUri, outputUri).withAspectRatio(aspectRatio, 1f)
             .withMaxResultSize(1080, 1080)
 
         // Ucrop başlıyor arka planda uCropActivity açılıyor
@@ -198,24 +204,19 @@ class AndroidImagePicker(
 
     private fun hasCameraPermission(): Boolean {
         return ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.CAMERA
+            context, Manifest.permission.CAMERA
         ) == PackageManager.PERMISSION_GRANTED
     }
 
     private fun createImageUri(): Uri {
         val imageFile = File(
-            context.filesDir,
-            "camera_image_${System.currentTimeMillis()}.jpg"
+            context.filesDir, "camera_image_${System.currentTimeMillis()}.jpg"
         )
 
         return FileProvider.getUriForFile(
-            context,
-            "${context.packageName}.provider",
-            imageFile
+            context, "${context.packageName}.provider", imageFile
         )
     }
-
 
 }
 

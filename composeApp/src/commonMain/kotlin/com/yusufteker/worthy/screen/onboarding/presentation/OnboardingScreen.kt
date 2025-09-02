@@ -1,11 +1,9 @@
 package com.yusufteker.worthy.screen.onboarding.presentation
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -15,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
-import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppDimens.ScreenPadding
 import com.yusufteker.worthy.screen.onboarding.presentation.components.UserFormPager
 import org.koin.compose.viewmodel.koinViewModel
@@ -30,10 +27,9 @@ fun OnboardingScreenRoot(
 
     BaseContentWrapper(
         state = state
-    ) {
+    ) { modifier ->
         OnboardingScreen(
-            state = state,
-            onAction = { action ->
+            modifier = modifier, state = state, onAction = { action ->
                 when (action) {
                     is OnboardingAction.OnGetStartedClicked -> {
                         //viewModel.navigateTo(Routes.Dashboard)
@@ -43,8 +39,7 @@ fun OnboardingScreenRoot(
                     else -> Unit
                 }
                 viewModel.onAction(action)
-            },
-            contentPadding = contentPadding
+            }, contentPadding = contentPadding
         )
     }
 
@@ -52,6 +47,7 @@ fun OnboardingScreenRoot(
 
 @Composable
 fun OnboardingScreen(
+    modifier: Modifier = Modifier,
     state: OnboardingState,
     onAction: (OnboardingAction) -> Unit,
     contentPadding: PaddingValues = PaddingValues()
@@ -60,19 +56,14 @@ fun OnboardingScreen(
 
 
     Box(
-        contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize().clickable(
-        indication = null,
-        interactionSource = remember { MutableInteractionSource() }
-    ) {
+        contentAlignment = Alignment.Center, modifier = modifier.clickable(
+        indication = null, interactionSource = remember { MutableInteractionSource() }) {
         focusManager.clearFocus()
-    }.background(
-        AppColors.background
-    ).padding(ScreenPadding)
+    }.padding(ScreenPadding)
     ) {
 
         UserFormPager(
-            onGetStarted = { onAction(OnboardingAction.OnGetStartedClicked(it)) }
-        )
+            onGetStarted = { onAction(OnboardingAction.OnGetStartedClicked(it)) })
 
     }
 }

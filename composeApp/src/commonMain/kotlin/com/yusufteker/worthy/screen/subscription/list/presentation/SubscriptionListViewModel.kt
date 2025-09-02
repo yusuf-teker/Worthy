@@ -16,19 +16,24 @@ class SubscriptionListViewModel(
     init {
         observeData()
     }
-    fun observeData(){
+
+    fun observeData() {
         launchWithLoading {
-            subscriptionRepository.getAllSubscriptions() .onEach { subscriptions ->
+            subscriptionRepository.getAllSubscriptions().onEach { subscriptions ->
+                val activeSubscriptions = subscriptions.filter { it.isActive() }
+                val activeGroupIds = activeSubscriptions.map { it.groupId }.toSet()
+
                 _state.update { currentState ->
                     currentState.copy(
                         activeSubscriptions = subscriptions.filter { it.isActive() },
-                        inactiveSubscriptions = subscriptions.filter { !it.isActive() }
+                        inactiveSubscriptions = subscriptions.filter { !it.isActive() && it.groupId !in activeGroupIds } // todo aynı group id ile aktif olan olmaması lazım
                     )
                 }
             }.launchIn(viewModelScope)
         }
 
     }
+
     fun onAction(action: SubscriptionListAction) {
         when (action) {
             is SubscriptionListAction.Init -> {
@@ -42,15 +47,18 @@ class SubscriptionListViewModel(
             is SubscriptionListAction.OnAddNewSubscription -> {
                 navigateTo(Routes.AddSubscription)
             }
+
             is SubscriptionListAction.NavigateToAddSubscription -> {
                 navigateTo(Routes.AddSubscription)
             }
-            is SubscriptionListAction.OnItemDelete ->{
+
+            is SubscriptionListAction.OnItemDelete -> {
                 launchWithLoading {
                     subscriptionRepository.deleteSubscription(action.id)
                 }
 
             }
+
             is SubscriptionListAction.OnItemClicked -> {
                 navigateTo(Routes.SubscriptionDetail(action.subscriptionId))
             }

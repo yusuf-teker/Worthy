@@ -2,7 +2,6 @@ package com.yusufteker.worthy.screen.wishlist.list.presentation
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -21,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yusufteker.worthy.app.navigation.NavigationHandler
 import com.yusufteker.worthy.app.navigation.NavigationModel
-import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.asStringList
 import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
@@ -48,7 +46,7 @@ fun WishlistScreenRoot(
 
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    NavigationHandler(viewModel) { model->
+    NavigationHandler(viewModel) { model ->
         onNavigateTo(model)
     }
 
@@ -56,7 +54,10 @@ fun WishlistScreenRoot(
         state = state
     ) {
         WishlistScreen(
-            state = state, onAction = viewModel::onAction, contentPadding = contentPadding
+            modifier = it,
+            state = state,
+            onAction = viewModel::onAction,
+            contentPadding = contentPadding
         )
     }
 
@@ -64,12 +65,13 @@ fun WishlistScreenRoot(
 
 @Composable
 fun WishlistScreen(
+    modifier: Modifier = Modifier,
     state: WishlistState,
     onAction: (WishlistAction) -> Unit,
     contentPadding: PaddingValues = PaddingValues(),
 ) {
 
-    Scaffold(modifier = Modifier.padding(contentPadding), floatingActionButton = {
+    Scaffold(modifier = modifier.padding(contentPadding), floatingActionButton = {
         WishlistFab(
             onClick = { onAction(WishlistAction.OnFabClick) })
 
@@ -89,7 +91,7 @@ fun WishlistScreen(
         )
     }) { innerPadding ->
 
-        Column(Modifier.fillMaxSize()) {
+        Column(modifier) {
             if (state.filteredItems.isEmpty()) {
 
                 EmptyScreen(

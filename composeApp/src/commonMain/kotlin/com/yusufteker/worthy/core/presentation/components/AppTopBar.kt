@@ -1,6 +1,5 @@
 package com.yusufteker.worthy.core.presentation.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -24,7 +23,7 @@ import com.yusufteker.worthy.core.presentation.theme.AppTypography
 
 @Composable
 fun AppTopBar(
-    modifier: Modifier = Modifier.background(AppColors.background),
+    modifier: Modifier = Modifier,
     title: String,
     onNavIconClick: (() -> Unit)? = null,
     isBack: Boolean = true,

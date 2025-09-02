@@ -52,6 +52,7 @@ fun SubscriptionListScreenRoot(
     }
     BaseContentWrapper(state = state) {
         SubscriptionListScreen(
+            modifier = it,
             state = state,
             onAction = viewModel::onAction,
             contentPadding = contentPadding
@@ -61,37 +62,30 @@ fun SubscriptionListScreenRoot(
 
 @Composable
 fun SubscriptionListScreen(
+    modifier: Modifier = Modifier,
     state: SubscriptionListState,
     onAction: (action: SubscriptionListAction) -> Unit,
     contentPadding: PaddingValues = PaddingValues()
 ) {
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize().padding(contentPadding),
-        topBar = {
-            AppTopBar(
-                title = UiText.StringResourceId(Res.string.screen_title_subscription_list)
-                    .asString(),
-                onNavIconClick = {
-                    onAction(SubscriptionListAction.OnNavigateBack)
-                }
+    Scaffold(modifier = modifier.padding(contentPadding), topBar = {
+        AppTopBar(
+            title = UiText.StringResourceId(Res.string.screen_title_subscription_list).asString(),
+            onNavIconClick = {
+                onAction(SubscriptionListAction.OnNavigateBack)
+            })
+    }, floatingActionButton = {
+        FloatingActionButton(onClick = {
+            onAction(SubscriptionListAction.NavigateToAddSubscription)
+        }, content = {
+            // Icon or text for the FAB
+            Icon(
+                imageVector = Icons.Default.Add, contentDescription = "Add Subscription"
             )
-        }, floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    onAction(SubscriptionListAction.NavigateToAddSubscription)
-                }, content = {
-                    // Icon or text for the FAB
-                    Icon(
-                        imageVector = Icons.Default.Add, contentDescription = "Add Subscription"
-                    )
-                })
-        }
-    ) {
+        })
+    }) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(contentPadding),
+            modifier = modifier.padding(contentPadding),
         ) {
 
             val activeScreen = Screen(
@@ -115,9 +109,7 @@ fun SubscriptionListScreen(
                         LazyColumn(modifier = Modifier.fillMaxSize()) {
                             items(state.activeSubscriptions, key = { it.id }) { subscription ->
                                 SwipeToDeleteWrapper(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(vertical = 8.dp),
+                                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                                     shape = CardDefaults.shape,
                                     onDelete = {
                                         onAction(
@@ -125,18 +117,20 @@ fun SubscriptionListScreen(
                                                 subscription.id
                                             )
                                         )
-                                    }
-                                ) {
-                                    SubscriptionItem(subscription = subscription,
-                                        onItemClicked = {
-                                        onAction(SubscriptionListAction.OnItemClicked(subscription.id))
-                                    })
+                                    }) {
+                                    SubscriptionItem(
+                                        subscription = subscription, onItemClicked = {
+                                            onAction(
+                                                SubscriptionListAction.OnItemClicked(
+                                                    subscription.id
+                                                )
+                                            )
+                                        })
                                 }
                             }
                         }
                     }
-                }
-            )
+                })
             val inactiveScreen = Screen(
                 title = UiText.StringResourceId(Res.string.inactive_subscriptions).asString(),
                 content = {
@@ -148,15 +142,12 @@ fun SubscriptionListScreen(
                                     contentDescription = null,
                                     modifier = Modifier.size(EMPTY_SCREEN_SIZE)
                                 )
-                            }
-                        )
+                            })
                     } else {
                         LazyColumn(modifier = Modifier.fillMaxSize()) {
                             items(state.inactiveSubscriptions, key = { it.id }) { subscription ->
                                 SwipeToDeleteWrapper(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(vertical = 8.dp),
+                                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                                     shape = CardDefaults.shape,
                                     onDelete = {
                                         onAction(
@@ -164,24 +155,23 @@ fun SubscriptionListScreen(
                                                 subscription.id
                                             )
                                         )
-                                    }
-                                ) {
+                                    }) {
                                     SubscriptionItem(
-                                        subscription = subscription,
-                                        onItemClicked = {
-                                            onAction(SubscriptionListAction.OnItemClicked(subscription.id))
+                                        subscription = subscription, onItemClicked = {
+                                            onAction(
+                                                SubscriptionListAction.OnItemClicked(
+                                                    subscription.id
+                                                )
+                                            )
                                         })
                                 }
                             }
                         }
                     }
-                }
-            )
+                })
 
             TabbedScreen(
-                initialPage = 0,
-                onTabChanged = {},
-                screens = listOf(activeScreen, inactiveScreen)
+                initialPage = 0, onTabChanged = {}, screens = listOf(activeScreen, inactiveScreen)
             )
 
         }
