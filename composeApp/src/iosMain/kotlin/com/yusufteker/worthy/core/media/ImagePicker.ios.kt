@@ -15,6 +15,9 @@ import androidx.compose.ui.graphics.asComposeImageBitmap
 import androidx.compose.ui.graphics.asSkiaBitmap
 import cocoapods.TOCropViewController.*
 import io.github.aakira.napier.Napier
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.withContext
 import org.jetbrains.skia.Image
 import platform.CoreGraphics.*
 
@@ -40,42 +43,61 @@ fun NSData.toByteArray(): ByteArray {
     return bytes
 }
 
+
+object ImageCache {
+    private val cache = mutableMapOf<String, ImageBitmap>()
+    private val maxCacheSize = 50 // Max 50 resim cache'le
+
+    fun get(path: String): ImageBitmap? = cache[path]
+
+    fun put(path: String, bitmap: ImageBitmap) {
+        if (cache.size >= maxCacheSize) {
+            // En eski item'ı çıkar (basit LRU)
+            val oldestKey = cache.keys.first()
+            cache.remove(oldestKey)
+        }
+        cache[path] = bitmap
+    }
+
+    fun clear() = cache.clear()
+}
+
 @OptIn(ExperimentalForeignApi::class)
 actual suspend fun loadImageBitmapFromPath(path: String): ImageBitmap? {
-    return try {
-        // Dosya adını çıkar
-        val fileName = path.substringAfterLast("/")
-        Napier.d("Loading image: $fileName")
+    ImageCache.get(path)?.let { return it }
 
-        // Documents directory al ve yeni yolu oluştur
-        val documentsDirectory = NSFileManager.defaultManager.URLsForDirectory(
-            directory = NSDocumentDirectory,
-            inDomains = NSUserDomainMask
-        ).firstOrNull() as? NSURL ?: return null
+    return withContext(Dispatchers.IO) {
+        try {
+            val fileName = path.substringAfterLast("/")
+            Napier.d("Loading image: $fileName")
 
-        val fileURL = documentsDirectory.URLByAppendingPathComponent(fileName) ?: return null
-        val currentPath = fileURL.path ?: return null
+            val documentsDirectory = NSFileManager.defaultManager.URLsForDirectory(
+                directory = NSDocumentDirectory,
+                inDomains = NSUserDomainMask
+            ).firstOrNull() as? NSURL ?: return@withContext null
 
-        // Dosya var mı kontrol et
-        if (!NSFileManager.defaultManager.fileExistsAtPath(currentPath)) {
-            Napier.d("File not found: $fileName")
-            return null
+            val fileURL = documentsDirectory.URLByAppendingPathComponent(fileName) ?: return@withContext null
+            val currentPath = fileURL.path ?: return@withContext null
+
+            if (!NSFileManager.defaultManager.fileExistsAtPath(currentPath)) {
+                Napier.d("File not found: $fileName")
+                return@withContext null
+            }
+
+            val nsData = NSData.dataWithContentsOfFile(currentPath) ?: return@withContext null
+            val byteArray = nsData.toByteArray()
+            val skiaImage = org.jetbrains.skia.Image.makeFromEncoded(byteArray) ?: return@withContext null
+            val imageBitmap = skiaImage.toComposeImageBitmap()
+
+            ImageCache.put(path, imageBitmap)
+
+            Napier.d("Image loaded and cached: ${imageBitmap.width}x${imageBitmap.height}")
+            imageBitmap
+
+        } catch (e: Exception) {
+            Napier.e("Error loading image: ${e.message}")
+            null
         }
-
-        // NSData oluştur
-        val nsData = NSData.dataWithContentsOfFile(currentPath) ?: return null
-
-        // ImageBitmap'e çevir
-        val byteArray = nsData.toByteArray()
-        val skiaImage = org.jetbrains.skia.Image.makeFromEncoded(byteArray) ?: return null
-        val imageBitmap = skiaImage.toComposeImageBitmap()
-
-        Napier.d("Image loaded successfully: ${imageBitmap.width}x${imageBitmap.height}")
-        imageBitmap
-
-    } catch (e: Exception) {
-        Napier.e("Error loading image: ${e.message}")
-        null
     }
 }
 
