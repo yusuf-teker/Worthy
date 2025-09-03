@@ -131,7 +131,7 @@ fun DashboardOverviewCard(
                     arrayOf(formatPercentageChange(incomeChangeRatio))
                 ).asString(),
                 style = AppTypography.bodyMedium,
-                color = if (incomeChangeRatio > 0) AppColors.savingsGreen else AppColors.error
+                color = if (incomeChangeRatio > 0) AppColors.savingsGreen else if (incomeChangeRatio == 0.0) AppColors.onSurface.copy(alpha = 0.4f) else AppColors.error
             )
             Spacer(Modifier.height(24.dp))
 

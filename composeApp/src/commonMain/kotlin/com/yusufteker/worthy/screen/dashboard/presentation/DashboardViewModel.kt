@@ -394,7 +394,10 @@ class DashboardViewModel(
                 month
             ).amount
 
-        return if (lastMonthIncome != 0.0) {
+        return if (lastMonthIncome == 0.0 && selectedMonthIncome == 0.0){
+            0.0
+        }
+        else if (lastMonthIncome != 0.0) {
             (selectedMonthIncome - lastMonthIncome) / lastMonthIncome * 100
         } else {
             100.0

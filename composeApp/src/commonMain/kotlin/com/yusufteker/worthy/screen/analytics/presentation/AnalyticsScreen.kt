@@ -58,6 +58,7 @@ import com.yusufteker.worthy.screen.analytics.presentation.components.ScrollAwar
 import com.yusufteker.worthy.screen.analytics.presentation.components.SummaryCards
 import com.yusufteker.worthy.screen.analytics.presentation.components.TopTransactionsCard
 import com.yusufteker.worthy.screen.analytics.presentation.components.TransactionFilter
+import com.yusufteker.worthy.screen.analytics.presentation.components.TransactionList
 import com.yusufteker.worthy.screen.analytics.presentation.components.TransactionListItem
 import com.yusufteker.worthy.screen.analytics.presentation.components.TransactionSortSheet
 import com.yusufteker.worthy.screen.analytics.presentation.components.TrendAnalysisCard
@@ -115,7 +116,6 @@ fun AnalyticsScreen(
                     .padding(top = contentPadding.calculateTopPadding()),
                 title = UiText.StringResourceId(Res.string.screen_name_analytics).asString(),
                 onNavIconClick = {
-                    onAction(AnalyticsAction.NavigateBack)
                 },
                 actions = {
                     IconButton(onClick = {
@@ -164,24 +164,16 @@ fun AnalyticsScreen(
                             onFilterClick = { showFilter = true },
                             lazyListState = listState
                         )
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
-                            state = listState,
-                            contentPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            items(state.filteredTransactions, key = { it.id }) { transaction ->
-                                SwipeToDeleteWrapper(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    shape = CardDefaults.shape,
-                                    onDelete = {
-                                        onAction(OnItemDelete(transaction.id))
-                                    },
-                                ) {
-                                    TransactionListItem(transaction = transaction)
-                                }
+
+                        TransactionList(
+                            transactions = state.filteredTransactions,
+                            convertedTransactions = state.convertedTransactions,
+                            listState = listState,
+                            onDelete = {
+                                onAction(OnItemDelete(it))
                             }
-                        }
+                        )
+
                     }
 
                     AnalyticsViewMode.CHART -> {
@@ -208,7 +200,7 @@ fun AnalyticsScreen(
                             ) {
                                 when (state.selectedChart) {
                                     ChartType.LINE_CHART -> LineChart(
-                                        transactions = state.filteredTransactions,
+                                        transactions = state.convertedFilteredTransactions,
                                         selectedPeriod = state.selectedTimePeriod
                                     )
 
@@ -216,8 +208,8 @@ fun AnalyticsScreen(
 
                                         PieChartPager(
                                             transactionsList = listOf(
-                                                state.filteredTransactions.filter { it.transactionType == TransactionType.EXPENSE },
-                                                state.filteredTransactions.filter { it.transactionType == TransactionType.INCOME }),
+                                                state.convertedFilteredTransactions.filter { it.transactionType == TransactionType.EXPENSE },
+                                                state.convertedFilteredTransactions.filter { it.transactionType == TransactionType.INCOME }),
                                             labels = listOf(
                                                 UiText.StringResourceId(Res.string.expenses)
                                                     .asString(),
@@ -231,7 +223,7 @@ fun AnalyticsScreen(
 
                                     ChartType.BAR_CHART -> {
                                         BarChart(
-                                            state.filteredTransactions, state.selectedTimePeriod
+                                            state.convertedFilteredTransactions, state.selectedTimePeriod
                                         )
                                     }
                                 }
@@ -239,18 +231,18 @@ fun AnalyticsScreen(
                             Spacer(modifier = Modifier.height(16.dp))
 
                             SummaryCards(
-                                transactions = state.filteredTransactions,
+                                transactions = state.convertedFilteredTransactions,
                                 selectedPeriod = state.selectedTimePeriod
                             )
 
                             Spacer(modifier = Modifier.height(16.dp))
 
 
-                            CategoryAnalysisPager(state.filteredTransactions, state.categories)
+                            CategoryAnalysisPager(state.convertedFilteredTransactions, state.categories)
 
                             Spacer(modifier = Modifier.height(16.dp))
 
-                            TrendAnalysisCard(state.filteredTransactions, state.selectedTimePeriod)
+                            TrendAnalysisCard(state.convertedFilteredTransactions, state.selectedTimePeriod)
 
                             Spacer(modifier = Modifier.height(16.dp))
                             // SON 6 AYIN CONVERTED EDILMIS İŞLEMLERİ
@@ -258,7 +250,7 @@ fun AnalyticsScreen(
 
                             Spacer(modifier = Modifier.height(16.dp))
 
-                            TopTransactionsCard(state.filteredTransactions)
+                            TopTransactionsCard(state.convertedFilteredTransactions)
 
                         }
 

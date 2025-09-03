@@ -15,11 +15,12 @@ import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.TransactionType
+import com.yusufteker.worthy.core.domain.model.format
+import com.yusufteker.worthy.core.domain.model.toAppDate
 import com.yusufteker.worthy.core.presentation.theme.AppBrushes
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
 import com.yusufteker.worthy.core.presentation.util.formatMoneyText
-import kotlinx.datetime.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.time.ExperimentalTime
 
@@ -36,12 +37,7 @@ fun TransactionListItem(
         TransactionType.REFUND -> AppColors.transactionRefundColor
     }
 
-    val localDateTime = Instant.fromEpochMilliseconds(transaction.transactionDate)
-        .toLocalDateTime(TimeZone.currentSystemDefault())
-    val dateString = "${
-        localDateTime.day.toString().padStart(2, '0')
-    }/" + "${localDateTime.month.number.toString().padStart(2, '0')}/" + "${localDateTime.year}"
-
+    val dateString = transaction.transactionDate.toAppDate().format()
     Card(
         modifier = modifier.fillMaxWidth().clickable { onItemClicked(transaction) },
         shape = CardDefaults.shape,

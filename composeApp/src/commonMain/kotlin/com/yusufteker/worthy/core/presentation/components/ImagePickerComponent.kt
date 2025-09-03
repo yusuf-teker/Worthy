@@ -43,6 +43,7 @@ import com.yusufteker.worthy.core.media.toImageBitmap
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
+import io.github.aakira.napier.Napier
 import org.jetbrains.compose.resources.painterResource
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.camera
@@ -126,6 +127,8 @@ fun ImagePickerComponent(
     if (showCameraPermissionDialog) {
         permissionChecker.requestCameraPermission { granted ->
             if (granted) {
+                Napier.d("hasCameraPermission granted" )
+
                 imagePicker.pickFromCamera { bitmap ->
                     loading = true
                     bitmap?.let {
@@ -189,10 +192,17 @@ fun ImagePickerComponent(
                         showBottomSheet = false
                         if (imagePicker.isCameraAvailable()) {
                             if (permissionChecker.hasCameraPermission()) {
+                                Napier.d("hasCameraPermission true" )
+
                                 imagePicker.pickFromCamera { bitmap ->
                                     loading = true
+                                    Napier.d("pickFromCamera")
                                     bitmap?.let {
+                                        Napier.d("pickFromCamera bitmap var")
+
                                         imagePicker.cropImage(it) { cropped ->
+                                                Napier.d("cropeed camera")
+
                                             loading = false
                                             cropped?.let { onImageSelected(it) }
                                         }

@@ -1,11 +1,15 @@
 package com.yusufteker.worthy.core.domain.model
 
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.StringResource
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.expense
 import worthy.composeapp.generated.resources.filter_none
 import worthy.composeapp.generated.resources.filter_refund
 import worthy.composeapp.generated.resources.income
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 enum class TransactionType {
     INCOME, EXPENSE, REFUND,
@@ -35,3 +39,12 @@ val TransactionType.labelRes: StringResource
         TransactionType.REFUND -> Res.string.filter_refund
         else -> Res.string.filter_none
     }
+
+@OptIn(ExperimentalTime::class)
+fun List<Transaction>.groupByMonth(): Map<String, List<Transaction>> {
+    return this.groupBy { transaction ->
+        val date = Instant.fromEpochMilliseconds(transaction.transactionDate)
+            .toLocalDateTime(TimeZone.currentSystemDefault())
+        "${date.month.name.lowercase().replaceFirstChar { it.uppercase() }} ${date.year}"
+    }
+}

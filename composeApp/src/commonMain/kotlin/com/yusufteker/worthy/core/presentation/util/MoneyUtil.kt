@@ -5,6 +5,7 @@ import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.intl.Locale
+import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Money
 import kotlin.math.floor
 import kotlin.math.round
@@ -57,6 +58,20 @@ fun Money.formatted(): String {
 
     val integerPart = floor(amount).toLong()
     val fractionalPart = ((amount - integerPart) * 100).roundToInt()
+
+    // Binlik ayırıcı ekleme
+    val integerStr = integerPart.toString().reversed().chunked(3).joinToString(thousandSeparator).reversed()
+
+    return "${currency.symbol} $integerStr$decimalSeparator${fractionalPart.toString().padStart(2,'0')}"
+}
+
+fun Double.formatMoney(currency: Currency): String{
+    val locale: Locale = Locale.current
+    val decimalSeparator = if (locale.language.lowercase() == "tr") "," else "."
+    val thousandSeparator = if (locale.language.lowercase() == "tr") "." else ","
+
+    val integerPart = floor(this).toLong()
+    val fractionalPart = ((this - integerPart) * 100).roundToInt()
 
     // Binlik ayırıcı ekleme
     val integerStr = integerPart.toString().reversed().chunked(3).joinToString(thousandSeparator).reversed()

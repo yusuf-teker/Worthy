@@ -87,8 +87,27 @@ class AnalyticsViewModel(
                 if (s.selectedTransactionType == null) true
                 else tx.transactionType == s.selectedTransactionType
             }
-
-        _state.update { it.copy(filteredTransactions = filtered) }
+        val filteredConverted = s.convertedTransactions
+            .filter { tx ->
+                if (s.selectedTimePeriod == TimePeriod.NONE) true
+                else tx.transactionDate >= currentTime - (s.selectedTimePeriod.days * 24L * 60L * 60L * 1000L)
+            }
+            .filter { tx ->
+                if (s.selectedCategories.isEmpty()) true
+                else tx.categoryId in s.selectedCategories.map { it.id }
+            }
+            .filter { tx ->
+                if (s.selectedCards.isEmpty()) true
+                else tx.cardId in s.selectedCards.map { it.id }
+            }
+            .filter { tx ->
+                if (s.selectedTransactionType == null) true
+                else tx.transactionType == s.selectedTransactionType
+            }
+        _state.update { it.copy(
+            filteredTransactions = filtered,
+            convertedFilteredTransactions = filteredConverted,
+        ) }
     }
 
     private fun applySort() {
@@ -209,7 +228,7 @@ class AnalyticsViewModel(
         }
 
         _state.update {
-            it.copy(transactions = convertedTransactions)
+            it.copy(convertedTransactions = convertedTransactions)
         }
 
     }

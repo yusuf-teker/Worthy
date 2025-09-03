@@ -71,6 +71,7 @@ fun EmptyScreen(
                 )
             }
         }
+        Spacer(modifier = Modifier.height(height = 124.dp))
 
     }
 }

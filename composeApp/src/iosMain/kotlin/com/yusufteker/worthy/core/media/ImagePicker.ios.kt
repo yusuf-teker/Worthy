@@ -83,7 +83,7 @@ class IOSImagePicker : ImagePicker {
 
     // Delegate referansını class seviyesinde saklıyoruz, GC'ye gitmesin diye
     private var cropDelegate: CropViewControllerDelegate? = null
-
+    private var cameraDelegate: CameraPickerDelegate? = null
     @OptIn(ExperimentalForeignApi::class)
     private fun presentCropViewController(image: UIImage, aspectRatio: Float, finalCallback: (PlatformImage?) -> Unit) {
 
@@ -136,6 +136,7 @@ class IOSImagePicker : ImagePicker {
     }
 
     override fun pickFromCamera(onResult: (PlatformImage?) -> Unit) {
+        Napier.d("pickFromCamera ONRESULT CALLBACKE ATANDI")
         mainCameraCallback = onResult
 
         if (!isCameraAvailable()) {
@@ -146,11 +147,15 @@ class IOSImagePicker : ImagePicker {
     }
 
     private fun launchCamera() {
+        Napier.d("Launch camera called")
         val picker = UIImagePickerController()
         picker.sourceType = UIImagePickerControllerSourceType.UIImagePickerControllerSourceTypeCamera
         picker.mediaTypes = listOf("public.image")
-        picker.delegate = CameraPickerDelegate(this)
-
+        //picker.delegate = CameraPickerDelegate(this)
+        Napier.d(" picker delegate "+ picker.delegate.toString())
+        // Delegate'i sakla
+        cameraDelegate = CameraPickerDelegate(this)     // 👈 DEĞİŞTİR
+        picker.delegate = cameraDelegate                // 👈 DEĞİŞTİR
         getCurrentViewController()?.presentViewController(picker, true, null)
     }
 
@@ -187,8 +192,11 @@ class IOSImagePicker : ImagePicker {
 
     internal fun handleCameraImage(image: UIImage) {
         //val bitmap = image.toImageBitmap()
+        Napier.d("handleCameraImage $mainCameraCallback" )
         mainCameraCallback?.invoke(PlatformImage(image))
         mainCameraCallback = null
+        cameraDelegate = null   // 👈 EKLE - Temizle
+
     }
 
     internal fun handleGalleryCancel() {
@@ -197,6 +205,8 @@ class IOSImagePicker : ImagePicker {
 
     internal fun handleCameraCancel() {
         mainCameraCallback = null
+        cameraDelegate = null   // 👈 EKLE - Temizle
+
     }
 
     private fun getCurrentViewController(): UIViewController? {
@@ -249,21 +259,30 @@ class CameraPickerDelegate(
         picker: UIImagePickerController,
         didFinishPickingMediaWithInfo: Map<Any?, *>
     ) {
+        Napier.d("imagePickerController")
         NSOperationQueue.mainQueue.addOperationWithBlock {
             val image = didFinishPickingMediaWithInfo[UIImagePickerControllerOriginalImage] as? UIImage
             if (image == null) {
                 picker.dismissViewControllerAnimated(true) {
+                    Napier.d("camera image picker image null")
                     imagePicker.handleCameraCancel()
                 }
             } else {
+
                 picker.dismissViewControllerAnimated(true) {
-                    imagePicker.handleCameraImage(image)
+                    Napier.d("camera image picker handle image")
+                    // dismiss tamamlandıktan SONRA biraz gecikmeli çağır
+                    NSOperationQueue.mainQueue.addOperationWithBlock {
+                        imagePicker.handleCameraImage(image)
+                    }
                 }
             }
         }
     }
 
     override fun imagePickerControllerDidCancel(picker: UIImagePickerController) {
+        Napier.d("imagePickerControllerDidCancel")
+
         picker.dismissViewControllerAnimated(true) {
             imagePicker.handleCameraCancel()
         }
