@@ -1,5 +1,6 @@
 package com.yusufteker.worthy.screen.card.list.presentation
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues

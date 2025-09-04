@@ -89,6 +89,7 @@ fun DashboardScreen(
             title = UiText.StringResourceId(Res.string.dashboard_overview).asString(),
             onNavIconClick = null,
             isBack = false,
+            showDivider = false,
             modifier = Modifier.background(AppColors.transparent)
         ) { }
 

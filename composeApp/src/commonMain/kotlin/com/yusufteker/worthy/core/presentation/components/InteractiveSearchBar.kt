@@ -101,7 +101,6 @@ fun InteractiveSearchBar(
             isSearching = true
             delay(300) // Debounce
             isSearching = false
-        } else {
         }
     }
 
@@ -111,7 +110,7 @@ fun InteractiveSearchBar(
         // Ana arama barı
         Box(
             modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(cornerRadius)).background(
-                if (!isFocused) AppColors.surface
+                if (!isFocused) AppColors.onPrimary
                 else Color.Transparent
             )
         ) {

@@ -54,9 +54,10 @@ class AnalyticsViewModel(
                         currencyConverter,
                         state.value.selectedCurrency
                     )
+                    applyFilters()
+
                 }
 
-                applyFilters()
             }.launchIn(viewModelScope)
         }
 
@@ -114,9 +115,9 @@ class AnalyticsViewModel(
         val s = state.value
         val sorted =  when (s.selectedSortOption) {
             SortOption.DATE_DESC -> s.filteredTransactions.sortedByDescending { it.transactionDate }
-            SortOption.DATE_ASC -> s.transactions.sortedBy { it.transactionDate }
-            SortOption.AMOUNT_DESC -> s.transactions.sortedByDescending { it.amount.amount }
-            SortOption.AMOUNT_ASC -> s.transactions.sortedBy { it.amount.amount }
+            SortOption.DATE_ASC -> s.filteredTransactions.sortedBy { it.transactionDate }
+            SortOption.AMOUNT_DESC -> s.filteredTransactions.sortedByDescending { it.amount.amount }
+            SortOption.AMOUNT_ASC -> s.filteredTransactions.sortedBy { it.amount.amount }
         }
 
         _state.update { it.copy(filteredTransactions = sorted) }

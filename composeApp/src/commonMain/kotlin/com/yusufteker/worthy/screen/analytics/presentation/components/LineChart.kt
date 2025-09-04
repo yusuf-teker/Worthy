@@ -81,51 +81,43 @@ fun LineChart(
     val periodStart = currentTime - (selectedPeriod.days.toDouble() * ONE_DAY_MILLIS)
     val currency = transactions.firstOrNull()?.amount?.currency ?: Currency.TRY
 
-    // SADECE TRANSACTİON DEĞERLERİ
-    /*val dailyData = transactions
+
+    val dailyData: List<Pair<Long, Double>> = transactions
         .filter {
-            Napier.d("currentTime=$currentTime")
-            Napier.d("selectedPeriod.days=${selectedPeriod.days}")
-            Napier.d("periodStart=$periodStart")
-
-            it.transactionDate >= periodStart
+            if (selectedPeriod == TimePeriod.NONE) true
+            else it.transactionDate >= periodStart
         }
-        .groupBy {
-            val dayMillis = 24 * 60 * 60 * 1000
-            (it.transactionDate / dayMillis) * dayMillis
-        }
-        .mapValues { entry ->
-            val income = entry.value.filter { it.transactionType == TransactionType.INCOME }
-                .sumOf { it.amount.amount }
-            val expense = entry.value.filter { it.transactionType == TransactionType.EXPENSE }
-                .sumOf { it.amount.amount }
-            income - expense
-        }
-        .toList()
-        .sortedBy { it.first }*/
-    // KÜMÜLATİF OLARAK
-    val dailyData: List<Pair<Long, Double>> = transactions.filter {
-        if (selectedPeriod == TimePeriod.NONE) true
-        else it.transactionDate >= periodStart
-    }.groupBy {
-        val dayMillis = ONE_DAY_MILLIS
-        (it.transactionDate / dayMillis) * dayMillis
-    }.map { entry ->
-        val dailyTotal = entry.value.fold(0.0) { acc, transaction ->
-            when (transaction.transactionType) {
-                TransactionType.INCOME -> acc + transaction.amount.amount
-                TransactionType.EXPENSE -> acc - transaction.amount.amount
-                TransactionType.REFUND -> acc // ignore
+        .sortedBy { it.transactionDate } // ÖNEMLİ: İlk önce tarihe göre sırala
+        .fold(mutableListOf<Pair<Long, Double>>()) { acc, transaction ->
+            val transactionValue = when (transaction.transactionType) {
+                TransactionType.INCOME -> transaction.amount.amount
+                TransactionType.EXPENSE -> -transaction.amount.amount
+                TransactionType.REFUND -> 0.0
             }
-        }
-        entry.key to dailyTotal // Pair<Long, Double>
-    }.runningFold(0L to 0.0) { acc, pair ->
-        val (_, cumulative) = acc
-        val (day, dailyValue) = pair
-        day to (cumulative + dailyValue)
-    }.sortedBy { it.first }
 
-        .drop(1) // İlk dummy değeri atıyoruz
+            val dayMillis = ONE_DAY_MILLIS
+            val transactionDay = (transaction.transactionDate / dayMillis) * dayMillis
+
+            // Eğer bu gün için zaten bir değer varsa, üzerine ekle
+            val existingDayIndex = acc.indexOfFirst { it.first == transactionDay }
+            if (existingDayIndex >= 0) {
+                val existingPair = acc[existingDayIndex]
+                val previousCumulative = if (existingDayIndex > 0) acc[existingDayIndex - 1].second else 0.0
+                acc[existingDayIndex] = transactionDay to (previousCumulative + existingPair.second - (if (existingDayIndex > 0) acc[existingDayIndex - 1].second else 0.0) + transactionValue)
+
+                // Sonraki tüm günlerin cumulative değerlerini güncelle
+                for (i in existingDayIndex + 1 until acc.size) {
+                    acc[i] = acc[i].first to (acc[i].second + transactionValue)
+                }
+            } else {
+                // Yeni gün, cumulative değeri hesapla
+                val previousCumulative = acc.lastOrNull()?.second ?: 0.0
+                acc.add(transactionDay to (previousCumulative + transactionValue))
+            }
+
+            acc
+        }
+        .sortedBy { it.first }
 
     val scrollState = rememberScrollState()
 

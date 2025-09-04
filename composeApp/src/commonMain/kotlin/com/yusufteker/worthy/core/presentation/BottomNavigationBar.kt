@@ -78,7 +78,7 @@ fun BottomNavigationBar(
     )
 
     Surface(
-        modifier = modifier,
+        modifier = modifier.padding(top = 4.dp),
         color = AppColors.transparent,
     ) {
         Row(

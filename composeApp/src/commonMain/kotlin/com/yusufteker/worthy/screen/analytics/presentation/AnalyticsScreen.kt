@@ -1,31 +1,23 @@
 package com.yusufteker.worthy.screen.analytics.presentation
 
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,10 +34,8 @@ import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
 import com.yusufteker.worthy.core.presentation.components.EmptyScreen
-import com.yusufteker.worthy.core.presentation.components.SwipeToDeleteWrapper
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.Constants.EMPTY_SCREEN_SIZE
-import com.yusufteker.worthy.screen.analytics.domain.model.TimePeriod
 import com.yusufteker.worthy.screen.analytics.presentation.AnalyticsAction.OnItemDelete
 import com.yusufteker.worthy.screen.analytics.presentation.components.BarChart
 import com.yusufteker.worthy.screen.analytics.presentation.components.CategoryAnalysisPager
@@ -59,7 +49,7 @@ import com.yusufteker.worthy.screen.analytics.presentation.components.SummaryCar
 import com.yusufteker.worthy.screen.analytics.presentation.components.TopTransactionsCard
 import com.yusufteker.worthy.screen.analytics.presentation.components.TransactionFilter
 import com.yusufteker.worthy.screen.analytics.presentation.components.TransactionList
-import com.yusufteker.worthy.screen.analytics.presentation.components.TransactionListItem
+import com.yusufteker.worthy.screen.analytics.presentation.components.TransactionListFlat
 import com.yusufteker.worthy.screen.analytics.presentation.components.TransactionSortSheet
 import com.yusufteker.worthy.screen.analytics.presentation.components.TrendAnalysisCard
 import org.jetbrains.compose.resources.painterResource
@@ -68,7 +58,6 @@ import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.analytics_empty_screen_button
 import worthy.composeapp.generated.resources.chart_view
 import worthy.composeapp.generated.resources.expenses
-import worthy.composeapp.generated.resources.filter
 import worthy.composeapp.generated.resources.incomes
 import worthy.composeapp.generated.resources.list_view
 import worthy.composeapp.generated.resources.screen_name_analytics
@@ -110,13 +99,10 @@ fun AnalyticsScreen(
 
 
     Scaffold(
-        modifier = modifier, topBar = {
+        modifier = modifier.padding(contentPadding), topBar = {
             AppTopBar(
-                modifier = Modifier.fillMaxWidth()
-                    .padding(top = contentPadding.calculateTopPadding()),
+                modifier = Modifier.fillMaxWidth(),
                 title = UiText.StringResourceId(Res.string.screen_name_analytics).asString(),
-                onNavIconClick = {
-                },
                 actions = {
                     IconButton(onClick = {
                         val newMode =
@@ -134,7 +120,7 @@ fun AnalyticsScreen(
                 })
         }) { paddingValues ->
         Column(
-            modifier = modifier.fillMaxWidth().padding(paddingValues),
+            modifier = modifier.fillMaxWidth().padding(top = paddingValues.calculateTopPadding()),
         ) {
 
             if (state.transactions.isEmpty()) {
@@ -153,7 +139,6 @@ fun AnalyticsScreen(
                     })
             } else {
 
-
                 when (state.viewMode) {
 
                     AnalyticsViewMode.LIST -> {
@@ -165,14 +150,13 @@ fun AnalyticsScreen(
                             lazyListState = listState
                         )
 
-                        TransactionList(
+                        TransactionListFlat(
                             transactions = state.filteredTransactions,
                             convertedTransactions = state.convertedTransactions,
                             listState = listState,
                             onDelete = {
                                 onAction(OnItemDelete(it))
-                            }
-                        )
+                            })
 
                     }
 
@@ -223,7 +207,8 @@ fun AnalyticsScreen(
 
                                     ChartType.BAR_CHART -> {
                                         BarChart(
-                                            state.convertedFilteredTransactions, state.selectedTimePeriod
+                                            state.convertedFilteredTransactions,
+                                            state.selectedTimePeriod
                                         )
                                     }
                                 }
@@ -238,11 +223,15 @@ fun AnalyticsScreen(
                             Spacer(modifier = Modifier.height(16.dp))
 
 
-                            CategoryAnalysisPager(state.convertedFilteredTransactions, state.categories)
+                            CategoryAnalysisPager(
+                                state.convertedFilteredTransactions, state.categories
+                            )
 
                             Spacer(modifier = Modifier.height(16.dp))
 
-                            TrendAnalysisCard(state.convertedFilteredTransactions, state.selectedTimePeriod)
+                            TrendAnalysisCard(
+                                state.convertedFilteredTransactions, state.selectedTimePeriod
+                            )
 
                             Spacer(modifier = Modifier.height(16.dp))
                             // SON 6 AYIN CONVERTED EDILMIS İŞLEMLERİ
@@ -284,8 +273,7 @@ fun AnalyticsScreen(
                     },
                     clearFilters = {
                         onAction(AnalyticsAction.ClearFilters)
-                    }
-                )
+                    })
             }
         }
 
@@ -296,9 +284,9 @@ fun AnalyticsScreen(
                     onAction(AnalyticsAction.OnSortSelected(sortOption))
                     showSort = false
                 },
-                onDismiss = { showSort = false }
-            )
+                onDismiss = { showSort = false })
         }
     }
 
 }
+
