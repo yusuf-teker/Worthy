@@ -38,7 +38,7 @@ import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
 import com.yusufteker.worthy.core.presentation.theme.Constants.WEEKLY_MAX_HOURS
 import com.yusufteker.worthy.core.presentation.util.formatMoneyText
-import com.yusufteker.worthy.screen.settings.presentation.components.BudgetSlider
+import com.yusufteker.worthy.screen.settings.presentation.components.BudgetStepper
 import com.yusufteker.worthy.screen.settings.presentation.components.FinancialWidget
 import com.yusufteker.worthy.screen.settings.presentation.components.RecurringFinancialItemDialog
 import org.jetbrains.compose.resources.painterResource
@@ -48,6 +48,7 @@ import worthy.composeapp.generated.resources.card
 import worthy.composeapp.generated.resources.hour_singular
 import worthy.composeapp.generated.resources.hours_plural
 import worthy.composeapp.generated.resources.label_budget
+import worthy.composeapp.generated.resources.hour_singular
 import worthy.composeapp.generated.resources.label_fixed_expenses
 import worthy.composeapp.generated.resources.label_income_sources
 import worthy.composeapp.generated.resources.label_savings
@@ -124,8 +125,9 @@ fun SettingsScreen(
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
 
                 // BUDGET SLIDER
-                BudgetSlider(
+                BudgetStepper(
                     modifier = Modifier.fillMaxWidth(),
+                    color = AppColors.primary,
                     budgetAmount = state.budgetAmount,
                     totalIncome = state.totalFixedIncome,
                     totalFixedExpenses = state.totalFixedExpenses,
