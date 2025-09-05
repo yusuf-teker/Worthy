@@ -21,6 +21,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.yusufteker.worthy.core.presentation.UiText
+import worthy.composeapp.generated.resources.Res
+import worthy.composeapp.generated.resources.wishlist_label_priority
 
 @Composable
 fun PriorityChooser(
@@ -52,7 +55,7 @@ fun PriorityChooser(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "Öncelik",
+            text = UiText.StringResourceId(Res.string.wishlist_label_priority).asString(),
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             color = currentColor

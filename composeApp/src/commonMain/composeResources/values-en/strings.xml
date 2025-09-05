@@ -93,6 +93,7 @@
     <string name="add_wish">Wish</string>
     <string name="add_recurring_item">Recurring Income/Expense</string>
     <string name="add_transaction">Income/Expense</string>
+    <string name="last_6_month">Last 6\nMonths</string>
 
 
 
@@ -173,6 +174,8 @@
     <string name="wishlist_checkbox_purchased">Mark as purchased</string>
     <string name="wishlist_button_save">Save</string>
     <string name="wishlist_empty_screen_button">Add your first wish 🎁</string>
+    <string name="wishlist_label_priority">Priority</string>
+    <string name="wishlist_added">Added: %1$s</string>
 
 
     <!-- Image Picker -->

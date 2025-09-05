@@ -109,7 +109,9 @@ fun AddSubscriptionScreen(
             AppButton(
                 modifier = Modifier.fillMaxWidth(),
                 text = UiText.StringResourceId(Res.string.add).asString(),
-                onClick = { onAction(AddSubscriptionAction.SubmitSubscription) })
+                onClick = { onAction(AddSubscriptionAction.SubmitSubscription) },
+                loading = state.isLoading
+            )
         },
 
         ) {
@@ -206,9 +208,8 @@ fun AddSubscriptionScreen(
                         2100, 12, 31
                     ))
                 ) UiText.StringResourceId(Res.string.info_start_end_different).asString() else null,
-                backgroundColor = AppColors.background
+                backgroundColor = AppColors.transparent // todo bakıcaz
             )
-            // todo odeme gunu lableı olacak
             DayOfMonthSelector(
                 selectedDay = state.scheduledDay,
                 onDayChange = { onAction(AddSubscriptionAction.OnScheduledDayChanged(it ?: 1)) },

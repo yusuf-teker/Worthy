@@ -279,7 +279,7 @@ class DashboardViewModel(
         val expensesRatio = (totalExpenseMoney.amount / totalExpense) // Expenses
         _state.update {
             it.copy(
-                fixedExpenseMoney = totalExpenseMoney,
+                fixedExpenseMoney = totalRecurringExpenseMoney,
                 desiresSpentMoney = totalWishlistMoney,
                 remainingMoney = Money(totalIncome - totalExpense, state.value.selectedCurrency),
                 expensesMoney = totalExpenseMoney

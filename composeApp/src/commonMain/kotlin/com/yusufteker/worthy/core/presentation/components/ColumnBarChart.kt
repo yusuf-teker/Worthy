@@ -44,11 +44,13 @@ import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.getMonthName
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.add_recurring_item
 import worthy.composeapp.generated.resources.add_transaction
 import worthy.composeapp.generated.resources.add_wish
+import worthy.composeapp.generated.resources.ic_empty
 import worthy.composeapp.generated.resources.no_data
 import kotlin.collections.forEachIndexed
 
@@ -100,48 +102,41 @@ fun ColumnBarChart(
                         ),
                         label = "barColor"
                     )
-                    var fontSize by remember { mutableStateOf(22.sp) }
+                    var fontSize by remember { mutableStateOf(16.sp) }
 
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.weight(1f).align(Alignment.Top)
                     ) {
                         Box(
-                            modifier = Modifier.height(maxBarHeight).clip(RoundedCornerShape(4.dp))
+                            modifier = Modifier
+                                .height(maxBarHeight)
+                                .clip(RoundedCornerShape(4.dp))
                                 .background(Color.Transparent),
                             contentAlignment = Alignment.BottomCenter
                         ) {
                             Box(
-                                modifier = Modifier.fillMaxWidth().height(animatedHeight.value.dp)
-                                .clickable { onBarClick.invoke(i) }.clip(RoundedCornerShape(4.dp))
-                                .then(
-                                    if (isSelected) Modifier.shadow(
-                                        6.dp, RoundedCornerShape(4.dp)
-                                    ) else Modifier
-                                ).background(barColor).align(Alignment.BottomCenter)){
-
-                                if (selectedIndex == i){
-                                    ResponsiveText(
-                                        text = amounts.get(i),
-                                        color = AppColors.onPrimary,
-                                        textStyle = TextStyle.Default.copy(
-                                            color = AppColors.onPrimary,
-                                            fontSize = fontSize
-                                        ),
-                                        modifier = Modifier.align(Alignment.BottomCenter),
-                                        onTextSizeChanged = {fontSize = it}
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(animatedHeight.value.dp)
+                                    .clickable { onBarClick.invoke(i) }
+                                    .clip(RoundedCornerShape(4.dp))
+                                    .then(
+                                        if (isSelected) Modifier.shadow(6.dp, RoundedCornerShape(4.dp))
+                                        else Modifier
                                     )
-                                }
-
-                            }
+                                    .background(barColor)
+                                    .align(Alignment.BottomCenter)
+                            )
                             if (animatedHeight.value <= 0) {
-                                IconButton(
-                                    onClick = { onBarClick.invoke(i) }) {
-                                    Icon(Icons.Default.Warning, contentDescription = null)
+                                Box(modifier = Modifier.clickable{onBarClick.invoke(i)}) {
+                                    Icon(painter = painterResource(Res.drawable.ic_empty), contentDescription = null)
                                 }
                             }
                         }
+
                         Spacer(Modifier.height(8.dp))
+
                         Text(
                             text = labels[i],
                             style = AppTypography.labelSmall,
@@ -149,9 +144,25 @@ fun ColumnBarChart(
                             overflow = TextOverflow.Ellipsis,
                             maxLines = 2,
                             textAlign = TextAlign.Center
-
                         )
+                        Spacer(Modifier.height(8.dp))
+
+                        // 🔑 Amount text barın dışına ama üst hizasına bağlı olacak
+                        if (isSelected) {
+                            ResponsiveText(
+                                text = amounts[i],
+                                color = AppColors.onSurface, // bar içinden çıktığı için kontrast renk
+                                textStyle = TextStyle.Default.copy(
+                                    fontSize = fontSize,
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                modifier = Modifier
+                                    .padding(bottom = 4.dp),
+                                onTextSizeChanged = { fontSize = it }
+                            )
+                        }
                     }
+
                 }
             }
         } else {
@@ -168,10 +179,10 @@ fun ColumnBarChart(
                 ) {
                     Column {
                         Icon(
-                            Icons.Default.Warning,
+                            painterResource(Res.drawable.ic_empty),
                             contentDescription = null,
                             tint = AppColors.onSurfaceVariant,
-                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                            modifier = Modifier//.align(Alignment.CenterHorizontally)
                         )
                         Text(
                             text = UiText.StringResourceId(Res.string.no_data).asString(),
@@ -280,7 +291,7 @@ fun MiniBarChart(
                 }
             }
         } else { // Values is Empty
-            Text(
+            Text(modifier = Modifier.align(Alignment.Bottom),
                 text = UiText.StringResourceId(Res.string.no_data).asString()
             )
         }

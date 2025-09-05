@@ -48,10 +48,8 @@ import com.yusufteker.worthy.screen.analytics.presentation.components.ScrollAwar
 import com.yusufteker.worthy.screen.analytics.presentation.components.SummaryCards
 import com.yusufteker.worthy.screen.analytics.presentation.components.TopTransactionsCard
 import com.yusufteker.worthy.screen.analytics.presentation.components.TransactionFilter
-import com.yusufteker.worthy.screen.analytics.presentation.components.TransactionList
 import com.yusufteker.worthy.screen.analytics.presentation.components.TransactionListFlat
 import com.yusufteker.worthy.screen.analytics.presentation.components.TransactionSortSheet
-import com.yusufteker.worthy.screen.analytics.presentation.components.TrendAnalysisCard
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import worthy.composeapp.generated.resources.Res
@@ -228,10 +226,6 @@ fun AnalyticsScreen(
                             )
 
                             Spacer(modifier = Modifier.height(16.dp))
-
-                            TrendAnalysisCard(
-                                state.convertedFilteredTransactions, state.selectedTimePeriod
-                            )
 
                             Spacer(modifier = Modifier.height(16.dp))
                             // SON 6 AYIN CONVERTED EDILMIS İŞLEMLERİ

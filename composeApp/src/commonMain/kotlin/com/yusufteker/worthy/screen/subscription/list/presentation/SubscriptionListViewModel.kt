@@ -26,7 +26,10 @@ class SubscriptionListViewModel(
                 _state.update { currentState ->
                     currentState.copy(
                         activeSubscriptions = subscriptions.filter { it.isActive() },
-                        inactiveSubscriptions = subscriptions.filter { !it.isActive() && it.groupId !in activeGroupIds } // todo aynı group id ile aktif olan olmaması lazım
+                        inactiveSubscriptions =subscriptions
+                            .filter { !it.isActive() && it.groupId !in activeGroupIds }
+                            .groupBy { it.groupId }
+                            .map { (_, subs) -> subs.last() }
                     )
                 }
             }.launchIn(viewModelScope)

@@ -36,6 +36,7 @@ import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.getNameResource
 import com.yusufteker.worthy.core.media.loadImageBitmapFromPath
+import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.theme.AppBrushes
 import com.yusufteker.worthy.core.presentation.theme.AppBrushes.cardBorderColor
 import com.yusufteker.worthy.core.presentation.theme.AppColors
@@ -45,6 +46,8 @@ import com.yusufteker.worthy.core.presentation.util.formatted
 import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistItem
 import io.github.aakira.napier.Napier
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import worthy.composeapp.generated.resources.Res
+import worthy.composeapp.generated.resources.wishlist_added
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -136,7 +139,7 @@ fun WishlistItemCard(
                 item.addedDate.let {
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = "Eklendi: ${it.toFormattedDate()}",
+                        text = UiText.StringResourceId(Res.string.wishlist_added, arrayOf(it.toFormattedDate())).asString(),
                         style = AppTypography.labelSmall,
                         color = AppColors.onSurface.copy(alpha = 0.5f)
                     )

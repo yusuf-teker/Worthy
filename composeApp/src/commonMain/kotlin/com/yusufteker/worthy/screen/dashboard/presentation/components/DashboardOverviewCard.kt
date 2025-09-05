@@ -35,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.core.presentation.UiText
@@ -58,6 +59,8 @@ import worthy.composeapp.generated.resources.chart_remaining
 import worthy.composeapp.generated.resources.history
 import worthy.composeapp.generated.resources.income_allocation_compare_to_last_month
 import worthy.composeapp.generated.resources.income_allocation_title
+import worthy.composeapp.generated.resources.last_6_month
+import worthy.composeapp.generated.resources.no_data
 
 @Composable
 fun DashboardOverviewCard(
@@ -165,20 +168,38 @@ fun DashboardOverviewCard(
             ) {
 
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(top = PaddingL)
+                    verticalAlignment = Alignment.Bottom,
+                    modifier = Modifier.padding(top = 8.dp)
                 ) {
 
-                    Icon(
-                        painter = painterResource(resource = Res.drawable.history),
-                        contentDescription = "gecmis",
-                        tint = AppColors.onBackground,
-                        modifier = Modifier.size(AppIconSizeSmall)
-                    )
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = UiText.StringResourceId(Res.string.last_6_month).asString(),
+                            style = AppTypography.labelSmall,
+                            color = AppColors.onBackground,
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        Icon(
+                            painter = painterResource(resource = Res.drawable.history),
+                            contentDescription = "gecmis",
+                            tint = AppColors.onBackground,
+                            modifier = Modifier.size(AppIconSizeSmall)
+                        )
+                    }
+
                     Spacer(Modifier.width(Spacing16))
-                    MiniBarChart(
-                        values = miniBarsFractions, labels = miniBarsMonths
-                    )
+                    if (miniBarsFractions.isNotEmpty() && !miniBarsFractions.all { it == 0f }){
+                        MiniBarChart(
+                            values = miniBarsFractions, labels = miniBarsMonths
+                        )
+                    }else{
+                        Text(modifier = Modifier.align(Alignment.Bottom),
+                            text = UiText.StringResourceId(Res.string.no_data).asString()
+                        )
+                    }
+
+
 
                 }
 

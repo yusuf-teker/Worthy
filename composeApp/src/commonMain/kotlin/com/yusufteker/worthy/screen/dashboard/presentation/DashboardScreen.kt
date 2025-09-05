@@ -31,6 +31,7 @@ import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppDimens.Spacing16
 import com.yusufteker.worthy.core.presentation.theme.AppDimens.Spacing8
 import com.yusufteker.worthy.core.presentation.util.formatted
+import com.yusufteker.worthy.core.presentation.util.formattedShort
 import com.yusufteker.worthy.core.presentation.util.formattedWithoutDecimals
 import com.yusufteker.worthy.screen.dashboard.presentation.components.BottomSheetContent
 import com.yusufteker.worthy.screen.dashboard.presentation.components.DashboardOverviewCard
@@ -99,7 +100,7 @@ fun DashboardScreen(
         // 3 – Kart
         DashboardOverviewCard(
             modifier = Modifier.fillMaxWidth(),
-            amountText = state.totalAllIncomeMoney.formatted(),// todo + income eklenecek
+            amountText = state.totalAllIncomeMoney.formattedShort(),// todo + income eklenecek
             incomeChangeRatio = state.incomeChangeRatio,
             barsFractions = listOf(
                 state.fixedExpenseFraction,
@@ -108,10 +109,10 @@ fun DashboardScreen(
                 state.expensesFraction
             ),
             barsAmount = listOf(
-                state.fixedExpenseMoney.formattedWithoutDecimals(),
-                state.desiresSpentMoney.formattedWithoutDecimals(),
-                state.remainingMoney.formattedWithoutDecimals(),
-                state.expensesMoney.formattedWithoutDecimals()
+                state.fixedExpenseMoney.formattedShort(),
+                state.desiresSpentMoney.formattedShort(),
+                state.remainingMoney.formattedShort(),
+                state.expensesMoney.formattedShort()
 
             ),
             miniBarsFractions = state.selectedMiniBarsFraction,

@@ -65,6 +65,44 @@ fun Money.formatted(): String {
     return "${currency.symbol} $integerStr$decimalSeparator${fractionalPart.toString().padStart(2,'0')}"
 }
 
+
+fun Money.formattedShort(): String {
+    val locale: Locale = Locale.current
+    val integerPart = floor(amount).toLong()
+
+    return when (locale.language.lowercase()) {
+
+        "tr" -> when {
+            integerPart >= 1_000_000 -> {
+                val millions = integerPart / 1_000_000
+                val thousands = (integerPart % 1_000_000) / 1_000
+                "${currency.symbol} ${millions} Mn ${if (thousands > 0) "${thousands} B" else ""}".trim()
+            }
+            integerPart >= 1_000 -> {
+                val thousands = integerPart / 1_000
+                "${currency.symbol} ${thousands} B"
+            }
+            else -> "${currency.symbol} $integerPart"
+        }
+
+        else -> when {
+                integerPart >= 1_000_000 -> {
+                    val millions = integerPart / 1_000_000
+                    val thousands = (integerPart % 1_000_000) / 1_000
+                    "${currency.symbol} ${millions}M ${if (thousands > 0) "${thousands}K" else ""}".trim()
+                }
+                integerPart >= 1_000 -> {
+                    val thousands = integerPart / 1_000
+                    val remainder = (integerPart % 1_000) / 100
+                    if (remainder > 0) "${currency.symbol} ${thousands}.${remainder}K"
+                    else "${currency.symbol} ${thousands}K"
+                }
+                else -> "${currency.symbol} $integerPart"
+            }
+
+    }
+}
+
 fun Double.formatMoney(currency: Currency): String{
     val locale: Locale = Locale.current
     val decimalSeparator = if (locale.language.lowercase() == "tr") "," else "."

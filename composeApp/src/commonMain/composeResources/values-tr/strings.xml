@@ -94,6 +94,8 @@
     <string name="add_wish">İstek</string>
     <string name="add_recurring_item">Sabit Gelir/Gider</string>
     <string name="add_transaction">Gelir/Gider</string>
+    <string name="last_6_month">Son 6\nAy</string>
+
 
     <!-- Bar labels -->
         <string name="chart_fixed_expenses">Sabit Giderler</string>
@@ -171,6 +173,8 @@
     <string name="wishlist_checkbox_purchased">Satın alındı olarak işaretle</string>
     <string name="wishlist_button_save">Kaydet</string>
     <string name="wishlist_empty_screen_button">İlk dileğini ekle 🎁</string>
+    <string name="wishlist_label_priority">Öncelik</string>
+    <string name="wishlist_added">Eklendi: %1$s</string>
 
 
     <!-- Image Picker -->
