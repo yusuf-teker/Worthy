@@ -116,34 +116,27 @@ fun Double.formatMoney(currency: Currency): String{
 
     return "${currency.symbol} $integerStr$decimalSeparator${fractionalPart.toString().padStart(2,'0')}"
 }
-fun Money.formattedWithoutDecimals(): String {
+
+
+fun Double.formatMoneyText(currency: Currency? = null, showDecimals: Boolean = true): String {
     val locale: Locale = Locale.current
-    val thousandSeparator = if (locale.language.lowercase() == "tr") "." else ","
 
-    val integerPart = floor(amount).toLong()
-
-    val integerStr = integerPart.toString()
-        .reversed()
-        .chunked(3)
-        .joinToString(thousandSeparator)
-        .reversed()
-
-    return "${currency.symbol} $integerStr"
-}
-
-
-fun Double.formatMoneyText(): String {
-    val locale: Locale = Locale.current
     val decimalSeparator = if (locale.language.lowercase() == "tr") "," else "."
     val thousandSeparator = if (locale.language.lowercase() == "tr") "." else ","
 
     val integerPart = floor(this).toLong()
-    val fractionalPart = ((this - integerPart) * 100).roundToInt()
-
     val integerStr = integerPart.toString().reversed().chunked(3).joinToString(thousandSeparator).reversed()
 
-    return "$integerStr$decimalSeparator${fractionalPart.toString().padStart(2,'0')}"
+    val currencySymbol = currency?.symbol?.let { " $it" } ?: ""
+    return if (showDecimals) {
+        val fractionalPart = ((this - integerPart) * 100).roundToInt()
+        "$integerStr$decimalSeparator${fractionalPart.toString().padStart(2, '0')}$currencySymbol"
+    } else {
+        "$integerStr$currencySymbol"
+    }
 }
+
+
 fun Int.formatMoneyText(): String {
     val locale: Locale = Locale.current
     val thousandSeparator = if (locale.language.lowercase() == "tr") "." else ","

@@ -73,7 +73,7 @@ fun TransactionListItem(
             Spacer(modifier = Modifier.width(8.dp))
 
             Text(
-                text = "${if (transaction.transactionType == TransactionType.EXPENSE) "-" else "+"} ${transaction.amount.amount.formatMoneyText()} ${transaction.amount.currency.symbol}",
+                text = "${if (transaction.transactionType == TransactionType.EXPENSE) "-" else "+"} ${transaction.amount.amount.formatMoneyText(currency = transaction.amount.currency, showDecimals = true)}",
                 color = amountColor,
                 fontSize = 16.sp,
                 style = AppTypography.titleMedium

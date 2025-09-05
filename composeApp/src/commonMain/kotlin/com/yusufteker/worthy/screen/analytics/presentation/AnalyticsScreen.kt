@@ -48,7 +48,7 @@ import com.yusufteker.worthy.screen.analytics.presentation.components.ScrollAwar
 import com.yusufteker.worthy.screen.analytics.presentation.components.SummaryCards
 import com.yusufteker.worthy.screen.analytics.presentation.components.TopTransactionsCard
 import com.yusufteker.worthy.screen.analytics.presentation.components.TransactionFilter
-import com.yusufteker.worthy.screen.analytics.presentation.components.TransactionListFlat
+import com.yusufteker.worthy.screen.analytics.presentation.components.TransactionListAccordion
 import com.yusufteker.worthy.screen.analytics.presentation.components.TransactionSortSheet
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -148,7 +148,7 @@ fun AnalyticsScreen(
                             lazyListState = listState
                         )
 
-                        TransactionListFlat(
+                        TransactionListAccordion(
                             transactions = state.filteredTransactions,
                             convertedTransactions = state.convertedTransactions,
                             listState = listState,

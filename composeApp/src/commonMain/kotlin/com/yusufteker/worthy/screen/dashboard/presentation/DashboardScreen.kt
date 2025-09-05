@@ -32,7 +32,6 @@ import com.yusufteker.worthy.core.presentation.theme.AppDimens.Spacing16
 import com.yusufteker.worthy.core.presentation.theme.AppDimens.Spacing8
 import com.yusufteker.worthy.core.presentation.util.formatted
 import com.yusufteker.worthy.core.presentation.util.formattedShort
-import com.yusufteker.worthy.core.presentation.util.formattedWithoutDecimals
 import com.yusufteker.worthy.screen.dashboard.presentation.components.BottomSheetContent
 import com.yusufteker.worthy.screen.dashboard.presentation.components.DashboardOverviewCard
 import io.github.aakira.napier.Napier
