@@ -4,6 +4,10 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -38,6 +42,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yusufteker.worthy.core.presentation.UiText
@@ -61,181 +66,191 @@ fun ColumnBarChart(
     amounts: List<String>,
     modifier: Modifier = Modifier,
     selectedIndex: Int?,
+    isLoading: Boolean = false,
     onBarClick: (Int) -> Unit,
     onAddWishlistClicked: () -> Unit = {},
     onAddRecurringClicked: () -> Unit = {},
     onAddTransactionClicked: () -> Unit = {}
 ) {
-    val hasData = values.any { it > 0f }
 
-    // Crossfade kullanarak iki state arasında geçiş
-    Crossfade(
-        targetState = hasData, animationSpec = tween(
-            durationMillis = 800, easing = FastOutSlowInEasing
-        ), modifier = Modifier.height(120.dp)
-    ) { showChart ->
-        if (showChart) {
-            // Chart gösterimi
-            Row(
-                modifier = modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.Bottom,
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                val maxBarHeight = 120.dp * values.max()
-                values.forEachIndexed { i, v ->
-                    val isSelected = selectedIndex == i
+    if (isLoading){
+        ShimmerBarsGroup()
+    }else{
 
-                    val targetHeight = 120.dp * v
-                    val animatedHeight = remember { Animatable(0f) }
-                    LaunchedEffect(v) {
-                        animatedHeight.animateTo(
-                            targetHeight.value, animationSpec = tween(
-                                durationMillis = 800, easing = FastOutSlowInEasing
+        val hasData = values.any { it > 0f }
+
+        // Crossfade kullanarak iki state arasında geçiş
+        Crossfade(
+            targetState = hasData, animationSpec = tween(
+                durationMillis = 800, easing = FastOutSlowInEasing
+            ), modifier = Modifier.height(120.dp)
+        ) { showChart ->
+            if (showChart) {
+                // Chart gösterimi
+                Row(
+                    modifier = modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.Bottom,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    val maxBarHeight = 120.dp * values.max()
+                    values.forEachIndexed { i, v ->
+                        val isSelected = selectedIndex == i
+
+                        val targetHeight = 120.dp * v
+                        val animatedHeight = remember { Animatable(0f) }
+                        LaunchedEffect(v) {
+                            animatedHeight.animateTo(
+                                targetHeight.value, animationSpec = tween(
+                                    durationMillis = 800, easing = FastOutSlowInEasing
+                                )
                             )
+                        }
+
+                        val barColor by animateColorAsState(
+                            targetValue = if (isSelected) AppColors.primary else AppColors.surfaceVariant,
+                            animationSpec = tween(
+                                durationMillis = 500, easing = FastOutSlowInEasing
+                            ),
+                            label = "barColor"
                         )
-                    }
+                        var fontSize by remember { mutableStateOf(16.sp) }
 
-                    val barColor by animateColorAsState(
-                        targetValue = if (isSelected) AppColors.primary else AppColors.surfaceVariant,
-                        animationSpec = tween(
-                            durationMillis = 500, easing = FastOutSlowInEasing
-                        ),
-                        label = "barColor"
-                    )
-                    var fontSize by remember { mutableStateOf(16.sp) }
-
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.weight(1f).align(Alignment.Top)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .height(maxBarHeight)
-                                .clip(RoundedCornerShape(4.dp))
-                                .background(Color.Transparent),
-                            contentAlignment = Alignment.BottomCenter
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.weight(1f).align(Alignment.Top)
                         ) {
                             Box(
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(animatedHeight.value.dp)
-                                    .clickable { onBarClick.invoke(i) }
+                                    .height(maxBarHeight)
                                     .clip(RoundedCornerShape(4.dp))
-                                    .then(
-                                        if (isSelected) Modifier.shadow(6.dp, RoundedCornerShape(4.dp))
-                                        else Modifier
-                                    )
-                                    .background(barColor)
-                                    .align(Alignment.BottomCenter)
-                            )
-                            if (animatedHeight.value <= 0) {
-                                Box(modifier = Modifier.clickable{onBarClick.invoke(i)}) {
-                                    Icon(painter = painterResource(Res.drawable.ic_empty), contentDescription = null)
+                                    .background(Color.Transparent),
+                                contentAlignment = Alignment.BottomCenter
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(animatedHeight.value.dp)
+                                        .clickable { onBarClick.invoke(i) }
+                                        .clip(RoundedCornerShape(4.dp))
+                                        .then(
+                                            if (isSelected) Modifier.shadow(6.dp, RoundedCornerShape(4.dp))
+                                            else Modifier
+                                        )
+                                        .background(barColor)
+                                        .align(Alignment.BottomCenter)
+                                )
+                                if (animatedHeight.value <= 0) {
+                                    Box(modifier = Modifier.clickable{onBarClick.invoke(i)}) {
+                                        Icon(painter = painterResource(Res.drawable.ic_empty), contentDescription = null)
+                                    }
                                 }
+                            }
+
+                            Spacer(Modifier.height(8.dp))
+
+                            Text(
+                                text = labels[i],
+                                style = AppTypography.labelSmall,
+                                color = AppColors.onSurfaceVariant,
+                                overflow = TextOverflow.Ellipsis,
+                                maxLines = 2,
+                                textAlign = TextAlign.Center
+                            )
+                            Spacer(Modifier.height(8.dp))
+
+                            // 🔑 Amount text barın dışına ama üst hizasına bağlı olacak
+                            if (isSelected) {
+                                ResponsiveText(
+                                    text = amounts[i],
+                                    color = AppColors.onSurface, // bar içinden çıktığı için kontrast renk
+                                    textStyle = TextStyle.Default.copy(
+                                        fontSize = fontSize,
+                                        fontWeight = FontWeight.Bold
+                                    ),
+                                    modifier = Modifier
+                                        .padding(bottom = 4.dp),
+                                    onTextSizeChanged = { fontSize = it }
+                                )
                             }
                         }
 
-                        Spacer(Modifier.height(8.dp))
+                    }
+                }
+            } else {
+                // No data gösterimi
+                Box(
+                    modifier = modifier.fillMaxWidth().height(120.dp),
+                    contentAlignment = Alignment.Center
+                ) {
 
-                        Text(
-                            text = labels[i],
-                            style = AppTypography.labelSmall,
-                            color = AppColors.onSurfaceVariant,
-                            overflow = TextOverflow.Ellipsis,
-                            maxLines = 2,
-                            textAlign = TextAlign.Center
-                        )
-                        Spacer(Modifier.height(8.dp))
-
-                        // 🔑 Amount text barın dışına ama üst hizasına bağlı olacak
-                        if (isSelected) {
-                            ResponsiveText(
-                                text = amounts[i],
-                                color = AppColors.onSurface, // bar içinden çıktığı için kontrast renk
-                                textStyle = TextStyle.Default.copy(
-                                    fontSize = fontSize,
-                                    fontWeight = FontWeight.Bold
-                                ),
-                                modifier = Modifier
-                                    .padding(bottom = 4.dp),
-                                onTextSizeChanged = { fontSize = it }
+                    Row(
+                        modifier = modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            Icon(
+                                painterResource(Res.drawable.ic_empty),
+                                contentDescription = null,
+                                tint = AppColors.onSurfaceVariant,
+                                modifier = Modifier//.align(Alignment.CenterHorizontally)
+                            )
+                            Text(
+                                text = UiText.StringResourceId(Res.string.no_data).asString(),
+                                style = AppTypography.bodyMedium,
+                                color = AppColors.onSurfaceVariant
                             )
                         }
-                    }
+                        FlowRow(
+                            maxItemsInEachRow = 2,
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
 
-                }
-            }
-        } else {
-            // No data gösterimi
-            Box(
-                modifier = modifier.fillMaxWidth().height(120.dp),
-                contentAlignment = Alignment.Center
-            ) {
+                            Text(
+                                modifier = Modifier.clickable {
+                                    onAddWishlistClicked.invoke()
+                                },
+                                text = "+ " + UiText.StringResourceId(Res.string.add_wish).asString(),
+                                style = AppTypography.bodyMedium.copy(
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                color = AppColors.primary
+                            )
 
-                Row(
-                    modifier = modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column {
-                        Icon(
-                            painterResource(Res.drawable.ic_empty),
-                            contentDescription = null,
-                            tint = AppColors.onSurfaceVariant,
-                            modifier = Modifier//.align(Alignment.CenterHorizontally)
-                        )
-                        Text(
-                            text = UiText.StringResourceId(Res.string.no_data).asString(),
-                            style = AppTypography.bodyMedium,
-                            color = AppColors.onSurfaceVariant
-                        )
-                    }
-                    FlowRow(
-                        maxItemsInEachRow = 2,
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
+                            Text(
+                                modifier = Modifier.clickable {
+                                    onAddTransactionClicked.invoke()
+                                },
+                                text = "+ " + UiText.StringResourceId(Res.string.add_transaction)
+                                    .asString(),
+                                style = AppTypography.bodyMedium.copy(
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                color = AppColors.primary
+                            )
+                            Text(
+                                modifier = Modifier.clickable {
+                                    onAddRecurringClicked.invoke()
+                                },
+                                text = "+ " + UiText.StringResourceId(Res.string.add_recurring_item)
+                                    .asString(),
+                                style = AppTypography.bodyMedium.copy(
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                color = AppColors.primary
+                            )
 
-                        Text(
-                            modifier = Modifier.clickable {
-                                onAddWishlistClicked.invoke()
-                            },
-                            text = "+ " + UiText.StringResourceId(Res.string.add_wish).asString(),
-                            style = AppTypography.bodyMedium.copy(
-                                fontWeight = FontWeight.Bold
-                            ),
-                            color = AppColors.primary
-                        )
-
-                        Text(
-                            modifier = Modifier.clickable {
-                                onAddTransactionClicked.invoke()
-                            },
-                            text = "+ " + UiText.StringResourceId(Res.string.add_transaction)
-                                .asString(),
-                            style = AppTypography.bodyMedium.copy(
-                                fontWeight = FontWeight.Bold
-                            ),
-                            color = AppColors.primary
-                        )
-                        Text(
-                            modifier = Modifier.clickable {
-                                onAddRecurringClicked.invoke()
-                            },
-                            text = "+ " + UiText.StringResourceId(Res.string.add_recurring_item)
-                                .asString(),
-                            style = AppTypography.bodyMedium.copy(
-                                fontWeight = FontWeight.Bold
-                            ),
-                            color = AppColors.primary
-                        )
+                        }
 
                     }
-
                 }
             }
         }
+
     }
+
+
 }
 
 @Composable

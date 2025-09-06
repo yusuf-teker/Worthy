@@ -7,6 +7,7 @@ import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.repository.CurrencyRatesRepository
 import com.yusufteker.worthy.core.domain.service.datasource.CurrencyRatesCacheDataSource
 import com.yusufteker.worthy.core.domain.service.datasource.CurrencyRatesRemoteDataSource
+import io.github.aakira.napier.Napier
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -24,8 +25,10 @@ class CurrencyRatesRepositoryImpl(
 
         // CACHE DEN ÇEKMEYE UYGUNSA CACHEDEN AL
         if (cached != null) { // null eğerki cache eklenmemiş veya 1 gün geçmiş
+            Napier.d("CurrencyRatesRepository: Returning rates from CACHE for base $base,")
             return Result.Success(cached.rates)
         }
+        Napier.d("CurrencyRatesRepository: No valid cache found, fetching rates from NETWORK for base $base")
 
         // CACHE'DE YOKSA VEYA 1 GÜN GEÇMEMİŞ İSE APIDEN ÇEK
         val ratesResult = remote.fetchRates(base)

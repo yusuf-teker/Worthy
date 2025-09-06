@@ -36,7 +36,8 @@ import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.util.isOnCurrentDestination
 import com.yusufteker.worthy.core.presentation.util.navigateTo
 import com.yusufteker.worthy.screen.addtransaction.presentation.AddTransactionScreenRoot
-import com.yusufteker.worthy.screen.analytics.presentation.AnalyticsScreenRoot
+import com.yusufteker.worthy.screen.transactions.detail.presentation.TransactionDetailScreenRoot
+import com.yusufteker.worthy.screen.transactions.list.presentation.AnalyticsScreenRoot
 import com.yusufteker.worthy.screen.card.add.presentation.AddCardScreenRoot
 import com.yusufteker.worthy.screen.card.list.presentation.CardListScreenRoot
 import com.yusufteker.worthy.screen.dashboard.presentation.DashboardScreenRoot
@@ -46,7 +47,7 @@ import com.yusufteker.worthy.screen.settings.presentation.SettingsScreenRoot
 import com.yusufteker.worthy.screen.subscription.add.presentation.AddSubscriptionScreenRoot
 import com.yusufteker.worthy.screen.subscription.detail.presentation.SubscriptionDetailScreenRoot
 import com.yusufteker.worthy.screen.subscription.list.presentation.SubscriptionListScreenRoot
-import com.yusufteker.worthy.screen.transaction.add.presentation.components.AddFabMenu
+import com.yusufteker.worthy.screen.transactions.add.presentation.components.AddFabMenu
 import com.yusufteker.worthy.screen.wallet.presentation.WalletScreenRoot
 import com.yusufteker.worthy.screen.wishlist.add.presentation.WishlistAddScreenRoot
 import com.yusufteker.worthy.screen.wishlist.detail.presentation.WishlistDetailScreenRoot
@@ -177,6 +178,15 @@ fun AppNavHost(
 
                         composable<Routes.Analytics> {
                             AnalyticsScreenRoot(
+                                contentPadding = innerPadding, onNavigateTo = { navModel ->
+                                    navController.navigateTo(navModel)
+                                })
+                        }
+                        composable<Routes.TransactionDetail> {
+                            val args = it.toRoute<Routes.TransactionDetail>()
+                            val transactionId = args.transactionId
+                            TransactionDetailScreenRoot(
+                                transactionId = transactionId,
                                 contentPadding = innerPadding, onNavigateTo = { navModel ->
                                     navController.navigateTo(navModel)
                                 })

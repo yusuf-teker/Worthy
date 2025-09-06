@@ -12,14 +12,18 @@ import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.util.network.UnresolvedAddressException
 import kotlinx.serialization.SerializationException
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 //DataSource = data’ya erişim
 class CurrencyRatesRemoteDataSourceImpl(
     private val client: HttpClient
 ) : CurrencyRatesRemoteDataSource {
 
+    @OptIn(ExperimentalTime::class)
     override suspend fun fetchRates(base: Currency): Result<Map<Currency, Double>, DataError.Remote> {
         Napier.d("fetchRates started. Base: ${base.name}", tag = "CurrencyRatesRemote")
+        val startTime = Clock.System.now().toEpochMilliseconds()  // Başlangıç zamanı
 
         val response = try {
             client.get("https://api.frankfurter.dev/v1/latest") {
@@ -37,6 +41,8 @@ class CurrencyRatesRemoteDataSourceImpl(
         }
 
         Napier.d("Raw response status: ${response.status.value}", tag = "CurrencyRatesRemote")
+        val endTime = Clock.System.now().toEpochMilliseconds()
+        Napier.d("fetchRates finished in ${endTime - startTime}ms", tag = "CurrencyRatesRemote")
 
         return when (response.status.value) {
             in 200..299 -> {

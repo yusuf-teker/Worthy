@@ -56,6 +56,9 @@ sealed class Routes(
     data object Analytics : Routes("Analytics")
 
     @Serializable
+    data class TransactionDetail(val transactionId: Int): Routes("TransactionDetail")
+
+    @Serializable
     data object Settings : Routes("Settings")
 
     @Serializable

@@ -189,22 +189,10 @@ class DashboardViewModel(
 
 
             combine(
-                dashboardRepository.getAllExpenseMonthlyAmount(
-                    6,
-                    getCurrentLocalDateTime()
-                ),
-                dashboardRepository.getAllIncomeMonthlyAmount(
-                    6,
-                    getCurrentLocalDateTime()
-                ),
-                dashboardRepository.getAllRecurringMonthlyAmount(
-                    monthCount = 6,
-                    currentDate = getCurrentLocalDateTime()
-                ),
-                dashboardRepository.getAllWishlistMonthlyAmount(
-                    monthCount = 6,
-                    currentDate = getCurrentLocalDateTime()
-                ),
+                dashboardRepository.getAllExpenseMonthlyAmount(6, getCurrentLocalDateTime()),
+                dashboardRepository.getAllIncomeMonthlyAmount(6, getCurrentLocalDateTime()),
+                dashboardRepository.getAllRecurringMonthlyAmount(6, getCurrentLocalDateTime()),
+                dashboardRepository.getAllWishlistMonthlyAmount(6, getCurrentLocalDateTime()),
                 dashboardRepository.getExpenseCategories()
             ) { expenses, incomes, dashboardRecurringData, wishlistItems, categories ->
                 _state.update { currentState ->
@@ -224,8 +212,9 @@ class DashboardViewModel(
                     dashboardRecurringData.expenses,
                     wishlistItems
                 )
-
-            }.launchIn(viewModelScope)
+            }
+                // burada sadece ilk değeri bekliyoruz
+                .first()
 
         }
 
@@ -318,22 +307,6 @@ class DashboardViewModel(
             )
         }
 
-    }
-
-    suspend fun showLoading() {
-        _state.update { currentState ->
-            currentState.copy(
-                isLoading = true
-            )
-        }
-    }
-
-    suspend fun hideLoading() {
-        _state.update { currentState ->
-            currentState.copy(
-                isLoading = false
-            )
-        }
     }
 
     private suspend fun calculateSelectedMonthRecurringIncome(month: AppDate): Money {

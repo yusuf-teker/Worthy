@@ -99,6 +99,7 @@ fun DashboardScreen(
         // 3 – Kart
         DashboardOverviewCard(
             modifier = Modifier.fillMaxWidth(),
+            isLoading = state.isLoading,
             amountText = state.totalAllIncomeMoney.formattedShort(),// todo + income eklenecek
             incomeChangeRatio = state.incomeChangeRatio,
             barsFractions = listOf(

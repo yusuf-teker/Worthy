@@ -41,6 +41,7 @@ import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.components.ColumnBarChart
 import com.yusufteker.worthy.core.presentation.components.MiniBarChart
+import com.yusufteker.worthy.core.presentation.components.ShimmerLabel
 import com.yusufteker.worthy.core.presentation.formatPercentageChange
 import com.yusufteker.worthy.core.presentation.getMonthName
 import com.yusufteker.worthy.core.presentation.theme.AppColors
@@ -64,6 +65,7 @@ import worthy.composeapp.generated.resources.no_data
 
 @Composable
 fun DashboardOverviewCard(
+    isLoading: Boolean = false,
     amountText: String = "",
     incomeChangeRatio: Double = 0.0,
     barsFractions: List<Float>,
@@ -124,22 +126,35 @@ fun DashboardOverviewCard(
                 }
             }
             Spacer(Modifier.height(16.dp))
+            if (isLoading) {
+                ShimmerLabel(width = 120.dp, height = 32.dp) // amountText yerine
+            } else {
             Text(
-                amountText, style = AppTypography.displaySmall, color = AppColors.onSurface
+                amountText,
+                style = AppTypography.displaySmall,
+                color = AppColors.onSurface
             )
+        }
             Spacer(Modifier.height(4.dp))
-            Text(
-                text = UiText.StringResourceId(
-                    Res.string.income_allocation_compare_to_last_month,
-                    arrayOf(formatPercentageChange(incomeChangeRatio))
-                ).asString(),
-                style = AppTypography.bodyMedium,
-                color = if (incomeChangeRatio > 0) AppColors.savingsGreen else if (incomeChangeRatio == 0.0) AppColors.onSurface.copy(alpha = 0.4f) else AppColors.error
-            )
+            if (isLoading) {
+                ShimmerLabel(width = 180.dp, height = 20.dp) // income_allocation_compare_to_last_month yerine
+            } else {
+                Text(
+                    text = UiText.StringResourceId(
+                        Res.string.income_allocation_compare_to_last_month,
+                        arrayOf(formatPercentageChange(incomeChangeRatio))
+                    ).asString(),
+                    style = AppTypography.bodyMedium,
+                    color = if (incomeChangeRatio > 0) AppColors.savingsGreen else if (incomeChangeRatio == 0.0) AppColors.onSurface.copy(
+                        alpha = 0.4f
+                    ) else AppColors.error
+                )
+            }
             Spacer(Modifier.height(24.dp))
 
 
             ColumnBarChart(
+                isLoading = isLoading,
                 values = barsFractions,
                 labels = listOf(
                     UiText.StringResourceId(Res.string.chart_fixed_expenses).asString(),

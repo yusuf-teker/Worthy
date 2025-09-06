@@ -24,9 +24,9 @@ import com.yusufteker.worthy.core.domain.service.datasource.CurrencyRatesCacheDa
 import com.yusufteker.worthy.core.domain.service.datasource.CurrencyRatesRemoteDataSource
 import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistRepository
 import com.yusufteker.worthy.screen.addtransaction.presentation.AddTransactionViewModel
-import com.yusufteker.worthy.screen.analytics.data.repository.AnalyticsRepositoryImpl
-import com.yusufteker.worthy.screen.analytics.domain.repository.AnalyticsRepository
-import com.yusufteker.worthy.screen.analytics.presentation.AnalyticsViewModel
+import com.yusufteker.worthy.screen.transactions.data.repository.AnalyticsRepositoryImpl
+import com.yusufteker.worthy.screen.transactions.domain.repository.AnalyticsRepository
+import com.yusufteker.worthy.screen.transactions.list.presentation.AnalyticsViewModel
 import com.yusufteker.worthy.screen.card.data.database.repository.CardRepositoryImpl
 import com.yusufteker.worthy.screen.card.domain.repository.CardRepository
 import com.yusufteker.worthy.screen.card.add.presentation.AddCardViewModel
@@ -43,6 +43,7 @@ import com.yusufteker.worthy.screen.subscription.data.database.repository.Subscr
 import com.yusufteker.worthy.screen.subscription.domain.repository.SubscriptionRepository
 import com.yusufteker.worthy.screen.subscription.list.presentation.SubscriptionListViewModel
 import com.yusufteker.worthy.screen.subscription.detail.presentation.SubscriptionDetailViewModel
+import com.yusufteker.worthy.screen.transactions.detail.presentation.TransactionDetailViewModel
 import com.yusufteker.worthy.screen.wishlist.add.presentation.WishlistAddViewModel
 import com.yusufteker.worthy.screen.wishlist.detail.presentation.WishlistDetailViewModel
 import com.yusufteker.worthy.screen.wishlist.list.data.database.repository.WishlistRepositoryImpl
@@ -110,4 +111,6 @@ val sharedModule = module {
     viewModel { SubscriptionListViewModel(get()) }
     viewModel { AddSubscriptionViewModel(get(), get()) }
     viewModel { SubscriptionDetailViewModel(get()) }
+    viewModel { TransactionDetailViewModel(get(), get()) }
+
 }

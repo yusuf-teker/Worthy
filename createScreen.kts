@@ -3,7 +3,7 @@
 import java.io.File
 
 
-val screenName = "SubscriptionDetail"//args.getOrNull(0) ?: error("Ekran adı girilmedi")
+val screenName = "TransactionDetail"//args.getOrNull(0) ?: error("Ekran adı girilmedi")
 val packageName = screenName.lowercase()
 val baseDir = File("composeApp/src/commonMain/kotlin/com/yusufteker/worthy/screen/$packageName/presentation")
 
@@ -71,14 +71,16 @@ val files = listOf(
     import worthy.composeapp.generated.resources.Res
     import worthy.composeapp.generated.resources.add_new_card
     import com.yusufteker.worthy.app.navigation.NavigationHandler
-        
+    import com.yusufteker.worthy.app.navigation.NavigationModel
+
 
 
     @Composable
     fun ${screenName}ScreenRoot(
         viewModel: ${screenName}ViewModel = koinViewModel(),
         contentPadding: PaddingValues = PaddingValues(),
-        onNavigateTo: (NavigationModel) -> Unit
+        onNavigateTo: (NavigationModel) -> Unit,
+
 
     ) {
         val state by viewModel.state.collectAsStateWithLifecycle()
@@ -87,11 +89,13 @@ val files = listOf(
             onNavigateTo(model)
         }
         
-        BaseContentWrapper(state = state) {
+        BaseContentWrapper(state = state) { modifier ->
             ${screenName}Screen(
                 state = state,
                 onAction = viewModel::onAction,
-                contentPadding = contentPadding
+                contentPadding = contentPadding,
+                modifier = modifier
+
             )
         }
     }
@@ -100,22 +104,24 @@ val files = listOf(
     fun ${screenName}Screen(
         state: ${screenName}State,
         onAction: (action: ${screenName}Action) -> Unit,
-        contentPadding: PaddingValues = PaddingValues()
+        contentPadding: PaddingValues = PaddingValues(),
+        modifier: Modifier = Modifier
+
     ) {
     
     Scaffold(
-        modifier = Modifier.fillMaxSize().padding(contentPadding),
+        modifier = modifier.fillMaxSize().padding(contentPadding),
         topBar = {
             AppTopBar(
                 title = UiText.StringResourceId(Res.string.add_new_card).asString(),
                 onNavIconClick = {}
             )
         }
-    ){
+    ){ paddingValues -> 
       Column(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
-                .padding(contentPadding),
+                .padding(top = paddingValues.calculateTopPadding()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // TODO
