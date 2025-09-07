@@ -1,6 +1,7 @@
 package com.yusufteker.worthy.app.navigation
 
 import com.yusufteker.worthy.core.domain.model.RecurringItem
+import com.yusufteker.worthy.core.domain.model.Transaction
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 

@@ -33,7 +33,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -71,6 +70,7 @@ import com.yusufteker.worthy.core.domain.model.isActive
 import com.yusufteker.worthy.core.domain.model.toEpochMillis
 import com.yusufteker.worthy.core.domain.model.toMonthlyData
 import com.yusufteker.worthy.core.presentation.UiText
+import com.yusufteker.worthy.core.presentation.base.AppScaffold
 import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
 import com.yusufteker.worthy.core.presentation.components.AppButton
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
@@ -148,7 +148,7 @@ fun SubscriptionDetailScreen(
     var showHistoryEditor by remember { mutableStateOf(false) }
 
 
-    Scaffold(modifier = modifier.padding(contentPadding).clickable {
+    AppScaffold(modifier = modifier.padding(contentPadding).clickable {
         showTerminateActivateBottomSheet = false
         showHistoryEditor = false
     }, topBar = {
@@ -743,7 +743,7 @@ fun hasDateConflict(
     items: List<RecurringItem.Subscription>, newItem: RecurringItem.Subscription? = null
 ): Pair<Int, UiText>? {
     val sorted = items.sortedBy { it.startDate }
-    val sortedMaxEnd = items.sortedBy { it.endDate }
+ //   val sortedMaxEnd = items.sortedBy { it.endDate }
     val lastUpdatedBeforeNew = items.find { it.endDate == null && it.id != newItem?.id }
     lastUpdatedBeforeNew?.let {
         newItem?.let { item ->
@@ -836,7 +836,7 @@ fun hasDateConflict(
                 )
             )
         }
-        if (item.endDate?.month == null && item.endDate?.year != null || item.endDate?.month != null && item.endDate?.year == null) {
+        if (item.endDate?.month == null && item.endDate?.year != null) {
             return Pair(
                 item.id, UiText.StringResourceId(
                     id = Res.string.missing_month_or_year
@@ -905,8 +905,8 @@ fun MiniSubscriptionChart(
     if (data.isEmpty()) return
 
     val sortedData = data.sortedBy { it.first.toEpochMillis() }
-    val minY = sortedData.minOf { it.second.amount.toDouble() }
-    val maxY = sortedData.maxOf { it.second.amount.toDouble() }
+    val minY = sortedData.minOf { it.second.amount }
+    val maxY = sortedData.maxOf { it.second.amount }
 
     Card(
 

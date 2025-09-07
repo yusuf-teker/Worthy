@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.yusufteker.worthy.app.navigation.NavigationModel
 import com.yusufteker.worthy.core.presentation.UiEvent
 import com.yusufteker.worthy.core.presentation.UiText
+import com.yusufteker.worthy.core.presentation.base.AppScaffold
 import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
 import com.yusufteker.worthy.core.presentation.components.AppButton
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
@@ -83,69 +84,71 @@ fun DashboardScreen(
     onAction: (DashboardAction) -> Unit,
 ) {
 
-    Column(modifier.padding(contentPadding)) {
-
-        AppTopBar(
-            title = UiText.StringResourceId(Res.string.dashboard_overview).asString(),
-            onNavIconClick = null,
-            isBack = false,
-            showDivider = false,
-            modifier = Modifier.background(AppColors.transparent)
-        ) { }
-
-
-
-        Spacer(Modifier.height(Spacing8))
-        // 3 – Kart
-        DashboardOverviewCard(
-            modifier = Modifier.fillMaxWidth(),
-            isLoading = state.isLoading,
-            amountText = state.totalAllIncomeMoney.formattedShort(),// todo + income eklenecek
-            incomeChangeRatio = state.incomeChangeRatio,
-            barsFractions = listOf(
-                state.fixedExpenseFraction,
-                state.desiresSpentFraction,
-                state.remainingFraction,
-                state.expensesFraction
-            ),
-            barsAmount = listOf(
-                state.fixedExpenseMoney.formattedShort(),
-                state.desiresSpentMoney.formattedShort(),
-                state.remainingMoney.formattedShort(),
-                state.expensesMoney.formattedShort()
-
-            ),
-            miniBarsFractions = state.selectedMiniBarsFraction,
-            miniBarsMonths = state.selectedMiniBarsMonths,
-
-            selectedChartIndex = state.selectedChartIndex,
-            onChartSelected = {
-                onAction(DashboardAction.ChartSelected(it))
-            },
-            selectableMonths = state.selectableMonths,
-            selectedMonth = state.selectedMonthYear,
-            onSelectedMonthChanged = { yearMonth ->
-                onAction(DashboardAction.OnSelectedMonthChanged(yearMonth))
-            },
-            onAddWishlistClicked = { onAction(DashboardAction.AddWishlistClicked) },
-            onAddRecurringClicked = { onAction(DashboardAction.AddRecurringClicked) },
-            onAddTransactionClicked = { onAction(DashboardAction.AddTransactionClicked) }
-
-        )
-
-        Spacer(Modifier.weight(1f))
-
-        // 4 – Evaluate Purchase
-        Row {
-            Spacer(modifier = Modifier.weight(1f))
-            AppButton(
-                text = UiText.StringResourceId(Res.string.dashboard_evaluate_purchase).asString(),
-                onClick = { onAction(DashboardAction.EvaluateButtonClicked) },
-                textModifier = Modifier.widthIn(max = 85.dp),
-
-                )
+    AppScaffold(
+        modifier = modifier.padding(contentPadding),
+        topBar = {
+            AppTopBar(
+                title = UiText.StringResourceId(Res.string.dashboard_overview).asString(),
+                onNavIconClick = null,
+                isBack = false,
+                showDivider = false,
+                modifier = Modifier.background(AppColors.transparent)
+            )
         }
-        Spacer(Modifier.height(Spacing16))
+    ) { paddingValues ->
+        Column(Modifier.padding(paddingValues).padding(top = 8.dp)) {
+
+            DashboardOverviewCard(
+                modifier = Modifier.fillMaxWidth(),
+                isLoading = state.isLoading,
+                amountText = state.totalAllIncomeMoney.formattedShort(),// todo + income eklenecek
+                incomeChangeRatio = state.incomeChangeRatio,
+                barsFractions = listOf(
+                    state.fixedExpenseFraction,
+                    state.desiresSpentFraction,
+                    state.remainingFraction,
+                    state.expensesFraction
+                ),
+                barsAmount = listOf(
+                    state.fixedExpenseMoney.formattedShort(),
+                    state.desiresSpentMoney.formattedShort(),
+                    state.remainingMoney.formattedShort(),
+                    state.expensesMoney.formattedShort()
+
+                ),
+                miniBarsFractions = state.selectedMiniBarsFraction,
+                miniBarsMonths = state.selectedMiniBarsMonths,
+
+                selectedChartIndex = state.selectedChartIndex,
+                onChartSelected = {
+                    onAction(DashboardAction.ChartSelected(it))
+                },
+                selectableMonths = state.selectableMonths,
+                selectedMonth = state.selectedMonthYear,
+                onSelectedMonthChanged = { yearMonth ->
+                    onAction(DashboardAction.OnSelectedMonthChanged(yearMonth))
+                },
+                onAddWishlistClicked = { onAction(DashboardAction.AddWishlistClicked) },
+                onAddRecurringClicked = { onAction(DashboardAction.AddRecurringClicked) },
+                onAddTransactionClicked = { onAction(DashboardAction.AddTransactionClicked) }
+
+            )
+
+            Spacer(Modifier.weight(1f))
+
+            // 4 – Evaluate Purchase
+            Row {
+                Spacer(modifier = Modifier.weight(1f))
+                AppButton(
+                    text = UiText.StringResourceId(Res.string.dashboard_evaluate_purchase).asString(),
+                    onClick = { onAction(DashboardAction.EvaluateButtonClicked) },
+                    textModifier = Modifier.widthIn(max = 85.dp),
+
+                    )
+            }
+            Spacer(Modifier.height(Spacing16))
+
+        }
 
     }
 

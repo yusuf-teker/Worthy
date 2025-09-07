@@ -12,6 +12,13 @@ object AppBrushes {
         @Composable get() = Brush.linearGradient(
             colors = AppColors.gradientBackgroundColors, start = Offset.Zero, end = Offset.Infinite
         )
+    val screenBackgroundReversed: Brush
+        @Composable get() = Brush.linearGradient(
+            colors = AppColors.gradientBackgroundColors,
+            start = Offset.Infinite,
+            end = Offset.Zero
+        )
+
 
     val cardItemBrush: Brush
         @Composable get() = if (isSystemInDarkTheme()) {

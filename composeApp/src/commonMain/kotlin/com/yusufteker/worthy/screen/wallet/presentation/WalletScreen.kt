@@ -4,12 +4,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.yusufteker.worthy.core.presentation.base.AppScaffold
 import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -39,7 +39,7 @@ fun WalletScreen(
     onAction: (action: WalletAction) -> Unit,
     contentPadding: PaddingValues = PaddingValues()
 ) {
-    Scaffold(
+    AppScaffold(
         modifier = modifier,
         topBar = {
             // TODO

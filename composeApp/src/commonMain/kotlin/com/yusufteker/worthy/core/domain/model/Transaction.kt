@@ -2,6 +2,7 @@ package com.yusufteker.worthy.core.domain.model
 
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.StringResource
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.expense
@@ -11,10 +12,12 @@ import worthy.composeapp.generated.resources.income
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
+@Serializable
 enum class TransactionType {
     INCOME, EXPENSE, REFUND,
 }
 
+@Serializable
 data class Transaction(
     val id: Int = 0,
     val name: String,

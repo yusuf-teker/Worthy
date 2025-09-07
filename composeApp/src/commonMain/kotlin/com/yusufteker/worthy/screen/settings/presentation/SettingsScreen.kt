@@ -28,6 +28,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yusufteker.worthy.app.navigation.NavigationHandler
 import com.yusufteker.worthy.app.navigation.NavigationModel
 import com.yusufteker.worthy.core.presentation.UiText
+import com.yusufteker.worthy.core.presentation.base.AppScaffold
 import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
 import com.yusufteker.worthy.core.presentation.components.CurrencyPicker
@@ -48,7 +49,6 @@ import worthy.composeapp.generated.resources.card
 import worthy.composeapp.generated.resources.hour_singular
 import worthy.composeapp.generated.resources.hours_plural
 import worthy.composeapp.generated.resources.label_budget
-import worthy.composeapp.generated.resources.hour_singular
 import worthy.composeapp.generated.resources.label_fixed_expenses
 import worthy.composeapp.generated.resources.label_income_sources
 import worthy.composeapp.generated.resources.label_savings
@@ -99,136 +99,142 @@ fun SettingsScreen(
     var showIncomeDialog by remember { mutableStateOf(false) }
     var showFixedExpenseDialog by remember { mutableStateOf(false) }
 
-    Column(
-        modifier.padding(contentPadding), verticalArrangement = Arrangement.spacedBy(24.dp)
-    ) {
-        AppTopBar(
-            title = UiText.StringResourceId(Res.string.screen_title_settings).asString(),
-            onNavIconClick = {},
-            isBack = false,
-            modifier = Modifier.background(AppColors.transparent)
-        ) { }
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // PIE CHART
-            PieChart(
-                values = listOf(
-                    state.totalFixedExpenses, state.budgetAmount.amount, state.savingsAmount
-                ), colors = listOf(
-                    AppColors.fixedExpenseGray, AppColors.budgetBlue, AppColors.savingsGreen
-                ), modifier = Modifier.size(120.dp)
+    AppScaffold(modifier.padding(contentPadding),
+        topBar = {
+            AppTopBar(
+                title = UiText.StringResourceId(Res.string.screen_title_settings).asString(),
+                onNavIconClick = {},
+                isBack = false,
+                modifier = Modifier.background(AppColors.transparent)
             )
+        }
+        ) { paddingValues ->
+        Column(
+            Modifier.padding(paddingValues), verticalArrangement = Arrangement.spacedBy(24.dp)
+        ) {
 
-            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // PIE CHART
+                PieChart(
+                    values = listOf(
+                        state.totalFixedExpenses, state.budgetAmount.amount, state.savingsAmount
+                    ), colors = listOf(
+                        AppColors.fixedExpenseGray, AppColors.budgetBlue, AppColors.savingsGreen
+                    ), modifier = Modifier.size(120.dp)
+                )
 
-                // BUDGET SLIDER
-                BudgetStepper(
-                    modifier = Modifier.fillMaxWidth(),
-                    color = AppColors.primary,
-                    budgetAmount = state.budgetAmount,
-                    totalIncome = state.totalFixedIncome,
-                    totalFixedExpenses = state.totalFixedExpenses,
-                    selectedCurrency = state.selectedCurrency.symbol,
-                    onBudgetChange = { v ->
-                        onAction(
-                            SettingsAction.OnBudgetValueChange(
-                                state.budgetAmount.copy(
-                                    amount = v.coerceIn(
-                                        0.0,
-                                        (state.totalFixedIncome - state.totalFixedExpenses).coerceAtLeast(
-                                            0.0
+                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+
+                    // BUDGET SLIDER
+                    BudgetStepper(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = AppColors.primary,
+                        budgetAmount = state.budgetAmount,
+                        totalIncome = state.totalFixedIncome,
+                        totalFixedExpenses = state.totalFixedExpenses,
+                        selectedCurrency = state.selectedCurrency.symbol,
+                        onBudgetChange = { v ->
+                            onAction(
+                                SettingsAction.OnBudgetValueChange(
+                                    state.budgetAmount.copy(
+                                        amount = v.coerceIn(
+                                            0.0,
+                                            (state.totalFixedIncome - state.totalFixedExpenses).coerceAtLeast(
+                                                0.0
+                                            )
                                         )
                                     )
                                 )
+
                             )
+                        },
+                    )
+                    // INCOME WIDGET
+                    FinancialWidget(
+                        title = UiText.StringResourceId(Res.string.label_income_sources).asString(),
+                        totalAmount = state.totalFixedIncome,
+                        color = AppColors.primary,
+                        onClick = { showIncomeDialog = true },
+                        currencySymbol = state.selectedCurrency.symbol
+                    )
 
-                        )
-                    },
-                )
-                // INCOME WIDGET
-                FinancialWidget(
-                    title = UiText.StringResourceId(Res.string.label_income_sources).asString(),
-                    totalAmount = state.totalFixedIncome,
-                    color = AppColors.primary,
-                    onClick = { showIncomeDialog = true },
-                    currencySymbol = state.selectedCurrency.symbol
-                )
+                    // FIXED EXPENSES WIDGET
+                    FinancialWidget(
+                        title = UiText.StringResourceId(Res.string.label_fixed_expenses).asString(),
+                        totalAmount = state.totalFixedExpenses,
+                        color = AppColors.primary,
+                        onClick = { showFixedExpenseDialog = true },
+                        currencySymbol = state.selectedCurrency.symbol
+                    )
+                }
+            }
 
-                // FIXED EXPENSES WIDGET
-                FinancialWidget(
-                    title = UiText.StringResourceId(Res.string.label_fixed_expenses).asString(),
-                    totalAmount = state.totalFixedExpenses,
-                    color = AppColors.primary,
-                    onClick = { showFixedExpenseDialog = true },
-                    currencySymbol = state.selectedCurrency.symbol
+            // SUMMARY
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                ReadOnlyRow(
+                    UiText.StringResourceId(Res.string.label_fixed_expenses).asString(),
+                    state.totalFixedExpenses,
+                    AppColors.fixedExpenseGray,
+                    state.selectedCurrency.symbol
+                )
+                ReadOnlyRow(
+                    UiText.StringResourceId(Res.string.label_budget).asString(),
+                    state.budgetAmount.amount,
+                    AppColors.budgetBlue,
+                    state.selectedCurrency.symbol
+                )
+                ReadOnlyRow(
+                    UiText.StringResourceId(Res.string.label_savings).asString(),
+                    state.savingsAmount,
+                    AppColors.savingsGreen,
+                    state.selectedCurrency.symbol
                 )
             }
+
+
+            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                val hourSingular = UiText.StringResourceId(Res.string.hour_singular).asString()
+                val hoursPlural = UiText.StringResourceId(Res.string.hours_plural).asString()
+
+                NumberPickerInput(
+                    label = UiText.StringResourceId(Res.string.label_weekly_work_hours).asString(),
+                    value = state.weeklyWorkHours,
+                    range = 0..WEEKLY_MAX_HOURS,
+                    step = 1,
+                    onValueChange = { onAction(SettingsAction.OnWeeklyWorkHoursChange(it)) },
+                    format = { hours ->
+                        if (hours == 1) {
+                            "$hours $hourSingular"
+                        } else {
+                            "$hours $hoursPlural"
+                        }
+                    },
+                    modifier = Modifier.weight(2f)
+                )
+                CurrencyPicker(
+                    modifier = Modifier.weight(2f),
+                    selectedCurrency = state.selectedCurrency,
+                    onCurrencySelected = { onAction(SettingsAction.OnCurrencyChange(it)) },
+                )
+            }
+
+            MenuRow(
+                iconPainter = painterResource(Res.drawable.card),
+                text = UiText.StringResourceId(Res.string.my_cards).asString(),
+                onClick = { onAction(SettingsAction.OnMyCardsClick) })
+            MenuRow(
+                iconPainter = painterResource(Res.drawable.subscription),
+                text = UiText.StringResourceId(Res.string.menu_subscriptions).asString(),
+                onClick = { onAction(SettingsAction.OnSubscriptionsClick) })
+
         }
-
-        // SUMMARY
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            ReadOnlyRow(
-                UiText.StringResourceId(Res.string.label_fixed_expenses).asString(),
-                state.totalFixedExpenses,
-                AppColors.fixedExpenseGray,
-                state.selectedCurrency.symbol
-            )
-            ReadOnlyRow(
-                UiText.StringResourceId(Res.string.label_budget).asString(),
-                state.budgetAmount.amount,
-                AppColors.budgetBlue,
-                state.selectedCurrency.symbol
-            )
-            ReadOnlyRow(
-                UiText.StringResourceId(Res.string.label_savings).asString(),
-                state.savingsAmount,
-                AppColors.savingsGreen,
-                state.selectedCurrency.symbol
-            )
-        }
-
-
-        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            val hourSingular = UiText.StringResourceId(Res.string.hour_singular).asString()
-            val hoursPlural = UiText.StringResourceId(Res.string.hours_plural).asString()
-
-            NumberPickerInput(
-                label = UiText.StringResourceId(Res.string.label_weekly_work_hours).asString(),
-                value = state.weeklyWorkHours,
-                range = 0..WEEKLY_MAX_HOURS,
-                step = 1,
-                onValueChange = { onAction(SettingsAction.OnWeeklyWorkHoursChange(it)) },
-                format = { hours ->
-                    if (hours == 1) {
-                        "$hours $hourSingular"
-                    } else {
-                        "$hours $hoursPlural"
-                    }
-                },
-                modifier = Modifier.weight(2f)
-            )
-            CurrencyPicker(
-                modifier = Modifier.weight(2f),
-                selectedCurrency = state.selectedCurrency,
-                onCurrencySelected = { onAction(SettingsAction.OnCurrencyChange(it)) },
-            )
-        }
-
-        MenuRow(
-            iconPainter = painterResource(Res.drawable.card),
-            text = UiText.StringResourceId(Res.string.my_cards).asString(),
-            onClick = { onAction(SettingsAction.OnMyCardsClick) })
-        MenuRow(
-            iconPainter = painterResource(Res.drawable.subscription),
-            text = UiText.StringResourceId(Res.string.menu_subscriptions).asString(),
-            onClick = { onAction(SettingsAction.OnSubscriptionsClick) })
 
     }
 
@@ -258,8 +264,7 @@ fun SettingsScreen(
             onAddNew = {
                 onAction(SettingsAction.OnAddNewRecurringItem(it))
             },
-            //currencyCode = state.selectedCurrency,
-            //isExpenseDialog = true
+
         )
     }
 

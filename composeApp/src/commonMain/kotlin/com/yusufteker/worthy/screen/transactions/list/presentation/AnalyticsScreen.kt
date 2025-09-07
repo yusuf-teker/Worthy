@@ -1,5 +1,6 @@
 package com.yusufteker.worthy.screen.transactions.list.presentation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -16,7 +17,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,10 +29,12 @@ import com.yusufteker.worthy.app.navigation.NavigationHandler
 import com.yusufteker.worthy.app.navigation.NavigationModel
 import com.yusufteker.worthy.core.domain.model.TransactionType
 import com.yusufteker.worthy.core.presentation.UiText
+import com.yusufteker.worthy.core.presentation.base.AppScaffold
 import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
 import com.yusufteker.worthy.core.presentation.components.EmptyScreen
 import com.yusufteker.worthy.core.presentation.theme.AppColors
+import com.yusufteker.worthy.core.presentation.theme.AppDimens.ScreenPadding
 import com.yusufteker.worthy.core.presentation.theme.Constants.EMPTY_SCREEN_SIZE
 import com.yusufteker.worthy.screen.transactions.list.presentation.AnalyticsAction.OnItemDelete
 import com.yusufteker.worthy.screen.transactions.list.presentation.components.BarChart
@@ -94,7 +96,7 @@ fun AnalyticsScreen(
     var showSort by remember { mutableStateOf(false) }
 
 
-    Scaffold(
+    AppScaffold(
         modifier = modifier.padding(contentPadding), topBar = {
             AppTopBar(
                 modifier = Modifier.fillMaxWidth(),
@@ -151,7 +153,7 @@ fun AnalyticsScreen(
                             convertedTransactions = state.convertedTransactions,
                             listState = listState,
                             onDelete = {
-                                onAction(OnItemDelete(it))
+                                //onAction(OnItemDelete(it)) TODO silmeyi kaldırdım şimdilik
                             },
                             onItemClicked = {
                                 onAction(AnalyticsAction.OnTransactionClicked(it))

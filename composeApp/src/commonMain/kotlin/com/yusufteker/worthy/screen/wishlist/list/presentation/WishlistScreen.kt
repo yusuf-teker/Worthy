@@ -12,7 +12,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -22,6 +21,7 @@ import com.yusufteker.worthy.app.navigation.NavigationHandler
 import com.yusufteker.worthy.app.navigation.NavigationModel
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.asStringList
+import com.yusufteker.worthy.core.presentation.base.AppScaffold
 import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
 import com.yusufteker.worthy.core.presentation.components.EmptyScreen
 import com.yusufteker.worthy.core.presentation.components.InteractiveSearchBar
@@ -71,7 +71,7 @@ fun WishlistScreen(
     contentPadding: PaddingValues = PaddingValues(),
 ) {
 
-    Scaffold(modifier = modifier.padding(contentPadding), floatingActionButton = {
+    AppScaffold(modifier = modifier.padding(contentPadding), floatingActionButton = {
         WishlistFab(
             onClick = { onAction(WishlistAction.OnFabClick) })
 

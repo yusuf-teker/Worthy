@@ -24,7 +24,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -40,11 +39,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yusufteker.worthy.app.navigation.NavigationHandler
 import com.yusufteker.worthy.app.navigation.NavigationModel
 import com.yusufteker.worthy.core.presentation.UiText
+import com.yusufteker.worthy.core.presentation.base.AppScaffold
 import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
 import com.yusufteker.worthy.core.presentation.components.DayOfMonthSelector
 import com.yusufteker.worthy.core.presentation.components.MessageText
 import com.yusufteker.worthy.core.presentation.components.UiMessage
+import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.util.CardNumberGroupingTransformation
 import com.yusufteker.worthy.core.presentation.util.CardValidator
 import com.yusufteker.worthy.core.presentation.util.ExpiryVisualTransformation
@@ -117,7 +118,7 @@ fun AddCardScreen(
 
     var showCardDetailInputs by remember { mutableStateOf(false) }
 
-    Scaffold(
+    AppScaffold(
         modifier = modifier, topBar = {
             AppTopBar(
                 modifier = Modifier.padding(top = contentPadding.calculateTopPadding()),

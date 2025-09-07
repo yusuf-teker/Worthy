@@ -29,7 +29,7 @@ class CurrencyRatesCacheDataSourceImpl(
 
             // 24 saat kontrolü Günde 1 api isteği atılabilir
             val now = Clock.System.now().toEpochMilliseconds()
-            if (now - cached.timestampMillis >= ONE_DAY_MILLIS) return null
+            if (now - cachedRates.timestampMillis >= ONE_DAY_MILLIS) return null
             cachedRates
         } catch (e: Exception) {
             null // NULL DONMESI API ISTEGINI TETIKLER

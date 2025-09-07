@@ -396,6 +396,9 @@
     <string name="sort_amount_desc">By Amount (High → Low)</string>
     <string name="sort_amount_asc">By Amount (Low → High)</string>
 
+    <string name="screen_title_transaction_detail">Transaction Detail</string>
+
+
     <!-- Subscription -->
     <string name="screen_title_subscription_list">My Subscriptions</string>
     <string name="subscription_empty_screen_button">Add Subscription 🎧🍿</string>

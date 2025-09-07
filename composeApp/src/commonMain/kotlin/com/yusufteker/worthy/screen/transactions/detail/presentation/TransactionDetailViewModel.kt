@@ -1,15 +1,16 @@
 package com.yusufteker.worthy.screen.transactions.detail.presentation
 
 import androidx.lifecycle.viewModelScope
+import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.domain.model.isActive
 import com.yusufteker.worthy.core.domain.repository.CategoryRepository
 import com.yusufteker.worthy.core.domain.repository.TransactionRepository
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import kotlin.collections.component1
-import kotlin.collections.component2
+import kotlinx.coroutines.launch
 
 class TransactionDetailViewModel(
     val transactionRepository: TransactionRepository,
@@ -53,8 +54,24 @@ class TransactionDetailViewModel(
                 }
             }
 
-            is TransactionDetailAction.CreateCategory -> TODO()
-            is TransactionDetailAction.UpdateCategory -> TODO()
+            is TransactionDetailAction.CreateCategory -> {
+                viewModelScope.launch {
+                    categoryRepository.insert(action.category)
+
+                }
+            }
+            is TransactionDetailAction.UpdateCategory -> {
+                _state.update { it.copy(selectedCategory = action.category) }
+            }
+            is TransactionDetailAction.UpdateAmount -> {
+                _state.update { it.copy(transaction = it.transaction?.copy(amount = action.money?: emptyMoney())) }
+            }
+            is TransactionDetailAction.UpdateName -> {
+                _state.update { it.copy(transaction = it.transaction?.copy(name = action.name)) }
+            }
+            is TransactionDetailAction.UpdateNote -> {
+                _state.update { it.copy(transaction = it.transaction?.copy(note = action.note)) }
+            }
         }
     }
 }

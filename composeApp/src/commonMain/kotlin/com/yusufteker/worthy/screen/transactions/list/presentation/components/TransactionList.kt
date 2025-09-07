@@ -135,18 +135,10 @@ fun TransactionListAccordion(
                         verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         monthTransactions.forEachIndexed { index, transaction ->
-                            SwipeToDeleteWrapper(
-                                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
-                                    .animateContentSize(
-                                        animationSpec = tween(300)
-                                    ),
-                                shape = CardDefaults.shape,
-                                onDelete = { onDelete(transaction.id) }) {
-                                TransactionListItem(
-                                    transaction = transaction,
-                                    onItemClicked = { onItemClicked(transaction.id) }
-                                )
-                            }
+                            TransactionListItem(
+                                transaction = transaction,
+                                onItemClicked = { onItemClicked(transaction.id) }
+                            )
                         }
                     }
                 }

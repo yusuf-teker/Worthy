@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -73,6 +74,7 @@ fun AppTopBar(
             HorizontalDivider(
                 Modifier.padding(top=8.dp), 1.dp, AppColors.outlineVariant
             )
+            Spacer(Modifier.height(8.dp))
         }
 
     }

@@ -385,6 +385,9 @@
     <string name="sort_amount_desc">Miktara göre (Büyük → Küçük)</string>
     <string name="sort_amount_asc">Miktara göre (Küçük → Büyük)</string>
 
+    <string name="screen_title_transaction_detail">İşlem Detayı</string>
+
+
     <!-- Subscription -->
     <string name="screen_title_subscription_list">Aboneliklerim</string>
     <string name="subscription_empty_screen_button">Abonelik Ekle 🎧🍿</string>

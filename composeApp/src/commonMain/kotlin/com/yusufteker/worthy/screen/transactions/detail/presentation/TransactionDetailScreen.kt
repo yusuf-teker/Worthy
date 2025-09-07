@@ -11,9 +11,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,22 +25,23 @@ import com.yusufteker.worthy.app.navigation.NavigationHandler
 import com.yusufteker.worthy.app.navigation.NavigationModel
 import com.yusufteker.worthy.core.domain.model.CategoryType
 import com.yusufteker.worthy.core.domain.model.TransactionType
-import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.domain.model.toAppDate
+import com.yusufteker.worthy.core.domain.model.toEpochMillis
 import com.yusufteker.worthy.core.presentation.UiText
+import com.yusufteker.worthy.core.presentation.base.AppScaffold
 import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
 import com.yusufteker.worthy.core.presentation.components.AppButton
+import com.yusufteker.worthy.core.presentation.components.AppTopBar
 import com.yusufteker.worthy.core.presentation.components.CategorySelector
 import com.yusufteker.worthy.core.presentation.components.MoneyInput
-import com.yusufteker.worthy.core.presentation.components.WheelDatePicker
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.todayIn
+import com.yusufteker.worthy.core.presentation.components.WheelDatePickerV3
+import io.github.aakira.napier.Napier
 import org.koin.compose.viewmodel.koinViewModel
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.add
 import worthy.composeapp.generated.resources.note
+import worthy.composeapp.generated.resources.screen_title_transaction_detail
 import worthy.composeapp.generated.resources.wishlist_label_product_name
-import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 @Composable
@@ -53,7 +54,9 @@ fun TransactionDetailScreenRoot(
     ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    viewModel.onAction(TransactionDetailAction.Init(transactionId))
+    LaunchedEffect(key1 = transactionId) {
+        viewModel.onAction(TransactionDetailAction.Init(transactionId))
+    }
     NavigationHandler(viewModel) { model ->
         onNavigateTo(model)
     }
@@ -78,49 +81,53 @@ fun TransactionDetailScreen(
 
 ) {
 
-    Scaffold(
-        modifier = modifier.fillMaxSize().padding(contentPadding),
-    ) { paddingValues ->
+    LaunchedEffect(key1 = state.isLoading) {
+        Napier.d("TransactionDetailScreen: isLoading = ${state.isLoading}")
+    }
+
+    AppScaffold(
+        modifier = modifier.fillMaxSize().padding(contentPadding), topBar = {
+            AppTopBar(
+                title = UiText.StringResourceId(Res.string.screen_title_transaction_detail)
+                    .asString(),
+                modifier = Modifier.fillMaxWidth(),
+                onNavIconClick = { onAction(TransactionDetailAction.NavigateBack) },
+                showDivider = false
+            )
+        }) { paddingValues ->
         Column(
-            modifier = Modifier.fillMaxSize().padding(contentPadding),
+            modifier = modifier.padding(paddingValues).fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            var name by remember { mutableStateOf(state.transaction?.name) }
             var errorName by remember { mutableStateOf<String?>(null) }
             var errorMoney by remember { mutableStateOf<UiText?>(null) }
             var errorCategory by remember { mutableStateOf<UiText?>(null) }
             var errorDate by remember { mutableStateOf<UiText?>(null) }
 
-            var amount by remember { mutableStateOf(state.transaction?.amount) }
-            var note by remember { mutableStateOf(state.transaction?.note ?: "") }
-            var transactionType by remember { mutableStateOf(state.transaction?.transactionType) }
-            var date = remember { state.transaction?.transactionDate?.toAppDate() }
-
             Column(
-                modifier = modifier.fillMaxSize().padding(top = paddingValues.calculateTopPadding())
-                    .verticalScroll(rememberScrollState())
+                modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState())
             ) {
                 state.transaction?.let {
 
                     // --- Name ---
                     OutlinedTextField(
-                        value = name ?: "", onValueChange = {
-                        name = it
-                    }, label = {
-                        Text(
-                            UiText.StringResourceId(Res.string.wishlist_label_product_name)
-                                .asString()
-                        )
-                    }, modifier = Modifier.fillMaxWidth(), isError = errorName != null
+
+                        value = it.name, onValueChange = {
+                            onAction(TransactionDetailAction.UpdateName(it))
+                        }, label = {
+                            Text(
+                                UiText.StringResourceId(Res.string.wishlist_label_product_name)
+                                    .asString()
+                            )
+                        }, modifier = Modifier.fillMaxWidth(), isError = errorName != null
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
 
                     // --- Amount ---
                     MoneyInput(
-                        money = amount, onValueChange = {
-
-                            amount = it
+                        money = it.amount, onValueChange = { newMoney ->
+                            onAction(TransactionDetailAction.UpdateAmount(newMoney))
                         }, errorMessage = errorMoney, isError = errorMoney != null
                     )
 
@@ -143,12 +150,17 @@ fun TransactionDetailScreen(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     // --- Date ---
-                    val currentDate = Clock.System.todayIn(TimeZone.currentSystemDefault())
 
-                    WheelDatePicker(
-                        initialDate = currentDate,
+                    WheelDatePickerV3(
+                        initialDate = state.transaction.transactionDate.toAppDate(),
                         onDateSelected = { epochSeconds ->
-                            date = epochSeconds.toAppDate()
+                            onAction(
+                                TransactionDetailAction.UpdateTransaction(
+                                    it.copy(
+                                        transactionDate = epochSeconds.toEpochMillis()
+                                    )
+                                )
+                            )
                         },
                         modifier = Modifier.fillMaxWidth().height(56.dp),
                         title = "Date Added", // todo tr en
@@ -159,8 +171,8 @@ fun TransactionDetailScreen(
                     // --- Note ---
 
                     OutlinedTextField(
-                        value = note,
-                        onValueChange = { note = it },
+                        value = it.note ?: "",
+                        onValueChange = { note -> onAction(TransactionDetailAction.UpdateNote(note)) },
                         label = { Text(UiText.StringResourceId(Res.string.note).asString()) },
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -173,14 +185,7 @@ fun TransactionDetailScreen(
                         text = UiText.StringResourceId(Res.string.add).asString(),
                         loading = state.isLoading,
                         onClick = {
-                            val updatedTransaction = it.copy(
-                                name = name ?: "",
-                                amount = amount ?: emptyMoney(),
-                                note = note,
-                                categoryId = state.selectedCategory?.id ?: 0,
-                            )
-                            onAction(TransactionDetailAction.UpdateTransaction(updatedTransaction))
-
+                            onAction(TransactionDetailAction.UpdateTransaction(it))
                         },
                     )
 

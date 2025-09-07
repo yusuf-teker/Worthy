@@ -25,7 +25,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.yusufteker.worthy.core.domain.getCurrentAppDate
 import com.yusufteker.worthy.core.domain.getCurrentEpochMillis
+import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.screen.card.domain.model.Card
 import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.CategoryType
@@ -40,6 +42,7 @@ import com.yusufteker.worthy.core.presentation.components.MoneyInput
 import com.yusufteker.worthy.core.presentation.components.NumberPickerInput
 import com.yusufteker.worthy.core.presentation.components.UiMessage
 import com.yusufteker.worthy.core.presentation.components.WheelDatePicker
+import com.yusufteker.worthy.core.presentation.components.WheelDatePickerV3
 import com.yusufteker.worthy.core.presentation.theme.Constants.MAX_INSTALLMENT_COUNT
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
@@ -81,11 +84,11 @@ fun AddTransactionForm(
     onNameChange: (String) -> Unit,
     onAmountChange: (Money) -> Unit,
     onCategoryChange: (Category) -> Unit,
-    onTransactionDateChange: (Long) -> Unit,
+    onTransactionDateChange: (AppDate) -> Unit,
     onNoteChange: (String) -> Unit,
     onCardSelected: (card: Card) -> Unit = {},
     onInstallmentCountChange: (Int) -> Unit = {},
-    onInstallmentStartDateChange: (Long) -> Unit = {},
+    onInstallmentStartDateChange: (AppDate) -> Unit = {},
     onNewCategoryCreated: (Category) -> Unit,
     onAddNewCardClicked: () -> Unit = {},
     onIsCardPaymentChanged: (Boolean) -> Unit = {},
@@ -140,12 +143,11 @@ fun AddTransactionForm(
 
         Spacer(modifier = Modifier.height(2.dp))
         // Date selector
-        val currentDate = Clock.System.todayIn(TimeZone.currentSystemDefault())
 
-        WheelDatePicker(
-            initialDate = currentDate,
-            onDateSelected = { epochSeconds ->
-                onTransactionDateChange(epochSeconds)
+        WheelDatePickerV3(
+            initialDate = getCurrentAppDate(),
+            onDateSelected = { appDate ->
+                onTransactionDateChange(appDate)
             },
             modifier = Modifier.fillMaxWidth().height(56.dp),
             title = "Date Added", // todo tr en
@@ -201,10 +203,10 @@ fun AddTransactionForm(
                             Spacer(Modifier.width(16.dp))
 
                             Box(Modifier.weight(targetWeight)) {
-                                WheelDatePicker(
-                                    initialDate = currentDate,
-                                    onDateSelected = { epochSeconds ->
-                                        onInstallmentStartDateChange(epochSeconds)
+                                WheelDatePickerV3(
+                                    initialDate = getCurrentAppDate(),
+                                    onDateSelected = { appDate ->
+                                        onInstallmentStartDateChange(appDate)
                                     },
                                     modifier = Modifier.wrapContentHeight(),
                                     title = "Installment Start Date"

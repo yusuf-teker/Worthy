@@ -6,4 +6,6 @@ import com.yusufteker.worthy.core.domain.model.Currency
 interface CurrencyRatesCacheDataSource {
     suspend fun saveRates(cachedRates: CachedExchangeRate)
     suspend fun getRates(base: Currency): CachedExchangeRate?
+
+
 }

@@ -11,7 +11,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yusufteker.worthy.app.navigation.NavigationHandler
 import com.yusufteker.worthy.app.navigation.NavigationModel
+import com.yusufteker.worthy.core.domain.model.toEpochMillis
 import com.yusufteker.worthy.core.presentation.UiText
+import com.yusufteker.worthy.core.presentation.base.AppScaffold
 import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
 import com.yusufteker.worthy.core.presentation.components.Screen
@@ -61,199 +63,203 @@ fun AddTransactionScreen(
     isIncomeByDefault: Boolean = false
 
 ) {
-    Column(
-        modifier = modifier.padding(contentPadding),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-
-        AppTopBar(
-            title = UiText.StringResourceId(Res.string.screen_title_new_transaction).asString(),
-            onNavIconClick = { onAction(AddTransactionAction.OnBackClick) },
-            isBack = true
-        )
-
-        val addIncomeScreen = Screen(
-            title = UiText.StringResourceId(Res.string.add_income).asString(), content = {
-                AddTransactionForm(
-                    state = state.incomeForm,
-                    isExpense = false,
-                    onAmountChange = {
-                        onAction(
-                            AddTransactionAction.IncomeFormAction(
-                                TransactionFormAction.MoneyChanged(
-                                    it
-                                )
-                            )
-                        )
-                    },
-                    onCategoryChange = {
-                        onAction(
-                            AddTransactionAction.IncomeFormAction(
-                                TransactionFormAction.CategoryChanged(
-                                    it
-                                )
-                            )
-                        )
-                    },
-                    onTransactionDateChange = {
-                        onAction(
-                            AddTransactionAction.IncomeFormAction(
-                                TransactionFormAction.DateChanged(
-                                    it
-                                )
-                            )
-                        )
-                    },
-                    onNoteChange = {
-                        onAction(
-                            AddTransactionAction.IncomeFormAction(
-                                TransactionFormAction.NoteChanged(
-                                    it
-                                )
-                            )
-                        )
-                    },
-                    onNewCategoryCreated = {
-                        onAction(
-                            AddTransactionAction.IncomeFormAction(
-                                TransactionFormAction.CategoryChanged(
-                                    it
-                                )
-                            )
-                        )
-                    },
-                    onSaveClick = {
-                        onAction(AddTransactionAction.IncomeFormAction(TransactionFormAction.SaveClicked))
-
-                    },
-                    onNameChange = {
-                        onAction(
-                            AddTransactionAction.IncomeFormAction(
-                                TransactionFormAction.NameChanged(
-                                    it
-                                )
-                            )
-                        )
-                    },
-
-                    )
-            }
-
-        )
-
-        val addExpenseScreen = Screen(
-            title = UiText.StringResourceId(Res.string.add_expense).asString(), content = {
-                AddTransactionForm(
-                    state = state.expenseForm,
-                    isExpense = true,
-                    isCardPayment = state.expenseForm.isCardPayment,
-                    onNameChange = {
-                        onAction(
-                            AddTransactionAction.ExpenseFormAction(
-                                TransactionFormAction.NameChanged(
-                                    it
-                                )
-                            )
-                        )
-                    },
-                    onAmountChange = {
-                        onAction(
-                            AddTransactionAction.ExpenseFormAction(
-                                TransactionFormAction.MoneyChanged(
-                                    it
-                                )
-                            )
-                        )
-                    },
-
-                    onCategoryChange = {
-                        onAction(
-                            AddTransactionAction.ExpenseFormAction(
-                                TransactionFormAction.CategoryChanged(
-                                    it
-                                )
-                            )
-                        )
-                    },
-                    onTransactionDateChange = {
-                        onAction(
-                            AddTransactionAction.ExpenseFormAction(
-                                TransactionFormAction.DateChanged(
-                                    it
-                                )
-                            )
-                        )
-                    },
-                    onNoteChange = {
-                        onAction(
-                            AddTransactionAction.ExpenseFormAction(
-                                TransactionFormAction.NoteChanged(
-                                    it
-                                )
-                            )
-                        )
-                    },
-                    onCardSelected = {
-                        onAction(
-                            AddTransactionAction.ExpenseFormAction(
-                                TransactionFormAction.CardSelected(
-                                    it
-                                )
-                            )
-                        )
-                    },
-                    onInstallmentCountChange = {
-                        onAction(
-                            AddTransactionAction.ExpenseFormAction(
-                                TransactionFormAction.InstallmentCountChanged(
-                                    it
-                                )
-                            )
-                        )
-                    },
-                    onInstallmentStartDateChange = {
-                        onAction(
-                            AddTransactionAction.ExpenseFormAction(
-                                TransactionFormAction.InstallmentStartDateChanged(
-                                    it
-                                )
-                            )
-                        )
-                    },
-                    onNewCategoryCreated = {
-                        onAction(
-                            AddTransactionAction.ExpenseFormAction(
-                                TransactionFormAction.CategoryChanged(
-                                    it
-                                )
-                            )
-                        )
-                    },
-
-                    onAddNewCardClicked = {
-                        onAction(AddTransactionAction.ExpenseFormAction(TransactionFormAction.AddNewCardClicked))
-                    },
-                    onIsCardPaymentChanged = {
-                        onAction(
-                            AddTransactionAction.ExpenseFormAction(
-                                TransactionFormAction.IsCardPaymentChanged(
-                                    it
-                                )
-                            )
-                        )
-                    },
-                    onSaveClick = {
-                        onAction(AddTransactionAction.ExpenseFormAction(TransactionFormAction.SaveClicked))
-                    })
-            })
-
-        TabbedScreen(
-            initialPage = if (isIncomeByDefault) 1 else 0, onTabChanged = {}, screens = listOf(
-                addExpenseScreen, addIncomeScreen
+    AppScaffold(
+        modifier = modifier.padding(contentPadding), topBar = {
+            AppTopBar(
+                title = UiText.StringResourceId(Res.string.screen_title_new_transaction).asString(),
+                onNavIconClick = { onAction(AddTransactionAction.OnBackClick) },
+                isBack = true
             )
-        )
+        }) { paddingValues ->
+        Column(
+            modifier = Modifier.padding(paddingValues),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
 
+            val addIncomeScreen = Screen(
+                title = UiText.StringResourceId(Res.string.add_income).asString(), content = {
+                    AddTransactionForm(
+                        state = state.incomeForm,
+                        isExpense = false,
+                        onAmountChange = {
+                            onAction(
+                                AddTransactionAction.IncomeFormAction(
+                                    TransactionFormAction.MoneyChanged(
+                                        it
+                                    )
+                                )
+                            )
+                        },
+                        onCategoryChange = {
+                            onAction(
+                                AddTransactionAction.IncomeFormAction(
+                                    TransactionFormAction.CategoryChanged(
+                                        it
+                                    )
+                                )
+                            )
+                        },
+                        onTransactionDateChange = {
+                            onAction(
+                                AddTransactionAction.IncomeFormAction(
+                                    TransactionFormAction.DateChanged(
+                                        it.toEpochMillis()
+                                    )
+                                )
+                            )
+                        },
+                        onNoteChange = {
+                            onAction(
+                                AddTransactionAction.IncomeFormAction(
+                                    TransactionFormAction.NoteChanged(
+                                        it
+                                    )
+                                )
+                            )
+                        },
+                        onNewCategoryCreated = {
+                            onAction(
+                                AddTransactionAction.IncomeFormAction(
+                                    TransactionFormAction.CategoryChanged(
+                                        it
+                                    )
+                                )
+                            )
+                        },
+                        onSaveClick = {
+                            onAction(AddTransactionAction.IncomeFormAction(TransactionFormAction.SaveClicked))
+
+                        },
+                        onNameChange = {
+                            onAction(
+                                AddTransactionAction.IncomeFormAction(
+                                    TransactionFormAction.NameChanged(
+                                        it
+                                    )
+                                )
+                            )
+                        },
+
+                        )
+                }
+
+            )
+
+            val addExpenseScreen = Screen(
+                title = UiText.StringResourceId(Res.string.add_expense).asString(), content = {
+                    AddTransactionForm(
+                        state = state.expenseForm,
+                        isExpense = true,
+                        isCardPayment = state.expenseForm.isCardPayment,
+                        onNameChange = {
+                            onAction(
+                                AddTransactionAction.ExpenseFormAction(
+                                    TransactionFormAction.NameChanged(
+                                        it
+                                    )
+                                )
+                            )
+                        },
+                        onAmountChange = {
+                            onAction(
+                                AddTransactionAction.ExpenseFormAction(
+                                    TransactionFormAction.MoneyChanged(
+                                        it
+                                    )
+                                )
+                            )
+                        },
+
+                        onCategoryChange = {
+                            onAction(
+                                AddTransactionAction.ExpenseFormAction(
+                                    TransactionFormAction.CategoryChanged(
+                                        it
+                                    )
+                                )
+                            )
+                        },
+                        onTransactionDateChange = {
+                            onAction(
+                                AddTransactionAction.ExpenseFormAction(
+                                    TransactionFormAction.DateChanged(
+                                        it.toEpochMillis()
+                                    )
+                                )
+                            )
+                        },
+                        onNoteChange = {
+                            onAction(
+                                AddTransactionAction.ExpenseFormAction(
+                                    TransactionFormAction.NoteChanged(
+                                        it
+                                    )
+                                )
+                            )
+                        },
+                        onCardSelected = {
+                            onAction(
+                                AddTransactionAction.ExpenseFormAction(
+                                    TransactionFormAction.CardSelected(
+                                        it
+                                    )
+                                )
+                            )
+                        },
+                        onInstallmentCountChange = {
+                            onAction(
+                                AddTransactionAction.ExpenseFormAction(
+                                    TransactionFormAction.InstallmentCountChanged(
+                                        it
+                                    )
+                                )
+                            )
+                        },
+                        onInstallmentStartDateChange = {
+                            onAction(
+                                AddTransactionAction.ExpenseFormAction(
+                                    TransactionFormAction.InstallmentStartDateChanged(
+                                        it.toEpochMillis()
+                                    )
+                                )
+                            )
+                        },
+                        onNewCategoryCreated = {
+                            onAction(
+                                AddTransactionAction.ExpenseFormAction(
+                                    TransactionFormAction.CategoryChanged(
+                                        it
+                                    )
+                                )
+                            )
+                        },
+
+                        onAddNewCardClicked = {
+                            onAction(AddTransactionAction.ExpenseFormAction(TransactionFormAction.AddNewCardClicked))
+                        },
+                        onIsCardPaymentChanged = {
+                            onAction(
+                                AddTransactionAction.ExpenseFormAction(
+                                    TransactionFormAction.IsCardPaymentChanged(
+                                        it
+                                    )
+                                )
+                            )
+                        },
+                        onSaveClick = {
+                            onAction(AddTransactionAction.ExpenseFormAction(TransactionFormAction.SaveClicked))
+                        })
+                })
+
+            TabbedScreen(
+                initialPage = if (isIncomeByDefault) 1 else 0, onTabChanged = {}, screens = listOf(
+                    addExpenseScreen, addIncomeScreen
+                )
+            )
+
+        }
     }
+
 }
 
 

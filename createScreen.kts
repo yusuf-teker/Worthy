@@ -59,7 +59,7 @@ val files = listOf(
 
     
     import androidx.compose.foundation.layout.*
-    import androidx.compose.material3.Scaffold
+    import com.yusufteker.worthy.core.presentation.base.AppScaffold
     import androidx.compose.runtime.*
     import androidx.compose.ui.Modifier
     import androidx.compose.ui.unit.dp
@@ -109,7 +109,7 @@ val files = listOf(
 
     ) {
     
-    Scaffold(
+    AppScaffold(
         modifier = modifier.fillMaxSize().padding(contentPadding),
         topBar = {
             AppTopBar(
