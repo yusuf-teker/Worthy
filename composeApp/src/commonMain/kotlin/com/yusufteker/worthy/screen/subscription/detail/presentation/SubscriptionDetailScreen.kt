@@ -63,7 +63,8 @@ import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.RecurringItem
-import com.yusufteker.worthy.core.domain.model.emptyMoney
+
+
 import com.yusufteker.worthy.core.domain.model.format
 import com.yusufteker.worthy.core.domain.model.getLastMonth
 import com.yusufteker.worthy.core.domain.model.isActive
@@ -82,6 +83,7 @@ import com.yusufteker.worthy.core.presentation.getMonthShortName
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppColors.primaryButtonColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
+import com.yusufteker.worthy.core.presentation.util.emptyMoney
 import com.yusufteker.worthy.core.presentation.util.formatted
 import com.yusufteker.worthy.screen.subscription.add.presentation.components.toComposeColor
 import com.yusufteker.worthy.screen.subscriptiondetail.presentation.SubscriptionDetailAction

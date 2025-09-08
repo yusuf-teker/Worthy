@@ -7,17 +7,11 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.intl.Locale
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Money
+import com.yusufteker.worthy.core.domain.service.CurrencyConverter
 import kotlin.math.floor
+import kotlin.math.pow
 import kotlin.math.round
 import kotlin.math.roundToInt
-
-fun formatMoney(amount: Double?, locale: androidx.compose.ui.text.intl.Locale): String {
-    val decimalSeparator = if (locale.language.lowercase() == "tr") "," else "."
-    val integerPart = floor(amount?:0.0).toLong()
-    val fractionalPart = round(( (amount?:0.0) - integerPart) * 100).toInt()
-    return "$integerPart$decimalSeparator${fractionalPart.toString().padStart(2, '0')}"
-}
-
 
 
 class MoneyVisualTransformation() : VisualTransformation {
@@ -103,21 +97,6 @@ fun Money.formattedShort(): String {
     }
 }
 
-fun Double.formatMoney(currency: Currency): String{
-    val locale: Locale = Locale.current
-    val decimalSeparator = if (locale.language.lowercase() == "tr") "," else "."
-    val thousandSeparator = if (locale.language.lowercase() == "tr") "." else ","
-
-    val integerPart = floor(this).toLong()
-    val fractionalPart = ((this - integerPart) * 100).roundToInt()
-
-    // Binlik ayırıcı ekleme
-    val integerStr = integerPart.toString().reversed().chunked(3).joinToString(thousandSeparator).reversed()
-
-    return "${currency.symbol} $integerStr$decimalSeparator${fractionalPart.toString().padStart(2,'0')}"
-}
-
-
 fun Double.formatMoneyText(currency: Currency? = null, showDecimals: Boolean = true): String {
     val locale: Locale = Locale.current
 
@@ -137,11 +116,34 @@ fun Double.formatMoneyText(currency: Currency? = null, showDecimals: Boolean = t
 }
 
 
-fun Int.formatMoneyText(): String {
-    val locale: Locale = Locale.current
-    val thousandSeparator = if (locale.language.lowercase() == "tr") "." else ","
+fun emptyMoney(currency: Currency = Currency.TRY) = Money(0.0, currency)
 
-    val integerStr = this.toString().reversed().chunked(3).joinToString(thousandSeparator).reversed()
-    return integerStr
+fun List<Money>.sumWithoutCurrencyConverted(): Money {
+    return Money(this.sumOf { it.amount }, this.first().currency)
 }
+
+
+suspend fun List<Money>.sumWithCurrencyConverted(
+    currencyConverter: CurrencyConverter, currency: Currency
+): Money {
+    if (this.isEmpty()) return emptyMoney(currency)
+    currencyConverter.convertAll(this, currency).sumWithoutCurrencyConverted()
+    return currencyConverter.convertAll(this, currency).sumWithoutCurrencyConverted()
+
+}
+
+fun Double.toFixedSafe(digits: Int): String {
+    val multiplier = 10.0.pow(digits)
+    val rounded = kotlin.math.round(this * multiplier) / multiplier
+    val str = rounded.toString()
+
+    return if (!str.contains(".")) {
+        str + "." + "0".repeat(digits)
+    } else {
+        val parts = str.split(".")
+        val decimal = parts.getOrNull(1) ?: ""
+        parts[0] + "." + decimal.padEnd(digits, '0')
+    }
+}
+
 

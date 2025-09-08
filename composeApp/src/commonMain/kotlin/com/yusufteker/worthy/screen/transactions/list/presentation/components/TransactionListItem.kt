@@ -1,6 +1,7 @@
 package com.yusufteker.worthy.screen.transactions.list.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -9,6 +10,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yusufteker.worthy.core.domain.model.Currency
@@ -17,11 +20,18 @@ import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.TransactionType
 import com.yusufteker.worthy.core.domain.model.format
 import com.yusufteker.worthy.core.domain.model.toAppDate
+import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.theme.AppBrushes
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
 import com.yusufteker.worthy.core.presentation.util.formatMoneyText
+import com.yusufteker.worthy.screen.subscription.add.presentation.components.toComposeColor
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import worthy.composeapp.generated.resources.Res
+import worthy.composeapp.generated.resources.filter_transaction_type
+import worthy.composeapp.generated.resources.monthly
+import worthy.composeapp.generated.resources.subscription
+import worthy.composeapp.generated.resources.transaction
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -37,6 +47,25 @@ fun TransactionListItem(
         TransactionType.EXPENSE -> AppColors.transactionExpenseColor
         TransactionType.REFUND -> AppColors.transactionRefundColor
     }
+    val transactionColor = when (transaction) { // Todo sonra renkler düzeltilecek
+        is Transaction.NormalTransaction -> {
+            when (transaction.transactionType) {
+                TransactionType.INCOME -> AppColors.transactionIncomeColor
+                TransactionType.EXPENSE -> AppColors.transactionExpenseColor
+                TransactionType.REFUND -> AppColors.transactionRefundColor
+            }
+        }
+        is Transaction.RecurringTransaction -> {
+            when (transaction.transactionType) {
+                TransactionType.INCOME -> AppColors.transactionIncomeColor
+                TransactionType.EXPENSE -> AppColors.transactionExpenseColor
+                TransactionType.REFUND -> AppColors.transactionRefundColor
+            }
+        }
+        is Transaction.SubscriptionTransaction -> {
+            transaction.colorHex?.toComposeColor() ?: AppColors.transactionExpenseColor
+        }
+    }
 
     val dateString = transaction.transactionDate.toAppDate().format()
     Card(
@@ -44,14 +73,24 @@ fun TransactionListItem(
         shape = CardDefaults.shape,
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
     ) {
+
+
         Row(
-            modifier = Modifier.fillMaxWidth().background(
-                AppBrushes.cardItemBrushWithBorder
-            ).padding(16.dp),
+            modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min).background(AppBrushes.cardItemBrushWithBorder
+            ),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column(modifier = Modifier.weight(1f)) {
+
+            /*
+            Box(
+                modifier = Modifier
+                    .width(12.dp)
+                    .fillMaxHeight()
+                    .background(transactionColor)
+            )*/
+
+            Column(modifier = Modifier.weight(1f).padding(16.dp)) {
                 Text(
                     text = transaction.name, style = AppTypography.titleMedium
                 )
@@ -73,13 +112,46 @@ fun TransactionListItem(
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            Text(
-                text = "${if (transaction.transactionType == TransactionType.EXPENSE) "-" else "+"} ${transaction.amount.amount.formatMoneyText(currency = transaction.amount.currency, showDecimals = true)}",
-                color = amountColor,
-                fontSize = 16.sp,
-                style = AppTypography.titleMedium
-            )
+            Column(modifier = Modifier.padding(top = 16.dp, end = 16.dp, bottom = 16.dp), horizontalAlignment = Alignment.End) {
+                Text(
+                    text = "${if (transaction.transactionType == TransactionType.EXPENSE) "-" else "+"} ${transaction.amount.amount.formatMoneyText(currency = transaction.amount.currency, showDecimals = true)}",
+                    color = amountColor,
+                    fontSize = 16.sp,
+                    style = AppTypography.titleMedium
+                )
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    val labelText = when (transaction) {
+                        is Transaction.NormalTransaction -> UiText.StringResourceId(Res.string.transaction).asString()
+                        is Transaction.SubscriptionTransaction -> UiText.StringResourceId(Res.string.subscription).asString()
+                        is Transaction.RecurringTransaction -> UiText.StringResourceId(Res.string.monthly).asString()
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .border(
+                                width = 1.dp,
+                                color = transactionColor,
+                                shape = MaterialTheme.shapes.small
+                            )
+                            .clip(MaterialTheme.shapes.small)
+                            .background(Color.Transparent)
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    ) {
+                        Text(
+                            text = labelText,
+                            style = AppTypography.bodySmall,
+                            color = amountColor,
+                        )
+                    }
+
+
+
+            }
+
         }
+
+
     }
 }
 
@@ -88,7 +160,7 @@ fun TransactionListItem(
 @Composable
 fun TransactionListPreview() {
     val dummyTransactions = listOf(
-        Transaction(
+        Transaction.NormalTransaction(
             id = 1,
             name = "Maaş",
             amount = Money(5000.0, Currency.TRY),
@@ -97,7 +169,7 @@ fun TransactionListPreview() {
             cardId = 1,
             transactionDate = Clock.System.now().toEpochMilliseconds(),
             note = "Aylık maaş"
-        ), Transaction(
+        ), Transaction.NormalTransaction(
             id = 2,
             name = "Market Alışverişi",
             amount = Money(250.0, Currency.TRY),
@@ -107,7 +179,7 @@ fun TransactionListPreview() {
             transactionDate = Clock.System.now().toEpochMilliseconds()
                 .minus(2_592_000_000), // 30 gün önce
             note = "Gıda ve temizlik"
-        ), Transaction(
+        ), Transaction.NormalTransaction(
             id = 3,
             name = "İade",
             amount = Money(100.0, Currency.TRY),

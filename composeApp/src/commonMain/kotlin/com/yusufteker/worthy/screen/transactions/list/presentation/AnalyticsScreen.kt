@@ -1,6 +1,5 @@
 package com.yusufteker.worthy.screen.transactions.list.presentation
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -34,9 +33,7 @@ import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
 import com.yusufteker.worthy.core.presentation.components.EmptyScreen
 import com.yusufteker.worthy.core.presentation.theme.AppColors
-import com.yusufteker.worthy.core.presentation.theme.AppDimens.ScreenPadding
 import com.yusufteker.worthy.core.presentation.theme.Constants.EMPTY_SCREEN_SIZE
-import com.yusufteker.worthy.screen.transactions.list.presentation.AnalyticsAction.OnItemDelete
 import com.yusufteker.worthy.screen.transactions.list.presentation.components.BarChart
 import com.yusufteker.worthy.screen.transactions.list.presentation.components.CategoryAnalysisPager
 import com.yusufteker.worthy.screen.transactions.list.presentation.components.ChartType
@@ -157,8 +154,7 @@ fun AnalyticsScreen(
                             },
                             onItemClicked = {
                                 onAction(AnalyticsAction.OnTransactionClicked(it))
-                            }
-                        )
+                            })
 
                     }
 

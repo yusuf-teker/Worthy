@@ -50,7 +50,9 @@
     <string name="no_selected">Seçilmedi</string>
     <string name="note">Note</string>
     <string name="empty_screen_message">Gösterilecek bir şey yok</string>
-
+    <string name="monthly">Aylık</string>
+    <string name="yearly">Yıllık</string>
+    <string name="one_time">Tek Seferlik</string>
 
 
 
@@ -293,6 +295,7 @@
     <string name="hint_enter_name">Adınızı giriniz</string>
 
     <!-- ADD TRANSACTION-->
+    <string name="transaction">İşlem</string>
     <string name="installment_count_label">Taksit Sayısı</string>
     <string name="card_selector_label">Kart</string>
     <string name="screen_title_new_transaction">Yeni İşlem</string>
@@ -389,6 +392,7 @@
 
 
     <!-- Subscription -->
+    <string name="subscription">Abonelik</string>
     <string name="screen_title_subscription_list">Aboneliklerim</string>
     <string name="subscription_empty_screen_button">Abonelik Ekle 🎧🍿</string>
     <string name="screen_title_add_new_subscription">Abonelik Ekle</string>

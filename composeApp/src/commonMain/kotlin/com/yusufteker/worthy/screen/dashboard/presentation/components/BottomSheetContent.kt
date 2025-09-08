@@ -39,7 +39,6 @@ import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.TransactionType
-import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.domain.model.getNameResource
 import com.yusufteker.worthy.core.domain.toEpochMillis
 import com.yusufteker.worthy.core.presentation.UiText
@@ -49,6 +48,7 @@ import com.yusufteker.worthy.core.presentation.components.CategoryIcon
 import com.yusufteker.worthy.core.presentation.components.MoneyInput
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppColors.secondaryButtonColors
+import com.yusufteker.worthy.core.presentation.util.emptyMoney
 import com.yusufteker.worthy.core.presentation.util.hideKeyboard
 import io.github.aakira.napier.Napier
 import worthy.composeapp.generated.resources.Res
@@ -271,7 +271,7 @@ fun BottomSheetContent(
                         amount?.let { amount ->
                             onPurchase(
 
-                                Transaction(
+                                Transaction.NormalTransaction(
                                     name = name ?: "",
                                     amount = amount,
                                     categoryId = category.id,

@@ -51,6 +51,9 @@
     <string name="no_selected">No selected</string>
     <string name="note">Note</string>
     <string name="empty_screen_message">Nothing to show here</string>
+    <string name="monthly">Monthly</string>
+    <string name="yearly">Yearly</string>
+    <string name="one_time">One-time</string>
 
 
 
@@ -303,6 +306,7 @@
 
 
     <!-- ADD TRANSACTION-->
+    <string name="transaction">Transaction</string>
     <string name="installment_count_label">Installment Count</string>
     <string name="card_selector_label">Card</string>
     <string name="screen_title_new_transaction">New Transaction</string>
@@ -400,6 +404,7 @@
 
 
     <!-- Subscription -->
+    <string name="subscription">Subscription</string>
     <string name="screen_title_subscription_list">My Subscriptions</string>
     <string name="subscription_empty_screen_button">Add Subscription 🎧🍿</string>
     <string name="screen_title_add_new_subscription">Add Subscription</string>

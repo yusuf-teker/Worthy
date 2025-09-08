@@ -1,8 +1,8 @@
 package com.yusufteker.worthy.screen.onboarding.presentation.components
 
 import com.yusufteker.worthy.core.domain.model.Money
-import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.presentation.UiText
+import com.yusufteker.worthy.core.presentation.util.emptyMoney
 
 data class UserOnboardingData(
     val name: String = "",

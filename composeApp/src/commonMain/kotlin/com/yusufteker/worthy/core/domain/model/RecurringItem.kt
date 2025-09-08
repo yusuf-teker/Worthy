@@ -5,6 +5,7 @@ import com.yusufteker.worthy.core.domain.createTimestampId
 import com.yusufteker.worthy.core.domain.getCurrentAppDate
 import com.yusufteker.worthy.core.domain.getCurrentMonth
 import com.yusufteker.worthy.core.domain.getCurrentYear
+import com.yusufteker.worthy.core.presentation.util.emptyMoney
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.number
@@ -28,16 +29,19 @@ sealed class RecurringItem {
 
 
     // 🔁 Ortak Transaction üretim fonksiyonu
-    fun toTransaction(forDate: AppDate): Transaction {
-        return Transaction(
-            id = 0,
-            name = name,
-            amount = amount,
-            transactionType = if (isIncome) TransactionType.INCOME else TransactionType.EXPENSE,
-            categoryId = null,
-            cardId = (this as? Subscription)?.cardId, // sadece subscription’da dolu olur
+    fun RecurringItem.toTransaction(forDate: AppDate): Transaction {
+        return Transaction.RecurringTransaction(
+            id = "${this.id}-${forDate.year}-${forDate.month}".hashCode(),
+            name = this.name,
+            amount = this.amount,
+            transactionType = if (this.isIncome) TransactionType.INCOME else TransactionType.EXPENSE,
+            categoryId = this.category?.id,
+            cardId = (this as? Subscription)?.cardId,
             transactionDate = forDate.toEpochMillis(),
-            note = "Generated from recurring"
+            note = "Generated from recurring",
+            recurringGroupId = this.groupId,
+            month = forDate.month,
+            year = forDate.year
         )
     }
 

@@ -32,7 +32,6 @@ import com.yusufteker.worthy.screen.card.domain.model.Card
 import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.CategoryType
 import com.yusufteker.worthy.core.domain.model.Money
-import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.components.AppButton
 import com.yusufteker.worthy.core.presentation.components.CardSelector
@@ -44,6 +43,7 @@ import com.yusufteker.worthy.core.presentation.components.UiMessage
 import com.yusufteker.worthy.core.presentation.components.WheelDatePicker
 import com.yusufteker.worthy.core.presentation.components.WheelDatePickerV3
 import com.yusufteker.worthy.core.presentation.theme.Constants.MAX_INSTALLMENT_COUNT
+import com.yusufteker.worthy.core.presentation.util.emptyMoney
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
 import worthy.composeapp.generated.resources.Res

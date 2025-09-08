@@ -24,6 +24,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yusufteker.worthy.app.navigation.NavigationHandler
 import com.yusufteker.worthy.app.navigation.NavigationModel
 import com.yusufteker.worthy.core.domain.model.CategoryType
+import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.TransactionType
 import com.yusufteker.worthy.core.domain.model.toAppDate
 import com.yusufteker.worthy.core.domain.model.toEpochMillis
@@ -154,13 +155,13 @@ fun TransactionDetailScreen(
                     WheelDatePickerV3(
                         initialDate = state.transaction.transactionDate.toAppDate(),
                         onDateSelected = { epochSeconds ->
-                            onAction(
-                                TransactionDetailAction.UpdateTransaction(
-                                    it.copy(
-                                        transactionDate = epochSeconds.toEpochMillis()
-                                    )
-                                )
-                            )
+                            val updatedTransaction = when (val t = state.transaction) {
+                                is Transaction.NormalTransaction -> t.copy(transactionDate = epochSeconds.toEpochMillis())
+                                is Transaction.SubscriptionTransaction -> t.copy(transactionDate = epochSeconds.toEpochMillis())
+                                is Transaction.RecurringTransaction -> t.copy(transactionDate = epochSeconds.toEpochMillis())
+                                else -> t
+                            }
+                            onAction(TransactionDetailAction.UpdateTransaction(updatedTransaction))
                         },
                         modifier = Modifier.fillMaxWidth().height(56.dp),
                         title = "Date Added", // todo tr en

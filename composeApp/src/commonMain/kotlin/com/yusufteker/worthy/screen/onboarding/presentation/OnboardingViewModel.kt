@@ -4,8 +4,8 @@ import androidx.lifecycle.viewModelScope
 import com.yusufteker.worthy.core.domain.createTimestampId
 import com.yusufteker.worthy.core.domain.getCurrentAppDate
 import com.yusufteker.worthy.core.domain.model.RecurringItem
-import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
+import com.yusufteker.worthy.core.presentation.util.emptyMoney
 import com.yusufteker.worthy.screen.onboarding.domain.OnboardingRepository
 import com.yusufteker.worthy.screen.onboarding.presentation.components.UserOnboardingData
 import kotlinx.coroutines.launch

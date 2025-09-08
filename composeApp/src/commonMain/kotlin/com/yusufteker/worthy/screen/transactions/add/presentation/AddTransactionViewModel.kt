@@ -135,7 +135,7 @@ class AddTransactionViewModel(
                             ) {
                                 _state.value = validated
                             } else {
-                                val transaction = Transaction(
+                                val transaction = Transaction.NormalTransaction(
                                     id = 0,
                                     name = validated.expenseForm.name,
                                     amount = validated.expenseForm.money!!,
@@ -249,7 +249,7 @@ class AddTransactionViewModel(
                             ) {
                                 _state.value = validated
                             } else {
-                                val transaction = Transaction(
+                                val transaction = Transaction.NormalTransaction(
                                     id = 0,
                                     name = _state.value.incomeForm.name,
                                     amount = _state.value.incomeForm.money!!,

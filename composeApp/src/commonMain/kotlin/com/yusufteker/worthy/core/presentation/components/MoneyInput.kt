@@ -23,10 +23,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Money
-import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.formatTwoDecimals
 import com.yusufteker.worthy.core.presentation.util.MoneyVisualTransformation
+import com.yusufteker.worthy.core.presentation.util.emptyMoney
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.amount
 

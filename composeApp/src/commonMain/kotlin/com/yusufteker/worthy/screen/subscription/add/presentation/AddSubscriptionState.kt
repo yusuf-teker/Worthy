@@ -7,10 +7,10 @@ import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.RecurringItem
-import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.domain.model.emptySubscription
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.base.BaseState
+import com.yusufteker.worthy.core.presentation.util.emptyMoney
 import com.yusufteker.worthy.screen.card.domain.model.Card
 
 data class AddSubscriptionState(

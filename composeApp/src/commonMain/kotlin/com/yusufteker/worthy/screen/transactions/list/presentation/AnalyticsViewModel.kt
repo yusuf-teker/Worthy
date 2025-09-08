@@ -5,6 +5,7 @@ import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.domain.getCurrentEpochMillis
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.distinctCategoryIds
+import com.yusufteker.worthy.core.domain.model.updateAmount
 import com.yusufteker.worthy.core.domain.service.CurrencyConverter
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import com.yusufteker.worthy.core.presentation.theme.Constants.ONE_DAY_MILLIS
@@ -226,9 +227,7 @@ class AnalyticsViewModel(
     ) {
 
         val convertedTransactions = state.value.transactions.map { tx ->
-            tx.copy(
-                amount = currencyConverter.convert(tx.amount, targetCurrency)
-            )
+            tx.updateAmount(currencyConverter.convert(tx.amount, targetCurrency))
         }
 
         _state.update {
@@ -248,8 +247,8 @@ class AnalyticsViewModel(
         val filtered = state.value.transactions.filter { it.transactionDate >= periodStart }
 
         val convertedTransactions = filtered.map { tx ->
-            tx.copy(
-                amount = currencyConverter.convert(tx.amount, targetCurrency)
+            tx.updateAmount(
+                currencyConverter.convert(tx.amount, targetCurrency)
             )
         }
 

@@ -4,8 +4,8 @@ import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.RecurringItem
-import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.presentation.base.BaseState
+import com.yusufteker.worthy.core.presentation.util.emptyMoney
 
 data class SettingsState(
     val incomeRecurringItems: List<RecurringItem.Generic> = emptyList(),

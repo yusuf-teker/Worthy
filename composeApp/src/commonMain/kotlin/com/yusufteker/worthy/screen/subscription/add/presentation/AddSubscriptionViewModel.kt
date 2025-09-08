@@ -2,19 +2,16 @@ package com.yusufteker.worthy.screen.subscription.add.presentation
 
 import androidx.lifecycle.viewModelScope
 import com.yusufteker.worthy.app.navigation.Routes
-import com.yusufteker.worthy.core.domain.model.emptyMoney
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import com.yusufteker.worthy.screen.settings.domain.UserPrefsManager
 import com.yusufteker.worthy.screen.subscription.domain.repository.SubscriptionRepository
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.error_empty_category
-import worthy.composeapp.generated.resources.error_empty_name
 import worthy.composeapp.generated.resources.error_empty_price
 import worthy.composeapp.generated.resources.error_empty_service_name
 
@@ -24,7 +21,6 @@ class AddSubscriptionViewModel(
 ) : BaseViewModel<AddSubscriptionState>(AddSubscriptionState()) {
 
 //TODO VALIDATION LAR EKLENECEK
-
 
     init {
 
@@ -40,17 +36,16 @@ class AddSubscriptionViewModel(
 
     }
 
-    fun observeData(){
+    fun observeData() {
 
         launchWithLoading {
             combine(
                 subscriptionRepository.getCards(),
                 subscriptionRepository.getCategories(),
-            ) {  cards, categories->
+            ) { cards, categories ->
                 _state.update { currentState ->
                     currentState.copy(
-                        cards = cards,
-                        categories = categories
+                        cards = cards, categories = categories
                     )
                 }
 
@@ -58,6 +53,7 @@ class AddSubscriptionViewModel(
         }
 
     }
+
     fun onAction(action: AddSubscriptionAction) {
         when (action) {
             is AddSubscriptionAction.Init -> {
@@ -73,13 +69,13 @@ class AddSubscriptionViewModel(
                     )
                 }
             }
+
             is AddSubscriptionAction.OnCategorySelected -> {
                 _state.update {
                     it.copy(
                         selectedCategory = action.category,
                         subscriptionPrev = state.value.subscriptionPrev.copy(
-                            category = action.category,
-                            icon = action.category?.icon ?: ""
+                            category = action.category, icon = action.category?.icon ?: ""
                         ),
                         errorCategory = null
 
@@ -96,6 +92,7 @@ class AddSubscriptionViewModel(
                     )
                 }
             }
+
             is AddSubscriptionAction.OnStartDateChanged -> {
                 _state.update {
                     it.copy(
@@ -115,6 +112,7 @@ class AddSubscriptionViewModel(
                     )
                 }
             }
+
             is AddSubscriptionAction.SubmitSubscription -> {
                 submitSubscription()
             }
@@ -122,6 +120,7 @@ class AddSubscriptionViewModel(
             is AddSubscriptionAction.NavigateBack -> {
                 navigateBack()
             }
+
             is AddSubscriptionAction.OnNewCategoryCreated -> {
                 launchWithLoading {
                     subscriptionRepository.addCategory(action.category)
@@ -145,6 +144,7 @@ class AddSubscriptionViewModel(
                     )
                 }
             }
+
             is AddSubscriptionAction.AddNewCardClicked -> {
                 navigateTo(Routes.AddCard)
             }
@@ -166,19 +166,18 @@ class AddSubscriptionViewModel(
 
             }
 
-
-
         }
     }
+
     private fun validate(state: AddSubscriptionState): AddSubscriptionState {
         return state.copy(
             errorName = if (state.subscriptionName.isBlank()) UiText.StringResourceId(Res.string.error_empty_service_name) else null,
             errorCategory = if (state.selectedCategory == null) UiText.StringResourceId(Res.string.error_empty_category) else null,
-            errorPrice = if (state.price == null || state.price.amount <= 0) UiText.StringResourceId(Res.string.error_empty_price) else null,
+            errorPrice = if (state.price == null || state.price.amount <= 0) UiText.StringResourceId(
+                Res.string.error_empty_price
+            ) else null,
         )
     }
-
-
 
 }
 

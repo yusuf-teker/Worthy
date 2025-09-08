@@ -1,6 +1,5 @@
 package com.yusufteker.worthy.core.data.database.mappers
 
-import androidx.compose.material3.HorizontalDivider
 import com.yusufteker.worthy.screen.card.data.database.entities.CardEntity
 import com.yusufteker.worthy.core.data.database.entities.CategoryEntity
 import com.yusufteker.worthy.core.data.database.entities.RecurringFinancialItemEntity
@@ -150,18 +149,19 @@ fun Card.toEntity(): CardEntity = CardEntity(
 )
 
 // Entity -> Domain
-fun TransactionEntity.toDomain(): Transaction {
-    return Transaction(
-        id = this.id,
-        name = this.name,
-        amount = this.amount,
-        transactionType = this.transactionType,
-        categoryId = this.categoryId,
-        cardId = this.cardId,
-        transactionDate = this.transactionDate,
-        relatedTransactionId = this.relatedTransactionId,
-        installmentCount = this.installmentCount,
-        installmentStartDate = this.installmentStartDate
+fun TransactionEntity.toDomain(): Transaction.NormalTransaction {
+    return Transaction.NormalTransaction(
+        id = id,
+        name = name,
+        amount = amount,
+        transactionType = transactionType,
+        categoryId = categoryId,
+        cardId = cardId,
+        transactionDate = transactionDate,
+        relatedTransactionId = relatedTransactionId,
+        installmentCount = installmentCount,
+        installmentStartDate = installmentStartDate,
+        note = note
     )
 }
 
@@ -177,22 +177,24 @@ fun Transaction.toEntity(): TransactionEntity {
         transactionDate = this.transactionDate,
         relatedTransactionId = this.relatedTransactionId,
         installmentCount = this.installmentCount,
-        installmentStartDate = this.installmentStartDate
+        installmentStartDate = this.installmentStartDate,
+        note = this.note
     )
 }
 
-fun WishlistItem.toExpenseTransaction(): Transaction {
-    return Transaction(
+fun WishlistItem.toExpenseTransaction(): Transaction.NormalTransaction {
+    return Transaction.NormalTransaction(
         id = this.id,
         name = this.name,
         amount = this.price,
         transactionType = TransactionType.EXPENSE,
         categoryId = this.category?.id,
-        cardId = null, //atodo satın alırken card eklenebilir sonra param ile maplerim
+        cardId = null,
         transactionDate = this.purchasedDate ?: getCurrentEpochMillis(),
         relatedTransactionId = null,
         installmentCount = null,
-        installmentStartDate = null
+        installmentStartDate = null,
+        note = null
     )
 }
 
@@ -210,6 +212,7 @@ fun SubscriptionEntity.toDomain(): RecurringItem.Subscription = RecurringItem.Su
     groupId = this.groupId,
     category = this.category
 )
+
 
 // RecurringItem.Subscription -> SubscriptionEntity
 fun RecurringItem.Subscription.toEntity(): SubscriptionEntity = SubscriptionEntity(
@@ -243,7 +246,7 @@ fun RecurringItem.Subscription.toTransactions(): List<Transaction> {
         )
 
         transactions.add(
-            Transaction(
+            Transaction.SubscriptionTransaction(
                 id ="${this.id}-${currentYear}-${currentMonth}".hashCode(),
                 name = this.name,
                 amount = this.amount,
@@ -254,7 +257,11 @@ fun RecurringItem.Subscription.toTransactions(): List<Transaction> {
                 relatedTransactionId = null,
                 installmentCount = null,
                 installmentStartDate = null,
-                note = null
+                note = null,
+                subscriptionGroupId = this.groupId,
+                startDate = this.startDate,
+                endDate = this.endDate,
+                colorHex = this.colorHex
             )
         )
 
