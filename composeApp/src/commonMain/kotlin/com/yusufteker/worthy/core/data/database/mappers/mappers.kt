@@ -259,6 +259,7 @@ fun RecurringItem.Subscription.toTransactions(): List<Transaction> {
                 installmentStartDate = null,
                 note = null,
                 subscriptionGroupId = this.groupId,
+                subscriptionId = this.id,
                 startDate = this.startDate,
                 endDate = this.endDate,
                 colorHex = this.colorHex

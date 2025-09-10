@@ -28,7 +28,7 @@ sealed interface AnalyticsAction {
 
     data class OnTransactionTypeSelected(val transactionType: TransactionType?) : AnalyticsAction
 
-    data class OnTransactionClicked(val transactionId: Int) : AnalyticsAction
+    data class OnTransactionClicked(val transaction: Transaction) : AnalyticsAction
 
 
 }

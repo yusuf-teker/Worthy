@@ -19,4 +19,6 @@ sealed interface TransactionDetailAction {
 
     data class CreateCategory(val category: Category): TransactionDetailAction
 
+    data class DeleteTransaction(val transaction: Transaction): TransactionDetailAction
+
 }

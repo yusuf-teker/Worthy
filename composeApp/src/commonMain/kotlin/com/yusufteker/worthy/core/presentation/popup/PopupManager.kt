@@ -2,6 +2,7 @@ package org.yusufteker.routealarm.core.presentation.popup
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
+import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.popup.PopupType
 import org.jetbrains.compose.resources.StringResource
 
@@ -39,7 +40,10 @@ class PopupManager {
         title: StringResource,
         message: StringResource,
         onConfirm: () -> Unit,
-        onDismiss: () -> Unit = {}
+        onDismiss: () -> Unit = {},
+        confirmLabel: UiText? = null,
+        dismissLabel: UiText? = null
+
     ) {
         showPopup(PopupType.Confirm(title, message, onConfirm, onDismiss))
     }

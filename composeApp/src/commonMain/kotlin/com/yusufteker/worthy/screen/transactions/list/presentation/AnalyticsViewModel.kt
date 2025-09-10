@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.domain.getCurrentEpochMillis
 import com.yusufteker.worthy.core.domain.model.Currency
+import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.distinctCategoryIds
 import com.yusufteker.worthy.core.domain.model.updateAmount
 import com.yusufteker.worthy.core.domain.service.CurrencyConverter
@@ -216,7 +217,20 @@ class AnalyticsViewModel(
                 applyFilters()
             }
             is AnalyticsAction.OnTransactionClicked -> {
-                navigateTo(Routes.TransactionDetail(action.transactionId))
+                when(action.transaction){
+                    is Transaction.NormalTransaction -> {
+                        navigateTo(Routes.TransactionDetail(action.transaction.id))
+                    }
+                    is Transaction.SubscriptionTransaction -> {
+                        navigateTo(Routes.SubscriptionDetail(action.transaction.subscriptionId))
+                    }
+                    is Transaction.RecurringTransaction -> {
+
+                    }
+                    else -> {
+
+                    }
+                }
             }
         }
     }

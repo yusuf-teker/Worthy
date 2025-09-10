@@ -445,6 +445,12 @@
   <string name="bar_daily_label">Each bar shows the total transactions of one day</string>
     <string name="bar_weekly_label">Each bar shows the total transactions of one week</string>
 
+    <string name="delete_subscription_title">Delete subscription</string>
+    <string name="delete_subscription_message">
+        Are you sure you want to permanently delete this subscription and all related history?
+        Deleting will remove the subscription as if it never existed in the app; this does not perform any "close month" action or disable data for the current month.
+    </string>
+    <string name="delete_subscription_confirm">Delete and remove</string>
 
 
 </resources>

@@ -7,12 +7,19 @@ import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.core.domain.model.RecurringItem
 import com.yusufteker.worthy.core.domain.model.isActive
 import com.yusufteker.worthy.core.domain.model.monthsBetween
+import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import com.yusufteker.worthy.screen.subscription.domain.repository.SubscriptionRepository
 import com.yusufteker.worthy.screen.subscriptiondetail.presentation.SubscriptionDetailAction
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import worthy.composeapp.generated.resources.Res
+import worthy.composeapp.generated.resources.cancel
+import worthy.composeapp.generated.resources.confirm
+import worthy.composeapp.generated.resources.delete_subscription_confirm
+import worthy.composeapp.generated.resources.delete_subscription_message
+import worthy.composeapp.generated.resources.delete_subscription_title
 
 class SubscriptionDetailViewModel(
     private val subscriptionRepository: SubscriptionRepository
@@ -178,9 +185,20 @@ class SubscriptionDetailViewModel(
                 }
             }
             is SubscriptionDetailAction.OnDeleteGroupRecurringItem -> {
-                launchWithLoading {
-                    subscriptionRepository.deleteByGroupId(action.groupId)
-                }
+
+                popupManager.showConfirm(
+                    title = Res.string.delete_subscription_title,
+                    message = Res.string.delete_subscription_message,
+                    onConfirm = {
+                        launchWithLoading {
+                            subscriptionRepository.deleteByGroupId(action.groupId)
+                            navigateBack()
+                        }
+                    },
+                     confirmLabel =  UiText.StringResourceId(Res.string.delete_subscription_confirm),
+                    dismissLabel = UiText.StringResourceId(Res.string.cancel)
+                )
+
             }
             is SubscriptionDetailAction.OnUpdateRecurringItems -> {
                 launchWithLoading {

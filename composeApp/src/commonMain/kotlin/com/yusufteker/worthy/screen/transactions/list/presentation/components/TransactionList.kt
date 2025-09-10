@@ -52,7 +52,7 @@ fun TransactionListAccordion(
     convertedTransactions: List<Transaction>,
     listState: LazyListState = rememberLazyListState(),
     onDelete: (Int) -> Unit,
-    onItemClicked: (transactionId: Int) -> Unit
+    onItemClicked: (transaction: Transaction) -> Unit
 ) {
     val groupedTransactions = transactions.groupByMonth()
     val groupedConvertedTransactions = convertedTransactions.groupByMonth()
@@ -137,7 +137,7 @@ fun TransactionListAccordion(
                         monthTransactions.forEachIndexed { index, transaction ->
                             TransactionListItem(
                                 transaction = transaction,
-                                onItemClicked = { onItemClicked(transaction.id) }
+                                onItemClicked = { onItemClicked(transaction) }
                             )
                         }
                     }

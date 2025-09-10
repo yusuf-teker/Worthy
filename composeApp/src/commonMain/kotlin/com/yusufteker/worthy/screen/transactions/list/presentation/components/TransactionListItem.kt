@@ -3,10 +3,22 @@ package com.yusufteker.worthy.screen.transactions.list.presentation.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,7 +40,6 @@ import com.yusufteker.worthy.core.presentation.util.formatMoneyText
 import com.yusufteker.worthy.screen.subscription.add.presentation.components.toComposeColor
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import worthy.composeapp.generated.resources.Res
-import worthy.composeapp.generated.resources.filter_transaction_type
 import worthy.composeapp.generated.resources.monthly
 import worthy.composeapp.generated.resources.subscription
 import worthy.composeapp.generated.resources.transaction
@@ -55,6 +66,7 @@ fun TransactionListItem(
                 TransactionType.REFUND -> AppColors.transactionRefundColor
             }
         }
+
         is Transaction.RecurringTransaction -> {
             when (transaction.transactionType) {
                 TransactionType.INCOME -> AppColors.transactionIncomeColor
@@ -62,6 +74,7 @@ fun TransactionListItem(
                 TransactionType.REFUND -> AppColors.transactionRefundColor
             }
         }
+
         is Transaction.SubscriptionTransaction -> {
             transaction.colorHex?.toComposeColor() ?: AppColors.transactionExpenseColor
         }
@@ -74,9 +87,9 @@ fun TransactionListItem(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
     ) {
 
-
         Row(
-            modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min).background(AppBrushes.cardItemBrushWithBorder
+            modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min).background(
+                AppBrushes.cardItemBrushWithBorder
             ),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
@@ -112,45 +125,46 @@ fun TransactionListItem(
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            Column(modifier = Modifier.padding(top = 16.dp, end = 16.dp, bottom = 16.dp), horizontalAlignment = Alignment.End) {
+            Column(
+                modifier = Modifier.padding(top = 16.dp, end = 16.dp, bottom = 16.dp),
+                horizontalAlignment = Alignment.End
+            ) {
                 Text(
-                    text = "${if (transaction.transactionType == TransactionType.EXPENSE) "-" else "+"} ${transaction.amount.amount.formatMoneyText(currency = transaction.amount.currency, showDecimals = true)}",
-                    color = amountColor,
-                    fontSize = 16.sp,
-                    style = AppTypography.titleMedium
-                )
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    val labelText = when (transaction) {
-                        is Transaction.NormalTransaction -> UiText.StringResourceId(Res.string.transaction).asString()
-                        is Transaction.SubscriptionTransaction -> UiText.StringResourceId(Res.string.subscription).asString()
-                        is Transaction.RecurringTransaction -> UiText.StringResourceId(Res.string.monthly).asString()
-                    }
-
-                    Box(
-                        modifier = Modifier
-                            .border(
-                                width = 1.dp,
-                                color = transactionColor,
-                                shape = MaterialTheme.shapes.small
-                            )
-                            .clip(MaterialTheme.shapes.small)
-                            .background(Color.Transparent)
-                            .padding(horizontal = 8.dp, vertical = 4.dp)
-                    ) {
-                        Text(
-                            text = labelText,
-                            style = AppTypography.bodySmall,
-                            color = amountColor,
+                    text = "${if (transaction.transactionType == TransactionType.EXPENSE) "-" else "+"} ${
+                        transaction.amount.amount.formatMoneyText(
+                            currency = transaction.amount.currency, showDecimals = true
                         )
-                    }
+                    }", color = amountColor, fontSize = 16.sp, style = AppTypography.titleMedium
+                )
+                Spacer(modifier = Modifier.height(4.dp))
 
+                val labelText = when (transaction) {
+                    is Transaction.NormalTransaction -> UiText.StringResourceId(Res.string.transaction)
+                        .asString()
 
+                    is Transaction.SubscriptionTransaction -> UiText.StringResourceId(Res.string.subscription)
+                        .asString()
+
+                    is Transaction.RecurringTransaction -> UiText.StringResourceId(Res.string.monthly)
+                        .asString()
+                }
+
+                Box(
+                    modifier = Modifier.border(
+                            width = 1.dp, color = amountColor, shape = MaterialTheme.shapes.small
+                        ).clip(MaterialTheme.shapes.small).background(Color.Transparent)
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    Text(
+                        text = labelText,
+                        style = AppTypography.bodySmall,
+                        color = amountColor,
+                    )
+                }
 
             }
 
         }
-
 
     }
 }

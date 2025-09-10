@@ -18,6 +18,8 @@ open class BaseViewModel<S : BaseState>(
     initialState: S
 ) : ViewModel(), KoinComponent {
 
+
+
     protected val _state = MutableStateFlow(initialState)
     val state: StateFlow<S> = _state
 

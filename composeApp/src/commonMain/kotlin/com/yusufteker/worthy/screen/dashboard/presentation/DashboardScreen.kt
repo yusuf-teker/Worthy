@@ -30,8 +30,6 @@ import com.yusufteker.worthy.core.presentation.components.AppButton
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppDimens.Spacing16
-import com.yusufteker.worthy.core.presentation.theme.AppDimens.Spacing8
-import com.yusufteker.worthy.core.presentation.util.formatted
 import com.yusufteker.worthy.core.presentation.util.formattedShort
 import com.yusufteker.worthy.screen.dashboard.presentation.components.BottomSheetContent
 import com.yusufteker.worthy.screen.dashboard.presentation.components.DashboardOverviewCard

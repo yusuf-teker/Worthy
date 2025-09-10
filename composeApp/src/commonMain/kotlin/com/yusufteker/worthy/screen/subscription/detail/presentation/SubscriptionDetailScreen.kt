@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -150,13 +151,27 @@ fun SubscriptionDetailScreen(
     var showHistoryEditor by remember { mutableStateOf(false) }
 
 
-    AppScaffold(modifier = modifier.padding(contentPadding).clickable {
-        showTerminateActivateBottomSheet = false
-        showHistoryEditor = false
-    }, topBar = {
+    AppScaffold(modifier = modifier.padding(contentPadding), topBar = {
         AppTopBar(
             title = state.subscription?.name ?: "",
-            onNavIconClick = { onAction(SubscriptionDetailAction.NavigateBack) })
+            onNavIconClick = { onAction(SubscriptionDetailAction.NavigateBack) }
+        ,
+            actions = {
+                // Delete subscription button
+                if (state.subscription != null) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Delete Transaction",
+                        modifier = Modifier.size(24.dp).clickable {
+                            onAction(SubscriptionDetailAction.OnDeleteGroupRecurringItem(state.subscription.groupId))
+                        },
+                        tint = AppColors.icon_red
+                    )
+                }
+
+            }
+            )
+
     }) { innerPadding ->
         state.subscription?.let { subscription ->
             Column(

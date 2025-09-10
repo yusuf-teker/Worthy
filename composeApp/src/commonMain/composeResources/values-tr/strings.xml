@@ -434,6 +434,12 @@
     <string name="streak_text">🔥 %1$d aylık seri!</string>
     <string name="bar_daily_label">Her bar 1 günlük işlemler toplamını gösterir</string>
     <string name="bar_weekly_label">Her bar 1 haftalık işlemler toplamını gösterir</string>
+    <string name="delete_subscription_title">Aboneliği sil</string>
+    <string name="delete_subscription_message">
+        Bu aboneliği ve bu aboneliğe bağlı tüm geçmiş verileri kalıcı olarak silmek istiyor musunuz?
+        Silme işlemi uygulamada aboneliği hiç olmamış gibi kaldırır; bu işlem mevcut ayı kapatma veya son ayın verilerini devre dışı bırakma işlemi değildir.
+    </string>
+    <string name="delete_subscription_confirm">Sil ve kaldır</string>
 
 
 </resources>

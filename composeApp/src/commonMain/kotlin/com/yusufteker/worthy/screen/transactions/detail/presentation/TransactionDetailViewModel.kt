@@ -1,6 +1,7 @@
 package com.yusufteker.worthy.screen.transactions.detail.presentation
 
 import androidx.lifecycle.viewModelScope
+import com.yusufteker.worthy.core.domain.model.Transaction
 
 import com.yusufteker.worthy.core.domain.model.updateAmount
 import com.yusufteker.worthy.core.domain.model.updateName
@@ -83,6 +84,18 @@ class TransactionDetailViewModel(
 
             is TransactionDetailAction.UpdateNote -> {
                 _state.update { it.copy(transaction = it.transaction?.updateNote(action.note)) }
+            }
+
+            is TransactionDetailAction.DeleteTransaction -> {
+                launchWithLoading {
+                    when(action.transaction) {
+                        is Transaction.NormalTransaction -> {
+                            transactionRepository.delete(action.transaction)
+                            navigateBack()
+                        }
+                        else -> {}
+                    }
+                }
             }
         }
     }

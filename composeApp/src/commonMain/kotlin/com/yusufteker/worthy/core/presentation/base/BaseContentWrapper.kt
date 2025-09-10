@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
+import com.yusufteker.worthy.core.presentation.popup.GlobalPopupHost
 import com.yusufteker.worthy.core.presentation.theme.AppBrushes.screenBackground
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppDimens.ScreenPadding
@@ -27,16 +28,9 @@ fun <T : BaseState> BaseContentWrapper(
 
     Box(modifier = modifier.fillMaxSize().background(screenBackground)) {
 
-        val focusManager = LocalFocusManager.current
 
         Box(
-            modifier = modifier.fillMaxSize()
-                .pointerInput(Unit) {
-                    detectTapGestures(onTap = {
-                        focusManager.clearFocus()
-                        hideKeyboard()
-                    })
-                }) {
+            modifier = modifier.fillMaxSize()) {
             content(modifier.fillMaxSize())
 
             if (state.isLoading) {

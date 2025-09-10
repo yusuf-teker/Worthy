@@ -1,7 +1,11 @@
 package com.yusufteker.worthy.core.presentation.popup
 
 import androidx.compose.runtime.Composable
+import com.yusufteker.worthy.core.presentation.UiText
 import org.jetbrains.compose.resources.StringResource
+import worthy.composeapp.generated.resources.Res
+import worthy.composeapp.generated.resources.cancel
+import worthy.composeapp.generated.resources.confirm
 
 sealed class PopupType {
     abstract val onDismiss: () -> Unit
@@ -16,7 +20,9 @@ sealed class PopupType {
         val title: StringResource,
         val message: StringResource,
         val onConfirm: () -> Unit,
-        override val onDismiss: () -> Unit = {}
+        override val onDismiss: () -> Unit = {},
+        val confirmLabel: UiText = UiText.StringResourceId(Res.string.confirm),
+        val dismissLabel: UiText =UiText.StringResourceId(Res.string.cancel)
     ) : PopupType()
 
     data class Error(

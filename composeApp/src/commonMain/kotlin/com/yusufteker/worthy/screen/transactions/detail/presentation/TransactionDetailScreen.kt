@@ -19,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yusufteker.worthy.app.navigation.NavigationHandler
@@ -36,10 +37,12 @@ import com.yusufteker.worthy.core.presentation.components.AppTopBar
 import com.yusufteker.worthy.core.presentation.components.CategorySelector
 import com.yusufteker.worthy.core.presentation.components.MoneyInput
 import com.yusufteker.worthy.core.presentation.components.WheelDatePickerV3
+import com.yusufteker.worthy.core.presentation.theme.AppColors.primaryButtonColors
 import io.github.aakira.napier.Napier
 import org.koin.compose.viewmodel.koinViewModel
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.add
+import worthy.composeapp.generated.resources.delete
 import worthy.composeapp.generated.resources.note
 import worthy.composeapp.generated.resources.screen_title_transaction_detail
 import worthy.composeapp.generated.resources.wishlist_label_product_name
@@ -188,6 +191,18 @@ fun TransactionDetailScreen(
                         onClick = {
                             onAction(TransactionDetailAction.UpdateTransaction(it))
                         },
+                    )
+
+                    AppButton(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = UiText.StringResourceId(Res.string.delete).asString(),
+                        loading = state.isLoading,
+                        onClick = {
+                            onAction(TransactionDetailAction.DeleteTransaction(it))
+                        },
+                        colors = primaryButtonColors.copy(
+                            containerColor =  Color.Red,
+                        )
                     )
 
                 }

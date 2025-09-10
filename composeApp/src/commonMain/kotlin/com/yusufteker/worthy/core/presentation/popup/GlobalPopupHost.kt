@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.yusufteker.worthy.core.presentation.UiText
 import io.github.aakira.napier.Napier
+import org.jetbrains.compose.resources.StringResource
 import org.yusufteker.routealarm.core.presentation.popup.LocalPopupManager
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.cancel
@@ -42,7 +43,10 @@ fun GlobalPopupHost() {
                     popup.onConfirm()
                     popupManager.dismissPopup(popup)
                 },
-                onDismiss = { popupManager.dismissPopup(popup) })
+                onDismiss = { popupManager.dismissPopup(popup) },
+                confirmLabel = popup.confirmLabel,
+                dismissLabel = popup.dismissLabel
+            )
 
             is PopupType.Error -> ErrorPopup(
                 message = UiText.StringResourceId(popup.message).asString(),
@@ -74,7 +78,9 @@ private fun InfoPopup(
 
 @Composable
 private fun ConfirmPopup(
-    title: String, message: String, onConfirm: () -> Unit, onDismiss: () -> Unit
+    title: String, message: String, onConfirm: () -> Unit, onDismiss: () -> Unit,
+    confirmLabel: UiText = UiText.StringResourceId(Res.string.confirm),
+    dismissLabel: UiText =  UiText.StringResourceId(Res.string.cancel)
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -82,7 +88,7 @@ private fun ConfirmPopup(
         text = { Text(text = message) },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(UiText.StringResourceId(Res.string.cancel).asString())
+                Text(dismissLabel.asString())
             }
         },
         confirmButton = {
@@ -90,7 +96,7 @@ private fun ConfirmPopup(
                 onConfirm()
                 onDismiss()
             }) {
-                Text(UiText.StringResourceId(Res.string.confirm).asString())
+                Text(confirmLabel.asString())
             }
         })
 }

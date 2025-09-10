@@ -12,6 +12,7 @@ import com.yusufteker.worthy.core.domain.repository.CategoryRepository
 import com.yusufteker.worthy.core.domain.repository.TransactionRepository
 import com.yusufteker.worthy.core.domain.toEpochMillis
 import com.yusufteker.worthy.screen.card.domain.repository.CardRepository
+import com.yusufteker.worthy.screen.subscription.domain.repository.SubscriptionRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDate
@@ -19,7 +20,8 @@ import kotlinx.datetime.LocalDate
 class TransactionRepositoryImpl(
     private val transactionDao: TransactionDao,
     private val cardRepository: CardRepository,
-    private val categoryRepository: CategoryRepository
+    private val categoryRepository: CategoryRepository,
+    private val subscriptionRepository: SubscriptionRepository
 ) : TransactionRepository {
 
     override fun getAll(): Flow<List<Transaction>> {

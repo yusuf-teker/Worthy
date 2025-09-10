@@ -14,28 +14,17 @@ import kotlin.math.round
 import kotlin.math.roundToInt
 
 
-class MoneyVisualTransformation() : VisualTransformation {
-    val locale: Locale = Locale.current
+
+class MoneyVisualTransformation : VisualTransformation {
     override fun filter(text: AnnotatedString): TransformedText {
         val input = text.text
+        val locale = Locale.current
+
+        // Türkçe için virgül, diğer diller için nokta kullan
         val transformed = if (locale.language.lowercase() == "tr") {
-            input.replace('.', ',') // uzunluk değişmiyor
+            input.replace('.', ',')
         } else {
             input
-        }
-
-        val offsetMapping = object : OffsetMapping {
-            override fun originalToTransformed(offset: Int): Int {
-                return offset + 1
-            }
-
-            override fun transformedToOriginal(offset: Int): Int {
-                return when {
-                    offset <= 0 -> 0
-                    offset == 1 -> 0
-                    else -> offset - 1
-                }
-            }
         }
 
         return TransformedText(
@@ -44,7 +33,6 @@ class MoneyVisualTransformation() : VisualTransformation {
         )
     }
 }
-
 fun Money.formatted(): String {
     val locale: Locale = Locale.current
     val decimalSeparator = if (locale.language.lowercase() == "tr") "," else "."
@@ -67,10 +55,20 @@ fun Money.formattedShort(): String {
     return when (locale.language.lowercase()) {
 
         "tr" -> when {
+            integerPart >= 1_000_000_000_000 -> {
+                val trillions = integerPart / 1_000_000_000_000
+                val billions = (integerPart % 1_000_000_000_000) / 1_000_000_000
+                "${currency.symbol} ${trillions} Tr${if (billions > 0) " ${billions} Mr" else ""}".trim()
+            }
+            integerPart >= 1_000_000_000 -> {
+                val billions = integerPart / 1_000_000_000
+                val millions = (integerPart % 1_000_000_000) / 1_000_000
+                "${currency.symbol} ${billions} Mr${if (millions > 0) " ${millions} Mn" else ""}".trim()
+            }
             integerPart >= 1_000_000 -> {
                 val millions = integerPart / 1_000_000
                 val thousands = (integerPart % 1_000_000) / 1_000
-                "${currency.symbol} ${millions} Mn ${if (thousands > 0) "${thousands} B" else ""}".trim()
+                "${currency.symbol} ${millions} Mn${if (thousands > 0) " ${thousands} B" else ""}".trim()
             }
             integerPart >= 1_000 -> {
                 val thousands = integerPart / 1_000
@@ -80,19 +78,29 @@ fun Money.formattedShort(): String {
         }
 
         else -> when {
-                integerPart >= 1_000_000 -> {
-                    val millions = integerPart / 1_000_000
-                    val thousands = (integerPart % 1_000_000) / 1_000
-                    "${currency.symbol} ${millions}M ${if (thousands > 0) "${thousands}K" else ""}".trim()
-                }
-                integerPart >= 1_000 -> {
-                    val thousands = integerPart / 1_000
-                    val remainder = (integerPart % 1_000) / 100
-                    if (remainder > 0) "${currency.symbol} ${thousands}.${remainder}K"
-                    else "${currency.symbol} ${thousands}K"
-                }
-                else -> "${currency.symbol} $integerPart"
+            integerPart >= 1_000_000_000_000 -> {
+                val trillions = integerPart / 1_000_000_000_000
+                val billions = (integerPart % 1_000_000_000_000) / 1_000_000_000
+                "${currency.symbol} ${trillions}T${if (billions > 0) " ${billions}B" else ""}".trim()
             }
+            integerPart >= 1_000_000_000 -> {
+                val billions = integerPart / 1_000_000_000
+                val millions = (integerPart % 1_000_000_000) / 1_000_000
+                "${currency.symbol} ${billions}B${if (millions > 0) " ${millions}M" else ""}".trim()
+            }
+            integerPart >= 1_000_000 -> {
+                val millions = integerPart / 1_000_000
+                val thousands = (integerPart % 1_000_000) / 1_000
+                "${currency.symbol} ${millions}M${if (thousands > 0) " ${thousands}K" else ""}".trim()
+            }
+            integerPart >= 1_000 -> {
+                val thousands = integerPart / 1_000
+                val remainder = (integerPart % 1_000) / 100
+                if (remainder > 0) "${currency.symbol} ${thousands}.${remainder}K"
+                else "${currency.symbol} ${thousands}K"
+            }
+            else -> "${currency.symbol} $integerPart"
+        }
 
     }
 }
@@ -131,19 +139,4 @@ suspend fun List<Money>.sumWithCurrencyConverted(
     return currencyConverter.convertAll(this, currency).sumWithoutCurrencyConverted()
 
 }
-
-fun Double.toFixedSafe(digits: Int): String {
-    val multiplier = 10.0.pow(digits)
-    val rounded = kotlin.math.round(this * multiplier) / multiplier
-    val str = rounded.toString()
-
-    return if (!str.contains(".")) {
-        str + "." + "0".repeat(digits)
-    } else {
-        val parts = str.split(".")
-        val decimal = parts.getOrNull(1) ?: ""
-        parts[0] + "." + decimal.padEnd(digits, '0')
-    }
-}
-
 

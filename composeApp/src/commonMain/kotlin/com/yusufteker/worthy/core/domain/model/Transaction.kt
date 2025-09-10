@@ -59,6 +59,7 @@ sealed class Transaction {
         override val installmentCount: Int? = null,
         override val installmentStartDate: AppDate? = null,
         override val note: String? = null,
+        val subscriptionId: Int,
         val subscriptionGroupId: String,
         val startDate: AppDate,
         val endDate: AppDate? = null,
@@ -122,5 +123,15 @@ fun Transaction.updateNote(newNote: String?): Transaction = when (this) {
     is Transaction.NormalTransaction -> this.copy(note = newNote)
     is Transaction.SubscriptionTransaction -> this.copy(note = newNote)
     is Transaction.RecurringTransaction -> this.copy(note = newNote)
+}
+
+fun Transaction.isSubscription(): Boolean {
+    return this is Transaction.SubscriptionTransaction
+}
+fun Transaction.isRecurring(): Boolean {
+    return this is Transaction.RecurringTransaction
+}
+fun Transaction.isNormal(): Boolean {
+    return this is Transaction.NormalTransaction
 }
 
