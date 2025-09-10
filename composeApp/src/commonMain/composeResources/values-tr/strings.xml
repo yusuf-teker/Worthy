@@ -322,6 +322,7 @@
     <string name="card_number">Kart Numarası</string>
     <string name="cardholder_placeholder">Ad Soyad</string>
     <string name="cardholder_label">Kart Sahibi</string>
+    <string name="card_name">Kartı Adı</string>
     <string name="card_nickname_label">Kart Takma Adı</string>
     <string name="card_nickname_placeholder">ör. Benim Visam</string>
         <!-- Kart Sahibi -->
@@ -440,6 +441,7 @@
         Silme işlemi uygulamada aboneliği hiç olmamış gibi kaldırır; bu işlem mevcut ayı kapatma veya son ayın verilerini devre dışı bırakma işlemi değildir.
     </string>
     <string name="delete_subscription_confirm">Sil ve kaldır</string>
-
+    <string name="subscription_history">Abonelik Geçmişi</string>
+    <string name="update_current_subscription_title">Mevcut aboneliği güncelle</string>
 
 </resources>

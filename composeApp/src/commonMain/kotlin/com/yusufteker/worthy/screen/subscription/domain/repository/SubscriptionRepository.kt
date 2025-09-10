@@ -28,6 +28,8 @@ interface SubscriptionRepository {
 
     fun getCards(): Flow<List<Card>>
 
+     fun  getCardById(cardId: Int): Flow<Card?>
+
     fun getCategories(): Flow<List<Category>>
 
     suspend fun addCategory(category: Category)

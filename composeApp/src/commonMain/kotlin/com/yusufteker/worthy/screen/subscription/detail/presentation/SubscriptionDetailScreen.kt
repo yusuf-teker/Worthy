@@ -1,5 +1,13 @@
 package com.yusufteker.worthy.screen.subscription.detail.presentation
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -32,7 +40,6 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -46,11 +53,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -64,8 +77,6 @@ import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.RecurringItem
-
-
 import com.yusufteker.worthy.core.domain.model.format
 import com.yusufteker.worthy.core.domain.model.getLastMonth
 import com.yusufteker.worthy.core.domain.model.isActive
@@ -75,6 +86,7 @@ import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.base.AppScaffold
 import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
 import com.yusufteker.worthy.core.presentation.components.AppButton
+import com.yusufteker.worthy.core.presentation.components.AppSurface
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
 import com.yusufteker.worthy.core.presentation.components.MoneyInput
 import com.yusufteker.worthy.core.presentation.components.SwipeToDeleteWrapper
@@ -88,17 +100,22 @@ import com.yusufteker.worthy.core.presentation.util.emptyMoney
 import com.yusufteker.worthy.core.presentation.util.formatted
 import com.yusufteker.worthy.screen.subscription.add.presentation.components.toComposeColor
 import com.yusufteker.worthy.screen.subscriptiondetail.presentation.SubscriptionDetailAction
+import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.activate
 import worthy.composeapp.generated.resources.amount_must_be_greater_than_zero
 import worthy.composeapp.generated.resources.cancel
-import worthy.composeapp.generated.resources.card_id
+import worthy.composeapp.generated.resources.card_name
 import worthy.composeapp.generated.resources.confirm
 import worthy.composeapp.generated.resources.date_ranges_conflict
 import worthy.composeapp.generated.resources.edit
 import worthy.composeapp.generated.resources.end_date
 import worthy.composeapp.generated.resources.end_date_required_for_past_start
+import worthy.composeapp.generated.resources.ic_calendar
+import worthy.composeapp.generated.resources.ic_credit_card
+import worthy.composeapp.generated.resources.ic_schedule
+import worthy.composeapp.generated.resources.ic_trending_up
 import worthy.composeapp.generated.resources.missing_month_or_year
 import worthy.composeapp.generated.resources.monthly_price
 import worthy.composeapp.generated.resources.new_amount
@@ -110,8 +127,10 @@ import worthy.composeapp.generated.resources.start_date_after_end_date
 import worthy.composeapp.generated.resources.start_date_must_be_before
 import worthy.composeapp.generated.resources.start_dates_cannot_be_same
 import worthy.composeapp.generated.resources.streak_text
+import worthy.composeapp.generated.resources.subscription_history
 import worthy.composeapp.generated.resources.terminate
 import worthy.composeapp.generated.resources.update
+import worthy.composeapp.generated.resources.update_current_subscription_title
 import kotlin.time.ExperimentalTime
 
 @Composable
@@ -150,187 +169,136 @@ fun SubscriptionDetailScreen(
     var showTerminateActivateBottomSheet by remember { mutableStateOf(false) }
     var showHistoryEditor by remember { mutableStateOf(false) }
 
-
-    AppScaffold(modifier = modifier.padding(contentPadding), topBar = {
-        AppTopBar(
-            title = state.subscription?.name ?: "",
-            onNavIconClick = { onAction(SubscriptionDetailAction.NavigateBack) }
-        ,
-            actions = {
-                // Delete subscription button
-                if (state.subscription != null) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Delete Transaction",
-                        modifier = Modifier.size(24.dp).clickable {
-                            onAction(SubscriptionDetailAction.OnDeleteGroupRecurringItem(state.subscription.groupId))
-                        },
-                        tint = AppColors.icon_red
-                    )
-                }
-
-            }
+    //  gradient background
+    Box(
+        modifier = Modifier.fillMaxSize().background(
+            brush = Brush.verticalGradient(
+                colors = listOf(
+                    AppColors.surface,
+                    AppColors.surfaceVariant.copy(alpha = 0.3f),
+                    AppColors.surface
+                )
             )
-
-    }) { innerPadding ->
-        state.subscription?.let { subscription ->
-            Column(
-                modifier = modifier.padding(innerPadding).fillMaxSize().padding(16.dp),
-
-                ) {
-                // Header Card: Icon + Name + Category
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = MaterialTheme.shapes.large,
-                    colors = CardDefaults.cardColors(containerColor = AppColors.surface),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier.size(64.dp).background(
-                                subscription.colorHex?.toComposeColor() ?: AppColors.primary,
-                                CircleShape
-                            ), contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = subscription.icon,
-                                style = MaterialTheme.typography.headlineMedium
-                            )
-                        }
-                        Column {
-                            Text(
-                                subscription.name,
-                                style = MaterialTheme.typography.headlineSmall,
-                                fontWeight = FontWeight.Bold
-                            )
-                            subscription.category?.let {
-                                Text(
-                                    it.name,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = Color.Gray
-                                )
-                            }
-                        }
-
-                    }
-                }
-
-                Spacer(Modifier.height(20.dp))
-                // Price Card
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = MaterialTheme.shapes.large,
-                    colors = CardDefaults.cardColors(containerColor = AppColors.secondaryContainer),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-                ) {
-                    Column(
-                        modifier = Modifier.padding(20.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            UiText.StringResourceId(Res.string.monthly_price).asString(),
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = Color.Gray
-                        )
-                        Text(
-                            text = subscription.amount.formatted(),
-                            style = MaterialTheme.typography.headlineLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = AppColors.primary
-                        )
-                    }
-                }
-                Spacer(Modifier.height(20.dp))
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = MaterialTheme.shapes.large,
-                    colors = CardDefaults.cardColors(containerColor = AppColors.surface),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-
-                        state.activeStreak?.let {
-                            SubscriptionStreakBadge(it, Modifier.align(Alignment.End))
-                        }
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                UiText.StringResourceId(Res.string.start_date).asString(),
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = Color.Gray
-                            )
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(
-                                    state.subscription.startDate.format(showDay = false),
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    fontWeight = FontWeight.Medium
-                                )
-                            }
-                        }
-
-                        state.subscription.endDate?.let {
-                            DetailRow(
-                                UiText.StringResourceId(Res.string.end_date).asString(),
-                                it.format(showDay = false)
-                            )
-                        }
-
-                        state.subscription.scheduledDay?.let {
-                            DetailRow(
-                                UiText.StringResourceId(Res.string.payment_day).asString(), "$it"
-                            )
-                        }
-
-                        state.subscription.cardId?.let {
-                            DetailRow(UiText.StringResourceId(Res.string.card_id).asString(), "$it")
-                        }
-
-                    }
-                }
-                Spacer(Modifier.height(20.dp))
-
-                MiniSubscriptionChart(state.subscriptions.toMonthlyData())
-
-                Spacer(Modifier.weight(1f))
-                AppButton( // EDIT
-                    text = UiText.StringResourceId(Res.string.edit).asString(), onClick = {
-                        showHistoryEditor = true
-                    }, trailingIcon = {
+        )
+    ) {
+        AppScaffold(modifier = modifier.padding(contentPadding), topBar = {
+            AppTopBar(
+                title = state.subscription?.name ?: "",
+                onNavIconClick = { onAction(SubscriptionDetailAction.NavigateBack) },
+                actions = {
+                    if (state.subscription != null) {
                         Icon(
-                            imageVector = Icons.Default.Edit, contentDescription = "Edit history"
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Delete Transaction",
+                            modifier = Modifier.size(28.dp).clickable {
+                                onAction(
+                                    SubscriptionDetailAction.OnDeleteGroupRecurringItem(
+                                        state.subscription.groupId
+                                    )
+                                )
+                            }.padding(2.dp),
+                            tint = AppColors.icon_red
                         )
+                    }
+                })
+        }, bottomBar = {
+            //  Action Buttons
+            state.subscription?.let {
+                Column {
+                    // Edit Button with  styling
+                    AppButton( // EDIT
+                        text = UiText.StringResourceId(Res.string.edit).asString(), onClick = {
+                            showHistoryEditor = true
+                        }, trailingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = "Edit history"
+                            )
 
-                    }, loading = state.isLoading, modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(Modifier.height(8.dp))
-                AppButton( // ACTIVATION
-                    text = if (subscription.isActive()) UiText.StringResourceId(Res.string.terminate)
-                        .asString() else UiText.StringResourceId(Res.string.activate).asString(),
-                    onClick = {
-                        showTerminateActivateBottomSheet = true
-                    },
-                    loading = state.isLoading,
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = primaryButtonColors.copy(
-                        containerColor = if (state.subscription.isActive()) Color.Red else Color.Green,
+                        }, loading = state.isLoading, modifier = Modifier.fillMaxWidth()
                     )
-                )
+                    Spacer(Modifier.height(8.dp))
+                    AppButton( // ACTIVATION
+                        text = if (state.subscription.isActive()) UiText.StringResourceId(Res.string.terminate)
+                            .asString() else UiText.StringResourceId(Res.string.activate)
+                            .asString(),
+                        onClick = {
+                            showTerminateActivateBottomSheet = true
+                        },
+                        loading = state.isLoading,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = primaryButtonColors.copy(
+                            containerColor = if (state.subscription.isActive()) Color.Red else Color.Green,
+                        )
+                    )
+                }
+            }
 
+        }) { innerPadding ->
+            state.subscription?.let { subscription ->
+                LazyColumn(
+                    modifier = Modifier.padding(innerPadding).fillMaxSize()
+                        .padding(horizontal = 20.dp),
+                    verticalArrangement = Arrangement.spacedBy(24.dp)
+                ) {
+                    item { Spacer(Modifier.height(8.dp)) }
+
+                    //  Header Card with gradient and shadow
+                    item {
+                        AnimatedVisibility(
+                            visible = true,
+                            enter = slideInVertically() + fadeIn(),
+                            exit = slideOutVertically() + fadeOut()
+                        ) {
+                            HeaderCard(subscription = subscription)
+                        }
+                    }
+
+                    //  Price Card with animated accent
+                    item {
+                        AnimatedVisibility(
+                            visible = true,
+                            enter = slideInVertically(initialOffsetY = { it / 2 }) + fadeIn(),
+                            exit = slideOutVertically() + fadeOut()
+                        ) {
+                            PriceCard(subscription = subscription)
+                        }
+                    }
+
+                    //  Details Card with icons
+                    item {
+                        AnimatedVisibility(
+                            visible = true,
+                            enter = slideInVertically(initialOffsetY = { it / 2 }) + fadeIn(),
+                            exit = slideOutVertically() + fadeOut()
+                        ) {
+                            DetailsCard(
+                                subscription = subscription,
+                                activeStreak = state.activeStreak,
+                                cardName = state.card?.nickname
+                            )
+                        }
+                    }
+
+                    //  Chart Card
+                    item {
+                        AnimatedVisibility(
+                            visible = true,
+                            enter = slideInVertically(initialOffsetY = { it / 2 }) + fadeIn(),
+                            exit = slideOutVertically() + fadeOut()
+                        ) {
+                            ChartCard(data = state.subscriptions.toMonthlyData())
+                        }
+                    }
+
+
+
+                    item { Spacer(Modifier.height(32.dp)) }
+                }
             }
         }
 
-        // Bottom Sheet for Date Selection
+        // Bottom Sheets remain the same...
         if (showTerminateActivateBottomSheet && state.subscription != null) {
             ActivationEditor(
                 isActive = state.subscription.isActive(),
@@ -344,34 +312,543 @@ fun SubscriptionDetailScreen(
                     }
                     showTerminateActivateBottomSheet = false
                 },
-                onDismiss = { showTerminateActivateBottomSheet = false }
-
-            )
+                onDismiss = { showTerminateActivateBottomSheet = false })
         }
 
-        // History Editor Bottom Sheet
         if (showHistoryEditor && state.subscription != null) {
             SubscriptionHistoryEditor(
                 history = state.subscriptions,
                 onDismiss = { showHistoryEditor = false },
                 onSave = { items ->
                     onAction(SubscriptionDetailAction.OnUpdateRecurringItems(items))
+                })
+        }
+    }
+}
+
+@Composable
+private fun HeaderCard(subscription: RecurringItem.Subscription) {
+    val dominantColor = subscription.colorHex?.toComposeColor() ?: AppColors.primary
+
+    Card(
+        modifier = Modifier.fillMaxWidth().shadow(
+            elevation = 16.dp,
+            shape = RoundedCornerShape(24.dp),
+            ambientColor = dominantColor.copy(alpha = 0.1f),
+            spotColor = dominantColor.copy(alpha = 0.1f)
+        ),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = AppColors.surface
+        ),
+    ) {
+        Box {
+            // Gradient overlay
+            Box(
+                modifier = Modifier.fillMaxWidth().height(140.dp).background(
+                    brush = Brush.horizontalGradient(
+                        colors = listOf(
+                            dominantColor.copy(alpha = 0.05f), dominantColor.copy(alpha = 0.15f)
+                        )
+                    ), shape = RoundedCornerShape(24.dp)
+                )
+            )
+
+            Row(
+                modifier = Modifier.padding(24.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+                //  icon with glow effect
+                Box(
+                    modifier = Modifier.size(80.dp).shadow(
+                        elevation = 12.dp,
+                        shape = CircleShape,
+                        ambientColor = dominantColor.copy(alpha = 0.3f),
+                        spotColor = dominantColor.copy(alpha = 0.3f)
+                    ).background(
+                        brush = Brush.radialGradient(
+                            colors = listOf(
+                                dominantColor, dominantColor.copy(alpha = 0.8f)
+                            )
+                        ), shape = CircleShape
+                    ), contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = subscription.icon,
+                        style = AppTypography.headlineLarge,
+                        color = Color.White
+                    )
                 }
 
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        subscription.name,
+                        style = AppTypography.headlineMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = AppColors.onSurface
+                    )
+                    subscription.category?.let {
+                        Surface(
+                            color = dominantColor.copy(alpha = 0.1f),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text(
+                                it.name,
+                                style = AppTypography.bodyMedium,
+                                fontWeight = FontWeight.Medium,
+                                color = dominantColor,
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PriceCard(subscription: RecurringItem.Subscription) {
+    val scale by animateFloatAsState(
+        targetValue = 1f, animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow
+        )
+    )
+
+    Card(
+        modifier = Modifier.fillMaxWidth().scale(scale).shadow(
+            elevation = 12.dp,
+            shape = RoundedCornerShape(24.dp),
+            ambientColor = AppColors.primary.copy(alpha = 0.1f)
+        ), shape = RoundedCornerShape(24.dp), colors = CardDefaults.cardColors(
+            containerColor = AppColors.primary.copy(alpha = 0.05f)
+        )
+    ) {
+        Box {
+            // Animated background pattern
+            val color = AppColors.primary
+            Canvas(
+                modifier = Modifier.fillMaxWidth().height(140.dp).alpha(0.1f)
+            ) {
+                val path = Path()
+                path.moveTo(0f, size.height * 0.7f)
+                path.quadraticBezierTo(
+                    size.width * 0.25f, size.height * 0.3f, size.width * 0.5f, size.height * 0.6f
+                )
+                path.quadraticBezierTo(
+                    size.width * 0.75f, size.height * 0.9f, size.width, size.height * 0.4f
+                )
+                path.lineTo(size.width, size.height)
+                path.lineTo(0f, size.height)
+                path.close()
+
+                drawPath(path, color = color)
+            }
+
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        painterResource(Res.drawable.ic_trending_up),
+                        contentDescription = null,
+                        tint = AppColors.primary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Text(
+                        UiText.StringResourceId(Res.string.monthly_price).asString(),
+                        style = AppTypography.bodyLarge,
+                        fontWeight = FontWeight.Medium,
+                        color = AppColors.onSurface.copy(alpha = 0.7f)
+                    )
+                }
+
+                Spacer(Modifier.height(8.dp))
+
+                Text(
+                    text = subscription.amount.formatted(),
+                    style = AppTypography.displaySmall,
+                    fontWeight = FontWeight.Bold,
+                    color = AppColors.primary,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun DetailsCard(
+    subscription: RecurringItem.Subscription, activeStreak: Int?, cardName: String? = null
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth()
+            .shadow(elevation = 8.dp, shape = RoundedCornerShape(20.dp)),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = AppColors.surface)
+    ) {
+        Column(
+            modifier = Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
+            activeStreak?.let {
+                StreakBadge(it, Modifier.align(Alignment.End))
+            }
+
+            DetailRow(
+                iconPainter = painterResource(Res.drawable.ic_calendar),
+                label = UiText.StringResourceId(Res.string.start_date).asString(),
+                value = subscription.startDate.format(showDay = false),
+                iconColor = AppColors.primary
+            )
+
+            subscription.endDate?.let {
+                DetailRow(
+                    iconPainter = painterResource(Res.drawable.ic_calendar),
+                    label = UiText.StringResourceId(Res.string.end_date).asString(),
+                    value = it.format(showDay = false),
+                    iconColor = AppColors.error
+                )
+            }
+
+            subscription.scheduledDay?.let {
+                DetailRow(
+                    iconPainter = painterResource(Res.drawable.ic_schedule),
+                    label = UiText.StringResourceId(Res.string.payment_day).asString(),
+                    value = "$it",
+                )
+            }
+
+            cardName?.let {
+                DetailRow(
+                    iconPainter = painterResource(Res.drawable.ic_credit_card),
+                    label = UiText.StringResourceId(Res.string.card_name).asString(),
+                    value = it,
+                    iconColor = AppColors.primary
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun DetailRow(
+    icon: androidx.compose.ui.graphics.vector.ImageVector? = null,
+    iconPainter: androidx.compose.ui.graphics.painter.Painter? = null,
+    label: String,
+    value: String,
+    iconColor: Color = AppColors.primary
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Surface(
+                modifier = Modifier.size(40.dp),
+                shape = CircleShape,
+                color = iconColor.copy(alpha = 0.1f)
+            ) {
+                when {
+                    icon != null -> {
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = label,
+                            tint = iconColor,
+                            modifier = Modifier.size(24.dp).padding(4.dp)
+                        )
+                    }
+
+                    iconPainter != null -> {
+                        Icon(
+                            painter = iconPainter,
+                            contentDescription = label,
+                            tint = iconColor,
+                            modifier = Modifier.size(24.dp).padding(4.dp)
+                        )
+                    }
+                }
+            }
+            Text(
+                label,
+                style = AppTypography.bodyLarge,
+                fontWeight = FontWeight.Medium,
+                color = AppColors.onSurface.copy(alpha = 0.7f)
+            )
+        }
+
+        Surface(
+            shape = RoundedCornerShape(12.dp), color = AppColors.surfaceVariant.copy(alpha = 0.5f)
+        ) {
+            Text(
+                value,
+                style = AppTypography.bodyLarge,
+                fontWeight = FontWeight.Bold,
+                color = AppColors.onSurface,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
             )
         }
     }
 }
 
 @Composable
-private fun DetailRow(label: String, value: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-
-        Text(label, style = MaterialTheme.typography.bodyLarge, color = Color.Gray)
-        Text(value, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
+private fun StreakBadge(activeMonths: Int, modifier: Modifier = Modifier) {
+    if (activeMonths > 0) {
+        AppSurface(
+            color = Brush.horizontalGradient(
+                colors = listOf(
+                    Color(0xFF4CAF50), Color(0xFF8BC34A)
+                )
+            ), shape = RoundedCornerShape(50), modifier = modifier.shadow(
+                elevation = 8.dp,
+                shape = RoundedCornerShape(50),
+                ambientColor = Color(0xFF4CAF50).copy(alpha = 0.3f)
+            )
+        ) {
+            Text(
+                text = UiText.StringResourceId(Res.string.streak_text, arrayOf(activeMonths))
+                    .asString(),
+                style = AppTypography.bodyMedium,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            )
+        }
     }
+}
+
+@Composable
+private fun ChartCard(data: List<Pair<AppDate, Money>>) {
+    Card(
+        modifier = Modifier.fillMaxWidth()
+            .shadow(elevation = 8.dp, shape = RoundedCornerShape(20.dp)),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = AppColors.surface)
+    ) {
+        Column(modifier = Modifier.padding(20.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(
+                    painterResource(Res.drawable.ic_trending_up),
+                    contentDescription = null,
+                    tint = AppColors.primary
+                )
+                Text(
+                    UiText.StringResourceId(Res.string.subscription_history).asString(),
+                    style = AppTypography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = AppColors.onSurface
+                )
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            MiniSubscriptionChart(data = data, height = 140.dp)
+        }
+    }
+}
+
+@Composable
+fun MiniSubscriptionChart(
+    data: List<Pair<AppDate, Money>>,
+    modifier: Modifier = Modifier,
+    lineColor: Color = AppColors.primary,
+    height: Dp = 120.dp
+) {
+    if (data.isEmpty()) return
+
+    val sortedData = data.sortedBy { it.first.toEpochMillis() }
+    val minY = sortedData.minOf { it.second.amount }
+    val maxY = sortedData.maxOf { it.second.amount }
+
+    Column(modifier = modifier) {
+        Box(modifier = Modifier.height(height).fillMaxWidth()) {
+            //  gradient background
+            Box(
+                modifier = Modifier.fillMaxSize().background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            lineColor.copy(alpha = 0.1f), Color.Transparent
+                        )
+                    ), shape = RoundedCornerShape(12.dp)
+                ).clip(RoundedCornerShape(12.dp))
+            )
+
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                val widthPx = size.width
+                val heightPx = size.height
+                val paddingX = 40f
+                val paddingY = 20f
+
+                val chartWidth = widthPx - paddingX
+                val chartHeight = heightPx - paddingY
+
+                fun mapX(index: Int): Float {
+                    return paddingX + (chartWidth / (sortedData.size - 1).coerceAtLeast(1)) * index
+                }
+
+                fun mapY(amount: Double): Float {
+                    return if (maxY == minY) {
+                        heightPx / 2f
+                    } else {
+                        heightPx - paddingY - ((amount - minY) / (maxY - minY) * chartHeight).toFloat()
+                    }
+                }
+
+                // Draw gradient fill under the line
+                val fillPath = Path()
+                var fillPathStarted = false
+
+                sortedData.forEachIndexed { index, (date, money) ->
+                    val x = mapX(index)
+                    val y = mapY(money.amount)
+
+                    val shouldBreakLine = if (index > 0) {
+                        val previousDate = sortedData[index - 1].first
+                        !isConsecutiveMonth(previousDate, date)
+                    } else false
+
+                    if (shouldBreakLine && fillPathStarted) {
+                        fillPath.lineTo(mapX(index - 1), heightPx - paddingY)
+                        fillPath.lineTo(paddingX, heightPx - paddingY)
+                        fillPath.close()
+
+                        drawPath(
+                            fillPath, brush = Brush.verticalGradient(
+                                colors = listOf(
+                                    lineColor.copy(alpha = 0.3f), Color.Transparent
+                                )
+                            )
+                        )
+                        fillPath.reset()
+                        fillPathStarted = false
+                    }
+
+                    if (!fillPathStarted) {
+                        fillPath.moveTo(x, heightPx - paddingY)
+                        fillPath.lineTo(x, y)
+                        fillPathStarted = true
+                    } else {
+                        fillPath.lineTo(x, y)
+                    }
+                }
+
+                if (fillPathStarted) {
+                    fillPath.lineTo(mapX(sortedData.lastIndex), heightPx - paddingY)
+                    fillPath.close()
+                    drawPath(
+                        fillPath, brush = Brush.verticalGradient(
+                            colors = listOf(
+                                lineColor.copy(alpha = 0.3f), Color.Transparent
+                            )
+                        )
+                    )
+                }
+
+                // Draw the main line with  styling
+                var currentPath = Path()
+                var pathStarted = false
+
+                sortedData.forEachIndexed { index, (date, money) ->
+                    val x = mapX(index)
+                    val y = mapY(money.amount)
+
+                    val shouldBreakLine = if (index > 0) {
+                        val previousDate = sortedData[index - 1].first
+                        !isConsecutiveMonth(previousDate, date)
+                    } else false
+
+                    if (shouldBreakLine && pathStarted) {
+                        drawPath(
+                            currentPath, color = lineColor, style = Stroke(
+                                width = 6f, cap = StrokeCap.Round
+                            )
+                        )
+                        currentPath = Path()
+                        pathStarted = false
+                    }
+
+                    if (!pathStarted) {
+                        currentPath.moveTo(x, y)
+                        pathStarted = true
+                    } else {
+                        currentPath.lineTo(x, y)
+                    }
+                }
+
+                if (pathStarted) {
+                    drawPath(
+                        currentPath, color = lineColor, style = Stroke(
+                            width = 6f, cap = StrokeCap.Round
+                        )
+                    )
+                }
+
+                //  data points
+                sortedData.forEachIndexed { index, (_, money) ->
+                    val x = mapX(index)
+                    val y = mapY(money.amount)
+
+                    // Outer ring
+                    drawCircle(
+                        color = lineColor.copy(alpha = 0.3f),
+                        radius = 8f,
+                        center = androidx.compose.ui.geometry.Offset(x, y)
+                    )
+                    // Inner circle
+                    drawCircle(
+                        color = lineColor,
+                        radius = 5f,
+                        center = androidx.compose.ui.geometry.Offset(x, y)
+                    )
+                    // Center highlight
+                    drawCircle(
+                        color = Color.White,
+                        radius = 2f,
+                        center = androidx.compose.ui.geometry.Offset(x, y)
+                    )
+                }
+            }
+        }
+
+        Spacer(Modifier.height(12.dp))
+
+        //  X-axis labels
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            sortedData.forEach { (date, _) ->
+                Surface(
+                    shape = RoundedCornerShape(8.dp),
+                    color = AppColors.surfaceVariant.copy(alpha = 0.6f)
+                ) {
+                    Text(
+                        getMonthShortName(date.month),
+                        style = AppTypography.bodySmall,
+                        fontWeight = FontWeight.Medium,
+                        color = AppColors.onSurface.copy(alpha = 0.7f),
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+private fun isConsecutiveMonth(date1: AppDate, date2: AppDate): Boolean {
+    val nextMonth = date1.nextMonth()
+    return nextMonth.year == date2.year && nextMonth.month == date2.month
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -387,13 +864,14 @@ fun ActivationEditor(
         onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState()
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier = Modifier.fillMaxWidth().padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             Text(
                 if (isActive) UiText.StringResourceId(Res.string.pick_end_date).asString()
                 else UiText.StringResourceId(Res.string.pick_start_date).asString(),
-                style = MaterialTheme.typography.titleMedium
+                style = AppTypography.titleLarge,
+                fontWeight = FontWeight.Bold
             )
 
             WheelDatePickerV3(
@@ -403,12 +881,17 @@ fun ActivationEditor(
             )
 
             Row(
-                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                TextButton(onClick = onDismiss) {
+                TextButton(
+                    onClick = onDismiss, modifier = Modifier.weight(1f)
+                ) {
                     Text(UiText.StringResourceId(Res.string.cancel).asString())
                 }
-                Button(onClick = onConfirm) {
+                Button(
+                    onClick = onConfirm, modifier = Modifier.weight(1f)
+                ) {
                     Text(UiText.StringResourceId(Res.string.confirm).asString())
                 }
             }
@@ -437,7 +920,6 @@ fun SubscriptionHistoryEditor(
             val index = items.indexOfFirst { it.id == id }
             if (index >= 0) {
                 listState.animateScrollToItem(index + 2)
-                // +2 çünkü ilk item "NewSubscription", ikincisi divider başlık
             }
         }
     }
@@ -449,7 +931,6 @@ fun SubscriptionHistoryEditor(
                 modifier = Modifier.weight(1f, fill = false),
                 state = listState
             ) {
-                // 🔹 Header - Yeni Abonelik Ekleme Bölümü
                 item {
                     Card(
                         modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(
@@ -470,8 +951,9 @@ fun SubscriptionHistoryEditor(
                                     tint = AppColors.primary
                                 )
                                 Text(
-                                    "Update Current Subscription",
-                                    style = MaterialTheme.typography.titleMedium,
+                                    UiText.StringResourceId(Res.string.update_current_subscription_title)
+                                        .asString(),
+                                    style = AppTypography.titleMedium,
                                     fontWeight = FontWeight.Bold,
                                     color = AppColors.primary
                                 )
@@ -517,15 +999,14 @@ fun SubscriptionHistoryEditor(
                     }
                 }
 
-                // 🔹 Divider ve Geçmiş Başlığı
                 item {
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         HorizontalDivider(
                             thickness = 2.dp, color = AppColors.outline.copy(alpha = 0.3f)
                         )
                         Text(
-                            "Subscription History",
-                            style = MaterialTheme.typography.titleMedium,
+                            UiText.StringResourceId(Res.string.subscription_history).asString(),
+                            style = AppTypography.titleMedium,
                             fontWeight = FontWeight.SemiBold,
                             color = AppColors.onSurface.copy(alpha = 0.7f),
                             modifier = Modifier.padding(vertical = 8.dp)
@@ -533,7 +1014,6 @@ fun SubscriptionHistoryEditor(
                     }
                 }
 
-                // 🔹 Mevcut Abonelikler (Geçmişten Günümüze)
                 itemsIndexed(items) { index, sub ->
                     val isCurrentSubscription = index == 0
 
@@ -557,7 +1037,6 @@ fun SubscriptionHistoryEditor(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 🔹 Save butonu
             Button(
                 modifier = Modifier.fillMaxWidth(), onClick = {
                     validationErrors = hasDateConflict(items)
@@ -658,7 +1137,7 @@ fun ExistingSubscription(
             ) {
                 Text(
                     if (isLast) "Current Period" else "Previous Period",
-                    style = MaterialTheme.typography.titleSmall,
+                    style = AppTypography.titleSmall,
                     fontWeight = FontWeight.Bold,
                     color = if (isLast) AppColors.secondary else AppColors.onSurface.copy(alpha = 0.7f)
                 )
@@ -670,7 +1149,7 @@ fun ExistingSubscription(
                     ) {
                         Text(
                             "ACTIVE",
-                            style = MaterialTheme.typography.labelSmall,
+                            style = AppTypography.labelSmall,
                             fontWeight = FontWeight.Bold,
                             color = AppColors.secondary,
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
@@ -697,7 +1176,7 @@ fun ExistingSubscription(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         "End Date (Optional):",
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = AppTypography.bodyMedium,
                         fontWeight = FontWeight.Medium
                     )
                     Checkbox(
@@ -707,7 +1186,7 @@ fun ExistingSubscription(
                                 onUpdate(subscription.copy(endDate = null))
                             }
                         })
-                    Text("Has end date", style = MaterialTheme.typography.bodySmall)
+                    Text("Has end date", style = AppTypography.bodySmall)
                 }
             }
 
@@ -746,9 +1225,7 @@ fun ExistingSubscription(
 
             validationError?.let {
                 Text(
-                    text = it,
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall
+                    text = it, color = AppColors.error, style = AppTypography.bodySmall
                 )
             }
         }
@@ -760,7 +1237,6 @@ fun hasDateConflict(
     items: List<RecurringItem.Subscription>, newItem: RecurringItem.Subscription? = null
 ): Pair<Int, UiText>? {
     val sorted = items.sortedBy { it.startDate }
- //   val sortedMaxEnd = items.sortedBy { it.endDate }
     val lastUpdatedBeforeNew = items.find { it.endDate == null && it.id != newItem?.id }
     lastUpdatedBeforeNew?.let {
         newItem?.let { item ->
@@ -782,19 +1258,15 @@ fun hasDateConflict(
         val currentEnd = current.endDate ?: current.startDate
         val nextStart = next.startDate
 
-        // 1. Aynı startDate olamaz
         if (currentStart == nextStart) {
-
             return Pair(
                 current.id, UiText.StringResourceId(
                     id = Res.string.start_dates_cannot_be_same,
                     args = arrayOf(currentStart.month, currentStart.year)
                 )
             )
-
         }
 
-        // 2. Yeni başlangıç tarihi, eskiye göre max 1 ay sonra olabilir
         val today = getCurrentAppDate()
         val latestAllowed = today.nextMonth()
         if (currentStart > latestAllowed) {
@@ -803,11 +1275,9 @@ fun hasDateConflict(
                     id = Res.string.start_date_must_be_before,
                     args = arrayOf(latestAllowed.month, latestAllowed.year)
                 )
-
             )
-
         }
-        // 3. Sonraki item'ın başlangıç tarihi, mevcut item'ın tarih aralığının içine düşemez
+
         if (nextStart > currentStart && nextStart < currentEnd) {
             return Pair(
                 next.id, UiText.StringResourceId(
@@ -825,7 +1295,6 @@ fun hasDateConflict(
             )
         }
 
-        // 3. current'ın endDate'i, sonraki startDate'den önce olmalı (== de dahil değil)
         if (currentEnd >= nextStart) return Pair(
             current.id, UiText.StringResourceId(
                 id = Res.string.date_ranges_conflict, args = arrayOf(
@@ -838,8 +1307,8 @@ fun hasDateConflict(
                 )
             )
         )
-
     }
+
     for (item in sorted) {
         val start = item.startDate
         val end = item.endDate
@@ -860,7 +1329,6 @@ fun hasDateConflict(
                 )
             )
         }
-
     }
 
     return null
@@ -885,157 +1353,3 @@ fun adjustOpenEndedRecurringItems(items: List<RecurringItem.Subscription>): List
         }
     }
 }
-
-@Composable
-fun SubscriptionStreakBadge(
-    activeMonths: Int, modifier: Modifier = Modifier
-) {
-    if (activeMonths > 0) {
-        Surface(
-            color = AppColors.primary.copy(alpha = 0.1f),
-            shape = RoundedCornerShape(50),
-            modifier = modifier.padding(top = 8.dp)
-        ) {
-            Row(
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = UiText.StringResourceId(Res.string.streak_text, arrayOf(activeMonths))
-                        .asString(),
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = AppColors.primary
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun MiniSubscriptionChart(
-    data: List<Pair<AppDate, Money>>,
-    modifier: Modifier = Modifier,
-    lineColor: Color = AppColors.primary,
-    height: Dp = 120.dp
-) {
-    if (data.isEmpty()) return
-
-    val sortedData = data.sortedBy { it.first.toEpochMillis() }
-    val minY = sortedData.minOf { it.second.amount }
-    val maxY = sortedData.maxOf { it.second.amount }
-
-    Card(
-
-        modifier = Modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.large,
-        colors = CardDefaults.cardColors(containerColor = AppColors.secondaryContainer),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Column(modifier = modifier.padding(start = 8.dp, end = 16.dp, top = 16.dp)) {
-            Box(modifier = Modifier.height(height).fillMaxWidth()) {
-                Canvas(modifier = Modifier.fillMaxSize()) {
-                    val widthPx = size.width
-                    val heightPx = size.height
-                    val paddingX = 40f
-                    val paddingY = 20f
-
-                    val chartWidth = widthPx - paddingX
-                    val chartHeight = heightPx - paddingY
-
-                    fun mapX(index: Int): Float {
-                        return paddingX + (chartWidth / (sortedData.size - 1).coerceAtLeast(1)) * index
-                    }
-
-                    fun mapY(amount: Double): Float {
-                        return if (maxY == minY) { //eşit olunca sıkıntı oluyordu
-                            heightPx / 2f // tüm noktalar aynı yatay çizgi üzerinde
-                        } else {
-                            heightPx - paddingY - ((amount - minY) / (maxY - minY) * chartHeight).toFloat()
-                        }
-                    }
-
-                    // Kesintisiz çizgiler çiz
-                    var currentPath = Path()
-                    var pathStarted = false
-
-                    sortedData.forEachIndexed { index, (date, money) ->
-                        val x = mapX(index)
-                        val y = mapY(money.amount)
-
-                        // Önceki nokta ile bu nokta arasında kesinti var mı kontrol et
-                        val shouldBreakLine = if (index > 0) {
-                            val previousDate = sortedData[index - 1].first
-                            !isConsecutiveMonth(previousDate, date)
-                        } else false
-
-                        if (shouldBreakLine && pathStarted) {
-                            // Önceki path'i çiz ve yeni path başlat
-                            drawPath(
-                                currentPath,
-                                color = lineColor,
-                                style = Stroke(width = 4f, cap = StrokeCap.Round)
-                            )
-                            currentPath = Path()
-                            pathStarted = false
-                        }
-
-                        // Path'e nokta ekle
-                        if (!pathStarted) {
-                            currentPath.moveTo(x, y)
-                            pathStarted = true
-                        } else {
-                            currentPath.lineTo(x, y)
-                        }
-                    }
-
-                    // Son path'i çiz
-                    if (pathStarted) {
-                        drawPath(
-                            currentPath,
-                            color = lineColor,
-                            style = Stroke(width = 4f, cap = StrokeCap.Round)
-                        )
-                    }
-
-                    // Noktalar (tüm noktaları çiz, çizgi olsun olmasın)
-                    sortedData.forEachIndexed { index, (_, money) ->
-                        val x = mapX(index)
-                        val y = mapY(money.amount)
-                        drawCircle(
-                            color = lineColor,
-                            radius = 4f,
-                            center = androidx.compose.ui.geometry.Offset(x, y)
-                        )
-                    }
-                }
-            }
-
-            // X ekseni etiketleri
-            Row(
-                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                sortedData.forEach { (date, _) ->
-                    Text(
-                        getMonthShortName(date.month),
-                        fontSize = MaterialTheme.typography.bodySmall.fontSize
-                    )
-                }
-            }
-        }
-    }
-
-}
-
-/**
- * İki AppDate'in ardışık aylar olup olmadığını kontrol eder
- */
-private fun isConsecutiveMonth(date1: AppDate, date2: AppDate): Boolean {
-    val nextMonth = date1.nextMonth()
-    return nextMonth.year == date2.year && nextMonth.month == date2.month
-}
-
-
-
-
-

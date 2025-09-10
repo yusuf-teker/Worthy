@@ -79,7 +79,9 @@ class SubscriptionRepositoryImpl(
     override fun getCards(): Flow<List<Card>> {
         return cardRepository.getAll()
     }
-
+    override fun  getCardById(cardId: Int): Flow<Card?> {
+        return cardRepository.getCardById(cardId)
+    }
     override fun getCategories(): Flow<List<Category>> {
         return categoryDao.getAll().map { list -> list.filter { it.type == CategoryType.SUBSCRIPTION }.map { it.toDomain() } }
     }

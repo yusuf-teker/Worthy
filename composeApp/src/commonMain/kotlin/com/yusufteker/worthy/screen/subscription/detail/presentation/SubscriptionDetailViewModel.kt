@@ -11,6 +11,7 @@ import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import com.yusufteker.worthy.screen.subscription.domain.repository.SubscriptionRepository
 import com.yusufteker.worthy.screen.subscriptiondetail.presentation.SubscriptionDetailAction
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -22,7 +23,7 @@ import worthy.composeapp.generated.resources.delete_subscription_message
 import worthy.composeapp.generated.resources.delete_subscription_title
 
 class SubscriptionDetailViewModel(
-    private val subscriptionRepository: SubscriptionRepository
+    private val subscriptionRepository: SubscriptionRepository,
 ) : BaseViewModel<SubscriptionDetailState>(SubscriptionDetailState()) {
 
 
@@ -36,6 +37,7 @@ class SubscriptionDetailViewModel(
                         subscriptions = subscriptions
                     ) }
 
+
                     state.value.subscription?.let {
                         if (it.isActive()){
                             setState { copy(
@@ -43,9 +45,18 @@ class SubscriptionDetailViewModel(
 
                             ) }
                         }
+                        // buradan cardId al
+                        it.cardId?.let { cardId ->
+                            // repository’den kartı getir
+                            val card = subscriptionRepository.getCardById(cardId).firstOrNull()
+                            setState { copy(card = card) }
+                        }
                     }
 
+
+
             }.launchIn(viewModelScope)
+
         }
 
     }

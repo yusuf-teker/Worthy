@@ -25,4 +25,8 @@ class CardRepositoryImpl(private val cardDao: CardDao) : CardRepository {
         cardDao.updateCard(card.toEntity())
     }
 
+    override fun getCardById(cardId: Int): Flow<Card?> {
+        return cardDao.getCardById(cardId).map { it?.toDomain()}
+    }
+
 }

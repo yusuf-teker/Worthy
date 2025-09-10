@@ -21,12 +21,14 @@ package com.yusufteker.worthy.screen.subscription.detail.presentation
         import com.yusufteker.worthy.core.domain.model.toEpochMillis
         import com.yusufteker.worthy.core.presentation.base.BaseState
         import com.yusufteker.worthy.core.presentation.theme.AppColors
+        import com.yusufteker.worthy.screen.card.domain.model.Card
 
-        data class SubscriptionDetailState(
+data class SubscriptionDetailState(
             override val isLoading: Boolean = false,
             val errorMessage: String? = null,
             val subscription: RecurringItem.Subscription? = null,
             val subscriptions: List<RecurringItem.Subscription> = emptyList(),
+            val card: Card? = null,
             val activeStreak: Int? = null,
 
             val pickedDate: AppDate = getCurrentAppDate(day = 1)

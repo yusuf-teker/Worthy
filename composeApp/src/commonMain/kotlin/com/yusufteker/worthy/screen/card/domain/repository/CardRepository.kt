@@ -8,4 +8,6 @@ interface CardRepository {
     suspend fun addCard(card: Card)
     suspend fun deleteCard(cardId: Int)
     suspend fun updateCard(card: Card)
+
+     fun getCardById(cardId: Int): Flow<Card?>
 }

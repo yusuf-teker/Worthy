@@ -25,7 +25,7 @@ interface CardDao {
     suspend fun deleteCardById(id: Int)
 
     @Query("SELECT * FROM cards WHERE id = :id LIMIT 1")
-    suspend fun getCardById(id: Int): CardEntity?
+     fun getCardById(id: Int): Flow<CardEntity?>
 
     @Query("SELECT * FROM cards ORDER BY expiryYear DESC, expiryMonth DESC")
     fun getAllCards(): Flow<List<CardEntity>>

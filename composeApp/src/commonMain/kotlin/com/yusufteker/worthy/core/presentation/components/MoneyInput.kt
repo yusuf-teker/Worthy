@@ -20,12 +20,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.presentation.UiText
-import com.yusufteker.worthy.core.presentation.formatTwoDecimals
 import com.yusufteker.worthy.core.presentation.util.MoneyVisualTransformation
 import com.yusufteker.worthy.core.presentation.util.emptyMoney
 import worthy.composeapp.generated.resources.Res
@@ -91,14 +89,12 @@ fun MoneyInput(
             label = { Text(label.asString()) },
             isError = isError,
             keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Done
+                keyboardType = KeyboardType.Number, imeAction = ImeAction.Done
             ),
             keyboardActions = KeyboardActions(
                 onDone = {
                     focusManager.clearFocus()
-                }
-            ),
+                }),
             modifier = modifier.fillMaxWidth(),
             trailingIcon = {
                 Box {
@@ -110,17 +106,12 @@ fun MoneyInput(
                     }
 
                     DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }
-                    ) {
+                        expanded = expanded, onDismissRequest = { expanded = false }) {
                         Currency.entries.forEach { currency ->
-                            DropdownMenuItem(
-                                text = { Text("${currency.symbol} ") },
-                                onClick = {
-                                    expanded = false
-                                    onValueChange(money?.copy(currency = currency))
-                                }
-                            )
+                            DropdownMenuItem(text = { Text("${currency.symbol} ") }, onClick = {
+                                expanded = false
+                                onValueChange(money?.copy(currency = currency))
+                            })
                         }
                     }
                 }
@@ -139,9 +130,6 @@ fun MoneyInput(
 
 // Yardımcı fonksiyonlar
 
-/**
- * Double değeri güvenli bir şekilde parse eder
- */
 fun parseDoubleCarefully(input: String): Double? {
     if (input.isEmpty() || input == "." || input == ",") return null
 
@@ -158,9 +146,6 @@ fun parseDoubleCarefully(input: String): Double? {
     }
 }
 
-/**
- * Double değeri input için formatlar
- */
 fun formatDoubleForInput(value: Double): String {
     return if (value == kotlin.math.floor(value) && value < 1e10) {
         // Tam sayı ise .0 gösterme
@@ -180,72 +165,4 @@ fun formatDoubleForInput(value: Double): String {
         }
     }
 }
-/**
- * Geliştirilmiş MoneyVisualTransformation
- */
 
-
-/**
- * Geliştirilmiş para formatlaması
- */
-fun Money.formatted(): String {
-    val locale = Locale.current
-    val decimalSeparator = if (locale.language.lowercase() == "tr") "," else "."
-    val thousandSeparator = if (locale.language.lowercase() == "tr") "." else ","
-
-    // Güvenli matematiksel işlemler
-    val safeAmount = kotlin.math.max(0.0, kotlin.math.min(amount, 999_999_999_999.99))
-    val integerPart = kotlin.math.floor(safeAmount).toLong()
-    val fractionalPart = ((safeAmount - integerPart) * 100).roundToInt()
-
-    // Binlik ayırıcı ekleme
-    val integerStr = addThousandSeparators(integerPart.toString(), thousandSeparator)
-
-    return "${currency.symbol} $integerStr$decimalSeparator${fractionalPart.toString().padStart(2,'0')}"
-}
-
-/**
- * Binlik ayırıcı ekleme fonksiyonu
- */
-fun addThousandSeparators(number: String, separator: String): String {
-    return number.reversed().chunked(3).joinToString(separator).reversed()
-}
-
-/**
- * Double uzantı fonksiyonu - güvenli para formatlaması
- */
-fun Double.formatMoneyTextSafe(currency: Currency? = null, showDecimals: Boolean = true): String {
-    val locale = Locale.current
-    val decimalSeparator = if (locale.language.lowercase() == "tr") "," else "."
-    val thousandSeparator = if (locale.language.lowercase() == "tr") "." else ","
-
-    // Güvenli sınırlar
-    val safeValue = kotlin.math.max(0.0, kotlin.math.min(this, 999_999_999_999.99))
-    val integerPart = kotlin.math.floor(safeValue).toLong()
-    val integerStr = addThousandSeparators(integerPart.toString(), thousandSeparator)
-
-    val currencySymbol = currency?.symbol?.let { " $it" } ?: ""
-
-    return if (showDecimals) {
-        val fractionalPart = ((safeValue - integerPart) * 100).roundToInt()
-        "$integerStr$decimalSeparator${fractionalPart.toString().padStart(2, '0')}$currencySymbol"
-    } else {
-        "$integerStr$currencySymbol"
-    }
-}
-
-/**
- * Güvenli ondalık basamak sayma
- */
-fun countDecimalPlacesLocalized(value: String): Int {
-    val separatorIndex = maxOf(value.indexOf('.'), value.indexOf(','))
-    return if (separatorIndex < 0) 0
-    else kotlin.math.min(value.length - separatorIndex - 1, 2) // Maksimum 2 basamak
-}
-fun isThirdOrFourthFromEndDotOrComma(s: String): Boolean {
-    if (s.length < 4) return false
-    val second = s[s.length - 2]
-    val third = s[s.length - 3]
-    val fourth = s[s.length - 4]
-    return third == '.' || third == ',' || fourth == '.' || fourth == ',' || second == '.' || second == ','
-}

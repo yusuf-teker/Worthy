@@ -335,6 +335,7 @@
     <string name="cardholder_placeholder">Name Surname</string>
     <string name="cardholder_label">Cardholder Name</string>
     <string name="card_nickname_label">Card Nickname</string>
+    <string name="card_name">Card Name</string>
     <string name="card_nickname_placeholder">e.g. My Visa</string>
         <!-- Cardholder -->
     <string name="error_cardholder_empty">Cardholder name cannot be empty</string>
@@ -451,6 +452,8 @@
         Deleting will remove the subscription as if it never existed in the app; this does not perform any "close month" action or disable data for the current month.
     </string>
     <string name="delete_subscription_confirm">Delete and remove</string>
+    <string name="subscription_history">Subscription History</string>
+    <string name="update_current_subscription_title">Update current subscription</string>
 
 
 </resources>
