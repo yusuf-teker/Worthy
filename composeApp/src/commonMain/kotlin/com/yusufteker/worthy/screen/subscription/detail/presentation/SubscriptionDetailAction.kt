@@ -15,7 +15,6 @@ sealed interface SubscriptionDetailAction {
 
     data class OnDeleteGroupRecurringItem(val groupId: String): SubscriptionDetailAction
 
-    data class OnAddNewRecurringItem(val item: RecurringItem.Subscription): SubscriptionDetailAction
 
 
 

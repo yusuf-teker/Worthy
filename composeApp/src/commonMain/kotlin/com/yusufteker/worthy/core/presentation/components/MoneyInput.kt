@@ -123,8 +123,6 @@ fun MoneyInput(
             MessageText(UiMessage.Error(it.asString()))
         }
 
-        // Debug için gerçek değeri göster
-        MessageText(UiMessage.Info("Gerçek değer: ${money?.amount}"))
     }
 }
 

@@ -190,11 +190,6 @@ class SubscriptionDetailViewModel(
             }
 
 
-            is SubscriptionDetailAction.OnAddNewRecurringItem -> {
-                launchWithLoading {
-                    subscriptionRepository.addSubscription(action.item)
-                }
-            }
             is SubscriptionDetailAction.OnDeleteGroupRecurringItem -> {
 
                 popupManager.showConfirm(

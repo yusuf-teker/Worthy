@@ -984,7 +984,11 @@ fun SubscriptionHistoryEditor(
                                         endDate = newEndDate,
                                         groupId = items.firstOrNull()?.groupId
                                             ?: createTimestampId(),
-                                        startDate = newStartDate ?: getCurrentAppDate()
+                                        startDate = newStartDate ?: getCurrentAppDate(),
+                                        colorHex = items.firstOrNull()?.colorHex,
+                                        icon = items.firstOrNull()?.icon ?: "💳",
+                                        category = items.firstOrNull()?.category,
+                                        scheduledDay = items.firstOrNull()?.scheduledDay
                                     )
 
                                     val tempItems = items.toMutableList()
