@@ -31,15 +31,16 @@ import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.TransactionType
 import com.yusufteker.worthy.core.domain.model.format
+import com.yusufteker.worthy.core.domain.model.isInstallment
 import com.yusufteker.worthy.core.domain.model.toAppDate
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.theme.AppBrushes
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
 import com.yusufteker.worthy.core.presentation.util.formatMoneyText
-import com.yusufteker.worthy.screen.subscription.add.presentation.components.toComposeColor
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import worthy.composeapp.generated.resources.Res
+import worthy.composeapp.generated.resources.installment_label
 import worthy.composeapp.generated.resources.monthly
 import worthy.composeapp.generated.resources.subscription
 import worthy.composeapp.generated.resources.transaction
@@ -53,31 +54,14 @@ fun TransactionListItem(
     onItemClicked: (Transaction) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val amountColor = when (transaction.transactionType) {
-        TransactionType.INCOME -> AppColors.transactionIncomeColor
-        TransactionType.EXPENSE -> AppColors.transactionExpenseColor
-        TransactionType.REFUND -> AppColors.transactionRefundColor
-    }
-    val transactionColor = when (transaction) { // Todo sonra renkler düzeltilecek
-        is Transaction.NormalTransaction -> {
-            when (transaction.transactionType) {
-                TransactionType.INCOME -> AppColors.transactionIncomeColor
-                TransactionType.EXPENSE -> AppColors.transactionExpenseColor
-                TransactionType.REFUND -> AppColors.transactionRefundColor
-            }
-        }
-
-        is Transaction.RecurringTransaction -> {
-            when (transaction.transactionType) {
-                TransactionType.INCOME -> AppColors.transactionIncomeColor
-                TransactionType.EXPENSE -> AppColors.transactionExpenseColor
-                TransactionType.REFUND -> AppColors.transactionRefundColor
-            }
-        }
-
-        is Transaction.SubscriptionTransaction -> {
-            transaction.colorHex?.toComposeColor() ?: AppColors.transactionExpenseColor
-        }
+    val amountColor = when {
+        transaction is Transaction.SubscriptionTransaction -> AppColors.txInstallmentColor
+        transaction.transactionType == TransactionType.EXPENSE && transaction.isInstallment() ->
+            AppColors.txInstallmentColor
+        transaction.transactionType == TransactionType.EXPENSE -> AppColors.txExpenseColor
+        transaction.transactionType == TransactionType.INCOME -> AppColors.txIncomeColor
+        transaction.transactionType == TransactionType.REFUND -> AppColors.txRefundColor
+        else -> Color.Gray
     }
 
     val dateString = transaction.transactionDate.toAppDate().format()
@@ -94,14 +78,6 @@ fun TransactionListItem(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-
-            /*
-            Box(
-                modifier = Modifier
-                    .width(12.dp)
-                    .fillMaxHeight()
-                    .background(transactionColor)
-            )*/
 
             Column(modifier = Modifier.weight(1f).padding(16.dp)) {
                 Text(
@@ -139,8 +115,12 @@ fun TransactionListItem(
                 Spacer(modifier = Modifier.height(4.dp))
 
                 val labelText = when (transaction) {
-                    is Transaction.NormalTransaction -> UiText.StringResourceId(Res.string.transaction)
-                        .asString()
+                    is Transaction.NormalTransaction -> {
+                       if (transaction.isInstallment())
+                            UiText.StringResourceId(Res.string.installment_label,arrayOf( (transaction.installmentIndex?:0)+1, transaction.installmentCount?:1)).asString()
+                        else  UiText.StringResourceId(Res.string.transaction)
+                           .asString()
+                    }
 
                     is Transaction.SubscriptionTransaction -> UiText.StringResourceId(Res.string.subscription)
                         .asString()
@@ -182,6 +162,7 @@ fun TransactionListPreview() {
             categoryId = 1,
             cardId = 1,
             transactionDate = Clock.System.now().toEpochMilliseconds(),
+            installmentIndex = -1,
             note = "Aylık maaş"
         ), Transaction.NormalTransaction(
             id = 2,
@@ -192,6 +173,7 @@ fun TransactionListPreview() {
             cardId = 2,
             transactionDate = Clock.System.now().toEpochMilliseconds()
                 .minus(2_592_000_000), // 30 gün önce
+            installmentIndex = -1,
             note = "Gıda ve temizlik"
         ), Transaction.NormalTransaction(
             id = 3,
@@ -201,6 +183,7 @@ fun TransactionListPreview() {
             categoryId = 3,
             cardId = 1,
             transactionDate = Clock.System.now().toEpochMilliseconds().minus(86400000),
+            installmentIndex = -1,
             note = "Ürün iadesi"
         )
     )

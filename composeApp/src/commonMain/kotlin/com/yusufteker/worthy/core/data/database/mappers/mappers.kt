@@ -161,6 +161,7 @@ fun TransactionEntity.toDomain(): Transaction.NormalTransaction {
         transactionDate = transactionDate,
         relatedTransactionId = relatedTransactionId,
         installmentCount = installmentCount,
+        installmentIndex = -1,// şimdilik dbde saklamıyorum runtime'da hesaplanıyor
         //installmentStartDate = installmentStartDate,
         note = note
     )

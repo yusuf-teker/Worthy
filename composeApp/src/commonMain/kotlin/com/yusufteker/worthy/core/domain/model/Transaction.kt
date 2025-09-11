@@ -30,6 +30,8 @@ sealed class Transaction {
     abstract val transactionDate: Long
     abstract val relatedTransactionId: Int?
     abstract val installmentCount: Int?
+
+    abstract val installmentIndex: Int?
     //abstract val installmentStartDate: AppDate?
     abstract val note: String?
 
@@ -45,6 +47,7 @@ sealed class Transaction {
         override val transactionDate: Long,
         override val relatedTransactionId: Int? = null,
         override val installmentCount: Int? = null,
+        override val installmentIndex: Int = -1,
         //override val installmentStartDate: AppDate? = null,
         override val note: String? = null
     ) : Transaction()
@@ -61,6 +64,7 @@ sealed class Transaction {
         override val transactionDate: Long,
         override val relatedTransactionId: Int? = null,
         override val installmentCount: Int? = null,
+        override val installmentIndex: Int = -1,
         //override val installmentStartDate: AppDate? = null,
         override val note: String? = null,
         val subscriptionId: Int,
@@ -83,6 +87,7 @@ sealed class Transaction {
         override val transactionDate: Long,
         override val relatedTransactionId: Int? = null,
         override val installmentCount: Int? = null,
+        override val installmentIndex: Int = -1,
         //override val installmentStartDate: AppDate? = null,
         override val note: String? = null,
         val recurringGroupId: String,
@@ -158,16 +163,20 @@ fun Transaction.splitInstallments(card: Card?): List<Transaction> {
         results += when (this) {
             is Transaction.NormalTransaction -> copy(
                 id = "${id}_$index".hashCode(), // benzersiz id üretmek için
+                installmentIndex = index,
                 amount = monthlyAmount,
                 transactionDate = txDate
             )
             is Transaction.SubscriptionTransaction -> copy(
                 id = "${id}_$index".hashCode(),
+                installmentIndex = index,
                 amount = monthlyAmount,
                 transactionDate = txDate
             )
             is Transaction.RecurringTransaction -> copy(
                 id = "${id}_$index".hashCode(),
+                installmentIndex = index,
+
                 amount = monthlyAmount,
                 transactionDate = txDate
             )
@@ -179,3 +188,21 @@ fun Transaction.splitInstallments(card: Card?): List<Transaction> {
 
     return results
 }
+
+fun Transaction.getInstallmentIndex(): Int? {
+    val parts = id.toString().split("_")
+    return if (parts.size > 1) {
+        parts.last().toIntOrNull()?.plus(1)
+    } else null
+}
+fun Transaction.isInstallment(): Boolean {
+    return (this.installmentCount ?: 0) > 1
+}
+
+fun Transaction.getInstallmentLabel(index: Int? = null): String {
+    val total = this.installmentCount ?: 1
+    val current = index?.coerceIn(1..total) ?: 1
+    return "$current/$total"
+}
+
+

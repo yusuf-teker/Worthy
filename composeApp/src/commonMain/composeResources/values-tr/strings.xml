@@ -294,7 +294,7 @@
 
     <string name="hint_enter_name">Adınızı giriniz</string>
 
-    <!-- ADD TRANSACTION-->
+    <!--  TRANSACTION-->
     <string name="transaction">İşlem</string>
     <string name="installment_count_label">Taksit Sayısı</string>
     <string name="card_selector_label">Kart</string>
@@ -308,6 +308,7 @@
     <string name="validation_date_empty">Tarih seçilmelidir</string>
     <string name="date_added">Ekleme Tarihi</string>
     <string name="validation_card_empty">Lütfen bir kart seçin</string>
+    <string name="installment_label">Taksit %1$d/%2$d</string>
 
 
     <!-- ADD CARD -->

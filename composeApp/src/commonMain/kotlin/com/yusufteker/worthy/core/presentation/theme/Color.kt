@@ -127,9 +127,10 @@ object AppColors {
             disabledContentColor = AppColors.onSecondary.copy(alpha = 0.3f)
         )
 
-    val transactionIncomeColor = Color(0xFF4CAF50)
-    val transactionExpenseColor = Color(0xFFF44336)
-    val transactionRefundColor = Color(0xFF2196F3)
+    val txIncomeColor = Color(0xFF4CAF50)
+    val txExpenseColor = Color(0xFFF44336)
+    val txInstallmentColor = Color(0xFFFF9800)
+    val txRefundColor = Color(0xFF2196F3)
 }
 
 val primaryLight = Color(0xFF2D638B)
