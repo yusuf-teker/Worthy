@@ -90,7 +90,7 @@ class TransactionDetailViewModel(
                 launchWithLoading {
                     when(action.transaction) {
                         is Transaction.NormalTransaction -> {
-                            transactionRepository.delete(action.transaction)
+                            transactionRepository.deleteByOriginalId(action.transaction.originalId)
                             navigateBack()
                         }
                         else -> {}

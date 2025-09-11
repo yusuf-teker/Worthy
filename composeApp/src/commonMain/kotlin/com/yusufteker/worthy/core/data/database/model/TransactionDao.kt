@@ -31,6 +31,10 @@ interface TransactionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(transaction: TransactionEntity): Long
 
+    // update original id
+    @Query("UPDATE transactions SET originalId = :id WHERE id = :id")
+    suspend fun updateOriginalId(id: Int)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(transactions: List<TransactionEntity>)
 
@@ -42,6 +46,10 @@ interface TransactionDao {
 
     @Query("DELETE FROM transactions WHERE id = :transactionId")
     suspend fun deleteById(transactionId: Int)
+
+    // delete by original ıd
+    @Query("DELETE FROM transactions WHERE originalId = :originalId")
+    suspend fun deleteByOriginalId(originalId: Int)
 
     @Delete
     suspend fun deleteAll(items: List<TransactionEntity>)

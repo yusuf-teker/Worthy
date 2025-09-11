@@ -10,4 +10,9 @@ import kotlin.math.roundToInt
 @Serializable
 data class Money(
     val amount: Double = 0.0, val currency: Currency
-)
+){
+    fun divide(divisor: Int): Money {
+        require(divisor > 0) { "Divisor must be greater than 0" }
+        return copy(amount = amount / divisor)
+    }
+}

@@ -10,6 +10,8 @@ interface AnalyticsRepository {
 
     fun getTransactions(): Flow<List<Transaction>>
 
+    fun getTransactionsWithInstallments(): Flow<List<Transaction>>
+
     fun getCategories(): Flow<List<Category>>
 
     fun getCards(): Flow<List<Card>>

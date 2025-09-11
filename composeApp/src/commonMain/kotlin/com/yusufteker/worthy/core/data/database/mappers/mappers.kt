@@ -152,6 +152,7 @@ fun Card.toEntity(): CardEntity = CardEntity(
 fun TransactionEntity.toDomain(): Transaction.NormalTransaction {
     return Transaction.NormalTransaction(
         id = id,
+        originalId = originalId,
         name = name,
         amount = amount,
         transactionType = transactionType,
@@ -160,7 +161,7 @@ fun TransactionEntity.toDomain(): Transaction.NormalTransaction {
         transactionDate = transactionDate,
         relatedTransactionId = relatedTransactionId,
         installmentCount = installmentCount,
-        installmentStartDate = installmentStartDate,
+        //installmentStartDate = installmentStartDate,
         note = note
     )
 }
@@ -169,6 +170,7 @@ fun TransactionEntity.toDomain(): Transaction.NormalTransaction {
 fun Transaction.toEntity(): TransactionEntity {
     return TransactionEntity(
         id = this.id,
+        originalId = originalId,
         name = this.name,
         amount = this.amount,
         transactionType = this.transactionType,
@@ -177,7 +179,7 @@ fun Transaction.toEntity(): TransactionEntity {
         transactionDate = this.transactionDate,
         relatedTransactionId = this.relatedTransactionId,
         installmentCount = this.installmentCount,
-        installmentStartDate = this.installmentStartDate,
+        //installmentStartDate = this.installmentStartDate,
         note = this.note
     )
 }
@@ -185,6 +187,7 @@ fun Transaction.toEntity(): TransactionEntity {
 fun WishlistItem.toExpenseTransaction(): Transaction.NormalTransaction {
     return Transaction.NormalTransaction(
         id = this.id,
+        originalId = this.id,// Todo simdilik taksit yok
         name = this.name,
         amount = this.price,
         transactionType = TransactionType.EXPENSE,
@@ -193,7 +196,7 @@ fun WishlistItem.toExpenseTransaction(): Transaction.NormalTransaction {
         transactionDate = this.purchasedDate ?: getCurrentEpochMillis(),
         relatedTransactionId = null,
         installmentCount = null,
-        installmentStartDate = null,
+        //installmentStartDate = null,
         note = null
     )
 }
@@ -248,6 +251,7 @@ fun RecurringItem.Subscription.toTransactions(): List<Transaction> {
         transactions.add(
             Transaction.SubscriptionTransaction(
                 id ="${this.id}-${currentYear}-${currentMonth}".hashCode(),
+                originalId = this.id, // todo subscription taksit yok şimdilik - transaction split fonksiyonu için gerekli değil
                 name = this.name,
                 amount = this.amount,
                 transactionType = if (this.isIncome) TransactionType.INCOME else TransactionType.EXPENSE,
@@ -256,7 +260,7 @@ fun RecurringItem.Subscription.toTransactions(): List<Transaction> {
                 transactionDate = transactionDate.toEpochMillis(),
                 relatedTransactionId = null,
                 installmentCount = null,
-                installmentStartDate = null,
+                //installmentStartDate = null,
                 note = null,
                 subscriptionGroupId = this.groupId,
                 subscriptionId = this.id,

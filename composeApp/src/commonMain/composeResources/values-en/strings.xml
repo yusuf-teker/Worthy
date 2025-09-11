@@ -317,6 +317,8 @@
     <string name="validation_category_empty">Category must be selected</string>
     <string name="validation_date_empty">Date must be selected</string>
     <string name="bottom_sheet_error_name_required">Product name is required</string>
+    <string name="date_added">Date Added</string>
+    <string name="validation_card_empty">Please select a card</string>
 
 
 

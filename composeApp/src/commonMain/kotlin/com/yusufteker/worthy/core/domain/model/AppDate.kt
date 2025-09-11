@@ -54,6 +54,9 @@ fun AppDate.toRoomInt(): Int {
 fun AppDate.toEpochMillis(): Long {
     return LocalDate(year, month, day ?: 1).toEpochMillis()
 }
+fun AppDate.toEpochMillis(statementDay: Int): Long {
+    return LocalDate(year, month, statementDay).toEpochMillis()
+}
 fun getLastSixMonths(): List<Int> {
     return (0 until 6).map { offset ->
         val month = (getCurrentMonth() - 5 + offset)

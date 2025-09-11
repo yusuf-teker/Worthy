@@ -1,5 +1,6 @@
 package com.yusufteker.worthy.core.domain.model
 
+import com.yusufteker.worthy.screen.card.domain.model.Card
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Serializable
@@ -20,6 +21,7 @@ enum class TransactionType {
 @Serializable
 sealed class Transaction {
     abstract val id: Int
+    abstract val originalId: Int
     abstract val name: String
     abstract val amount: Money
     abstract val transactionType: TransactionType
@@ -28,12 +30,13 @@ sealed class Transaction {
     abstract val transactionDate: Long
     abstract val relatedTransactionId: Int?
     abstract val installmentCount: Int?
-    abstract val installmentStartDate: AppDate?
+    //abstract val installmentStartDate: AppDate?
     abstract val note: String?
 
     @Serializable
     data class NormalTransaction(
         override val id: Int = 0,
+        override val originalId: Int = id, // taksitliye çevirince normal id değişebilir
         override val name: String,
         override val amount: Money,
         override val transactionType: TransactionType,
@@ -42,13 +45,14 @@ sealed class Transaction {
         override val transactionDate: Long,
         override val relatedTransactionId: Int? = null,
         override val installmentCount: Int? = null,
-        override val installmentStartDate: AppDate? = null,
+        //override val installmentStartDate: AppDate? = null,
         override val note: String? = null
     ) : Transaction()
 
     @Serializable
     data class SubscriptionTransaction(
         override val id: Int = 0,
+        override val originalId: Int = id,
         override val name: String,
         override val amount: Money,
         override val transactionType: TransactionType,
@@ -57,7 +61,7 @@ sealed class Transaction {
         override val transactionDate: Long,
         override val relatedTransactionId: Int? = null,
         override val installmentCount: Int? = null,
-        override val installmentStartDate: AppDate? = null,
+        //override val installmentStartDate: AppDate? = null,
         override val note: String? = null,
         val subscriptionId: Int,
         val subscriptionGroupId: String,
@@ -70,6 +74,7 @@ sealed class Transaction {
     @Serializable
     data class RecurringTransaction(
         override val id: Int = 0,
+        override val originalId: Int = id,
         override val name: String,
         override val amount: Money,
         override val transactionType: TransactionType,
@@ -78,7 +83,7 @@ sealed class Transaction {
         override val transactionDate: Long,
         override val relatedTransactionId: Int? = null,
         override val installmentCount: Int? = null,
-        override val installmentStartDate: AppDate? = null,
+        //override val installmentStartDate: AppDate? = null,
         override val note: String? = null,
         val recurringGroupId: String,
         val month: Int,
@@ -135,3 +140,42 @@ fun Transaction.isNormal(): Boolean {
     return this is Transaction.NormalTransaction
 }
 
+fun Transaction.splitInstallments(card: Card?): List<Transaction> {
+    if (installmentCount == null /*|| installmentStartDate == null*/ || (installmentCount ?: 0) <= 1) {
+        return listOf(this)
+    }
+
+    val monthlyAmount = amount.divide(installmentCount?:1)
+    val results = mutableListOf<Transaction>()
+
+    val statementDay = card?.statementDay ?: 1 // statement day yoksa ayın 1’i gibi kabul edelim
+    var currentDate = transactionDate.toAppDate()//installmentStartDate
+
+    repeat(installmentCount?:1) { index ->
+        // TransactionDate'i statement day'e göre ayarlıyoruz
+        val txDate = currentDate!!.toEpochMillis(statementDay)
+
+        results += when (this) {
+            is Transaction.NormalTransaction -> copy(
+                id = "${id}_$index".hashCode(), // benzersiz id üretmek için
+                amount = monthlyAmount,
+                transactionDate = txDate
+            )
+            is Transaction.SubscriptionTransaction -> copy(
+                id = "${id}_$index".hashCode(),
+                amount = monthlyAmount,
+                transactionDate = txDate
+            )
+            is Transaction.RecurringTransaction -> copy(
+                id = "${id}_$index".hashCode(),
+                amount = monthlyAmount,
+                transactionDate = txDate
+            )
+        }
+
+        // bir sonraki aya geç
+        currentDate = currentDate.nextMonth()
+    }
+
+    return results
+}

@@ -57,7 +57,10 @@ class TransactionRepositoryImpl(
     }
 
     override suspend fun insert(transaction: Transaction): Long {
-        return transactionDao.insert(transaction.toEntity())
+        val x = transactionDao.insert(transaction.toEntity())
+        transactionDao.updateOriginalId(x.toInt()) // taksitli işmler için original id kullanmam gerekti o yüzden ilk kayıtta original idyi setliyorum
+
+        return x
     }
 
     override suspend fun insertAll(transactions: List<Transaction>) {
@@ -74,6 +77,10 @@ class TransactionRepositoryImpl(
 
     override suspend fun deleteById(transactionId: Int) {
         transactionDao.deleteById(transactionId)
+    }
+
+    override suspend fun deleteByOriginalId(originalId: Int) {
+        transactionDao.deleteByOriginalId(originalId)
     }
 
     override suspend fun deleteAll(items: List<Transaction>) {

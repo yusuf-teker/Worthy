@@ -27,7 +27,7 @@ import com.yusufteker.worthy.screen.wishlist.list.data.database.model.WishlistIt
         TransactionEntity::class,
         CardEntity::class,
         SubscriptionEntity::class,
-    ], version = 2, exportSchema = false
+    ], version = 3, exportSchema = false
 )
 @TypeConverters(RoomTypeConverters::class)
 @ConstructedBy(WorthyDatabaseConstructor::class)

@@ -15,9 +15,6 @@ sealed interface AnalyticsAction {
     data class OnCardSelected(val card: Card, val isSelected: Boolean) : AnalyticsAction
     object ClearFilters : AnalyticsAction
     object NavigateBack : AnalyticsAction
-
-    data class OnItemDelete(val id: Int) : AnalyticsAction
-
     data class OnChangeViewMode(val viewMode: AnalyticsViewMode) : AnalyticsAction
 
     data class OnChangeChartType(val chartType: ChartType) : AnalyticsAction

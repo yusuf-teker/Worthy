@@ -42,9 +42,11 @@ import io.github.aakira.napier.Napier
 import org.koin.compose.viewmodel.koinViewModel
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.add
+import worthy.composeapp.generated.resources.date_added
 import worthy.composeapp.generated.resources.delete
 import worthy.composeapp.generated.resources.note
 import worthy.composeapp.generated.resources.screen_title_transaction_detail
+import worthy.composeapp.generated.resources.update
 import worthy.composeapp.generated.resources.wishlist_label_product_name
 import kotlin.time.ExperimentalTime
 
@@ -96,7 +98,7 @@ fun TransactionDetailScreen(
                     .asString(),
                 modifier = Modifier.fillMaxWidth(),
                 onNavIconClick = { onAction(TransactionDetailAction.NavigateBack) },
-                showDivider = false
+                showDivider = true
             )
         }) { paddingValues ->
         Column(
@@ -167,7 +169,7 @@ fun TransactionDetailScreen(
                             onAction(TransactionDetailAction.UpdateTransaction(updatedTransaction))
                         },
                         modifier = Modifier.fillMaxWidth().height(56.dp),
-                        title = "Date Added", // todo tr en
+                        title = UiText.StringResourceId(Res.string.date_added).asString(),
                         errorMessage = errorDate?.asString()
                     )
                     Spacer(modifier = Modifier.height(16.dp))
@@ -186,7 +188,7 @@ fun TransactionDetailScreen(
 
                     AppButton(
                         modifier = Modifier.fillMaxWidth(),
-                        text = UiText.StringResourceId(Res.string.add).asString(),
+                        text = UiText.StringResourceId(Res.string.update).asString(),
                         loading = state.isLoading,
                         onClick = {
                             onAction(TransactionDetailAction.UpdateTransaction(it))

@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.validation_amount_empty
+import worthy.composeapp.generated.resources.validation_card_empty
 import worthy.composeapp.generated.resources.validation_category_empty
 import worthy.composeapp.generated.resources.validation_date_empty
 import worthy.composeapp.generated.resources.validation_name_empty
@@ -97,14 +98,14 @@ class AddTransactionViewModel(
                             )
                         )
                     }
-
+/*
                     is TransactionFormAction.InstallmentStartDateChanged -> {
                         _state.value = _state.value.copy(
                             expenseForm = _state.value.expenseForm.copy(
                                 installmentStartDate = action.action.date
                             )
                         )
-                    }
+                    }*/
 
                     is TransactionFormAction.MoneyChanged -> {
                         _state.value = _state.value.copy(
@@ -143,7 +144,7 @@ class AddTransactionViewModel(
                                     transactionDate = validated.expenseForm.transactionDate,
                                     note = validated.expenseForm.note,
                                     installmentCount = validated.expenseForm.installmentCount,
-                                    installmentStartDate = validated.expenseForm.installmentStartDate.toAppDate(),
+                                    //installmentStartDate = validated.expenseForm.installmentStartDate.toAppDate(),
                                     transactionType = TransactionType.EXPENSE,
                                 )
                                 transactionRepository.insert(transaction)
@@ -230,13 +231,13 @@ class AddTransactionViewModel(
                         )
                     }
 
-                    is TransactionFormAction.InstallmentStartDateChanged -> {
+                    /*is TransactionFormAction.InstallmentStartDateChanged -> {
                         _state.value = _state.value.copy(
                             incomeForm = _state.value.incomeForm.copy(
                                 installmentStartDate = action.action.date
                             )
                         )
-                    }
+                    }*/
 
                     is TransactionFormAction.SaveClicked -> {
 
@@ -292,7 +293,8 @@ private fun validateExpenseForm(state: AddTransactionState): AddTransactionState
             errorName = if (form.name.isBlank()) UiText.StringResourceId(Res.string.validation_name_empty) else null,
             errorMoney = if (form.money == null) UiText.StringResourceId(Res.string.validation_amount_empty) else null,
             errorCategory = if (form.selectedCategory == null) UiText.StringResourceId(Res.string.validation_category_empty) else null,
-            errorDate = if (form.transactionDate == 0L) UiText.StringResourceId(Res.string.validation_date_empty) else null
+            errorDate = if (form.transactionDate == 0L) UiText.StringResourceId(Res.string.validation_date_empty) else null,
+            errorCard = if (form.isCardPayment && form.selectedCard == null) UiText.StringResourceId(Res.string.validation_card_empty) else null
         )
     )
 }

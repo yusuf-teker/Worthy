@@ -215,7 +215,7 @@ fun AddTransactionScreen(
                                 )
                             )
                         },
-                        onInstallmentStartDateChange = {
+                        /*onInstallmentStartDateChange = {
                             onAction(
                                 AddTransactionAction.ExpenseFormAction(
                                     TransactionFormAction.InstallmentStartDateChanged(
@@ -223,7 +223,7 @@ fun AddTransactionScreen(
                                     )
                                 )
                             )
-                        },
+                        },*/
                         onNewCategoryCreated = {
                             onAction(
                                 AddTransactionAction.ExpenseFormAction(

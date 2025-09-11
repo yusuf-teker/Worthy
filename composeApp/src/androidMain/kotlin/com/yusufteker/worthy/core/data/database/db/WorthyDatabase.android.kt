@@ -3,6 +3,7 @@ package com.yusufteker.worthy.core.data.database.db
 import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.yusufteker.worthy.core.data.database.migrations.MIGRATION_2_3
 
 actual class DatabaseFactory(
     private val context: Context
@@ -15,6 +16,6 @@ actual class DatabaseFactory(
             context,
             WorthyDatabase::class.java,
             dbFile.absolutePath
-        )
+        ).addMigrations(MIGRATION_2_3)
     }
 }

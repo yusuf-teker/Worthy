@@ -29,6 +29,7 @@ import com.yusufteker.worthy.screen.card.data.database.entities.CardEntity
 )
 data class TransactionEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val originalId: Int = id,
     val name: String,
     val amount: Money,
     val transactionType: TransactionType,

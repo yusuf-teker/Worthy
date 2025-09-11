@@ -306,6 +306,8 @@
     <string name="validation_amount_empty">Tutar girilmelidir</string>
     <string name="validation_category_empty">Kategori seçilmelidir</string>
     <string name="validation_date_empty">Tarih seçilmelidir</string>
+    <string name="date_added">Ekleme Tarihi</string>
+    <string name="validation_card_empty">Lütfen bir kart seçin</string>
 
 
     <!-- ADD CARD -->

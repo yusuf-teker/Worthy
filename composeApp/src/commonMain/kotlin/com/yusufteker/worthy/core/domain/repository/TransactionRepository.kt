@@ -35,7 +35,7 @@ interface TransactionRepository {
 
     suspend fun deleteById(transactionId: Int)
 
-
+    suspend fun deleteByOriginalId(originalId: Int)
     suspend fun deleteAll(items: List<Transaction>)
 
     fun getTransactionsSince(startDate: LocalDate): Flow<List<Transaction>>

@@ -26,7 +26,7 @@ class AnalyticsViewModel(
     fun observeData() {
         launchWithLoading {
             combine(
-                analyticsRepository.getTransactions(),
+                analyticsRepository.getTransactionsWithInstallments(),
                 analyticsRepository.getCards(),
                 analyticsRepository.getUserPrefCurrency()
             ) { transactions, cards, currency ->
@@ -57,6 +57,7 @@ class AnalyticsViewModel(
                         state.value.selectedCurrency
                     )
                     applyFilters()
+                    applySort()
 
                 }
 
@@ -159,12 +160,6 @@ class AnalyticsViewModel(
                 applyFilters()
             }
 
-            is AnalyticsAction.OnItemDelete -> {
-                launchWithLoading {
-                    analyticsRepository.deleteTransaction(action.id)
-                }
-            }
-
             is AnalyticsAction.NavigateBack -> {
                 navigateBack()
             }
@@ -219,7 +214,7 @@ class AnalyticsViewModel(
             is AnalyticsAction.OnTransactionClicked -> {
                 when(action.transaction){
                     is Transaction.NormalTransaction -> {
-                        navigateTo(Routes.TransactionDetail(action.transaction.id))
+                        navigateTo(Routes.TransactionDetail(action.transaction.originalId))
                     }
                     is Transaction.SubscriptionTransaction -> {
                         navigateTo(Routes.SubscriptionDetail(action.transaction.subscriptionId))

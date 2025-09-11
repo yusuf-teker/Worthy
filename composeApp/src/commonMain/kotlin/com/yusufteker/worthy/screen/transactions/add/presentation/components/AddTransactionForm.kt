@@ -48,6 +48,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.add
+import worthy.composeapp.generated.resources.date_added
 import worthy.composeapp.generated.resources.installment_count_label
 import worthy.composeapp.generated.resources.note
 import worthy.composeapp.generated.resources.pay_with_card
@@ -67,13 +68,15 @@ data class AddTransactionFormState(
     val isCardPayment: Boolean = false,
     val cards: List<Card>? = null,
     val installmentCount: Int = 0,
-    val installmentStartDate: Long = getCurrentEpochMillis(),
+    //val installmentStartDate: Long = getCurrentEpochMillis(),
 
     val errorName: UiText? = null,
     val errorMoney: UiText? = null,
     val errorCategory: UiText? = null,
     val errorDate: UiText? = null,
-)
+    val errorCard: UiText? = null,
+
+    )
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
@@ -150,7 +153,7 @@ fun AddTransactionForm(
                 onTransactionDateChange(appDate)
             },
             modifier = Modifier.fillMaxWidth().height(56.dp),
-            title = "Date Added", // todo tr en
+            title = UiText.StringResourceId(Res.string.date_added).asString(),
             errorMessage = state.errorDate?.asString()
         )
         val targetWeight by animateFloatAsState(
@@ -199,7 +202,7 @@ fun AddTransactionForm(
                             )
                         }
 
-                        if (targetWeight > 0f) {
+                        /*if (targetWeight > 0f) {
                             Spacer(Modifier.width(16.dp))
 
                             Box(Modifier.weight(targetWeight)) {
@@ -212,7 +215,7 @@ fun AddTransactionForm(
                                     title = "Installment Start Date"
                                 )
                             }
-                        }
+                        }*/
 
                     }
 
