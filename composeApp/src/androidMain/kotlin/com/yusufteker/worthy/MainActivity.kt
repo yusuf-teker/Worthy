@@ -12,7 +12,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-
+        //setTheme(androidx.appcompat.R.style.Theme_AppCompat_NoActionBar)
         setContent {
             App(
                 prefs = remember {
