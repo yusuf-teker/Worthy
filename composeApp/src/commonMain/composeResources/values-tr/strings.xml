@@ -453,6 +453,9 @@
     <string name="installments">Taksitler</string>
     <string name="installment_paid">Ödendi</string>
     <string name="installment_pending">Bekliyor</string>
+    <string name="card_current_month_payment">Bu ayın ödemesi</string>
+    <string name="card_total_remaining">Toplam kalan borç</string>
+    <string name="card_due_date">Son ödeme tarihi</string>
 
 
 </resources>

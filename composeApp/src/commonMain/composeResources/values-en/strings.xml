@@ -465,6 +465,9 @@
     <string name="installments">Installments</string>
     <string name="installment_paid">Paid</string>
     <string name="installment_pending">Pending</string>
+    <string name="card_current_month_payment">This month’s payment</string>
+    <string name="card_total_remaining">Total Remaining Debt</string>
+    <string name="card_due_date">Due date</string>
 
 
 

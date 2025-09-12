@@ -2,10 +2,19 @@ package com.yusufteker.worthy.screen.card.list.presentation
 
 import androidx.lifecycle.viewModelScope
 import com.yusufteker.worthy.app.navigation.Routes
+import com.yusufteker.worthy.core.domain.getCurrentAppDate
+import com.yusufteker.worthy.core.domain.isAfterOrEqual
+import com.yusufteker.worthy.core.domain.isInThisMonth
+import com.yusufteker.worthy.core.domain.model.splitInstallments
+import com.yusufteker.worthy.core.domain.repository.TransactionRepository
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
+import com.yusufteker.worthy.core.presentation.util.sumWithoutCurrencyConverted
 import com.yusufteker.worthy.screen.card.domain.repository.CardRepository
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import worthy.composeapp.generated.resources.Res
@@ -14,9 +23,10 @@ import worthy.composeapp.generated.resources.delete_card_message
 import worthy.composeapp.generated.resources.delete_card_title
 import worthy.composeapp.generated.resources.delete_subscription_confirm
 
-class CardListViewModel (
-    val cardRepository: CardRepository
-): BaseViewModel<CardListState>(CardListState()) {
+class CardListViewModel(
+    val cardRepository: CardRepository,
+    val transactionRepository: TransactionRepository,
+) : BaseViewModel<CardListState>(CardListState()) {
 
     fun onAction(action: CardListAction) {
         when (action) {
@@ -24,7 +34,7 @@ class CardListViewModel (
 
             }
 
-           is CardListAction.NavigateBack -> {
+            is CardListAction.NavigateBack -> {
                 navigateBack()
             }
 
@@ -40,10 +50,17 @@ class CardListViewModel (
                     )
                 }
             }
+
             is CardListAction.onDeleteCard -> {
                 popupManager.showConfirm(
-                    title = UiText.StringResourceId(Res.string.delete_card_title, arrayOf(state.value.selectedCard?.nickname ?: "")),
-                    message = UiText.StringResourceId(Res.string.delete_card_message, arrayOf(state.value.selectedCard?.nickname ?: "")),
+                    title = UiText.StringResourceId(
+                        Res.string.delete_card_title,
+                        arrayOf(state.value.selectedCard?.nickname ?: "")
+                    ),
+                    message = UiText.StringResourceId(
+                        Res.string.delete_card_message,
+                        arrayOf(state.value.selectedCard?.nickname ?: "")
+                    ),
                     onConfirm = {
                         launchWithLoading {
                             action.card?.let { card ->
@@ -56,18 +73,21 @@ class CardListViewModel (
                             }
                         }
                     },
-                    confirmLabel =  UiText.StringResourceId(Res.string.delete_subscription_confirm),
+                    confirmLabel = UiText.StringResourceId(Res.string.delete_subscription_confirm),
                     dismissLabel = UiText.StringResourceId(Res.string.cancel)
                 )
 
             }
         }
     }
+
     init {
         observeCardList()
+        observeSelectedCardExpense()
     }
 
-    fun observeCardList(){
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun observeCardList() {
         launchWithLoading {
 
             cardRepository.getAll().onEach { cards ->
@@ -81,4 +101,41 @@ class CardListViewModel (
         }
 
     }
+
+    fun observeSelectedCardExpense() {
+        state.map { it.selectedCard?.id } // selectedCardId
+            .flatMapLatest { cardId ->
+                if (cardId != null) {
+                    transactionRepository.getByCardIdConverted(cardId)
+                } else {
+                    // boş bir liste döndür
+                    kotlinx.coroutines.flow.flowOf(emptyList())
+                }
+            }
+            .onEach { transactions ->
+                val expandedTransactions = transactions.flatMap { tx ->
+                    tx.splitInstallments(state.value.selectedCard)
+                }
+                val thisMonthTransactions =
+                    expandedTransactions.filter { it.transactionDate.isInThisMonth() }
+                val totalFutureTransactions = expandedTransactions.filter {
+                    it.transactionDate.isAfterOrEqual(
+                        getCurrentAppDate(day = state.value.selectedCard?.statementDay ?: 1)
+                    )
+                }
+
+                val totalSpentThisMonth = thisMonthTransactions.map { it.amount }.sumWithoutCurrencyConverted()
+                val totalFutureExpenses = totalFutureTransactions.map { it.amount }.sumWithoutCurrencyConverted()
+
+                setState {
+                    copy(
+                        selectedCardCurrentTotalExpense = totalSpentThisMonth,
+                        selectedCardFutureTotalExpense = totalFutureExpenses
+                    )
+                }
+
+            }.launchIn(viewModelScope)
+
+    }
+
 }

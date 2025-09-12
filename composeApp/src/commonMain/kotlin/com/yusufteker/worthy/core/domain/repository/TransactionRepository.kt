@@ -19,7 +19,9 @@ interface TransactionRepository {
 
     fun getByCategory(categoryId: Int): Flow<List<Transaction>>
 
-    fun getByCard(cardId: Int): Flow<List<Transaction>>
+    fun getByCardId(cardId: Int): Flow<List<Transaction>>
+
+    fun getByCardIdConverted(cardId: Int): Flow<List<Transaction>>
 
     fun getByType(type: TransactionType): Flow<List<Transaction>>
 

@@ -1,6 +1,8 @@
 package com.yusufteker.worthy.core.domain
 
 import com.yusufteker.worthy.core.domain.model.AppDate
+import com.yusufteker.worthy.core.domain.model.toAppDate
+import com.yusufteker.worthy.core.domain.model.toEpochMillis
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
@@ -25,6 +27,18 @@ fun Long.toLocalDate(timeZone: TimeZone = TimeZone.currentSystemDefault()): Loca
 @OptIn(ExperimentalTime::class)
 fun getCurrentMonth(): Int {
     return Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).month.number
+}
+
+
+fun Long.isInThisMonth(): Boolean {
+    val current = getCurrentLocalDateTime()
+    val target = this.toLocalDate()
+    return current.month == target.month && current.year == target.year
+}
+
+fun Long.isAfterOrEqual( referenceDate: AppDate = getCurrentAppDate()): Boolean {
+    val txDate = this.toAppDate()
+    return txDate.toEpochMillis() >= referenceDate.toEpochMillis()
 }
 
 @OptIn(ExperimentalTime::class)

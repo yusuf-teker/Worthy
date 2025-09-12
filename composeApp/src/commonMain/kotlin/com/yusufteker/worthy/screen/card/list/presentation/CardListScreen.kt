@@ -1,18 +1,24 @@
 package com.yusufteker.worthy.screen.card.list.presentation
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -26,15 +32,18 @@ import com.yusufteker.worthy.core.presentation.components.AppButton
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
 import com.yusufteker.worthy.core.presentation.components.EmptyScreen
 import com.yusufteker.worthy.core.presentation.theme.AppColors.primaryButtonColors
+import com.yusufteker.worthy.core.presentation.theme.AppTypography
 import com.yusufteker.worthy.core.presentation.theme.Constants.EMPTY_SCREEN_SIZE
+import com.yusufteker.worthy.core.presentation.util.formatted
 import com.yusufteker.worthy.screen.card.list.presentation.components.CreditCardCarousel
-import com.yusufteker.worthy.screen.transactions.detail.presentation.TransactionDetailAction
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.add_new_card
 import worthy.composeapp.generated.resources.add_your_first_card
-import worthy.composeapp.generated.resources.delete
+import worthy.composeapp.generated.resources.card_current_month_payment
+import worthy.composeapp.generated.resources.card_due_date
+import worthy.composeapp.generated.resources.card_total_remaining
 import worthy.composeapp.generated.resources.empty_credit_card
 import worthy.composeapp.generated.resources.screen_title_my_cards
 
@@ -90,26 +99,77 @@ fun CardListScreen(
                 })
         }) {
         Column(
-            modifier = modifier.padding(contentPadding),
+            modifier = modifier.fillMaxWidth().padding(contentPadding),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
             if (state.cards.isNotEmpty()) {
                 CreditCardCarousel(
-                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp), cards = state.cards,
+                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                    cards = state.cards,
                     onCardSelected = {
                         onAction(CardListAction.onCardSelected(it))
+                    })
+
+                Spacer(Modifier.width(16.dp))
+
+                state.selectedCard?.let { selected ->
+                    Column(
+                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = selected.nickname ?: "", style = AppTypography.titleMedium
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                UiText.StringResourceId(Res.string.card_total_remaining).asString()
+                            )
+                            Text(state.selectedCardFutureTotalExpense?.formatted() ?: "-")
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                UiText.StringResourceId(Res.string.card_current_month_payment)
+                                    .asString()
+                            )
+                            Text(state.selectedCardCurrentTotalExpense?.formatted() ?: "-")
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                UiText.StringResourceId(Res.string.card_due_date)
+                                    .asString()
+                            )
+                            Text(state.selectedCard.statementDay.toString()) // Todo kesim ve ödeme tarihi farklı olacak sonradan düzelt
+                        }
+
                     }
-                )
+                }
+
 
                 Spacer(Modifier.weight(1f))
 
                 AppButton(
+                    modifier = Modifier.fillMaxWidth(),
                     text = "Delete",
                     enabled = state.selectedCard != null,
                     onClick = {
                         state.selectedCard?.let {
-                            //onAction(CardListAction.onDeleteCard(it)) // todo seelcted card sıkıntılı
+                            onAction(CardListAction.onDeleteCard(it))
                         }
                     },
                     colors = primaryButtonColors.copy(containerColor = Color.Red)

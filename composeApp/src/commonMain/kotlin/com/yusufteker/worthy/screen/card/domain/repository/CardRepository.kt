@@ -10,4 +10,6 @@ interface CardRepository {
     suspend fun updateCard(card: Card)
 
      fun getCardById(cardId: Int): Flow<Card?>
+
+
 }

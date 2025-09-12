@@ -51,6 +51,14 @@ fun CreditCardCarousel(
         }
     }
 
+    // Sayfa değiştiğinde seçilen kartı bildir
+    LaunchedEffect(pagerState.currentPage, cards) {
+        if (cards.isNotEmpty() && pagerState.currentPage in cards.indices) {
+            onCardSelected(cards[pagerState.currentPage])
+        }
+    }
+
+
     HorizontalPager(
         state = pagerState,
         modifier = modifier.fillMaxWidth(),
@@ -62,7 +70,6 @@ fun CreditCardCarousel(
 
 
     ) { page ->
-        onCardSelected.invoke(cards[page])
 
         val pageOffset = (pagerState.currentPage - page) +
                 pagerState.currentPageOffsetFraction

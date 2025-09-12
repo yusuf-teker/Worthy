@@ -8,12 +8,16 @@ import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.CategoryType
 import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.TransactionType
+import com.yusufteker.worthy.core.domain.model.updateAmount
 import com.yusufteker.worthy.core.domain.repository.CategoryRepository
 import com.yusufteker.worthy.core.domain.repository.TransactionRepository
+import com.yusufteker.worthy.core.domain.service.CurrencyConverter
 import com.yusufteker.worthy.core.domain.toEpochMillis
 import com.yusufteker.worthy.screen.card.domain.repository.CardRepository
+import com.yusufteker.worthy.screen.settings.domain.UserPrefsManager
 import com.yusufteker.worthy.screen.subscription.domain.repository.SubscriptionRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDate
 
@@ -21,7 +25,10 @@ class TransactionRepositoryImpl(
     private val transactionDao: TransactionDao,
     private val cardRepository: CardRepository,
     private val categoryRepository: CategoryRepository,
-    private val subscriptionRepository: SubscriptionRepository
+    private val subscriptionRepository: SubscriptionRepository,
+    private val currencyConverter: CurrencyConverter,
+    private val userPrefsManager: UserPrefsManager
+
 ) : TransactionRepository {
 
     override fun getAll(): Flow<List<Transaction>> {
@@ -44,9 +51,28 @@ class TransactionRepositoryImpl(
         return transactionDao.getByCategory(categoryId).map { list -> list.map { it.toDomain() } }
     }
 
-    override fun getByCard(cardId: Int): Flow<List<Transaction>> {
+    override fun getByCardId(cardId: Int): Flow<List<Transaction>> {
         return transactionDao.getByCard(cardId).map { list -> list.map { it.toDomain() } }
     }
+
+    override fun getByCardIdConverted(cardId: Int): Flow<List<Transaction>> {
+        return transactionDao.getByCard(cardId)
+            .map { list ->
+
+                val domainTransactions = list.map { it.toDomain() }
+
+                val selectedCurrency = userPrefsManager.selectedCurrency.first()
+
+
+                val convertedTransactions = domainTransactions.map { tx ->
+                    val convertedAmount = currencyConverter.convert(tx.amount, selectedCurrency)
+                    tx.updateAmount(convertedAmount)
+                }
+
+                convertedTransactions
+            }
+    }
+
 
     override fun getByType(type: TransactionType): Flow<List<Transaction>> {
         return transactionDao.getByType(type).map { list -> list.map { it.toDomain() } }
@@ -97,4 +123,5 @@ class TransactionRepositoryImpl(
         return transactionDao.getRelatedTransactions(relatedTransactionId)
             .map { list -> list.map { it.toDomain() } }
     }
+
 }

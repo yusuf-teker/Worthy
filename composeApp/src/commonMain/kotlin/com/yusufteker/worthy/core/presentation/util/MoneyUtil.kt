@@ -127,6 +127,7 @@ fun Double.formatMoneyText(currency: Currency? = null, showDecimals: Boolean = t
 fun emptyMoney(currency: Currency = Currency.TRY) = Money(0.0, currency)
 
 fun List<Money>.sumWithoutCurrencyConverted(): Money {
+    if (this.isEmpty()) return emptyMoney()
     return Money(this.sumOf { it.amount }, this.first().currency)
 }
 
