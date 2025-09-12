@@ -447,4 +447,9 @@
     <string name="subscription_history">Abonelik Geçmişi</string>
     <string name="update_current_subscription_title">Mevcut aboneliği güncelle</string>
 
+
+    <!-- INSTALLMENT  -->
+    <string name="installments">Taksitler</string>
+
+
 </resources>

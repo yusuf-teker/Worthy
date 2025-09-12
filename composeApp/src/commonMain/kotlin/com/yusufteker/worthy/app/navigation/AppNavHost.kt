@@ -41,6 +41,7 @@ import com.yusufteker.worthy.screen.transactions.list.presentation.AnalyticsScre
 import com.yusufteker.worthy.screen.card.add.presentation.AddCardScreenRoot
 import com.yusufteker.worthy.screen.card.list.presentation.CardListScreenRoot
 import com.yusufteker.worthy.screen.dashboard.presentation.DashboardScreenRoot
+import com.yusufteker.worthy.screen.installments.list.presentation.InstallmentListScreenRoot
 import com.yusufteker.worthy.screen.onboarding.domain.OnboardingManager
 import com.yusufteker.worthy.screen.onboarding.presentation.OnboardingScreenRoot
 import com.yusufteker.worthy.screen.settings.presentation.SettingsScreenRoot
@@ -187,6 +188,18 @@ fun AppNavHost(
                             val transactionId = args.transactionId
                             TransactionDetailScreenRoot(
                                 transactionId = transactionId,
+                                contentPadding = innerPadding, onNavigateTo = { navModel ->
+                                    navController.navigateTo(navModel)
+                                })
+                        }
+                    }
+
+                    navigation<Routes.InstallmentGraph>(
+                        startDestination = Routes.InstallmentList
+                    ) {
+
+                        composable<Routes.InstallmentList> {
+                            InstallmentListScreenRoot(
                                 contentPadding = innerPadding, onNavigateTo = { navModel ->
                                     navController.navigateTo(navModel)
                                 })

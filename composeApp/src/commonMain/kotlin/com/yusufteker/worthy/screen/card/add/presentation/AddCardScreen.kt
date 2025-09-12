@@ -374,7 +374,7 @@ fun AddCardScreen(
                                 nickname = nickname,
                                 cardBrand = cardBrand,
                                 note = "",
-                                statementDay = statementDay,
+                                statementDay = statementDay?:1,
 
                                 )
                         )

@@ -133,7 +133,8 @@ fun CardEntity.toDomain(): Card = Card(
     cvv = encryptedCvv,
     nickname = nickname,
     cardBrand = cardBrand,
-    note = note
+    note = note,
+    statementDay = statementDay,
 )
 
 fun Card.toEntity(): CardEntity = CardEntity(

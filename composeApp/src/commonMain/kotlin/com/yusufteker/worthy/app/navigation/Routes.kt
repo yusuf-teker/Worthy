@@ -77,6 +77,12 @@ sealed class Routes(
     @Serializable
     data class SubscriptionDetail(val subscriptionId: Int): Routes("SubscriptionDetail")
 
+    @Serializable
+    data object InstallmentGraph : Routes("InstallmentGraph")
+
+    @Serializable
+    data object InstallmentList : Routes("InstallmentList")
+
 }
 
 fun Routes.isAddTransaction(): Boolean {

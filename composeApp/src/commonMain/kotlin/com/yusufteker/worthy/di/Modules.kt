@@ -1,5 +1,8 @@
 package com.yusufteker.worthy.di
 
+import com.yusufteker.worthy.screen.installments.list.domain.repository.InstallmentListRepository
+import com.yusufteker.worthy.screen.installments.list.data.repository.InstallmentListRepositoryImpl
+
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.yusufteker.worthy.core.data.createHttpClient
 import com.yusufteker.worthy.core.data.database.db.DatabaseFactory
@@ -33,6 +36,7 @@ import com.yusufteker.worthy.screen.card.add.presentation.AddCardViewModel
 import com.yusufteker.worthy.screen.card.list.presentation.CardListViewModel
 import com.yusufteker.worthy.screen.dashboard.domain.DashboardRepository
 import com.yusufteker.worthy.screen.dashboard.presentation.DashboardViewModel
+import com.yusufteker.worthy.screen.installments.list.presentation.InstallmentListViewModel
 import com.yusufteker.worthy.screen.onboarding.domain.OnboardingManager
 import com.yusufteker.worthy.screen.onboarding.domain.OnboardingRepository
 import com.yusufteker.worthy.screen.onboarding.presentation.OnboardingViewModel
@@ -57,6 +61,11 @@ import org.yusufteker.routealarm.core.presentation.popup.PopupManager
 expect val platformModule: Module
 
 val sharedModule = module {
+
+    // 🆕 InstallmentList eklemeleri
+    single<InstallmentListRepository> { InstallmentListRepositoryImpl(get(),get()) }
+    viewModel { InstallmentListViewModel(get()) }
+
 
     single { PopupManager() }
 

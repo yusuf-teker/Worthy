@@ -67,7 +67,7 @@ data class AddTransactionFormState(
     val selectedCard: Card? = null,
     val isCardPayment: Boolean = false,
     val cards: List<Card>? = null,
-    val installmentCount: Int = 0,
+    val installmentCount: Int = 1,
     //val installmentStartDate: Long = getCurrentEpochMillis(),
 
     val errorName: UiText? = null,
@@ -106,20 +106,23 @@ fun AddTransactionForm(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         // 1 NAME
-        OutlinedTextField(
-            value = state.name,
-            onValueChange = {
-                onNameChange.invoke(it)
-            },
-            label = {
-                Text(
-                    UiText.StringResourceId(Res.string.wishlist_label_product_name).asString()
-                )
-            },
-            modifier = Modifier.fillMaxWidth(),
-            isError = state.errorName != null
-        )
-        MessageText(state.errorName?.let {  UiMessage.Error(it.asString()) })
+        Column {
+            OutlinedTextField(
+                value = state.name,
+                onValueChange = {
+                    onNameChange.invoke(it)
+                },
+                label = {
+                    Text(
+                        UiText.StringResourceId(Res.string.wishlist_label_product_name).asString()
+                    )
+                },
+                modifier = Modifier.fillMaxWidth(),
+                isError = state.errorName != null
+            )
+            MessageText(state.errorName?.let {  UiMessage.Error(it.asString()) })
+        }
+
         // 2 AMOUNT
         MoneyInput(
             money = state.money ?: emptyMoney(),
@@ -228,7 +231,8 @@ fun AddTransactionForm(
                         modifier = Modifier.fillMaxWidth(),
                         onAddNewCard = {
                             onAddNewCardClicked.invoke()
-                        }
+                        },
+                        errorMessage = state.errorCard
                     )
                 }
 

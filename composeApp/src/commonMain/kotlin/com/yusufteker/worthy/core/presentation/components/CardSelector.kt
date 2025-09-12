@@ -1,5 +1,6 @@
 package com.yusufteker.worthy.core.presentation.components
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DropdownMenuItem
@@ -32,7 +33,8 @@ fun CardSelector(
     selectedCard: Card? = null,
     modifier: Modifier = Modifier,
     onCardSelected: (Card) -> Unit,
-    onAddNewCard: () -> Unit
+    onAddNewCard: () -> Unit,
+    errorMessage: UiText? = null
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -41,19 +43,28 @@ fun CardSelector(
         onExpandedChange = { expanded = !expanded },
         modifier = modifier
     ) {
-        OutlinedTextField(
-            value = selectedCard?.nickname ?: "",
-            onValueChange = {},
-            readOnly = true,
-            label = { Text(UiText.StringResourceId(Res.string.card_selector_label).asString()) },
-            trailingIcon = {
-                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-            },
-            leadingIcon = null,
-            modifier = Modifier
-                .menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true)
-                .fillMaxWidth()
-        )
+        Column {
+            OutlinedTextField(
+                value = selectedCard?.nickname ?: "",
+                onValueChange = {},
+                readOnly = true,
+                label = { Text(UiText.StringResourceId(Res.string.card_selector_label).asString()) },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                },
+                leadingIcon = null,
+                modifier = Modifier
+                    .menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true)
+                    .fillMaxWidth(),
+                isError = errorMessage != null
+            )
+            if (errorMessage != null) {
+                MessageText(errorMessage.let { UiMessage.Error(it.asString()) })
+            }
+        }
+
+
+
 
         ExposedDropdownMenu(
             expanded = expanded,

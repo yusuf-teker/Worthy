@@ -459,4 +459,9 @@
     <string name="update_current_subscription_title">Update current subscription</string>
 
 
+    <!-- INSTALLMENT  -->
+    <string name="installments">Installments</string>
+
+
+
 </resources>

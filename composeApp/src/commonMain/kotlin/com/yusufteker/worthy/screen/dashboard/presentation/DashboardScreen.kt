@@ -1,6 +1,7 @@
 package com.yusufteker.worthy.screen.dashboard.presentation
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -28,16 +29,23 @@ import com.yusufteker.worthy.core.presentation.base.AppScaffold
 import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
 import com.yusufteker.worthy.core.presentation.components.AppButton
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
+import com.yusufteker.worthy.core.presentation.components.MenuRow
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppDimens.Spacing16
 import com.yusufteker.worthy.core.presentation.util.formattedShort
 import com.yusufteker.worthy.screen.dashboard.presentation.components.BottomSheetContent
 import com.yusufteker.worthy.screen.dashboard.presentation.components.DashboardOverviewCard
+import com.yusufteker.worthy.screen.settings.presentation.SettingsAction
 import io.github.aakira.napier.Napier
+import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import worthy.composeapp.generated.resources.Res
+import worthy.composeapp.generated.resources.card
 import worthy.composeapp.generated.resources.dashboard_evaluate_purchase
 import worthy.composeapp.generated.resources.dashboard_overview
+import worthy.composeapp.generated.resources.ic_installment
+import worthy.composeapp.generated.resources.installments
+import worthy.composeapp.generated.resources.my_cards
 
 @Composable
 fun DashboardScreenRoot(
@@ -92,6 +100,14 @@ fun DashboardScreen(
                 showDivider = false,
                 modifier = Modifier.background(AppColors.transparent)
             )
+        },
+        floatingActionButton = {
+            AppButton(
+                text = UiText.StringResourceId(Res.string.dashboard_evaluate_purchase).asString(),
+                onClick = { onAction(DashboardAction.EvaluateButtonClicked) },
+                textModifier = Modifier.widthIn(max = 85.dp),
+
+                )
         }
     ) { paddingValues ->
         Column(Modifier.padding(paddingValues).padding(top = 8.dp)) {
@@ -132,19 +148,14 @@ fun DashboardScreen(
 
             )
 
-            Spacer(Modifier.weight(1f))
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
 
-            // 4 – Evaluate Purchase
-            Row {
-                Spacer(modifier = Modifier.weight(1f))
-                AppButton(
-                    text = UiText.StringResourceId(Res.string.dashboard_evaluate_purchase).asString(),
-                    onClick = { onAction(DashboardAction.EvaluateButtonClicked) },
-                    textModifier = Modifier.widthIn(max = 85.dp),
+                MenuRow(
+                    iconPainter = painterResource(Res.drawable.ic_installment),
+                    text = UiText.StringResourceId(Res.string.installments).asString(),
+                    onClick = { onAction(DashboardAction.onInstallmentsMenuClicked) })
 
-                    )
             }
-            Spacer(Modifier.height(Spacing16))
 
         }
 

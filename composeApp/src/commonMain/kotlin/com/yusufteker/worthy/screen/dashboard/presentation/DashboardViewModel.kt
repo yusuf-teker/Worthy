@@ -159,7 +159,11 @@ class DashboardViewModel(
                     )
                 }
             }
+        }
 
+        is DashboardAction.onInstallmentsMenuClicked -> {
+            navigateTo(Routes.InstallmentGraph)
+            //sendUiEventSafe(NavigateTo(Routes.Installments))
         }
     }
 

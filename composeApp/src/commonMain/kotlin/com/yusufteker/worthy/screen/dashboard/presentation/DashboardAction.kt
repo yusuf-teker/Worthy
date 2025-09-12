@@ -21,4 +21,6 @@ sealed interface DashboardAction {
     object AddRecurringClicked : DashboardAction
     object AddTransactionClicked : DashboardAction
 
+    object onInstallmentsMenuClicked : DashboardAction
+
 }

@@ -132,7 +132,8 @@ class AddTransactionViewModel(
                             if (validated.expenseForm.errorName != null ||
                                 validated.expenseForm.errorMoney != null ||
                                 validated.expenseForm.errorCategory != null ||
-                                validated.expenseForm.errorDate != null
+                                validated.expenseForm.errorDate != null ||
+                                validated.expenseForm.errorCard != null
                             ) {
                                 _state.value = validated
                             } else {
@@ -146,6 +147,7 @@ class AddTransactionViewModel(
                                     installmentCount = validated.expenseForm.installmentCount,
                                     //installmentStartDate = validated.expenseForm.installmentStartDate.toAppDate(),
                                     transactionType = TransactionType.EXPENSE,
+                                    cardId = validated.expenseForm.selectedCard?.id
                                 )
                                 transactionRepository.insert(transaction)
                                 navigateTo(Routes.AnalyticsGraph)
@@ -257,8 +259,7 @@ class AddTransactionViewModel(
                                     categoryId = _state.value.incomeForm.selectedCategory!!.id,
                                     transactionDate = _state.value.incomeForm.transactionDate,
                                     note = _state.value.incomeForm.note,
-                                    transactionType = TransactionType.INCOME,
-
+                                    transactionType = TransactionType.INCOME
                                     )
 
                                 transactionRepository.insert(transaction)
@@ -294,7 +295,8 @@ private fun validateExpenseForm(state: AddTransactionState): AddTransactionState
             errorMoney = if (form.money == null) UiText.StringResourceId(Res.string.validation_amount_empty) else null,
             errorCategory = if (form.selectedCategory == null) UiText.StringResourceId(Res.string.validation_category_empty) else null,
             errorDate = if (form.transactionDate == 0L) UiText.StringResourceId(Res.string.validation_date_empty) else null,
-            errorCard = if (form.isCardPayment && form.selectedCard == null) UiText.StringResourceId(Res.string.validation_card_empty) else null
+            errorCard = if (form.isCardPayment && form.selectedCard == null) UiText.StringResourceId(Res.string.validation_card_empty) else null,
+
         )
     )
 }

@@ -3,6 +3,8 @@ package com.yusufteker.worthy.core.data.database.db
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.yusufteker.worthy.core.data.database.migrations.MIGRATION_2_3
+import com.yusufteker.worthy.core.data.database.migrations.MIGRATION_3_4
+import com.yusufteker.worthy.core.data.database.migrations.migrationList
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
@@ -13,7 +15,7 @@ actual class DatabaseFactory {
         val dbFile = documentDirectory() + "/${WorthyDatabase.DATABASE_NAME}}"
         return Room.databaseBuilder<WorthyDatabase>(
             name = dbFile
-        ).addMigrations(MIGRATION_2_3)
+        ).addMigrations(*migrationList.toTypedArray() )
     }
 
     @OptIn(ExperimentalForeignApi::class)

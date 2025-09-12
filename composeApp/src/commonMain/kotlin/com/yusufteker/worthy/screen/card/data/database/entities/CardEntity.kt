@@ -22,5 +22,7 @@ data class CardEntity(
 
     val cardBrand: CardBrand? = null,
 
-    val note: String? = null
+    val note: String? = null,
+
+    val statementDay: Int = 1,
 )

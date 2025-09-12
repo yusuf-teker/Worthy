@@ -82,3 +82,11 @@ fun AppDate.format(showDay: Boolean = true): String {
 fun monthsBetween(start: AppDate, end: AppDate): Int {
     return (end.year - start.year) * 12 + (end.month - start.month)
 }
+
+@OptIn(ExperimentalTime::class)
+fun AppDate.isBeforeToday(): Boolean {
+    val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+    return this.year < today.year ||
+            (this.year == today.year && this.month < today.month.number) ||
+            (this.year == today.year && this.month == today.month.number && (this.day?:0) < today.day)
+}

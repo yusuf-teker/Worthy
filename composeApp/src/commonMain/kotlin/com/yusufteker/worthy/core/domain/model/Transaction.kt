@@ -189,12 +189,6 @@ fun Transaction.splitInstallments(card: Card?): List<Transaction> {
     return results
 }
 
-fun Transaction.getInstallmentIndex(): Int? {
-    val parts = id.toString().split("_")
-    return if (parts.size > 1) {
-        parts.last().toIntOrNull()?.plus(1)
-    } else null
-}
 fun Transaction.isInstallment(): Boolean {
     return (this.installmentCount ?: 0) > 1
 }
