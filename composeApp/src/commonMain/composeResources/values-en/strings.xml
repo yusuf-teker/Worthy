@@ -357,6 +357,8 @@
     <string name="toggle_card_details_skip">Skip entering card details</string>
     <string name="statement_day">Statement Day</string>
     <string name="add_your_first_card">Add your first card 💳</string>
+    <string name="delete_card_title">Delete %1$s</string>
+    <string name="delete_card_message">Are you sure you want to permanently delete %1$s?</string>
 
 
     <!-- Analytics -->
@@ -461,6 +463,8 @@
 
     <!-- INSTALLMENT  -->
     <string name="installments">Installments</string>
+    <string name="installment_paid">Paid</string>
+    <string name="installment_pending">Pending</string>
 
 
 

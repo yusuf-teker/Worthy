@@ -1,15 +1,19 @@
 package com.yusufteker.worthy.screen.transactions.detail.presentation
 
 import androidx.lifecycle.viewModelScope
+import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.domain.model.Transaction
 
 import com.yusufteker.worthy.core.domain.model.updateAmount
+import com.yusufteker.worthy.core.domain.model.updateCard
+import com.yusufteker.worthy.core.domain.model.updateDate
 import com.yusufteker.worthy.core.domain.model.updateName
 import com.yusufteker.worthy.core.domain.model.updateNote
 import com.yusufteker.worthy.core.domain.repository.CategoryRepository
 import com.yusufteker.worthy.core.domain.repository.TransactionRepository
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import com.yusufteker.worthy.core.presentation.util.emptyMoney
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -25,13 +29,18 @@ class TransactionDetailViewModel(
 
     fun observeData() {
         launchWithLoading {
-            categoryRepository.getAll().onEach { categories ->
-                _state.update {
-                    it.copy(
-                        categories = categories
-                    )
-                }
+            combine(
+                categoryRepository.getAll(),
+                categoryRepository.getCards()
+            ) { categories, cards ->
+                categories to cards
+            }.onEach { (categories, cards) ->
+                _state.update { it.copy(
+                    categories = categories,
+                    cards = cards
+                ) }
             }.launchIn(viewModelScope)
+
         }
 
     }
@@ -56,6 +65,7 @@ class TransactionDetailViewModel(
             is TransactionDetailAction.UpdateTransaction -> {
                 launchWithLoading {
                     transactionRepository.update(action.transaction)
+                    navigateBack()
                 }
             }
 
@@ -85,6 +95,9 @@ class TransactionDetailViewModel(
             is TransactionDetailAction.UpdateNote -> {
                 _state.update { it.copy(transaction = it.transaction?.updateNote(action.note)) }
             }
+            is TransactionDetailAction.UpdateDate -> {
+                _state.update { it.copy(transaction = it.transaction?.updateDate(action.date)) }
+            }
 
             is TransactionDetailAction.DeleteTransaction -> {
                 launchWithLoading {
@@ -96,6 +109,14 @@ class TransactionDetailViewModel(
                         else -> {}
                     }
                 }
+            }
+
+            is TransactionDetailAction.NavigateToAddCardScreen -> {
+                navigateTo(Routes.AddCard)
+            }
+            is TransactionDetailAction.UpdateCard -> {
+                _state.update { it.copy(transaction = it.transaction?.updateCard(action.cardId)) }
+
             }
         }
     }

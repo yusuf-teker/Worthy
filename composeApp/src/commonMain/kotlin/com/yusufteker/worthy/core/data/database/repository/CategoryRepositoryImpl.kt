@@ -7,12 +7,15 @@ import com.yusufteker.worthy.core.data.database.model.CategoryDao
 import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.CategoryType
 import com.yusufteker.worthy.core.domain.repository.CategoryRepository
+import com.yusufteker.worthy.screen.card.domain.model.Card
+import com.yusufteker.worthy.screen.card.domain.repository.CardRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 class CategoryRepositoryImpl(
     private val categoryDao: CategoryDao,
+    private val cardRepository: CardRepository
 ) : CategoryRepository {
 
     override suspend fun initializeDefaultCategories() {
@@ -31,6 +34,9 @@ class CategoryRepositoryImpl(
         } else {
             emit(currentList.map { it.toDomain() })
         }
+    }
+    override fun getCards(): Flow<List<Card>> {
+        return cardRepository.getAll()
     }
 
     override fun getByType(type: CategoryType): Flow<List<Category>> {

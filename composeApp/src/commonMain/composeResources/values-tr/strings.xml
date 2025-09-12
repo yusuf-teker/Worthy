@@ -345,7 +345,8 @@
     <string name="toggle_card_details_skip">Kart detaylarını olmadan devam et</string>
     <string name="statement_day">Ödeme Günü</string>
     <string name="add_your_first_card">İlk kartını ekle 💳</string>
-
+    <string name="delete_card_title">%1$s Sil</string>
+    <string name="delete_card_message">%1$s'yi kalıcı olarak silmek istediğinizden emin misiniz?</string>
 
     <!-- Analytics -->
     <string name="screen_name_analytics">İşlemlerim</string>
@@ -450,6 +451,8 @@
 
     <!-- INSTALLMENT  -->
     <string name="installments">Taksitler</string>
+    <string name="installment_paid">Ödendi</string>
+    <string name="installment_pending">Bekliyor</string>
 
 
 </resources>

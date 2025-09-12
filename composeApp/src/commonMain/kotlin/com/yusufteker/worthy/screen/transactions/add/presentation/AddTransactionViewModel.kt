@@ -69,7 +69,8 @@ class AddTransactionViewModel(
                     is TransactionFormAction.CardSelected -> {
                         _state.value = _state.value.copy(
                             expenseForm = _state.value.expenseForm.copy(
-                                selectedCard = action.action.card
+                                selectedCard = action.action.card,
+                                errorCard = null
                             )
                         )
                     }

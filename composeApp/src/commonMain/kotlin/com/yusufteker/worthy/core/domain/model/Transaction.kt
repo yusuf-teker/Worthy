@@ -135,6 +135,24 @@ fun Transaction.updateNote(newNote: String?): Transaction = when (this) {
     is Transaction.RecurringTransaction -> this.copy(note = newNote)
 }
 
+fun Transaction.updateCategory(newCategoryId: Int?): Transaction = when (this) {
+    is Transaction.NormalTransaction -> this.copy(categoryId = newCategoryId)
+    is Transaction.SubscriptionTransaction -> this.copy(categoryId = newCategoryId)
+    is Transaction.RecurringTransaction -> this.copy(categoryId = newCategoryId)
+}
+
+fun Transaction.updateCard(newCardId: Int?): Transaction = when (this) {
+    is Transaction.NormalTransaction -> this.copy(cardId = newCardId)
+    is Transaction.SubscriptionTransaction -> this.copy(cardId = newCardId)
+    is Transaction.RecurringTransaction -> this.copy(cardId = newCardId)
+}
+
+fun Transaction.updateDate(newDate: Long): Transaction = when (this) {
+    is Transaction.NormalTransaction -> this.copy(transactionDate = newDate)
+    is Transaction.SubscriptionTransaction -> this.copy(transactionDate = newDate)
+    is Transaction.RecurringTransaction -> this.copy(transactionDate = newDate)
+}
+
 fun Transaction.isSubscription(): Boolean {
     return this is Transaction.SubscriptionTransaction
 }

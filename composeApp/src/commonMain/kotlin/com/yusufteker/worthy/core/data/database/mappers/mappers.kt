@@ -146,7 +146,8 @@ fun Card.toEntity(): CardEntity = CardEntity(
     encryptedCvv = cvv,
     nickname = nickname,
     cardBrand = cardBrand,
-    note = note
+    note = note,
+    statementDay = statementDay,
 )
 
 // Entity -> Domain

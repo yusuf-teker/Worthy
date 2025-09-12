@@ -14,10 +14,10 @@ import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
 import org.koin.compose.viewmodel.koinViewModel
 import worthy.composeapp.generated.resources.Res
-import worthy.composeapp.generated.resources.add_new_card
 import com.yusufteker.worthy.app.navigation.NavigationHandler
 import com.yusufteker.worthy.app.navigation.NavigationModel
-import com.yusufteker.worthy.core.domain.model.Transaction
+import com.yusufteker.worthy.screen.installments.list.presentation.component.InstallmentCard
+import com.yusufteker.worthy.screen.installments.list.presentation.component.InstallmentListAccordion
 import worthy.composeapp.generated.resources.installments
 
 @Composable
@@ -68,16 +68,26 @@ AppScaffold(
         )
     }
 ){ paddingValues ->
-    LazyColumn(
+    Column(modifier.padding(paddingValues)) {
+        InstallmentListAccordion(
+            installments = state.installments,
+            onItemClicked = {
+                //onAction(InstallmentListAction.OnInstallmentClicked(it))
+            }
+        )
+    }
+
+    /*LazyColumn(
         modifier = modifier
             .fillMaxSize()
             .padding(top = paddingValues.calculateTopPadding()),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         itemsIndexed(state.installments) { index, installment ->
-            InstallmentCard(installment = installment)
+
+            InstallmentCard(installment = installment,)
         }
-    }
+    }*/
 }
   
 }

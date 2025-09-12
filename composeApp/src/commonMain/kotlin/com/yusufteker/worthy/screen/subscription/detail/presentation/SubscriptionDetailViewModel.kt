@@ -1,7 +1,6 @@
 package com.yusufteker.worthy.screen.subscription.detail.presentation
 
 import androidx.lifecycle.viewModelScope
-import com.yusufteker.worthy.core.data.database.mappers.toTransactions
 import com.yusufteker.worthy.core.domain.getCurrentAppDate
 import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.core.domain.model.RecurringItem
@@ -17,7 +16,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.cancel
-import worthy.composeapp.generated.resources.confirm
 import worthy.composeapp.generated.resources.delete_subscription_confirm
 import worthy.composeapp.generated.resources.delete_subscription_message
 import worthy.composeapp.generated.resources.delete_subscription_title
@@ -26,41 +24,39 @@ class SubscriptionDetailViewModel(
     private val subscriptionRepository: SubscriptionRepository,
 ) : BaseViewModel<SubscriptionDetailState>(SubscriptionDetailState()) {
 
-
-
-    fun observeData(groupId: String){
+    fun observeData(groupId: String) {
         launchWithLoading {
-            subscriptionRepository.getAllSubscriptionsByGroupId(groupId) .onEach { subscriptions ->
+            subscriptionRepository.getAllSubscriptionsByGroupId(groupId).onEach { subscriptions ->
 
-                    setState { copy(
-                        subscription = subscriptions.firstOrNull(),
-                        subscriptions = subscriptions
-                    ) }
+                setState {
+                    copy(
+                        subscription = subscriptions.firstOrNull(), subscriptions = subscriptions
+                    )
+                }
 
 
-                    state.value.subscription?.let {
-                        if (it.isActive()){
-                            setState { copy(
+                state.value.subscription?.let {
+                    if (it.isActive()) {
+                        setState {
+                            copy(
                                 activeStreak = calculateSubscriptionStreak(subscriptions)
 
-                            ) }
-                        }
-                        // buradan cardId al
-                        it.cardId?.let { cardId ->
-                            // repository’den kartı getir
-                            val card = subscriptionRepository.getCardById(cardId).firstOrNull()
-                            setState { copy(card = card) }
+                            )
                         }
                     }
-
-
+                    // buradan cardId al
+                    it.cardId?.let { cardId ->
+                        // repository’den kartı getir
+                        val card = subscriptionRepository.getCardById(cardId).firstOrNull()
+                        setState { copy(card = card) }
+                    }
+                }
 
             }.launchIn(viewModelScope)
 
         }
 
     }
-
 
     fun calculateSubscriptionStreak(subscriptions: List<RecurringItem.Subscription>): Int {
         if (subscriptions.isEmpty()) return 0
@@ -108,7 +104,6 @@ class SubscriptionDetailViewModel(
         return totalStreakMonths
     }
 
-
     private fun isMonthContinuous(endDate: AppDate, checkDate: AppDate): Boolean {
         // Aynı ay/yıl ise kesintisiz
         if (endDate.year == checkDate.year && endDate.month == checkDate.month) {
@@ -120,19 +115,19 @@ class SubscriptionDetailViewModel(
         return nextMonth.year == checkDate.year && nextMonth.month == checkDate.month
     }
 
-
-
     fun onAction(action: SubscriptionDetailAction) {
         when (action) {
             is SubscriptionDetailAction.Init -> {
                 launchWithLoading {
-                    val subscription = subscriptionRepository.getSubscriptionById(action.subscriptionId)
+                    val subscription =
+                        subscriptionRepository.getSubscriptionById(action.subscriptionId)
                     subscription?.groupId?.let {
                         observeData(it)
                     }
 
                 }
             }
+
             is SubscriptionDetailAction.NavigateBack -> {
                 navigateBack()
             }
@@ -143,19 +138,16 @@ class SubscriptionDetailViewModel(
                     val today = getCurrentAppDate(day = 1)
                     val pickedDate = state.value.pickedDate
                     val subscriptions = state.value.subscriptions
-                    val isActive = subscriptions.firstOrNull{it.endDate == null}
+                    val isActive = subscriptions.firstOrNull { it.endDate == null }
                     val maxEndDate = subscriptions.mapNotNull { it.endDate }.max()
-                    if (isActive != null && isActive.startDate <= today){ // end date yok devam ediyor
+                    if (isActive != null && isActive.startDate <= today) { // end date yok devam ediyor
                         // error mesajı göster devam eden abonelik
-                    }else if (pickedDate <= maxEndDate){
+                    } else if (pickedDate <= maxEndDate) {
                         // başlangıç günü eski tarihler ile uyuşmuyor
-                    }
-                    else if (pickedDate > maxEndDate) {
+                    } else if (pickedDate > maxEndDate) {
                         val subscription = state.value.subscription ?: return@launchWithLoading
                         val newItem = subscription.copy(
-                            id = 0,
-                            startDate = pickedDate,
-                            endDate = null
+                            id = 0, startDate = pickedDate, endDate = null
                         )
                         subscriptionRepository.addSubscription(newItem)
                     }
@@ -164,6 +156,7 @@ class SubscriptionDetailViewModel(
 
                 // Handle activation logic
             }
+
             is SubscriptionDetailAction.EndSubscription -> {
 
                 // Handle termination logic
@@ -171,44 +164,44 @@ class SubscriptionDetailViewModel(
 
                     val today = getCurrentAppDate()
 
-                    val activeItem = state.value.subscriptions
-                        .firstOrNull { it.endDate == null || it.endDate > today }
+                    val activeItem =
+                        state.value.subscriptions.firstOrNull { it.endDate == null || it.endDate > today }
 
                     activeItem?.let { item ->
                         val updated = item.copy(endDate = today)
                         subscriptionRepository.updateGroup(
                             state.value.subscriptions.map {
                                 if (it.id == item.id) updated else it
-                            },
-                            state.value.subscriptions
+                            }, state.value.subscriptions
                         )
                     }
                 }
             }
+
             is SubscriptionDetailAction.OnDateSelected -> {
                 _state.update { it.copy(pickedDate = action.date) }
             }
 
-
             is SubscriptionDetailAction.OnDeleteGroupRecurringItem -> {
 
                 popupManager.showConfirm(
-                    title = Res.string.delete_subscription_title,
-                    message = Res.string.delete_subscription_message,
+                    title = UiText.StringResourceId(Res.string.delete_subscription_title),
+                    message = UiText.StringResourceId(Res.string.delete_subscription_message),
                     onConfirm = {
                         launchWithLoading {
                             subscriptionRepository.deleteByGroupId(action.groupId)
                             navigateBack()
                         }
                     },
-                     confirmLabel =  UiText.StringResourceId(Res.string.delete_subscription_confirm),
+                    confirmLabel = UiText.StringResourceId(Res.string.delete_subscription_confirm),
                     dismissLabel = UiText.StringResourceId(Res.string.cancel)
                 )
 
             }
+
             is SubscriptionDetailAction.OnUpdateRecurringItems -> {
                 launchWithLoading {
-                    subscriptionRepository.updateGroup(action.items,state.value.subscriptions)
+                    subscriptionRepository.updateGroup(action.items, state.value.subscriptions)
 
                 }
             }

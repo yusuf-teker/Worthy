@@ -37,8 +37,8 @@ class PopupManager {
     }
 
     fun showConfirm(
-        title: StringResource,
-        message: StringResource,
+        title: UiText,
+        message: UiText,
         onConfirm: () -> Unit,
         onDismiss: () -> Unit = {},
         confirmLabel: UiText? = null,

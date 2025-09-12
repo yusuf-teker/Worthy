@@ -17,8 +17,8 @@ sealed class PopupType {
     ) : PopupType()
 
     data class Confirm(
-        val title: StringResource,
-        val message: StringResource,
+        val title: UiText,
+        val message: UiText,
         val onConfirm: () -> Unit,
         override val onDismiss: () -> Unit = {},
         val confirmLabel: UiText = UiText.StringResourceId(Res.string.confirm),

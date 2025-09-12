@@ -25,7 +25,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yusufteker.worthy.app.navigation.NavigationHandler
 import com.yusufteker.worthy.app.navigation.NavigationModel
 import com.yusufteker.worthy.core.domain.model.CategoryType
-import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.TransactionType
 import com.yusufteker.worthy.core.domain.model.toAppDate
 import com.yusufteker.worthy.core.domain.model.toEpochMillis
@@ -34,6 +33,7 @@ import com.yusufteker.worthy.core.presentation.base.AppScaffold
 import com.yusufteker.worthy.core.presentation.base.BaseContentWrapper
 import com.yusufteker.worthy.core.presentation.components.AppButton
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
+import com.yusufteker.worthy.core.presentation.components.CardSelector
 import com.yusufteker.worthy.core.presentation.components.CategorySelector
 import com.yusufteker.worthy.core.presentation.components.MoneyInput
 import com.yusufteker.worthy.core.presentation.components.WheelDatePickerV3
@@ -41,7 +41,6 @@ import com.yusufteker.worthy.core.presentation.theme.AppColors.primaryButtonColo
 import io.github.aakira.napier.Napier
 import org.koin.compose.viewmodel.koinViewModel
 import worthy.composeapp.generated.resources.Res
-import worthy.composeapp.generated.resources.add
 import worthy.composeapp.generated.resources.date_added
 import worthy.composeapp.generated.resources.delete
 import worthy.composeapp.generated.resources.note
@@ -160,13 +159,7 @@ fun TransactionDetailScreen(
                     WheelDatePickerV3(
                         initialDate = state.transaction.transactionDate.toAppDate(),
                         onDateSelected = { epochSeconds ->
-                            val updatedTransaction = when (val t = state.transaction) {
-                                is Transaction.NormalTransaction -> t.copy(transactionDate = epochSeconds.toEpochMillis())
-                                is Transaction.SubscriptionTransaction -> t.copy(transactionDate = epochSeconds.toEpochMillis())
-                                is Transaction.RecurringTransaction -> t.copy(transactionDate = epochSeconds.toEpochMillis())
-                                else -> t
-                            }
-                            onAction(TransactionDetailAction.UpdateTransaction(updatedTransaction))
+                            onAction(TransactionDetailAction.UpdateDate(epochSeconds.toEpochMillis()))
                         },
                         modifier = Modifier.fillMaxWidth().height(56.dp),
                         title = UiText.StringResourceId(Res.string.date_added).asString(),
@@ -181,6 +174,20 @@ fun TransactionDetailScreen(
                         onValueChange = { note -> onAction(TransactionDetailAction.UpdateNote(note)) },
                         label = { Text(UiText.StringResourceId(Res.string.note).asString()) },
                         modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    CardSelector(
+                        cards = state.cards,
+                        selectedCard = it.cardId?.let { id -> state.cards.find { card -> card.id == id } },
+                        onCardSelected = { selectedCard ->
+                            onAction(TransactionDetailAction.UpdateCard(selectedCard.id))
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        onAddNewCard = {
+                            onAction(TransactionDetailAction.NavigateToAddCardScreen)
+                        },
+                        //errorMessage = state.errorCard // todo ekle
                     )
                     Spacer(modifier = Modifier.weight(1f))
 
@@ -203,7 +210,7 @@ fun TransactionDetailScreen(
                             onAction(TransactionDetailAction.DeleteTransaction(it))
                         },
                         colors = primaryButtonColors.copy(
-                            containerColor =  Color.Red,
+                            containerColor = Color.Red,
                         )
                     )
 

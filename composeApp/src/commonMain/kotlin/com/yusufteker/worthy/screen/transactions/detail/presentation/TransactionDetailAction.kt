@@ -11,11 +11,17 @@ sealed interface TransactionDetailAction {
 
     data class UpdateCategory(val category: Category): TransactionDetailAction
 
+    data class UpdateCard(val cardId: Int): TransactionDetailAction
+
+    data object NavigateToAddCardScreen: TransactionDetailAction
+
     data class UpdateName(val name: String): TransactionDetailAction
 
     data class UpdateAmount(val money: Money?): TransactionDetailAction
 
     data class UpdateNote(val note: String): TransactionDetailAction
+
+    data class UpdateDate(val date: Long): TransactionDetailAction
 
     data class CreateCategory(val category: Category): TransactionDetailAction
 

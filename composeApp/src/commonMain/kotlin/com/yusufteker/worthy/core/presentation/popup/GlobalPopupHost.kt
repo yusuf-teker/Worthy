@@ -37,8 +37,8 @@ fun GlobalPopupHost() {
                 onDismiss = { popupManager.dismissPopup(popup) })
 
             is PopupType.Confirm -> ConfirmPopup(
-                title = UiText.StringResourceId(popup.title).asString(),
-                message = UiText.StringResourceId(popup.message).asString(),
+                title = popup.title.asString(),
+                message = popup.message.asString(),
                 onConfirm = {
                     popup.onConfirm()
                     popupManager.dismissPopup(popup)

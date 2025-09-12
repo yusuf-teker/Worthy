@@ -4,31 +4,52 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
+import com.yusufteker.worthy.core.domain.model.isActive
+import com.yusufteker.worthy.core.presentation.UiText
+import com.yusufteker.worthy.core.presentation.components.AppButton
+import com.yusufteker.worthy.core.presentation.theme.AppColors.primaryButtonColors
 import com.yusufteker.worthy.screen.card.domain.model.Card
 import com.yusufteker.worthy.screen.card.domain.model.CardBrand
 import com.yusufteker.worthy.core.presentation.util.groupEvery4
 import com.yusufteker.worthy.screen.card.add.presentation.components.CreditCardPreview
+import com.yusufteker.worthy.screen.transactions.detail.presentation.TransactionDetailAction
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import worthy.composeapp.generated.resources.Res
+import worthy.composeapp.generated.resources.activate
+import worthy.composeapp.generated.resources.delete
+import worthy.composeapp.generated.resources.terminate
 import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CreditCardCarousel(
     cards: List<Card>, // kendi modelin, içinde holder, number, expiry vs
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onCardSelected: (Card) -> Unit = {},
 ) {
     val pagerState = rememberPagerState(
         initialPage = cards.size-1, // burada değiştirebilirsin
         pageCount = { cards.size }
     )
+
+    LaunchedEffect(cards.size) {
+        if (cards.isNotEmpty()) {
+            // currentPage > son index ise son karta kaydır
+            val newPage = pagerState.currentPage.coerceAtMost(cards.lastIndex)
+            pagerState.animateScrollToPage(newPage)
+        }
+    }
 
     HorizontalPager(
         state = pagerState,
@@ -41,6 +62,7 @@ fun CreditCardCarousel(
 
 
     ) { page ->
+        onCardSelected.invoke(cards[page])
 
         val pageOffset = (pagerState.currentPage - page) +
                 pagerState.currentPageOffsetFraction
@@ -48,20 +70,24 @@ fun CreditCardCarousel(
         val scale = 1f - 0.15f * pageOffset.absoluteValue
         val rotation = 8f * pageOffset
 
-        CreditCardPreview(
-            cardHolder =  cards[page].cardHolderName,
-            cardNumberFormatted = groupEvery4(cards[page].cardNumber),
-            expiryFormatted = "${cards[page].expiryMonth}/ ${cards[page].expiryYear}",
-            brand = cards[page].cardBrand ?: CardBrand.Unknown,
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(1.586f)
-                .graphicsLayer {
-                    scaleX = scale.coerceAtLeast(minimumValue = 0.65f)
-                    scaleY = scale.coerceAtLeast(minimumValue = 0.65f)
-                    rotationY = rotation
-                }
-        )
+        Column {
+            CreditCardPreview(
+                cardHolder =  cards[page].cardHolderName,
+                cardNumberFormatted = groupEvery4(cards[page].cardNumber),
+                expiryFormatted = "${cards[page].expiryMonth}/ ${cards[page].expiryYear}",
+                brand = cards[page].cardBrand ?: CardBrand.Unknown,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1.586f)
+                    .graphicsLayer {
+                        scaleX = scale.coerceAtLeast(minimumValue = 0.65f)
+                        scaleY = scale.coerceAtLeast(minimumValue = 0.65f)
+                        rotationY = rotation
+                    }
+            )
+
+        }
+
     }
 }
 

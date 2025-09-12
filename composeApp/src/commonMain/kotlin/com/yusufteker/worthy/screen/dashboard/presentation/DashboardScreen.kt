@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,21 +30,17 @@ import com.yusufteker.worthy.core.presentation.components.AppButton
 import com.yusufteker.worthy.core.presentation.components.AppTopBar
 import com.yusufteker.worthy.core.presentation.components.MenuRow
 import com.yusufteker.worthy.core.presentation.theme.AppColors
-import com.yusufteker.worthy.core.presentation.theme.AppDimens.Spacing16
 import com.yusufteker.worthy.core.presentation.util.formattedShort
 import com.yusufteker.worthy.screen.dashboard.presentation.components.BottomSheetContent
 import com.yusufteker.worthy.screen.dashboard.presentation.components.DashboardOverviewCard
-import com.yusufteker.worthy.screen.settings.presentation.SettingsAction
 import io.github.aakira.napier.Napier
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import worthy.composeapp.generated.resources.Res
-import worthy.composeapp.generated.resources.card
 import worthy.composeapp.generated.resources.dashboard_evaluate_purchase
 import worthy.composeapp.generated.resources.dashboard_overview
 import worthy.composeapp.generated.resources.ic_installment
 import worthy.composeapp.generated.resources.installments
-import worthy.composeapp.generated.resources.my_cards
 
 @Composable
 fun DashboardScreenRoot(
@@ -90,26 +85,22 @@ fun DashboardScreen(
     onAction: (DashboardAction) -> Unit,
 ) {
 
-    AppScaffold(
-        modifier = modifier.padding(contentPadding),
-        topBar = {
-            AppTopBar(
-                title = UiText.StringResourceId(Res.string.dashboard_overview).asString(),
-                onNavIconClick = null,
-                isBack = false,
-                showDivider = false,
-                modifier = Modifier.background(AppColors.transparent)
-            )
-        },
-        floatingActionButton = {
-            AppButton(
-                text = UiText.StringResourceId(Res.string.dashboard_evaluate_purchase).asString(),
-                onClick = { onAction(DashboardAction.EvaluateButtonClicked) },
-                textModifier = Modifier.widthIn(max = 85.dp),
+    AppScaffold(modifier = modifier.padding(contentPadding), topBar = {
+        AppTopBar(
+            title = UiText.StringResourceId(Res.string.dashboard_overview).asString(),
+            onNavIconClick = null,
+            isBack = false,
+            showDivider = false,
+            modifier = Modifier.background(AppColors.transparent)
+        )
+    }, floatingActionButton = {
+        AppButton(
+            text = UiText.StringResourceId(Res.string.dashboard_evaluate_purchase).asString(),
+            onClick = { onAction(DashboardAction.EvaluateButtonClicked) },
+            textModifier = Modifier.widthIn(max = 85.dp),
 
-                )
-        }
-    ) { paddingValues ->
+            )
+    }) { paddingValues ->
         Column(Modifier.padding(paddingValues).padding(top = 8.dp)) {
 
             DashboardOverviewCard(
@@ -147,6 +138,7 @@ fun DashboardScreen(
                 onAddTransactionClicked = { onAction(DashboardAction.AddTransactionClicked) }
 
             )
+            Spacer(Modifier.height(16.dp))
 
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
 

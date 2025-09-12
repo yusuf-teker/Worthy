@@ -98,7 +98,7 @@ val sharedModule = module {
     single<OnboardingRepository> { OnboardingRepositoryImpl(get(), get(), get()) }
     single<TransactionRepository> { TransactionRepositoryImpl(get(),get(),get(), get()) }
     single<WishlistRepository> { WishlistRepositoryImpl(get(),get()) }
-    single<CategoryRepository> { CategoryRepositoryImpl(get()) }
+    single<CategoryRepository> { CategoryRepositoryImpl(get(), get()) }
     single<RecurringFinancialItemRepository> { RecurringFinancialItemRepositoryImpl(get()) }
     single<DashboardRepository> { DashboardRepositoryImpl(get(), get(),get(),get()) }
     single<CurrencyRatesCacheDataSource> { CurrencyRatesCacheDataSourceImpl(get()) }
