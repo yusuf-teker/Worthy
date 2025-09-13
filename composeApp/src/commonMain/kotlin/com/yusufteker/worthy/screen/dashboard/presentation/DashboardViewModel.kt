@@ -30,6 +30,9 @@ class DashboardViewModel(
     private val currencyConverter: CurrencyConverter
 ) : BaseViewModel<DashboardState>(DashboardState()) {
 
+    // TODO
+    // 1 TAKSITLI İŞLEMLER MİNİ BAR CHARTTA GÖZÜKMYÜRO
+
     init {
         observeData()
     }

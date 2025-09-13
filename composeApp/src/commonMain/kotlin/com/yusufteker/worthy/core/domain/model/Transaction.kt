@@ -163,6 +163,8 @@ fun Transaction.isNormal(): Boolean {
     return this is Transaction.NormalTransaction
 }
 
+// bu fonksiyon transaction'ı taksitlerine ayırır
+// Taksit yok ise verileni geri döner
 fun Transaction.splitInstallments(card: Card?): List<Transaction> {
     if (installmentCount == null /*|| installmentStartDate == null*/ || (installmentCount ?: 0) <= 1) {
         return listOf(this)

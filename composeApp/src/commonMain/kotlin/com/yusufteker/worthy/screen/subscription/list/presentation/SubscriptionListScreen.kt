@@ -83,9 +83,9 @@ fun SubscriptionListScreen(
                 imageVector = Icons.Default.Add, contentDescription = "Add Subscription"
             )
         })
-    }) {
+    }) { paddingValues ->
         Column(
-            modifier = modifier.padding(contentPadding),
+            modifier = modifier.padding(top = paddingValues.calculateTopPadding()),
         ) {
 
             val activeScreen = Screen(

@@ -132,7 +132,6 @@ class WishlistAddViewModel(
                 }
             )
             wishlistRepository.insert(wishlistItem)
-            delay(3000)
             navigateBack()
 
         }
@@ -163,19 +162,4 @@ class WishlistAddViewModel(
         }
     }
 
-    suspend fun showLoading() {
-        _state.update { currentState ->
-            currentState.copy(
-                isLoading = true
-            )
-        }
-    }
-
-    suspend fun hideLoading() {
-        _state.update { currentState ->
-            currentState.copy(
-                isLoading = false
-            )
-        }
-    }
 }

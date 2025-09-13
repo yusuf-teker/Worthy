@@ -97,9 +97,9 @@ fun CardListScreen(
                     }
 
                 })
-        }) {
+        }) { paddingValues ->
         Column(
-            modifier = modifier.fillMaxWidth().padding(contentPadding),
+            modifier = modifier.fillMaxWidth().padding(top = paddingValues.calculateTopPadding()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 

@@ -19,7 +19,6 @@ import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
 import com.yusufteker.worthy.core.presentation.theme.Constants.currencySymbols
-import com.yusufteker.worthy.core.presentation.toFormattedWithThousandsSeparator
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.*

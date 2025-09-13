@@ -21,7 +21,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
-import com.yusufteker.worthy.core.presentation.toFormattedWithThousandsSeparator
 import com.yusufteker.worthy.core.presentation.util.formatMoneyText
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.amount_with_currency

@@ -8,16 +8,19 @@ import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.TransactionType
 import com.yusufteker.worthy.core.domain.model.generateMonthlyAmounts
+import com.yusufteker.worthy.core.domain.model.splitInstallments
 import com.yusufteker.worthy.core.domain.model.toAppDate
 import com.yusufteker.worthy.core.domain.repository.CategoryRepository
 import com.yusufteker.worthy.core.domain.repository.RecurringFinancialItemRepository
 import com.yusufteker.worthy.core.domain.repository.TransactionRepository
 import com.yusufteker.worthy.core.domain.toEpochMillis
 import com.yusufteker.worthy.core.domain.toLocalDate
+import com.yusufteker.worthy.screen.card.domain.repository.CardRepository
 import com.yusufteker.worthy.screen.dashboard.domain.DashboardRecurringData
 import com.yusufteker.worthy.screen.dashboard.domain.DashboardRepository
 import com.yusufteker.worthy.screen.wishlist.list.domain.WishlistRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
@@ -28,7 +31,8 @@ class DashboardRepositoryImpl(
     private val recurringRepository: RecurringFinancialItemRepository,
     private val wishlistRepository: WishlistRepository,
     private val categoryRepository: CategoryRepository,
-    private val transactionRepository: TransactionRepository
+    private val transactionRepository: TransactionRepository,
+
 ) : DashboardRepository {
 
     override fun getAllRecurringMonthlyAmount(
@@ -50,6 +54,7 @@ class DashboardRepositoryImpl(
 
     }
 
+    // BURADA SPLIT ETMIYORUM TAKSITLI GELIR YOK
     override fun getAllIncomeMonthlyAmount(
         monthCount: Int, currentDate: LocalDate
     ): Flow<List<DashboardMonthlyAmount>> {
@@ -77,22 +82,35 @@ class DashboardRepositoryImpl(
         monthCount: Int, currentDate: LocalDate
     ): Flow<List<DashboardMonthlyAmount>> {
         val startDate = currentDate.minus(monthCount.toLong(), DateTimeUnit.MONTH)
-
         val firstDayOfStartMonth = LocalDate(startDate.year, startDate.month.number, 1)
-        return transactionRepository.getTransactionsSince(firstDayOfStartMonth)
-            .map { transactions ->
-                val expenses = transactions.filter { it.transactionType == TransactionType.EXPENSE }
 
-                val grouped: Map<AppDate, List<Transaction>> = expenses.groupBy { tx ->
-                    val localDate = tx.transactionDate.toLocalDate()
-                    AppDate(year = localDate.year, month = localDate.month.number)
-                }
-                grouped.map { (yearMonth, expenseList) ->
-                    DashboardMonthlyAmount(
-                        appDate = yearMonth, amount = expenseList.map { it.amount })
-                }.sortedWith(compareBy({ it.appDate.year }, { it.appDate.month }))
+        return combine(
+            transactionRepository.getTransactionsSince(firstDayOfStartMonth),
+            transactionRepository.getCards()
+        ) { transactions, cards ->
+
+            // TAKSITLI ISE HER BIR TAKSITI AY AY AYIR
+            val splitTransactions = transactions.flatMap { tx ->
+                val card = cards.find { it.id == tx.cardId } // cardId eşleşmesi
+                tx.splitInstallments(card)
             }
+
+            val expenses = splitTransactions.filter { it.transactionType == TransactionType.EXPENSE }
+
+            val grouped: Map<AppDate, List<Transaction>> = expenses.groupBy { tx ->
+                val localDate = tx.transactionDate.toLocalDate()
+                AppDate(year = localDate.year, month = localDate.month.number)
+            }
+
+            grouped.map { (yearMonth, expenseList) ->
+                DashboardMonthlyAmount(
+                    appDate = yearMonth,
+                    amount = expenseList.map { it.amount }
+                )
+            }.sortedWith(compareBy({ it.appDate.year }, { it.appDate.month }))
+        }
     }
+
 
     // Satın alınmayan wishlist seçili ay veya daha öncesinde eklenmiş ise döndürür
     // 6.ayda eklenmişse 6 7 8 9 10 11 12. aylarda gözükür

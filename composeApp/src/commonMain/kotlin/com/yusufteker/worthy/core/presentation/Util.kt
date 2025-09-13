@@ -47,57 +47,10 @@ fun Int.formatTwoDecimals(): String {
     return "$intPart.${decimalPart.toString().padStart(2, '0')}"
 }
 
-fun Float.toFormattedWithThousandsSeparator(
-    digits: Int = 2,
-    separator: Char = '.'
-): String {
-    val multiplier = 10.0.pow(digits).toFloat()
-    val rounded = kotlin.math.round(this * multiplier) / multiplier
-    val parts = rounded.toString().split(".")
-
-    val integerPart = parts[0]
-    val decimalPart = parts.getOrNull(1) ?: ""
-
-    val formattedInt = integerPart.reversed()
-        .chunked(3)
-        .joinToString(separator.toString())
-        .reversed()
-
-    val formattedDecimal = decimalPart.padEnd(digits, '0')
-
-    return "$formattedInt.$formattedDecimal"
-}
-
-fun Double.toFormattedWithThousandsSeparator(
-    separator: Char = '.'
-): String {
-    val digits = if (this < 1_000_000) 2 else 0
-
-    val multiplier = 10.0.pow(digits)
-    val rounded = kotlin.math.round(this * multiplier) / multiplier
-    val parts = rounded.toString().split(".")
-
-    val integerPart = parts[0]
-    val decimalPart = parts.getOrNull(1) ?: ""
-
-    val formattedInt = integerPart.reversed()
-        .chunked(3)
-        .joinToString(separator.toString())
-        .reversed()
-
-    val formattedDecimal = if (digits > 0)
-        decimalPart.padEnd(digits, '0')
-    else
-        ""
-
-    return if (digits > 0) "$formattedInt.$formattedDecimal" else formattedInt
-}
-
-
 
 @OptIn(ExperimentalTime::class)
 fun Long.toFormattedDate(): String {
-    val instant = Instant.fromEpochSeconds(this)
+    val instant = Instant.fromEpochMilliseconds(this)
     val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
 
     return "${localDateTime.day.toString().padStart(2, '0')}/" +
