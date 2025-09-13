@@ -2,6 +2,7 @@ package com.yusufteker.worthy.core.domain.model
 
 import com.yusufteker.worthy.screen.card.domain.model.Card
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.StringResource
@@ -114,6 +115,15 @@ fun List<Transaction>.groupByMonth(): Map<String, List<Transaction>> {
         val date = Instant.fromEpochMilliseconds(transaction.transactionDate)
             .toLocalDateTime(TimeZone.currentSystemDefault())
         "${date.month.name.lowercase().replaceFirstChar { it.uppercase() }} ${date.year}"
+    }
+}
+
+@OptIn(ExperimentalTime::class)
+fun List<Transaction>.groupByMonth2(): Map<AppDate, List<Transaction>> {
+    return this.groupBy { transaction ->
+        val date = Instant.fromEpochMilliseconds(transaction.transactionDate)
+            .toLocalDateTime(TimeZone.currentSystemDefault())
+        AppDate(year = date.year, month = date.month.number)
     }
 }
 

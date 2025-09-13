@@ -1,7 +1,6 @@
 package com.yusufteker.worthy.screen.transactions.list.presentation.components
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
@@ -25,7 +24,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,10 +36,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.unit.dp
+import com.yusufteker.worthy.core.domain.getCurrentAppDate
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Transaction
-import com.yusufteker.worthy.core.domain.model.groupByMonth
-import com.yusufteker.worthy.core.presentation.components.SwipeToDeleteWrapper
+import com.yusufteker.worthy.core.domain.model.groupByMonth2
+import com.yusufteker.worthy.core.presentation.getMonthShortName
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
 import com.yusufteker.worthy.core.presentation.util.formatMoneyText
@@ -54,11 +53,10 @@ fun TransactionListAccordion(
     onDelete: (Int) -> Unit,
     onItemClicked: (transaction: Transaction) -> Unit
 ) {
-    val groupedTransactions = transactions.groupByMonth()
-    val groupedConvertedTransactions = convertedTransactions.groupByMonth()
-    // Hangi ayların expanded olduğunu tutalım
+    val groupedTransactions = transactions.groupByMonth2()
+    val groupedConvertedTransactions = convertedTransactions.groupByMonth2()
     var expandedMonths by remember {
-        mutableStateOf(groupedTransactions.keys.mapIndexed { i, key -> key to (i == 0) }.toMap())
+        mutableStateOf(groupedTransactions.keys.associateWith { appDate -> (appDate == getCurrentAppDate().copy(day = null)) })
     }
 
     LazyColumn(
@@ -67,12 +65,12 @@ fun TransactionListAccordion(
         contentPadding = PaddingValues(vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        groupedTransactions.forEach { (month, monthTransactions) ->
-            val convertedMonthTransactions = groupedConvertedTransactions[month] ?: emptyList()
+        groupedTransactions.forEach { (appDate, monthTransactions) ->
+            val convertedMonthTransactions = groupedConvertedTransactions[appDate] ?: emptyList()
             val totalAmount = convertedMonthTransactions.sumOf { it.amount.amount }
             val currency =
                 convertedMonthTransactions.firstOrNull()?.amount?.currency ?: Currency.TRY
-            val isExpanded = expandedMonths[month] == true
+            val isExpanded = expandedMonths[appDate] == true
 
             // Header
             item {
@@ -80,7 +78,7 @@ fun TransactionListAccordion(
                     modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp))
                         .background(AppColors.primaryContainer).clickable {
                             expandedMonths = expandedMonths.toMutableMap().apply {
-                                this[month] = !(this[month] ?: false)
+                                this[appDate] = !(this[appDate] ?: false)
                             }
                         }.padding(vertical = 12.dp)
                 ) {
@@ -103,7 +101,7 @@ fun TransactionListAccordion(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = month,
+                            text = getMonthShortName(appDate.month) + " " + appDate.year,
                             style = AppTypography.titleLarge,
                             color = AppColors.onPrimaryContainer
                         )

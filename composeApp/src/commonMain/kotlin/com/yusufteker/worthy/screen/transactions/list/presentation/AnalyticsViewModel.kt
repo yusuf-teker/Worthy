@@ -6,6 +6,7 @@ import com.yusufteker.worthy.core.domain.getCurrentEpochMillis
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.distinctCategoryIds
+import com.yusufteker.worthy.core.domain.model.toAppDate
 import com.yusufteker.worthy.core.domain.model.updateAmount
 import com.yusufteker.worthy.core.domain.service.CurrencyConverter
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
@@ -13,6 +14,7 @@ import com.yusufteker.worthy.core.presentation.theme.Constants.ONE_DAY_MILLIS
 import com.yusufteker.worthy.screen.transactions.domain.model.TimePeriod
 import com.yusufteker.worthy.screen.transactions.domain.repository.AnalyticsRepository
 import com.yusufteker.worthy.screen.transactions.list.presentation.components.SortOption
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
@@ -76,8 +78,10 @@ class AnalyticsViewModel(
 
         val filtered = s.transactions
             .filter { tx ->
-                if (s.selectedTimePeriod == TimePeriod.NONE) true
-                else tx.transactionDate >= currentTime - (s.selectedTimePeriod.days * 24L * 60L * 60L * 1000L)
+                val txDate = tx.transactionDate
+                val lowerBound = currentTime - (s.selectedTimePeriod.days * 24L * 60L * 60L * 1000L)
+
+                s.selectedTimePeriod == TimePeriod.NONE || (txDate in lowerBound..currentTime)
             }
             .filter { tx ->
                 if (s.selectedCategories.isEmpty()) true
@@ -93,8 +97,10 @@ class AnalyticsViewModel(
             }
         val filteredConverted = s.convertedTransactions
             .filter { tx ->
-                if (s.selectedTimePeriod == TimePeriod.NONE) true
-                else tx.transactionDate >= currentTime - (s.selectedTimePeriod.days * 24L * 60L * 60L * 1000L)
+                val txDate = tx.transactionDate
+                val lowerBound = currentTime - (s.selectedTimePeriod.days * 24L * 60L * 60L * 1000L)
+
+                s.selectedTimePeriod == TimePeriod.NONE || (txDate in lowerBound..currentTime)
             }
             .filter { tx ->
                 if (s.selectedCategories.isEmpty()) true
