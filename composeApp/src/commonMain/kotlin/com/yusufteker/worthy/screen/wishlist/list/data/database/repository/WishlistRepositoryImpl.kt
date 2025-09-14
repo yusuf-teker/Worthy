@@ -19,6 +19,11 @@ class WishlistRepositoryImpl(
         itemDao.getAllWithCategoryFlow()
             .map { list -> list.map { it.toDomain() } }
 
+    override fun getAllUnpurchased(): Flow<List<WishlistItem>> {
+        return itemDao.getAllUnpurchasedWithCategoryFlow()
+            .map { list -> list.map { it.toDomain() } }
+    }
+
     override fun getByCategory(categoryId: Int): Flow<List<WishlistItem>> =
         itemDao.getByCategoryFlow(categoryId)
             .map { list -> list.map { it.toDomain() } }

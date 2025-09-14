@@ -133,6 +133,23 @@ class TransactionRepositoryImpl(
             txs + subs
         }
     }
+    override fun getTransactionsSince(startDate: LocalDate, transactionType: TransactionType): Flow<List<Transaction>> {
+        val startMillis = startDate.toEpochMillis()
+
+        val transactions =
+            transactionDao.getTransactionsFrom(startMillis, transactionType)
+            .map { list -> list.map { it.toDomain() } }
+
+        // başlangıç tarihinden sonra aktif olan subscriptionları al ve transactiona çevir
+        val subscriptions = subscriptionRepository.getSubscriptionsSince(startDate)
+            .map { subs -> subs.flatMap { it.toTransactions() } }
+
+
+        return combine(transactions, subscriptions) { txs, subs ->
+            txs + subs
+        }
+    }
+
 
     override fun getRelatedTransactions(relatedTransactionId: Int): Flow<List<Transaction>> {
         return transactionDao.getRelatedTransactions(relatedTransactionId)

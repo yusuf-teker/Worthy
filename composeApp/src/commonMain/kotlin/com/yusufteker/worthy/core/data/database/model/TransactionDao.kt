@@ -57,6 +57,10 @@ interface TransactionDao {
     @Query("SELECT * FROM transactions WHERE transactionDate >= :startDate ORDER BY transactionDate DESC")
     fun getTransactionsFrom(startDate: Long): Flow<List<TransactionEntity>>
 
+    @Query("SELECT * FROM transactions WHERE transactionDate >= :startDate AND transactionType = :transactionType ORDER BY transactionDate DESC")
+    fun getTransactionsFrom(startDate: Long, transactionType: TransactionType): Flow<List<TransactionEntity>>
+
+
     @Query("SELECT * FROM transactions WHERE relatedTransactionId = :relatedTransactionId ORDER BY transactionDate DESC")
     fun getRelatedTransactions(relatedTransactionId: Int): Flow<List<TransactionEntity>>
 }

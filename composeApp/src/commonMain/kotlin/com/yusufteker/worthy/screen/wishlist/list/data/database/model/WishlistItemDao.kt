@@ -40,6 +40,10 @@ interface WishlistItemDao {
     fun getAllWithCategoryFlow(): Flow<List<WishlistWithCategory>>
 
     @Transaction
+    @Query("SELECT * FROM wishlist WHERE isPurchased = false ORDER BY addedDate DESC")
+    fun getAllUnpurchasedWithCategoryFlow(): Flow<List<WishlistWithCategory>>
+
+    @Transaction
     @Query("SELECT * FROM wishlist WHERE categoryId = :categoryId ORDER BY priority DESC")
     fun getByCategoryFlow(categoryId: Int): Flow<List<WishlistWithCategory>>
 

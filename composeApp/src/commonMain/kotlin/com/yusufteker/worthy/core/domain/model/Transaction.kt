@@ -1,5 +1,6 @@
 package com.yusufteker.worthy.core.domain.model
 
+import com.yusufteker.worthy.core.domain.toLocalDate
 import com.yusufteker.worthy.screen.card.domain.model.Card
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.number
@@ -109,22 +110,27 @@ val TransactionType.labelRes: StringResource
         else -> Res.string.filter_none
     }
 
-@OptIn(ExperimentalTime::class)
-fun List<Transaction>.groupByMonth(): Map<String, List<Transaction>> {
-    return this.groupBy { transaction ->
-        val date = Instant.fromEpochMilliseconds(transaction.transactionDate)
-            .toLocalDateTime(TimeZone.currentSystemDefault())
-        "${date.month.name.lowercase().replaceFirstChar { it.uppercase() }} ${date.year}"
-    }
-}
 
 @OptIn(ExperimentalTime::class)
-fun List<Transaction>.groupByMonth2(): Map<AppDate, List<Transaction>> {
+fun List<Transaction>.groupByMonth(): Map<AppDate, List<Transaction>> {
     return this.groupBy { transaction ->
         val date = Instant.fromEpochMilliseconds(transaction.transactionDate)
             .toLocalDateTime(TimeZone.currentSystemDefault())
         AppDate(year = date.year, month = date.month.number)
     }
+}
+ fun List<Transaction>.groupByMonthForDashboard(): List<DashboardMonthlyAmount> {
+    val grouped = this.groupBy { tx ->
+        val localDate = tx.transactionDate.toLocalDate()
+        AppDate(localDate.year, localDate.month.number)
+    }
+
+    return grouped.map { (yearMonth, txList) ->
+        DashboardMonthlyAmount(
+            appDate = yearMonth,
+            amount = txList.map { it.amount }
+        )
+    }.sortedWith(compareBy({ it.appDate.year }, { it.appDate.month }))
 }
 
 fun Transaction.updateAmount(newAmount: Money): Transaction = when (this) {

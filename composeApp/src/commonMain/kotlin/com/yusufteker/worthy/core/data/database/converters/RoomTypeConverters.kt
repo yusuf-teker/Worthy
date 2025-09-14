@@ -43,7 +43,6 @@ class RoomTypeConverters {
         return value?.let { AppDate(year = it / 100, month = it % 100) }
     }
 
-
     @TypeConverter
     fun fromTransactionType(value: TransactionType): String {
         return value.name
@@ -53,7 +52,6 @@ class RoomTypeConverters {
     fun toTransactionType(value: String): TransactionType {
         return TransactionType.valueOf(value)
     }
-
 
     @TypeConverter
     fun fromCategory(category: Category?): String? = category?.let { json.encodeToString(it) }

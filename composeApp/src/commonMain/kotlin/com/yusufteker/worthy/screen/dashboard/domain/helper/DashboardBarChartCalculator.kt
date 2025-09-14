@@ -1,4 +1,4 @@
-package com.yusufteker.worthy.screen.dashboard.domain
+package com.yusufteker.worthy.screen.dashboard.domain.helper
 
 import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.core.domain.model.Currency
@@ -40,11 +40,26 @@ class DashboardBarChartCalculator(
         selectedMonth: AppDate
     ): Result {
 
-        val totalExpenseMoney = expenses.sumConvertedAmount(selectedCurrency, selectedMonth, currencyConverter) ?: Money(0.0, selectedCurrency)
-        val totalIncomeMoney = incomes.sumConvertedAmount(selectedCurrency, selectedMonth, currencyConverter) ?: Money(0.0, selectedCurrency)
-        val totalRecurringIncomeMoney = recurringIncomes.sumConvertedAmount(selectedCurrency, selectedMonth, currencyConverter) ?: Money(0.0, selectedCurrency)
-        val totalRecurringExpenseMoney = recurringExpenses.sumConvertedAmount(selectedCurrency, selectedMonth, currencyConverter) ?: Money(0.0, selectedCurrency)
-        val totalWishlistMoney = wishlistItems.sumConvertedAmount(selectedCurrency, selectedMonth, currencyConverter) ?: Money(0.0, selectedCurrency)
+        val totalExpenseMoney = expenses.sumConvertedAmount(selectedCurrency, selectedMonth, currencyConverter) ?: Money(
+            0.0,
+            selectedCurrency
+        )
+        val totalIncomeMoney = incomes.sumConvertedAmount(selectedCurrency, selectedMonth, currencyConverter) ?: Money(
+            0.0,
+            selectedCurrency
+        )
+        val totalRecurringIncomeMoney = recurringIncomes.sumConvertedAmount(selectedCurrency, selectedMonth, currencyConverter) ?: Money(
+            0.0,
+            selectedCurrency
+        )
+        val totalRecurringExpenseMoney = recurringExpenses.sumConvertedAmount(selectedCurrency, selectedMonth, currencyConverter) ?: Money(
+            0.0,
+            selectedCurrency
+        )
+        val totalWishlistMoney = wishlistItems.sumConvertedAmount(selectedCurrency, selectedMonth, currencyConverter) ?: Money(
+            0.0,
+            selectedCurrency
+        )
 
         var totalExpense = totalExpenseMoney.amount + totalRecurringExpenseMoney.amount
         val totalIncome = totalIncomeMoney.amount + totalRecurringIncomeMoney.amount

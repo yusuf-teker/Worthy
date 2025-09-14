@@ -35,7 +35,9 @@ fun <T : BaseState> BaseContentWrapper(
 
             if (state.isLoading) {
                 Box(
-                    modifier = Modifier.matchParentSize().background(Color.Transparent)
+                    modifier = Modifier.matchParentSize().pointerInput(Unit) {
+                        awaitPointerEventScope { while (true) { awaitPointerEvent() } }
+                    }.background(Color.Transparent)
                 )
 
                 Box(

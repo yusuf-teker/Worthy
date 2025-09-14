@@ -42,5 +42,7 @@ interface TransactionRepository {
 
     fun getTransactionsSince(startDate: LocalDate): Flow<List<Transaction>>
 
+    fun getTransactionsSince(startDate: LocalDate, transactionType: TransactionType): Flow<List<Transaction>>
+
     fun getRelatedTransactions(relatedTransactionId: Int): Flow<List<Transaction>>
 }

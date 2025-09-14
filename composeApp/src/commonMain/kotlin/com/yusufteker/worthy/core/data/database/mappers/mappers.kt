@@ -1,18 +1,18 @@
 package com.yusufteker.worthy.core.data.database.mappers
 
-import com.yusufteker.worthy.screen.card.data.database.entities.CardEntity
 import com.yusufteker.worthy.core.data.database.entities.CategoryEntity
 import com.yusufteker.worthy.core.data.database.entities.RecurringFinancialItemEntity
 import com.yusufteker.worthy.core.data.database.entities.TransactionEntity
 import com.yusufteker.worthy.core.domain.getCurrentAppDate
 import com.yusufteker.worthy.core.domain.getCurrentEpochMillis
 import com.yusufteker.worthy.core.domain.model.AppDate
-import com.yusufteker.worthy.screen.card.domain.model.Card
 import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.RecurringItem
 import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.TransactionType
 import com.yusufteker.worthy.core.domain.model.toEpochMillis
+import com.yusufteker.worthy.screen.card.data.database.entities.CardEntity
+import com.yusufteker.worthy.screen.card.domain.model.Card
 import com.yusufteker.worthy.screen.subscription.data.database.entities.SubscriptionEntity
 import com.yusufteker.worthy.screen.wishlist.list.data.database.entities.WishlistItemEntity
 import com.yusufteker.worthy.screen.wishlist.list.data.database.relation.WishlistWithCategory
@@ -122,8 +122,6 @@ fun RecurringItem.Generic.toEntity(): RecurringFinancialItemEntity = RecurringFi
     category = category
 )
 
-
-
 fun CardEntity.toDomain(): Card = Card(
     id = id,
     cardHolderName = cardHolderName,
@@ -219,7 +217,6 @@ fun SubscriptionEntity.toDomain(): RecurringItem.Subscription = RecurringItem.Su
     category = this.category
 )
 
-
 // RecurringItem.Subscription -> SubscriptionEntity
 fun RecurringItem.Subscription.toEntity(): SubscriptionEntity = SubscriptionEntity(
     id = this.id,
@@ -235,7 +232,7 @@ fun RecurringItem.Subscription.toEntity(): SubscriptionEntity = SubscriptionEnti
     cardId = this.cardId
 )
 
-fun RecurringItem.Subscription.toTransactions(): List<Transaction> {
+fun RecurringItem.Subscription.toTransactions(day: Int? = this.scheduledDay): List<Transaction> {
     val transactions = mutableListOf<Transaction>()
 
     val start = this.startDate
@@ -248,12 +245,12 @@ fun RecurringItem.Subscription.toTransactions(): List<Transaction> {
         val transactionDate = AppDate(
             year = currentYear,
             month = currentMonth,
-            day = this.scheduledDay ?: start.day // Todo şimdilik böyle ama carda göre versiyonu lazım
+            day = day ?: start.day // Todo şimdilik böyle ama carda göre versiyonu lazım
         )
 
         transactions.add(
             Transaction.SubscriptionTransaction(
-                id ="${this.id}-${currentYear}-${currentMonth}".hashCode(),
+                id = "${this.id}-${currentYear}-${currentMonth}".hashCode(),
                 originalId = this.id, // todo subscription taksit yok şimdilik - transaction split fonksiyonu için gerekli değil
                 name = this.name,
                 amount = this.amount,
@@ -296,14 +293,12 @@ fun RecurringItem.Subscription.toTransactionsSince(since: AppDate): List<Transac
 
     while (currentYear < end.year || (currentYear == end.year && currentMonth <= end.month)) {
         val transactionDate = AppDate(
-            year = currentYear,
-            month = currentMonth,
-            day = this.scheduledDay ?: start.day
+            year = currentYear, month = currentMonth, day = this.scheduledDay ?: start.day
         )
 
         transactions.add(
             Transaction.SubscriptionTransaction(
-                id ="${this.id}-${currentYear}-${currentMonth}".hashCode(),
+                id = "${this.id}-${currentYear}-${currentMonth}".hashCode(),
                 originalId = this.id,
                 name = this.name,
                 amount = this.amount,
@@ -332,7 +327,6 @@ fun RecurringItem.Subscription.toTransactionsSince(since: AppDate): List<Transac
 
     return transactions
 }
-
 
 // Listeyi çevirmek için
 fun List<RecurringItem.Subscription>.toTransactions(): List<Transaction> {

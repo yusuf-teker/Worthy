@@ -5,6 +5,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface WishlistRepository {
     fun getAll(): Flow<List<WishlistItem>>
+
+    fun getAllUnpurchased(): Flow<List<WishlistItem>>
     fun getByCategory(categoryId: Int): Flow<List<WishlistItem>>
 
     suspend fun getById(id: Int): WishlistItem?
