@@ -61,7 +61,7 @@ data class ChartPoint(
 )
 
 @Composable
-fun LineChart(
+fun LineChart( //todo Tek eleman varsa yok sayılyor onu düzelt
     transactions: List<Transaction>, selectedPeriod: TimePeriod
 ) {
     var animationProgress by remember { mutableStateOf(0f) }
@@ -93,8 +93,7 @@ fun LineChart(
                 TransactionType.REFUND -> 0.0
             }
 
-            val dayMillis = ONE_DAY_MILLIS
-            val transactionDay = (transaction.transactionDate / dayMillis) * dayMillis
+            val transactionDay = (transaction.transactionDate / ONE_DAY_MILLIS) * ONE_DAY_MILLIS
 
             // Eğer bu gün için zaten bir değer varsa, üzerine ekle
             val existingDayIndex = acc.indexOfFirst { it.first == transactionDay }
@@ -256,7 +255,7 @@ fun LineChart(
                     }
                 }
 
-                if (points.size > 1) {
+                if (points.isNotEmpty()) {
                     // Üst alan (pozitif değerler) - yeşil
                     val positiveAreaPath = Path().apply {
                         moveTo(points.first().x, zeroY)

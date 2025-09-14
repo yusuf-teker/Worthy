@@ -99,7 +99,9 @@ fun AnalyticsScreen(
                 modifier = Modifier.fillMaxWidth(),
                 title = UiText.StringResourceId(Res.string.screen_name_analytics).asString(),
                 actions = {
-                    IconButton(onClick = {
+                    IconButton(
+                        modifier = Modifier.padding(0.dp).size(36.dp),
+                        onClick = {
                         val newMode =
                             if (state.viewMode == AnalyticsViewMode.LIST) AnalyticsViewMode.CHART
                             else AnalyticsViewMode.LIST

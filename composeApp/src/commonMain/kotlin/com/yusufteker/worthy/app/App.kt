@@ -23,9 +23,7 @@ import org.yusufteker.routealarm.core.presentation.popup.PopupManager
 
 @Composable
 @Preview
-fun App(
-    prefs: DataStore<Preferences> // todo gereklimi kontrol et
-) {
+fun App() {
 
     val navController = rememberNavController()
     val popupManager = koinInject<PopupManager>()

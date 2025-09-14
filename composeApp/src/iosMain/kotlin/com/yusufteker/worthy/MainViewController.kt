@@ -18,11 +18,5 @@ fun MainViewController() = ComposeUIViewController(
 
     }
 ) {
-    App(
-
-        prefs = remember {
-            createDataStore()
-        }
-
-    )
+    App()
 }

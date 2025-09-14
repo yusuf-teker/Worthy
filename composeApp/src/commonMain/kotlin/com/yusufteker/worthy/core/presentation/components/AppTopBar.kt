@@ -35,7 +35,7 @@ fun AppTopBar(
     onNavIconClick: (() -> Unit)? = null,
     isBack: Boolean = true,
     showDivider: Boolean = true,
-    actions: @Composable RowScope.() -> Unit = {},
+    actions:( @Composable RowScope.() -> Unit)? = {},
 ) {
 
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -62,17 +62,20 @@ fun AppTopBar(
                         .clickable { onNavIconClick() })
             }
 
-            // Sağdaki aksiyonlar
-            Row(
-                modifier = Modifier.align(Alignment.CenterEnd),
-                verticalAlignment = Alignment.CenterVertically,
-                content = actions
-            )
+            actions?.let {
+                // Sağdaki aksiyonlar
+                Row(
+                    modifier = Modifier.size(36.dp).align(Alignment.CenterEnd),
+                    verticalAlignment = Alignment.CenterVertically,
+                    content = it
+                )
+            }
+
         }
 
         if (showDivider) {
             HorizontalDivider(
-                Modifier.padding(top=8.dp), 1.dp, AppColors.outlineVariant
+                Modifier.padding(top= if (actions == null) 8.dp else 0.dp), 1.dp, AppColors.outlineVariant
             )
             Spacer(Modifier.height(8.dp))
         }
