@@ -86,7 +86,7 @@ class DashboardRepositoryImpl(
 
         return combine(
             transactionRepository.getTransactionsSince(firstDayOfStartMonth),
-            transactionRepository.getCards()
+                    transactionRepository.getCards()
         ) { transactions, cards ->
 
             // TAKSITLI ISE HER BIR TAKSITI AY AY AYIR

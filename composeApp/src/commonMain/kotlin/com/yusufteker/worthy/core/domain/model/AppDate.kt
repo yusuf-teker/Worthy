@@ -74,6 +74,14 @@ fun Long.toAppDate(): AppDate {
     )
 }
 
+fun LocalDate.toAppDate(): AppDate {
+    return AppDate(
+        year = this.year,
+        month = this.month.number,
+        day = this.day
+    )
+}
+
 fun AppDate.format(showDay: Boolean = true): String {
     return "${if (showDay)this.day.toString() + "/" else ""}${this.month}/${this.year}"
 }

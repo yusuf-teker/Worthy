@@ -2,12 +2,16 @@ package com.yusufteker.worthy.core.data.database.repository
 
 import com.yusufteker.worthy.core.data.database.mappers.toDomain
 import com.yusufteker.worthy.core.data.database.mappers.toEntity
+import com.yusufteker.worthy.core.data.database.mappers.toTransactions
+import com.yusufteker.worthy.core.data.database.mappers.toTransactionsSince
 import com.yusufteker.worthy.core.data.database.model.TransactionDao
+import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.screen.card.domain.model.Card
 import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.CategoryType
 import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.TransactionType
+import com.yusufteker.worthy.core.domain.model.toAppDate
 import com.yusufteker.worthy.core.domain.model.updateAmount
 import com.yusufteker.worthy.core.domain.repository.CategoryRepository
 import com.yusufteker.worthy.core.domain.repository.TransactionRepository
@@ -17,6 +21,7 @@ import com.yusufteker.worthy.screen.card.domain.repository.CardRepository
 import com.yusufteker.worthy.screen.settings.domain.UserPrefsManager
 import com.yusufteker.worthy.screen.subscription.domain.repository.SubscriptionRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDate
@@ -115,8 +120,18 @@ class TransactionRepositoryImpl(
 
     override fun getTransactionsSince(startDate: LocalDate): Flow<List<Transaction>> {
         val startMillis = startDate.toEpochMillis()
-        return transactionDao.getTransactionsFrom(startMillis)
+
+        val transactions = transactionDao.getTransactionsFrom(startMillis)
             .map { list -> list.map { it.toDomain() } }
+
+        // başlangıç tarihinden sonra aktif olan subscriptionları al ve transactiona çevir
+        val subscriptions = subscriptionRepository.getSubscriptionsSince(startDate)
+            .map { subs -> subs.flatMap { it.toTransactions() } }
+
+
+        return combine(transactions, subscriptions) { txs, subs ->
+            txs + subs
+        }
     }
 
     override fun getRelatedTransactions(relatedTransactionId: Int): Flow<List<Transaction>> {

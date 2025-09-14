@@ -248,7 +248,7 @@ fun RecurringItem.Subscription.toTransactions(): List<Transaction> {
         val transactionDate = AppDate(
             year = currentYear,
             month = currentMonth,
-            day = this.scheduledDay ?: start.day
+            day = this.scheduledDay ?: start.day // Todo şimdilik böyle ama carda göre versiyonu lazım
         )
 
         transactions.add(
@@ -284,6 +284,55 @@ fun RecurringItem.Subscription.toTransactions(): List<Transaction> {
 
     return transactions
 }
+
+fun RecurringItem.Subscription.toTransactionsSince(since: AppDate): List<Transaction> {
+    val transactions = mutableListOf<Transaction>()
+
+    val start = if (this.startDate < since) since else this.startDate
+    val end = this.endDate ?: getCurrentAppDate(day = 1)
+
+    var currentYear = start.year
+    var currentMonth = start.month
+
+    while (currentYear < end.year || (currentYear == end.year && currentMonth <= end.month)) {
+        val transactionDate = AppDate(
+            year = currentYear,
+            month = currentMonth,
+            day = this.scheduledDay ?: start.day
+        )
+
+        transactions.add(
+            Transaction.SubscriptionTransaction(
+                id ="${this.id}-${currentYear}-${currentMonth}".hashCode(),
+                originalId = this.id,
+                name = this.name,
+                amount = this.amount,
+                transactionType = if (this.isIncome) TransactionType.INCOME else TransactionType.EXPENSE,
+                categoryId = this.category?.id,
+                cardId = this.cardId,
+                transactionDate = transactionDate.toEpochMillis(),
+                relatedTransactionId = null,
+                installmentCount = null,
+                note = null,
+                subscriptionGroupId = this.groupId,
+                subscriptionId = this.id,
+                startDate = this.startDate,
+                endDate = this.endDate,
+                colorHex = this.colorHex
+            )
+        )
+
+        if (currentMonth == 12) {
+            currentMonth = 1
+            currentYear++
+        } else {
+            currentMonth++
+        }
+    }
+
+    return transactions
+}
+
 
 // Listeyi çevirmek için
 fun List<RecurringItem.Subscription>.toTransactions(): List<Transaction> {

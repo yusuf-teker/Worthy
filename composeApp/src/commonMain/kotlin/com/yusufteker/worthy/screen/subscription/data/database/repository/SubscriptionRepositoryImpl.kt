@@ -10,13 +10,17 @@ import com.yusufteker.worthy.core.domain.model.CategoryType
 import com.yusufteker.worthy.core.domain.model.RecurringItem
 import com.yusufteker.worthy.core.domain.model.defaultCategories
 import com.yusufteker.worthy.core.domain.model.toRoomInt
+import com.yusufteker.worthy.core.domain.toEpochMillis
 import com.yusufteker.worthy.screen.card.domain.model.Card
 import com.yusufteker.worthy.screen.card.domain.repository.CardRepository
 import com.yusufteker.worthy.screen.subscription.data.database.model.SubscriptionDao
 import com.yusufteker.worthy.screen.subscription.domain.repository.SubscriptionRepository
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
 import kotlin.collections.filter
 import kotlin.collections.map
 
@@ -91,6 +95,20 @@ class SubscriptionRepositoryImpl(
 
     override suspend fun deleteByGroupId(groupId: String) {
         dao.deleteByGroupId(groupId)
+    }
+
+    // Verdiğim başlangıç günü sonrasında  aktif olan subscriptionları getir
+    override fun getSubscriptionsSince(startDate: LocalDate): Flow<List<RecurringItem.Subscription>> {
+        val startInt = startDate.year * 100 + startDate.month.number
+        Napier.d("getSubscriptionsSince startInt: $startInt", tag = "SubscriptionRepository")
+        val subscriptions =
+             dao.getSubscriptionsSince(startInt)
+            .map { entities ->
+                Napier.d("getSubscriptionsSince entities: $entities", tag = "SubscriptionRepository")
+                entities.map { it.toDomain() }
+            }
+        Napier.d("getSubscriptionsSince: $subscriptions", tag = "SubscriptionRepository")
+        return subscriptions
     }
 
 }

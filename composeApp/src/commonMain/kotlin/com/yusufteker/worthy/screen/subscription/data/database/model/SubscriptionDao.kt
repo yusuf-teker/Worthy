@@ -48,4 +48,16 @@ interface SubscriptionDao {
     """
     )
     fun getActiveSubscriptions(today: Int): Flow<List<SubscriptionEntity>>
+
+
+    @Query("""
+SELECT * FROM subscriptions
+WHERE 
+    (startDate >= :startInt)
+    OR 
+    (startDate < :startInt AND (endDate IS NULL OR endDate >= :startInt))
+ORDER BY startDate
+""")
+    fun getSubscriptionsSince(startInt: Int): Flow<List<SubscriptionEntity>>
+
 }

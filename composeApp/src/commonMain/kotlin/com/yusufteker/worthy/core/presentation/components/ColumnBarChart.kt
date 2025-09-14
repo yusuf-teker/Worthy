@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.getMonthName
+import com.yusufteker.worthy.core.presentation.getMonthShortName
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
 import org.jetbrains.compose.resources.painterResource
@@ -262,7 +263,7 @@ fun MiniBarChart(
     val maxBarHeight = 60.dp
 
     Row(
-        modifier = modifier,
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.Bottom
     ) {
@@ -297,7 +298,7 @@ fun MiniBarChart(
                     Spacer(Modifier.height(4.dp))
 
                     Text(
-                        text = getMonthName(labels[idx]).asString(),
+                        text = getMonthShortName(labels[idx]),
                         style = AppTypography.labelSmall,
                         color = AppColors.onSurfaceVariant,
                         maxLines = 1,

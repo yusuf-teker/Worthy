@@ -5,6 +5,7 @@ import com.yusufteker.worthy.core.domain.model.RecurringItem
 import com.yusufteker.worthy.screen.card.domain.model.Card
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.datetime.LocalDate
 
 interface SubscriptionRepository {
 
@@ -35,5 +36,7 @@ interface SubscriptionRepository {
     suspend fun addCategory(category: Category)
 
     suspend fun deleteByGroupId(groupId: String)
+
+    fun getSubscriptionsSince(startDate: LocalDate): Flow<List<RecurringItem.Subscription>>
 
 }
