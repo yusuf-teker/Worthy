@@ -13,10 +13,10 @@ import com.yusufteker.worthy.core.data.database.repository.OnboardingRepositoryI
 import com.yusufteker.worthy.core.data.database.repository.RecurringFinancialItemRepositoryImpl
 import com.yusufteker.worthy.core.data.database.repository.SearchHistoryRepositoryImpl
 import com.yusufteker.worthy.core.data.database.repository.TransactionRepositoryImpl
-import com.yusufteker.worthy.core.data.service.CurrencyConverterImpl
-import com.yusufteker.worthy.core.data.service.datasource.CurrencyRatesCacheDataSourceImpl
-import com.yusufteker.worthy.core.data.service.datasource.CurrencyRatesRemoteDataSourceImpl
-import com.yusufteker.worthy.core.data.service.repository.CurrencyRatesRepositoryImpl
+import com.yusufteker.worthy.core.data.network.CurrencyConverterImpl
+import com.yusufteker.worthy.core.data.network.datasource.CurrencyRatesCacheDataSourceImpl
+import com.yusufteker.worthy.core.data.network.datasource.CurrencyRatesRemoteDataSourceImpl
+import com.yusufteker.worthy.core.data.network.repository.CurrencyRatesRepositoryImpl
 import com.yusufteker.worthy.core.domain.repository.CategoryRepository
 import com.yusufteker.worthy.core.domain.repository.CurrencyRatesRepository
 import com.yusufteker.worthy.core.domain.repository.RecurringFinancialItemRepository
@@ -84,6 +84,8 @@ val sharedModule = module {
     }
 
     single { createHttpClient(get<HttpClientEngine>()) }
+
+
     // DAO'ları veritabanından çek
     single { get<WorthyDatabase>().transactionDao }
     single { get<WorthyDatabase>().wishlistItemDao }
@@ -93,7 +95,7 @@ val sharedModule = module {
     single { get<WorthyDatabase>().subscriptionDao }
 
     // Repository implementasyonlarını bind et
-    single<CurrencyRatesRepository> { CurrencyRatesRepositoryImpl(get(), get()) }
+    single<CurrencyRatesRepository> { CurrencyRatesRepositoryImpl(get(), get(),get()) }
     single<CurrencyConverter> { CurrencyConverterImpl(get()) }
     single<OnboardingRepository> { OnboardingRepositoryImpl(get(), get(), get()) }
     single<TransactionRepository> { TransactionRepositoryImpl(get(),get(),get(), get(), get(), get()) }

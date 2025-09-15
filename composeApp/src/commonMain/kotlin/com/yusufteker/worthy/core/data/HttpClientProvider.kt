@@ -13,6 +13,9 @@ import kotlinx.serialization.json.Json
 fun createHttpClient(engine: HttpClientEngine): HttpClient {
     return HttpClient(engine) {
 
+        install(io.ktor.client.plugins.HttpTimeout) {
+            requestTimeoutMillis = 2000
+        }
         install(Logging) {
             logger = Logger.DEFAULT
             level = LogLevel.ALL

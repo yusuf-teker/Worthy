@@ -1,6 +1,6 @@
-package com.yusufteker.worthy.core.data.service.datasource
+package com.yusufteker.worthy.core.data.network.datasource
 
-import com.yusufteker.worthy.core.data.service.model.ExchangeRateResponse
+import com.yusufteker.worthy.core.data.network.model.ExchangeRateResponse
 import com.yusufteker.worthy.core.domain.DataError
 import com.yusufteker.worthy.core.domain.Result
 import com.yusufteker.worthy.core.domain.model.Currency

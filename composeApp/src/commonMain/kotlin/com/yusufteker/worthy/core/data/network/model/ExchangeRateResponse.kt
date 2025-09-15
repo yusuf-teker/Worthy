@@ -1,4 +1,4 @@
-package com.yusufteker.worthy.core.data.service.model
+package com.yusufteker.worthy.core.data.network.model
 
 import kotlinx.serialization.Serializable
 

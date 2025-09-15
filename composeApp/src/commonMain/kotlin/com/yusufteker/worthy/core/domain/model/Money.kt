@@ -15,4 +15,14 @@ data class Money(
         require(divisor > 0) { "Divisor must be greater than 0" }
         return copy(amount = amount / divisor)
     }
+
+    operator fun plus(other: Money): Money {
+        require(currency == other.currency) { "Currencies must match to add." }
+        return copy(amount = amount + other.amount)
+    }
+
+    operator fun minus(other: Money): Money {
+        require(currency == other.currency) { "Currencies must match to subtract." }
+        return copy(amount = amount - other.amount)
+    }
 }

@@ -6,6 +6,7 @@ import com.yusufteker.worthy.core.domain.getCurrentEpochMillis
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.distinctCategoryIds
+import com.yusufteker.worthy.core.domain.model.isInstallmentRefund
 import com.yusufteker.worthy.core.domain.model.toAppDate
 import com.yusufteker.worthy.core.domain.model.updateAmount
 import com.yusufteker.worthy.core.domain.service.CurrencyConverter
@@ -220,7 +221,12 @@ class AnalyticsViewModel(
             is AnalyticsAction.OnTransactionClicked -> {
                 when(action.transaction){
                     is Transaction.NormalTransaction -> {
-                        navigateTo(Routes.TransactionDetail(action.transaction.originalId))
+                        if (action.transaction.isInstallmentRefund()){ // original Id 0 related -> Actual Transaction
+                            navigateTo(Routes.TransactionDetail(action.transaction.relatedTransactionId?: action.transaction.id))
+                        }else{
+                            navigateTo(Routes.TransactionDetail(action.transaction.originalId))
+                        }
+
                     }
                     is Transaction.SubscriptionTransaction -> {
                         navigateTo(Routes.SubscriptionDetail(action.transaction.subscriptionId))

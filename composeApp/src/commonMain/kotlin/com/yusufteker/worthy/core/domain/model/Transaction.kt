@@ -1,5 +1,6 @@
 package com.yusufteker.worthy.core.domain.model
 
+import com.yusufteker.worthy.core.domain.service.CurrencyConverter
 import com.yusufteker.worthy.core.domain.toLocalDate
 import com.yusufteker.worthy.screen.card.domain.model.Card
 import kotlinx.datetime.TimeZone
@@ -233,6 +234,23 @@ fun Transaction.getInstallmentLabel(index: Int? = null): String {
     val total = this.installmentCount ?: 1
     val current = index?.coerceIn(1..total) ?: 1
     return "$current/$total"
+}
+
+fun Transaction.NormalTransaction.toRefundTransaction(): Transaction {
+    // todo taksit olmadıgına dikkat et koşuluna bakıalcak original id varsa taksitmi vs
+    return  this.copy(
+            id = 0,
+            originalId = 0,
+            amount = this.amount.copy(amount = amount.amount * -1),
+            transactionType = TransactionType.REFUND,
+            relatedTransactionId = this.id,
+            installmentIndex = -1
+    )
+
+}
+
+fun Transaction.isInstallmentRefund(): Boolean{
+    return this.isInstallment() && this.transactionType == TransactionType.REFUND
 }
 
 

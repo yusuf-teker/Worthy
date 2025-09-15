@@ -27,6 +27,8 @@ interface TransactionRepository {
 
     suspend fun getById(id: Int): Transaction?
 
+    suspend fun getByIdWithRefund(id: Int): List<Transaction>?
+
     suspend fun insert(transaction: Transaction): Long
 
     suspend fun insertAll(transactions: List<Transaction>)
@@ -45,4 +47,6 @@ interface TransactionRepository {
     fun getTransactionsSince(startDate: LocalDate, transactionType: TransactionType): Flow<List<Transaction>>
 
     fun getRelatedTransactions(relatedTransactionId: Int): Flow<List<Transaction>>
+
+    suspend fun refundTransaction(transaction: Transaction): Long
 }

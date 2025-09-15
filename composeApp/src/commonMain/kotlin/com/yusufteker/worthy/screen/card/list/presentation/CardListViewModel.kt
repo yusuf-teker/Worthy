@@ -13,6 +13,7 @@ import com.yusufteker.worthy.core.presentation.util.sumWithoutCurrencyConverted
 import com.yusufteker.worthy.screen.card.domain.repository.CardRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -102,6 +103,7 @@ class CardListViewModel(
 
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun observeSelectedCardExpense() {
         state.map { it.selectedCard?.id } // selectedCardId
             .flatMapLatest { cardId ->
@@ -109,15 +111,18 @@ class CardListViewModel(
                     transactionRepository.getByCardIdConverted(cardId)
                 } else {
                     // boş bir liste döndür
-                    kotlinx.coroutines.flow.flowOf(emptyList())
+                    flowOf(emptyList())
                 }
             }
             .onEach { transactions ->
+                // Taksitli işemleri transaction liste çevir ay ay ayır
                 val expandedTransactions = transactions.flatMap { tx ->
                     tx.splitInstallments(state.value.selectedCard)
                 }
+                // Her ayın işlemine bak bu ay olanları seç
                 val thisMonthTransactions =
                     expandedTransactions.filter { it.transactionDate.isInThisMonth() }
+                // Bu aydan sonraki işlemler
                 val totalFutureTransactions = expandedTransactions.filter {
                     it.transactionDate.isAfterOrEqual(
                         getCurrentAppDate(day = state.value.selectedCard?.statementDay ?: 1)

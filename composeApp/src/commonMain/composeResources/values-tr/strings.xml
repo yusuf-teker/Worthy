@@ -53,7 +53,8 @@
     <string name="monthly">Aylık</string>
     <string name="yearly">Yıllık</string>
     <string name="one_time">Tek Seferlik</string>
-
+    <string name="refund_button">İade et</string>
+    <string name="refund">İade</string>
 
 
     <!-- Dashboard -->

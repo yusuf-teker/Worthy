@@ -1,5 +1,6 @@
-package com.yusufteker.worthy.core.data.service.repository
+package com.yusufteker.worthy.core.data.network.repository
 
+import com.yusufteker.worthy.core.data.network.util.NetworkStatus
 import com.yusufteker.worthy.core.domain.DataError
 import com.yusufteker.worthy.core.domain.Result
 import com.yusufteker.worthy.core.domain.model.CachedExchangeRate
@@ -14,7 +15,8 @@ import kotlin.time.ExperimentalTime
 //Repository = data kaynaklarını birleştirme
 class CurrencyRatesRepositoryImpl(
     private val remote: CurrencyRatesRemoteDataSource,
-    private val cache: CurrencyRatesCacheDataSource // DataStore, Room veya SharedPreferences tabanlı
+    private val cache: CurrencyRatesCacheDataSource, // DataStore, Room veya SharedPreferences tabanlı
+    private val networkStatus: NetworkStatus
 ) : CurrencyRatesRepository {
 
     @OptIn(ExperimentalTime::class)
@@ -27,6 +29,16 @@ class CurrencyRatesRepositoryImpl(
             return Result.Success(cached.rates)
         }
 
+
+
+        if (!networkStatus.isOnline()) {
+            Napier.w("Repository: No internet connection, returning cached rates if available")
+            return if (cached != null) {
+                Result.Success(cached.rates)
+            } else {
+                Result.Error(DataError.Remote.NO_INTERNET)
+            }
+        }
         Napier.d("Repository: Fetching rates from NETWORK for base $base")
         return when (val ratesResult = remote.fetchRates(base)) {
             is Result.Success -> {

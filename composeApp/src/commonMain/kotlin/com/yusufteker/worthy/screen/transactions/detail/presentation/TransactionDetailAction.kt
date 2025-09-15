@@ -27,4 +27,6 @@ sealed interface TransactionDetailAction {
 
     data class DeleteTransaction(val transaction: Transaction): TransactionDetailAction
 
+    data class RefundTransaction(val transaction: Transaction): TransactionDetailAction
+
 }

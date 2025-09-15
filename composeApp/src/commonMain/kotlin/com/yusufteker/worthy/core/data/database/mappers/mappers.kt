@@ -149,7 +149,7 @@ fun Card.toEntity(): CardEntity = CardEntity(
 )
 
 // Entity -> Domain
-fun TransactionEntity.toDomain(): Transaction.NormalTransaction {
+fun TransactionEntity.toDomain(): Transaction {
     return Transaction.NormalTransaction(
         id = id,
         originalId = originalId,

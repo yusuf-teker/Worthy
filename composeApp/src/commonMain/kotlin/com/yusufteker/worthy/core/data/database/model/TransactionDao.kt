@@ -25,9 +25,10 @@ interface TransactionDao {
     @Query("SELECT * FROM transactions WHERE transactionType = :type ORDER BY transactionDate DESC")
     fun getByType(type: TransactionType): Flow<List<TransactionEntity>>
 
-    @Query("SELECT * FROM transactions WHERE id = :id")
+    @Query("SELECT * FROM transactions WHERE id = :id OR relatedTransactionId = :id")
     suspend fun getById(id: Int): TransactionEntity?
-
+    @Query("SELECT * FROM transactions WHERE id = :id OR relatedTransactionId = :id")
+    suspend fun getByIdWithRefund(id: Int): List<TransactionEntity>?
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(transaction: TransactionEntity): Long
 
@@ -63,4 +64,19 @@ interface TransactionDao {
 
     @Query("SELECT * FROM transactions WHERE relatedTransactionId = :relatedTransactionId ORDER BY transactionDate DESC")
     fun getRelatedTransactions(relatedTransactionId: Int): Flow<List<TransactionEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun refundTransaction(transaction: TransactionEntity): Long
+
+
+    @Query("""
+        SELECT t.* FROM transactions t
+        LEFT JOIN transactions refund
+        ON refund.relatedTransactionId = t.id AND refund.transactionType = 'REFUND'
+        WHERE t.installmentCount IS NOT NULL
+        AND (refund.id IS NULL OR refund.id = t.id)
+        GROUP BY COALESCE(refund.id, t.id)
+        ORDER BY t.transactionDate DESC
+    """)
+    fun getAllInstallments(): Flow<List<TransactionEntity>> // Refund var ise normali getirme sadece refundu al
 }

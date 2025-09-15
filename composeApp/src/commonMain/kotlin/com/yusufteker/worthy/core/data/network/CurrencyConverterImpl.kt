@@ -1,4 +1,4 @@
-package com.yusufteker.worthy.core.data.service
+package com.yusufteker.worthy.core.data.network
 
 import com.yusufteker.worthy.core.domain.Result
 import com.yusufteker.worthy.core.domain.model.Currency
@@ -8,7 +8,6 @@ import com.yusufteker.worthy.core.domain.service.CurrencyConverter
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 class CurrencyConverterImpl(private val repository: CurrencyRatesRepository) : CurrencyConverter {

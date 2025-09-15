@@ -9,6 +9,7 @@ data class TransactionDetailState(
     override val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val transaction: Transaction? = null,
+    val isRefund: Boolean? = null,
     val categories: List<Category> = emptyList(),
     val selectedCategory: Category? = null,
     val cards: List<Card> = emptyList(),

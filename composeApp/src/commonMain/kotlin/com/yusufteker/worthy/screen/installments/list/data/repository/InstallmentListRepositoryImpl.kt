@@ -18,11 +18,11 @@ class InstallmentListRepositoryImpl(
 
     override fun getAllInstallments(): Flow<List<InstallmentCardUIModel>> {
         return combine(
-            transactionDao.getAll().map { list -> list.map { it.toDomain() } },
+            transactionDao.getAllInstallments().map { list -> list.map { it.toDomain() } },
             cardRepository.getAll()
         ) { transactions, cards ->
             transactions
-                .filter { it.isInstallment() } // sadece taksitli işlemler
+                //.filter { it.isInstallment() } // sadece taksitli işlemler
                 .flatMap { tx ->
                     val card = cards.find { it.id == tx.cardId } // doğru kartı bul
                     tx.splitInstallments(card).map{ transaction ->

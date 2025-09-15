@@ -3,6 +3,8 @@ package com.yusufteker.worthy.screen.transactions.detail.presentation
 import androidx.lifecycle.viewModelScope
 import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.domain.model.Transaction
+import com.yusufteker.worthy.core.domain.model.TransactionType
+import com.yusufteker.worthy.core.domain.model.toRefundTransaction
 
 import com.yusufteker.worthy.core.domain.model.updateAmount
 import com.yusufteker.worthy.core.domain.model.updateCard
@@ -50,8 +52,12 @@ class TransactionDetailViewModel(
             is TransactionDetailAction.Init -> {
                 launchWithLoading {
                     _state.update {
+                        val transactionList = transactionRepository.getByIdWithRefund(action.transactionId) // todo refund ise related id
+                        val transaction = transactionList?.firstOrNull { transaction -> transaction.transactionType == TransactionType.EXPENSE }
+                        val isRefund = transactionList?.any{it -> it.transactionType == TransactionType.REFUND }
                         it.copy(
-                            transaction = transactionRepository.getById(action.transactionId),
+                            transaction = transaction,
+                            isRefund = isRefund,
                             selectedCategory = categoryRepository.getById(action.transactionId)
                         )
                     }
@@ -117,6 +123,18 @@ class TransactionDetailViewModel(
             is TransactionDetailAction.UpdateCard -> {
                 _state.update { it.copy(transaction = it.transaction?.updateCard(action.cardId)) }
 
+            }
+
+            is TransactionDetailAction.RefundTransaction -> {
+                launchWithLoading {
+                    when(action.transaction) {
+                        is Transaction.NormalTransaction -> {
+                            transactionRepository.refundTransaction(action.transaction.toRefundTransaction())
+                            navigateBack()
+                        }
+                        else -> {}
+                    }
+                }
             }
         }
     }

@@ -87,6 +87,12 @@ class TransactionRepositoryImpl(
         return transactionDao.getById(id)?.toDomain()
     }
 
+    override suspend fun getByIdWithRefund(id: Int): List<Transaction>? {
+        return transactionDao.getByIdWithRefund(id)?.map { it.toDomain()  }
+    }
+
+
+
     override suspend fun insert(transaction: Transaction): Long {
         val x = transactionDao.insert(transaction.toEntity())
         transactionDao.updateOriginalId(x.toInt()) // taksitli işmler için original id kullanmam gerekti o yüzden ilk kayıtta original idyi setliyorum
@@ -139,14 +145,17 @@ class TransactionRepositoryImpl(
         val transactions =
             transactionDao.getTransactionsFrom(startMillis, transactionType)
             .map { list -> list.map { it.toDomain() } }
+        val refunds = // todo şimdilik default refundsa dageliyor
+            transactionDao.getTransactionsFrom(startMillis, TransactionType.REFUND)
+                .map { list -> list.map { it.toDomain() } }
 
         // başlangıç tarihinden sonra aktif olan subscriptionları al ve transactiona çevir
         val subscriptions = subscriptionRepository.getSubscriptionsSince(startDate)
             .map { subs -> subs.flatMap { it.toTransactions() } }
 
 
-        return combine(transactions, subscriptions) { txs, subs ->
-            txs + subs
+        return combine(refunds,transactions, subscriptions) { refunds, txs, subs ->
+            refunds + txs + subs
         }
     }
 
@@ -154,6 +163,12 @@ class TransactionRepositoryImpl(
     override fun getRelatedTransactions(relatedTransactionId: Int): Flow<List<Transaction>> {
         return transactionDao.getRelatedTransactions(relatedTransactionId)
             .map { list -> list.map { it.toDomain() } }
+    }
+
+    override suspend fun refundTransaction(transaction: Transaction): Long {
+
+        transactionDao.refundTransaction(transaction.toEntity())
+        return 1
     }
 
 }

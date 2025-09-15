@@ -42,8 +42,11 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.installment_label
 import worthy.composeapp.generated.resources.monthly
+import worthy.composeapp.generated.resources.refund
+import worthy.composeapp.generated.resources.refund_button
 import worthy.composeapp.generated.resources.subscription
 import worthy.composeapp.generated.resources.transaction
+import kotlin.math.absoluteValue
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -105,9 +108,9 @@ fun TransactionListItem(
                 modifier = Modifier.padding(top = 16.dp, end = 16.dp, bottom = 16.dp),
                 horizontalAlignment = Alignment.End
             ) {
-                Text(
+                Text(// todo refundda + olmicak
                     text = "${if (transaction.transactionType == TransactionType.EXPENSE) "-" else "+"} ${
-                        transaction.amount.amount.formatMoneyText(
+                        transaction.amount.amount.absoluteValue.formatMoneyText(
                             currency = transaction.amount.currency, showDecimals = true
                         )
                     }", color = amountColor, fontSize = 16.sp, style = AppTypography.titleMedium
@@ -116,7 +119,11 @@ fun TransactionListItem(
 
                 val labelText = when (transaction) {
                     is Transaction.NormalTransaction -> {
-                       if (transaction.isInstallment())
+
+                        if (transaction.transactionType == TransactionType.REFUND){
+                            UiText.StringResourceId(Res.string.refund).asString()
+                        }
+                        else if (transaction.isInstallment())
                             UiText.StringResourceId(Res.string.installment_label,arrayOf( (transaction.installmentIndex?:0)+1, transaction.installmentCount?:1)).asString()
                         else  UiText.StringResourceId(Res.string.transaction)
                            .asString()
