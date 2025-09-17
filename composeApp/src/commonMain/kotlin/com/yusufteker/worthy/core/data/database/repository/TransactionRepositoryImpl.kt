@@ -139,19 +139,37 @@ class TransactionRepositoryImpl(
             txs + subs
         }
     }
+
+    override fun getIncomeTransactionsSince(startDate: LocalDate): Flow<List<Transaction>> {
+        val startMillis = startDate.toEpochMillis()
+
+        val transactions =
+            transactionDao.getTransactionsFrom(startMillis, transactionType = TransactionType.INCOME)
+                .map { list -> list.map { it.toDomain() } }
+
+
+        return transactions
+    }
+
     override fun getTransactionsSince(startDate: LocalDate, transactionType: TransactionType): Flow<List<Transaction>> {
         val startMillis = startDate.toEpochMillis()
 
         val transactions =
             transactionDao.getTransactionsFrom(startMillis, transactionType)
             .map { list -> list.map { it.toDomain() } }
-        val refunds = // todo şimdilik default refundsa dageliyor
-            transactionDao.getTransactionsFrom(startMillis, TransactionType.REFUND)
-                .map { list -> list.map { it.toDomain() } }
 
         // başlangıç tarihinden sonra aktif olan subscriptionları al ve transactiona çevir
         val subscriptions = subscriptionRepository.getSubscriptionsSince(startDate)
             .map { subs -> subs.flatMap { it.toTransactions() } }
+
+
+
+            val refunds = // todo şimdilik default refundsa dageliyor
+                transactionDao.getTransactionsFrom(startMillis, TransactionType.REFUND)
+                    .map { list -> list.map { it.toDomain() } }
+
+
+
 
 
         return combine(refunds,transactions, subscriptions) { refunds, txs, subs ->

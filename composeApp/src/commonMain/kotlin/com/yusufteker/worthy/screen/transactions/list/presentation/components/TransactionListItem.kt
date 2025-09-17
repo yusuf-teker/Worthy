@@ -68,6 +68,7 @@ fun TransactionListItem(
     }
 
     val dateString = transaction.transactionDate.toAppDate().format()
+    val firstPaymentDateString = transaction.firstPaymentDate.toAppDate().format()
     Card(
         modifier = modifier.fillMaxWidth().clickable { onItemClicked(transaction) },
         shape = CardDefaults.shape,
@@ -89,6 +90,12 @@ fun TransactionListItem(
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = dateString,
+                    style = AppTypography.bodySmall,
+                    color = AppColors.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = firstPaymentDateString,
                     style = AppTypography.bodySmall,
                     color = AppColors.onSurfaceVariant
                 )

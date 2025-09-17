@@ -23,4 +23,6 @@ sealed interface DashboardAction {
 
     object onInstallmentsMenuClicked : DashboardAction
 
+    object onTransactionsMenuClicked: DashboardAction
+
 }

@@ -66,7 +66,7 @@ fun SummaryCards(transactions: List<Transaction>, selectedPeriod: TimePeriod) {
         .filter { it.transactionType == TransactionType.REFUND }
         .sumOf { it.amount.amount }
 
-    val balance = totalIncome - totalExpense + totalRefund
+    val balance = totalIncome - totalExpense - totalRefund
 
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -104,7 +104,7 @@ fun SummaryCards(transactions: List<Transaction>, selectedPeriod: TimePeriod) {
         item {
             AnimatedSummaryCard(
                 title = UiText.StringResourceId(Res.string.summary_balance).asString(),
-                value = balance,
+                value = balance * -1,
                 currency = currency,
                 icon = if (balance >= 0) "✅" else "❌",
                 color = if (balance >= 0) Color(0xFF4CAF50) else Color(0xFFF44336),

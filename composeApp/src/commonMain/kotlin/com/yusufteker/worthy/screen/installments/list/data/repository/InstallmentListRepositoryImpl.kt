@@ -2,8 +2,7 @@ package com.yusufteker.worthy.screen.installments.list.data.repository
 
 import com.yusufteker.worthy.core.data.database.mappers.toDomain
 import com.yusufteker.worthy.core.data.database.model.TransactionDao
-import com.yusufteker.worthy.core.domain.model.isInstallment
-import com.yusufteker.worthy.core.domain.model.splitInstallments
+import com.yusufteker.worthy.core.domain.model.splitInstallmentsByFirstPaymentDate
 import com.yusufteker.worthy.screen.card.domain.repository.CardRepository
 import com.yusufteker.worthy.screen.installments.list.domain.model.InstallmentCardUIModel
 import com.yusufteker.worthy.screen.installments.list.domain.repository.InstallmentListRepository
@@ -18,14 +17,14 @@ class InstallmentListRepositoryImpl(
 
     override fun getAllInstallments(): Flow<List<InstallmentCardUIModel>> {
         return combine(
-            transactionDao.getAllInstallments().map { list -> list.map { it.toDomain() } },
+            transactionDao.getAll().map { list -> list.map { it.toDomain() } },
             cardRepository.getAll()
         ) { transactions, cards ->
             transactions
                 //.filter { it.isInstallment() } // sadece taksitli işlemler
                 .flatMap { tx ->
                     val card = cards.find { it.id == tx.cardId } // doğru kartı bul
-                    tx.splitInstallments(card).map{ transaction ->
+                    tx.splitInstallmentsByFirstPaymentDate(card).map{ transaction ->
                         InstallmentCardUIModel(transaction, card)
                     }
                 }

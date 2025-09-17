@@ -4,7 +4,9 @@ import androidx.lifecycle.viewModelScope
 import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.TransactionType
+import com.yusufteker.worthy.core.domain.model.adjustFirstInstallmentDate
 import com.yusufteker.worthy.core.domain.model.toAppDate
+import com.yusufteker.worthy.core.domain.model.toEpochMillis
 import com.yusufteker.worthy.core.domain.repository.TransactionRepository
 import com.yusufteker.worthy.core.presentation.UiEvent
 import com.yusufteker.worthy.core.presentation.UiText
@@ -36,10 +38,8 @@ class AddTransactionViewModel(
             ) { expenseCategories, incomeCategories, cards ->
                 _state.value = _state.value.copy(
                     expenseForm = _state.value.expenseForm.copy(
-                        categories = expenseCategories,
-                        cards = cards
-                    ),
-                    incomeForm = _state.value.incomeForm.copy(
+                        categories = expenseCategories, cards = cards
+                    ), incomeForm = _state.value.incomeForm.copy(
                         categories = incomeCategories
                     )
                 )
@@ -47,7 +47,6 @@ class AddTransactionViewModel(
 
         }
     }
-
 
     fun onAction(action: AddTransactionAction) {
         when (action) {
@@ -69,16 +68,15 @@ class AddTransactionViewModel(
                     is TransactionFormAction.CardSelected -> {
                         _state.value = _state.value.copy(
                             expenseForm = _state.value.expenseForm.copy(
-                                selectedCard = action.action.card,
-                                errorCard = null
+                                selectedCard = action.action.card, errorCard = null
                             )
                         )
                     }
+
                     is TransactionFormAction.CategoryChanged -> {
                         _state.value = _state.value.copy(
                             expenseForm = _state.value.expenseForm.copy(
-                                selectedCategory = action.action.category,
-                                errorCategory = null
+                                selectedCategory = action.action.category, errorCategory = null
                             )
                         )
                     }
@@ -86,8 +84,7 @@ class AddTransactionViewModel(
                     is TransactionFormAction.DateChanged -> {
                         _state.value = _state.value.copy(
                             expenseForm = _state.value.expenseForm.copy(
-                                transactionDate = action.action.date,
-                                errorDate = null
+                                transactionDate = action.action.date, errorDate = null
                             )
                         )
                     }
@@ -99,20 +96,11 @@ class AddTransactionViewModel(
                             )
                         )
                     }
-/*
-                    is TransactionFormAction.InstallmentStartDateChanged -> {
-                        _state.value = _state.value.copy(
-                            expenseForm = _state.value.expenseForm.copy(
-                                installmentStartDate = action.action.date
-                            )
-                        )
-                    }*/
 
                     is TransactionFormAction.MoneyChanged -> {
                         _state.value = _state.value.copy(
                             expenseForm = _state.value.expenseForm.copy(
-                                money = action.action.money,
-                                errorMoney = null
+                                money = action.action.money, errorMoney = null
                             )
                         )
                     }
@@ -130,12 +118,7 @@ class AddTransactionViewModel(
 
                         launchWithLoading {
                             val validated = validateExpenseForm(state.value)
-                            if (validated.expenseForm.errorName != null ||
-                                validated.expenseForm.errorMoney != null ||
-                                validated.expenseForm.errorCategory != null ||
-                                validated.expenseForm.errorDate != null ||
-                                validated.expenseForm.errorCard != null
-                            ) {
+                            if (validated.expenseForm.errorName != null || validated.expenseForm.errorMoney != null || validated.expenseForm.errorCategory != null || validated.expenseForm.errorDate != null || validated.expenseForm.errorCard != null) {
                                 _state.value = validated
                             } else {
                                 val transaction = Transaction.NormalTransaction(
@@ -146,8 +129,13 @@ class AddTransactionViewModel(
                                     transactionDate = validated.expenseForm.transactionDate,
                                     note = validated.expenseForm.note,
                                     installmentCount = validated.expenseForm.installmentCount,
-                                    //installmentStartDate = validated.expenseForm.installmentStartDate.toAppDate(),
                                     transactionType = TransactionType.EXPENSE,
+                                    firstPaymentDate = adjustFirstInstallmentDate(
+                                        validated.expenseForm.transactionDate.toAppDate(),
+                                        validated.expenseForm.selectedCard?.statementDay
+                                            ?: (validated.expenseForm.transactionDate.toAppDate().day
+                                                ?: 1)
+                                    ).toEpochMillis(),
                                     cardId = validated.expenseForm.selectedCard?.id
                                 )
                                 transactionRepository.insert(transaction)
@@ -157,6 +145,7 @@ class AddTransactionViewModel(
                         }
 
                     }
+
                     is TransactionFormAction.AddNewCardClicked -> {
                         sendUiEventSafe(UiEvent.NavigateTo(Routes.AddCard))
                     }
@@ -178,8 +167,7 @@ class AddTransactionViewModel(
                     is TransactionFormAction.NameChanged -> {
                         _state.value = _state.value.copy(
                             incomeForm = _state.value.incomeForm.copy(
-                                name = action.action.name,
-                                errorMoney = null
+                                name = action.action.name, errorMoney = null
                             )
                         )
                     }
@@ -195,8 +183,7 @@ class AddTransactionViewModel(
                     is TransactionFormAction.CategoryChanged -> {
                         _state.value = _state.value.copy(
                             incomeForm = _state.value.incomeForm.copy(
-                                selectedCategory = action.action.category,
-                                errorCategory = null
+                                selectedCategory = action.action.category, errorCategory = null
                             )
                         )
                     }
@@ -204,8 +191,7 @@ class AddTransactionViewModel(
                     is TransactionFormAction.DateChanged -> {
                         _state.value = _state.value.copy(
                             incomeForm = _state.value.incomeForm.copy(
-                                transactionDate = action.action.date,
-                                errorDate = null
+                                transactionDate = action.action.date, errorDate = null
                             )
                         )
                     }
@@ -213,8 +199,7 @@ class AddTransactionViewModel(
                     is TransactionFormAction.MoneyChanged -> {
                         _state.value = _state.value.copy(
                             incomeForm = _state.value.incomeForm.copy(
-                                money = action.action.money,
-                                errorMoney = null
+                                money = action.action.money, errorMoney = null
                             )
                         )
                     }
@@ -226,6 +211,7 @@ class AddTransactionViewModel(
                             )
                         )
                     }
+
                     is TransactionFormAction.InstallmentCountChanged -> {
                         _state.value = _state.value.copy(
                             incomeForm = _state.value.incomeForm.copy(
@@ -234,23 +220,12 @@ class AddTransactionViewModel(
                         )
                     }
 
-                    /*is TransactionFormAction.InstallmentStartDateChanged -> {
-                        _state.value = _state.value.copy(
-                            incomeForm = _state.value.incomeForm.copy(
-                                installmentStartDate = action.action.date
-                            )
-                        )
-                    }*/
 
                     is TransactionFormAction.SaveClicked -> {
 
                         launchWithLoading {
                             val validated = validateIncomeForm(state.value)
-                            if (validated.incomeForm.errorName != null ||
-                                validated.incomeForm.errorMoney != null ||
-                                validated.incomeForm.errorCategory != null ||
-                                validated.incomeForm.errorDate != null
-                            ) {
+                            if (validated.incomeForm.errorName != null || validated.incomeForm.errorMoney != null || validated.incomeForm.errorCategory != null || validated.incomeForm.errorDate != null) {
                                 _state.value = validated
                             } else {
                                 val transaction = Transaction.NormalTransaction(
@@ -261,7 +236,7 @@ class AddTransactionViewModel(
                                     transactionDate = _state.value.incomeForm.transactionDate,
                                     note = _state.value.incomeForm.note,
                                     transactionType = TransactionType.INCOME
-                                    )
+                                )
 
                                 transactionRepository.insert(transaction)
 
@@ -270,8 +245,8 @@ class AddTransactionViewModel(
 
                         }
 
-
                     }
+
                     is TransactionFormAction.AddNewCardClicked -> {
 
                     }
@@ -288,6 +263,7 @@ class AddTransactionViewModel(
         }
     }
 }
+
 private fun validateExpenseForm(state: AddTransactionState): AddTransactionState {
     val form = state.expenseForm
     return state.copy(
@@ -296,13 +272,13 @@ private fun validateExpenseForm(state: AddTransactionState): AddTransactionState
             errorMoney = if (form.money == null) UiText.StringResourceId(Res.string.validation_amount_empty) else null,
             errorCategory = if (form.selectedCategory == null) UiText.StringResourceId(Res.string.validation_category_empty) else null,
             errorDate = if (form.transactionDate == 0L) UiText.StringResourceId(Res.string.validation_date_empty) else null,
-            errorCard = if (form.isCardPayment && form.selectedCard == null) UiText.StringResourceId(Res.string.validation_card_empty) else null,
+            errorCard = if (form.isCardPayment && form.selectedCard == null) UiText.StringResourceId(
+                Res.string.validation_card_empty
+            ) else null,
 
-        )
+            )
     )
 }
-
-
 
 private fun validateIncomeForm(state: AddTransactionState): AddTransactionState {
     val form = state.incomeForm

@@ -188,11 +188,11 @@ fun AnalyticsScreen(
                                         selectedPeriod = state.selectedTimePeriod
                                     )
 
-                                    ChartType.PIE_CHART -> {
+                                    ChartType.PIE_CHART -> { // Refund olanlar gösterilmiyor // todo belki sonra değişir
 
                                         PieChartPager(
                                             transactionsList = listOf(
-                                                state.convertedFilteredTransactions.filter { it.transactionType == TransactionType.EXPENSE },
+                                                state.convertedFilteredTransactions.filter { it.transactionType == TransactionType.EXPENSE && it.refundDate == null },
                                                 state.convertedFilteredTransactions.filter { it.transactionType == TransactionType.INCOME }),
                                             labels = listOf(
                                                 UiText.StringResourceId(Res.string.expenses)

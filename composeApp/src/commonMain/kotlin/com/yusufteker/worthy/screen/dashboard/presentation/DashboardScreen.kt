@@ -41,6 +41,8 @@ import worthy.composeapp.generated.resources.dashboard_evaluate_purchase
 import worthy.composeapp.generated.resources.dashboard_overview
 import worthy.composeapp.generated.resources.ic_installment
 import worthy.composeapp.generated.resources.installments
+import worthy.composeapp.generated.resources.screen_name_analytics
+import worthy.composeapp.generated.resources.transaction
 
 @Composable
 fun DashboardScreenRoot(
@@ -146,6 +148,10 @@ fun DashboardScreen(
                     iconPainter = painterResource(Res.drawable.ic_installment),
                     text = UiText.StringResourceId(Res.string.installments).asString(),
                     onClick = { onAction(DashboardAction.onInstallmentsMenuClicked) })
+                MenuRow(
+                    iconPainter = painterResource(Res.drawable.transaction),
+                    text = UiText.StringResourceId(Res.string.screen_name_analytics).asString(),
+                    onClick = { onAction(DashboardAction.onTransactionsMenuClicked) })
 
             }
 

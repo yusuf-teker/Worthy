@@ -38,14 +38,24 @@ fun Money.formatted(): String {
     val decimalSeparator = if (locale.language.lowercase() == "tr") "," else "."
     val thousandSeparator = if (locale.language.lowercase() == "tr") "." else ","
 
-    val integerPart = floor(amount).toLong()
-    val fractionalPart = ((amount - integerPart) * 100).roundToInt()
+    val isNegative = amount < 0
+    val absAmount = kotlin.math.abs(amount)
+
+    val integerPart = floor(absAmount).toLong()
+    val fractionalPart = ((absAmount - integerPart) * 100).roundToInt()
 
     // Binlik ayırıcı ekleme
-    val integerStr = integerPart.toString().reversed().chunked(3).joinToString(thousandSeparator).reversed()
+    val integerStr = integerPart.toString()
+        .reversed()
+        .chunked(3)
+        .joinToString(thousandSeparator)
+        .reversed()
 
-    return "${currency.symbol} $integerStr$decimalSeparator${fractionalPart.toString().padStart(2,'0')}"
+    val formatted = "$integerStr$decimalSeparator${fractionalPart.toString().padStart(2, '0')} ${currency.symbol}"
+
+    return if (isNegative) "-$formatted" else formatted
 }
+
 
 
 fun Money.formattedShort(): String {

@@ -16,9 +16,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -31,6 +34,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yusufteker.worthy.app.navigation.NavigationHandler
 import com.yusufteker.worthy.app.navigation.NavigationModel
+import com.yusufteker.worthy.core.domain.getCurrentAppDate
+import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.core.domain.model.CategoryType
 import com.yusufteker.worthy.core.domain.model.TransactionType
 import com.yusufteker.worthy.core.domain.model.toAppDate
@@ -46,12 +51,9 @@ import com.yusufteker.worthy.core.presentation.components.MoneyInput
 import com.yusufteker.worthy.core.presentation.components.WheelDatePickerV3
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppColors.primaryButtonColors
-import com.yusufteker.worthy.screen.subscriptiondetail.presentation.SubscriptionDetailAction
-import io.github.aakira.napier.Napier
 import org.koin.compose.viewmodel.koinViewModel
 import worthy.composeapp.generated.resources.Res
 import worthy.composeapp.generated.resources.date_added
-import worthy.composeapp.generated.resources.delete
 import worthy.composeapp.generated.resources.note
 import worthy.composeapp.generated.resources.refund_button
 import worthy.composeapp.generated.resources.screen_title_transaction_detail
@@ -87,7 +89,7 @@ fun TransactionDetailScreenRoot(
     }
 }
 
-@OptIn(ExperimentalTime::class)
+@OptIn(ExperimentalTime::class, ExperimentalMaterial3Api::class)
 @Composable
 fun TransactionDetailScreen(
     state: TransactionDetailState,
@@ -96,10 +98,6 @@ fun TransactionDetailScreen(
     modifier: Modifier = Modifier
 
 ) {
-
-    LaunchedEffect(key1 = state.isLoading) {
-        Napier.d("TransactionDetailScreen: isLoading = ${state.isLoading}")
-    }
 
     AppScaffold(
         modifier = modifier.fillMaxSize().padding(contentPadding), topBar = {
@@ -124,8 +122,7 @@ fun TransactionDetailScreen(
                             tint = AppColors.icon_red
                         )
                     }
-                }
-            )
+                })
         }) { paddingValues ->
         Column(
             modifier = modifier.padding(paddingValues).fillMaxSize(),
@@ -135,6 +132,8 @@ fun TransactionDetailScreen(
             var errorMoney by remember { mutableStateOf<UiText?>(null) }
             var errorCategory by remember { mutableStateOf<UiText?>(null) }
             var errorDate by remember { mutableStateOf<UiText?>(null) }
+            val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+            var showRefundSheet by remember { mutableStateOf(false) }
 
             Column(
                 modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState())
@@ -231,14 +230,14 @@ fun TransactionDetailScreen(
                         )
 
 
-                        if (state.isRefund != null && !state.isRefund){ // REFUND DEĞİL ise refund butonu
+                        if (state.isRefund != null && !state.isRefund) { // REFUND DEĞİL ise refund butonu
                             Spacer(Modifier.width(16.dp))
                             AppButton(
                                 modifier = Modifier.weight(1f),
                                 text = UiText.StringResourceId(Res.string.refund_button).asString(),
                                 loading = state.isLoading,
                                 onClick = {
-                                    onAction(TransactionDetailAction.RefundTransaction(it))
+                                    showRefundSheet = true
                                 },
                                 colors = primaryButtonColors.copy(
                                     containerColor = Color.Red,
@@ -248,11 +247,64 @@ fun TransactionDetailScreen(
 
                     }
 
-
                 }
 
             }
+            if (showRefundSheet) {
+                ModalBottomSheet(
+                    onDismissRequest = { showRefundSheet = false }, sheetState = bottomSheetState
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        Text(
+                            text = UiText.StringResourceId(Res.string.summary_refund).asString(),
+                            style = androidx.compose.material3.MaterialTheme.typography.titleMedium
+                        )
+                        var selectedRefundDate by remember {
+                            mutableStateOf<AppDate?>(
+                                getCurrentAppDate()
+                            )
+                        }
+
+                        state.transaction?.let {
+                            WheelDatePickerV3(
+                                initialDate = selectedRefundDate
+                                    ?: state.transaction.transactionDate.toAppDate(),
+                                onDateSelected = { date ->
+                                    selectedRefundDate = date
+                                },
+                                modifier = Modifier.fillMaxWidth().height(56.dp),
+                                title = UiText.StringResourceId(Res.string.date_added).asString(),
+                                errorMessage = null,
+                                minDate = it.transactionDate.toAppDate(),
+                                maxDate = it.transactionDate.toAppDate().afterWeeks(2)
+                            )
+                        }
+
+
+                        AppButton(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = UiText.StringResourceId(Res.string.refund_button).asString(),
+                            loading = state.isLoading,
+                            onClick = {
+                                selectedRefundDate?.let { refundDate ->
+                                    onAction(
+                                        TransactionDetailAction.RefundTransaction(
+                                            refundDate
+                                        )
+                                    )
+                                    showRefundSheet = false
+                                }
+                            },
+                            colors = primaryButtonColors.copy(containerColor = Color.Red)
+                        )
+                    }
+                }
+            }
         }
+
     }
 
 }

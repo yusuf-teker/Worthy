@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.TransactionType
+import com.yusufteker.worthy.core.domain.model.toEpochMillis
 import com.yusufteker.worthy.core.domain.model.toRefundTransaction
 
 import com.yusufteker.worthy.core.domain.model.updateAmount
@@ -32,15 +33,15 @@ class TransactionDetailViewModel(
     fun observeData() {
         launchWithLoading {
             combine(
-                categoryRepository.getAll(),
-                categoryRepository.getCards()
+                categoryRepository.getAll(), categoryRepository.getCards()
             ) { categories, cards ->
                 categories to cards
             }.onEach { (categories, cards) ->
-                _state.update { it.copy(
-                    categories = categories,
-                    cards = cards
-                ) }
+                _state.update {
+                    it.copy(
+                        categories = categories, cards = cards
+                    )
+                }
             }.launchIn(viewModelScope)
 
         }
@@ -52,9 +53,12 @@ class TransactionDetailViewModel(
             is TransactionDetailAction.Init -> {
                 launchWithLoading {
                     _state.update {
-                        val transactionList = transactionRepository.getByIdWithRefund(action.transactionId) // todo refund ise related id
-                        val transaction = transactionList?.firstOrNull { transaction -> transaction.transactionType == TransactionType.EXPENSE }
-                        val isRefund = transactionList?.any{it -> it.transactionType == TransactionType.REFUND }
+                        val transactionList =
+                            transactionRepository.getByIdWithRefund(action.transactionId) // todo refund ise related id
+                        val transaction =
+                            transactionList?.firstOrNull { transaction -> transaction.transactionType == TransactionType.EXPENSE }
+                        val isRefund =
+                            transactionList?.any { it -> it.transactionType == TransactionType.REFUND }
                         it.copy(
                             transaction = transaction,
                             isRefund = isRefund,
@@ -101,17 +105,19 @@ class TransactionDetailViewModel(
             is TransactionDetailAction.UpdateNote -> {
                 _state.update { it.copy(transaction = it.transaction?.updateNote(action.note)) }
             }
+
             is TransactionDetailAction.UpdateDate -> {
                 _state.update { it.copy(transaction = it.transaction?.updateDate(action.date)) }
             }
 
             is TransactionDetailAction.DeleteTransaction -> {
                 launchWithLoading {
-                    when(action.transaction) {
+                    when (action.transaction) {
                         is Transaction.NormalTransaction -> {
                             transactionRepository.deleteByOriginalId(action.transaction.originalId)
                             navigateBack()
                         }
+
                         else -> {}
                     }
                 }
@@ -120,6 +126,7 @@ class TransactionDetailViewModel(
             is TransactionDetailAction.NavigateToAddCardScreen -> {
                 navigateTo(Routes.AddCard)
             }
+
             is TransactionDetailAction.UpdateCard -> {
                 _state.update { it.copy(transaction = it.transaction?.updateCard(action.cardId)) }
 
@@ -127,13 +134,20 @@ class TransactionDetailViewModel(
 
             is TransactionDetailAction.RefundTransaction -> {
                 launchWithLoading {
-                    when(action.transaction) {
-                        is Transaction.NormalTransaction -> {
-                            transactionRepository.refundTransaction(action.transaction.toRefundTransaction())
-                            navigateBack()
+                    state.value.transaction?.let {
+                        when (it) {
+                            is Transaction.NormalTransaction -> {
+                                // eskisine refund date ekliyorum
+                                transactionRepository.update(it.copy(refundDate = action.refundDate.toEpochMillis()))
+                                // refundu installment countu 1 çektim 1 defa gözükmesi lazım çünkü genel olarak
+                                transactionRepository.refundTransaction(it.toRefundTransaction(action.refundDate))
+                                navigateBack()
+                            }
+
+                            else -> {}
                         }
-                        else -> {}
                     }
+
                 }
             }
         }

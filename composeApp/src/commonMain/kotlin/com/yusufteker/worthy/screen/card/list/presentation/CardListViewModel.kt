@@ -5,7 +5,7 @@ import com.yusufteker.worthy.app.navigation.Routes
 import com.yusufteker.worthy.core.domain.getCurrentAppDate
 import com.yusufteker.worthy.core.domain.isAfterOrEqual
 import com.yusufteker.worthy.core.domain.isInThisMonth
-import com.yusufteker.worthy.core.domain.model.splitInstallments
+import com.yusufteker.worthy.core.domain.model.splitInstallmentsByFirstPaymentDate
 import com.yusufteker.worthy.core.domain.repository.TransactionRepository
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
@@ -117,14 +117,14 @@ class CardListViewModel(
             .onEach { transactions ->
                 // Taksitli işemleri transaction liste çevir ay ay ayır
                 val expandedTransactions = transactions.flatMap { tx ->
-                    tx.splitInstallments(state.value.selectedCard)
+                    tx.splitInstallmentsByFirstPaymentDate(state.value.selectedCard)
                 }
                 // Her ayın işlemine bak bu ay olanları seç
                 val thisMonthTransactions =
-                    expandedTransactions.filter { it.transactionDate.isInThisMonth() }
+                    expandedTransactions.filter { it.firstPaymentDate.isInThisMonth() }
                 // Bu aydan sonraki işlemler
                 val totalFutureTransactions = expandedTransactions.filter {
-                    it.transactionDate.isAfterOrEqual(
+                    it.firstPaymentDate.isAfterOrEqual(
                         getCurrentAppDate(day = state.value.selectedCard?.statementDay ?: 1)
                     )
                 }

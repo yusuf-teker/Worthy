@@ -6,8 +6,7 @@ import com.yusufteker.worthy.core.domain.getCurrentEpochMillis
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.distinctCategoryIds
-import com.yusufteker.worthy.core.domain.model.isInstallmentRefund
-import com.yusufteker.worthy.core.domain.model.toAppDate
+import com.yusufteker.worthy.core.domain.model.isRefund
 import com.yusufteker.worthy.core.domain.model.updateAmount
 import com.yusufteker.worthy.core.domain.service.CurrencyConverter
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
@@ -15,7 +14,6 @@ import com.yusufteker.worthy.core.presentation.theme.Constants.ONE_DAY_MILLIS
 import com.yusufteker.worthy.screen.transactions.domain.model.TimePeriod
 import com.yusufteker.worthy.screen.transactions.domain.repository.AnalyticsRepository
 import com.yusufteker.worthy.screen.transactions.list.presentation.components.SortOption
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
@@ -29,17 +27,16 @@ class AnalyticsViewModel(
     fun observeData() {
         launchWithLoading {
             combine(
-                analyticsRepository.getTransactionsWithInstallments(),
-                analyticsRepository.getCards(),
-                analyticsRepository.getUserPrefCurrency()
+                analyticsRepository.getTransactionsWithInstallments(),// ödeme ayına göre ayrıldı
+                analyticsRepository.getCards(), analyticsRepository.getUserPrefCurrency()
             ) { transactions, cards, currency ->
 
                 val distinctCategoryIds = transactions.distinctCategoryIds()
 
                 // repository’den tüm kategorileri alıp filtrele
-                val categories = analyticsRepository.getCategories()
-                    .first() // Flow ise ilk değeri almak için
-                    .filter { it.id in distinctCategoryIds }
+                val categories =
+                    analyticsRepository.getCategories().first() // Flow ise ilk değeri almak için
+                        .filter { it.id in distinctCategoryIds }
 
                 _state.update {
                     it.copy(
@@ -52,12 +49,10 @@ class AnalyticsViewModel(
                 }
                 launchWithLoading {
                     filterTransactionsWithCurrencyConverter(
-                        currencyConverter,
-                        state.value.selectedCurrency
+                        currencyConverter, state.value.selectedCurrency
                     )
                     calculateMonthlyComparisonTransactions(
-                        currencyConverter,
-                        state.value.selectedCurrency
+                        currencyConverter, state.value.selectedCurrency
                     )
                     applyFilters()
                     applySort()
@@ -77,53 +72,47 @@ class AnalyticsViewModel(
         val s = state.value
         val currentTime = getCurrentEpochMillis()
 
-        val filtered = s.transactions
-            .filter { tx ->
-                val txDate = tx.transactionDate
-                val lowerBound = currentTime - (s.selectedTimePeriod.days * 24L * 60L * 60L * 1000L)
+        val filtered = s.transactions.filter { tx ->
+            val txDate = tx.transactionDate
+            val lowerBound = currentTime - (s.selectedTimePeriod.days * 24L * 60L * 60L * 1000L)
 
-                s.selectedTimePeriod == TimePeriod.NONE || (txDate in lowerBound..currentTime)
-            }
-            .filter { tx ->
-                if (s.selectedCategories.isEmpty()) true
-                else tx.categoryId in s.selectedCategories.map { it.id }
-            }
-            .filter { tx ->
-                if (s.selectedCards.isEmpty()) true
-                else tx.cardId in s.selectedCards.map { it.id }
-            }
-            .filter { tx ->
-                if (s.selectedTransactionType == null) true
-                else tx.transactionType == s.selectedTransactionType
-            }
-        val filteredConverted = s.convertedTransactions
-            .filter { tx ->
-                val txDate = tx.transactionDate
-                val lowerBound = currentTime - (s.selectedTimePeriod.days * 24L * 60L * 60L * 1000L)
+            s.selectedTimePeriod == TimePeriod.NONE || (txDate in lowerBound..currentTime)
+        }.filter { tx ->
+            if (s.selectedCategories.isEmpty()) true
+            else tx.categoryId in s.selectedCategories.map { it.id }
+        }.filter { tx ->
+            if (s.selectedCards.isEmpty()) true
+            else tx.cardId in s.selectedCards.map { it.id }
+        }.filter { tx ->
+            if (s.selectedTransactionType == null) true
+            else tx.transactionType == s.selectedTransactionType
+        }
+        val filteredConverted = s.convertedTransactions.filter { tx ->
+            val txDate = tx.transactionDate
+            val lowerBound = currentTime - (s.selectedTimePeriod.days * 24L * 60L * 60L * 1000L)
 
-                s.selectedTimePeriod == TimePeriod.NONE || (txDate in lowerBound..currentTime)
-            }
-            .filter { tx ->
-                if (s.selectedCategories.isEmpty()) true
-                else tx.categoryId in s.selectedCategories.map { it.id }
-            }
-            .filter { tx ->
-                if (s.selectedCards.isEmpty()) true
-                else tx.cardId in s.selectedCards.map { it.id }
-            }
-            .filter { tx ->
-                if (s.selectedTransactionType == null) true
-                else tx.transactionType == s.selectedTransactionType
-            }
-        _state.update { it.copy(
-            filteredTransactions = filtered,
-            convertedFilteredTransactions = filteredConverted,
-        ) }
+            s.selectedTimePeriod == TimePeriod.NONE || (txDate in lowerBound..currentTime)
+        }.filter { tx ->
+            if (s.selectedCategories.isEmpty()) true
+            else tx.categoryId in s.selectedCategories.map { it.id }
+        }.filter { tx ->
+            if (s.selectedCards.isEmpty()) true
+            else tx.cardId in s.selectedCards.map { it.id }
+        }.filter { tx ->
+            if (s.selectedTransactionType == null) true
+            else tx.transactionType == s.selectedTransactionType
+        }
+        _state.update {
+            it.copy(
+                filteredTransactions = filtered,
+                convertedFilteredTransactions = filteredConverted,
+            )
+        }
     }
 
     private fun applySort() {
         val s = state.value
-        val sorted =  when (s.selectedSortOption) {
+        val sorted = when (s.selectedSortOption) {
             SortOption.DATE_DESC -> s.filteredTransactions.sortedByDescending { it.transactionDate }
             SortOption.DATE_ASC -> s.filteredTransactions.sortedBy { it.transactionDate }
             SortOption.AMOUNT_DESC -> s.filteredTransactions.sortedByDescending { it.amount.amount }
@@ -132,6 +121,7 @@ class AnalyticsViewModel(
 
         _state.update { it.copy(filteredTransactions = sorted) }
     }
+
     fun onAction(action: AnalyticsAction) {
         when (action) {
             is AnalyticsAction.Init -> {
@@ -202,6 +192,7 @@ class AnalyticsViewModel(
             is AnalyticsAction.OnAddTransactionClicked -> {
                 navigateTo(Routes.AddTransaction())
             }
+
             is AnalyticsAction.OnSortSelected -> {
                 _state.update {
                     it.copy(
@@ -210,6 +201,7 @@ class AnalyticsViewModel(
                 }
                 applySort()
             }
+
             is AnalyticsAction.OnTransactionTypeSelected -> {
                 _state.update {
                     it.copy(
@@ -218,22 +210,30 @@ class AnalyticsViewModel(
                 }
                 applyFilters()
             }
+
             is AnalyticsAction.OnTransactionClicked -> {
-                when(action.transaction){
+                when (action.transaction) {
                     is Transaction.NormalTransaction -> {
-                        if (action.transaction.isInstallmentRefund()){ // original Id 0 related -> Actual Transaction
-                            navigateTo(Routes.TransactionDetail(action.transaction.relatedTransactionId?: action.transaction.id))
-                        }else{
+                        if (action.transaction.isRefund()) { // original Id 0 related -> Actual Transaction
+                            navigateTo(
+                                Routes.TransactionDetail(
+                                    action.transaction.relatedTransactionId ?: action.transaction.id
+                                )
+                            )
+                        } else {
                             navigateTo(Routes.TransactionDetail(action.transaction.originalId))
                         }
 
                     }
+
                     is Transaction.SubscriptionTransaction -> {
                         navigateTo(Routes.SubscriptionDetail(action.transaction.subscriptionId))
                     }
+
                     is Transaction.RecurringTransaction -> {
 
                     }
+
                     else -> {
 
                     }
@@ -243,8 +243,7 @@ class AnalyticsViewModel(
     }
 
     suspend fun filterTransactionsWithCurrencyConverter(
-        currencyConverter: CurrencyConverter,
-        targetCurrency: Currency
+        currencyConverter: CurrencyConverter, targetCurrency: Currency
     ) {
 
         val convertedTransactions = state.value.transactions.map { tx ->
@@ -258,12 +257,10 @@ class AnalyticsViewModel(
     }
 
     suspend fun calculateMonthlyComparisonTransactions(
-        currencyConverter: CurrencyConverter,
-        targetCurrency: Currency
+        currencyConverter: CurrencyConverter, targetCurrency: Currency
     ) {
         val currentTime = getCurrentEpochMillis()
-        val periodStart =
-            currentTime - (TimePeriod.SIX_MONTHS.days.toDouble() * ONE_DAY_MILLIS)
+        val periodStart = currentTime - (TimePeriod.SIX_MONTHS.days.toDouble() * ONE_DAY_MILLIS)
 
         val filtered = state.value.transactions.filter { it.transactionDate >= periodStart }
 

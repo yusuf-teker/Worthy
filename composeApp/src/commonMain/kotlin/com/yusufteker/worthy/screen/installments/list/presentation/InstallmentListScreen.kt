@@ -70,24 +70,17 @@ AppScaffold(
 ){ paddingValues ->
     Column(modifier.padding(paddingValues)) {
         InstallmentListAccordion(
-            installments = state.installments,
+            monthGroups = state.monthGroups,
             onItemClicked = {
                 //onAction(InstallmentListAction.OnInstallmentClicked(it))
+            },
+            onMonthClicked = {
+                onAction(InstallmentListAction.OnMonthClicked(it))
+
             }
         )
     }
 
-    /*LazyColumn(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(top = paddingValues.calculateTopPadding()),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        itemsIndexed(state.installments) { index, installment ->
-
-            InstallmentCard(installment = installment,)
-        }
-    }*/
 }
   
 }

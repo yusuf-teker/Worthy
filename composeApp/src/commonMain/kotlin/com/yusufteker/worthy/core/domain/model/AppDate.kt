@@ -2,9 +2,11 @@ package com.yusufteker.worthy.core.domain.model
 
 import com.yusufteker.worthy.core.domain.getCurrentMonth
 import com.yusufteker.worthy.core.domain.toEpochMillis
+import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.number
+import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.todayIn
 import kotlinx.serialization.Serializable
@@ -32,12 +34,18 @@ data class AppDate(
         return if (day != null) "$day/$month/$year" else "$month/$year"
     }
 
-    override fun compareTo(other: AppDate): Int {
+    override operator fun compareTo(other: AppDate): Int {
         if (year != other.year) return year - other.year
         if (month != other.month) return month - other.month
         return (day ?: 0) - (other.day ?: 0)
     }
 
+    fun afterWeeks(weeks: Int): AppDate {
+        // Gün yoksa ayın ilk günü varsayalım
+        val baseDate = LocalDate(year, month, day ?: 1)
+        val newDate = baseDate.plus(DatePeriod(days = weeks * 7))
+        return copy(year = newDate.year, month = newDate.monthNumber, day = newDate.dayOfMonth)
+    }
 }
 fun AppDate.getLastMonth(): AppDate {
     if (this.month > 1) {
@@ -98,3 +106,5 @@ fun AppDate.isBeforeToday(): Boolean {
             (this.year == today.year && this.month < today.month.number) ||
             (this.year == today.year && this.month == today.month.number && (this.day?:0) < today.day)
 }
+
+

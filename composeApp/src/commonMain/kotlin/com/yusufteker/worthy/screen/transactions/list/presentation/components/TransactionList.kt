@@ -39,7 +39,7 @@ import androidx.compose.ui.unit.dp
 import com.yusufteker.worthy.core.domain.getCurrentAppDate
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Transaction
-import com.yusufteker.worthy.core.domain.model.groupByMonth
+import com.yusufteker.worthy.core.domain.model.groupByFirstPaymentMonth
 import com.yusufteker.worthy.core.presentation.getMonthShortName
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
@@ -53,8 +53,8 @@ fun TransactionListAccordion(
     onDelete: (Int) -> Unit,
     onItemClicked: (transaction: Transaction) -> Unit
 ) {
-    val groupedTransactions = transactions.groupByMonth()
-    val groupedConvertedTransactions = convertedTransactions.groupByMonth()
+    val groupedTransactions = transactions.groupByFirstPaymentMonth()
+    val groupedConvertedTransactions = convertedTransactions.groupByFirstPaymentMonth()
     var expandedMonths by remember {
         mutableStateOf(groupedTransactions.keys.associateWith { appDate -> (appDate == getCurrentAppDate().copy(day = null)) })
     }

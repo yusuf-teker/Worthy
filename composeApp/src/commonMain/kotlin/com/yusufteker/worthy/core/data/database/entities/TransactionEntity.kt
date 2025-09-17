@@ -39,5 +39,7 @@ data class TransactionEntity(
     val relatedTransactionId: Int? = null,
     val installmentCount: Int? = null,
     val installmentStartDate: AppDate? = null,
+    val refundDate: Long? = null,
+    val firstPaymentDate: Long,
     val note: String? = null
 )

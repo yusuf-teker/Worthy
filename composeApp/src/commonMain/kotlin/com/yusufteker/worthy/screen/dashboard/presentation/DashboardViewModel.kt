@@ -147,6 +147,9 @@ class DashboardViewModel(
         is DashboardAction.onInstallmentsMenuClicked -> {
             navigateTo(Routes.InstallmentGraph)
         }
+        is DashboardAction.onTransactionsMenuClicked -> {
+            navigateTo(Routes.AnalyticsGraph)
+        }
     }
 
     private fun observeData() {

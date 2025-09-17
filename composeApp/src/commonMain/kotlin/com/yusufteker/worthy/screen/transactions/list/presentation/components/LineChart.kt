@@ -90,7 +90,7 @@ fun LineChart( //todo Tek eleman varsa yok sayılyor onu düzelt
             val transactionValue = when (transaction.transactionType) {
                 TransactionType.INCOME -> transaction.amount.amount
                 TransactionType.EXPENSE -> -transaction.amount.amount
-                TransactionType.REFUND -> 0.0
+                TransactionType.REFUND -> -transaction.amount.amount
             }
 
             val transactionDay = (transaction.transactionDate / ONE_DAY_MILLIS) * ONE_DAY_MILLIS

@@ -7,7 +7,8 @@ import com.yusufteker.worthy.core.domain.model.Transaction
 import com.yusufteker.worthy.core.domain.model.TransactionType
 import com.yusufteker.worthy.core.domain.model.generateMonthlyAmounts
 import com.yusufteker.worthy.core.domain.model.groupByMonthForDashboard
-import com.yusufteker.worthy.core.domain.model.splitInstallments
+import com.yusufteker.worthy.core.domain.model.groupByMonthForDashboardIncome
+import com.yusufteker.worthy.core.domain.model.splitInstallmentsByFirstPaymentDate
 import com.yusufteker.worthy.core.domain.repository.CategoryRepository
 import com.yusufteker.worthy.core.domain.repository.RecurringFinancialItemRepository
 import com.yusufteker.worthy.core.domain.repository.TransactionRepository
@@ -63,10 +64,10 @@ class DashboardRepositoryImpl(
     ): Flow<List<DashboardMonthlyAmount>> {
         val firstDayOfStartMonth = getStartDate(monthCount, currentDate)
 
-        return transactionRepository.getTransactionsSince(
-            firstDayOfStartMonth, TransactionType.INCOME
+        return transactionRepository.getIncomeTransactionsSince(
+            firstDayOfStartMonth
         ).map { transactions ->
-            transactions.groupByMonthForDashboard()
+            transactions.groupByMonthForDashboardIncome()
         }
     }
 
@@ -85,7 +86,7 @@ class DashboardRepositoryImpl(
             // TAKSITLI ISE HER BIR TAKSITI AY AY AYIR
             val cardMap = cards.associateBy { it.id }  // cardId - Card
 
-            transactions.flatMap { tx -> tx.splitInstallments(cardMap[tx.cardId]) }
+            transactions.flatMap { tx -> tx.splitInstallmentsByFirstPaymentDate(cardMap[tx.cardId]) }
                 .groupByMonthForDashboard()
 
         }

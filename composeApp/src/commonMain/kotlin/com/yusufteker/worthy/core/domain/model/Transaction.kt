@@ -1,6 +1,5 @@
 package com.yusufteker.worthy.core.domain.model
 
-import com.yusufteker.worthy.core.domain.service.CurrencyConverter
 import com.yusufteker.worthy.core.domain.toLocalDate
 import com.yusufteker.worthy.screen.card.domain.model.Card
 import kotlinx.datetime.TimeZone
@@ -35,6 +34,10 @@ sealed class Transaction {
     abstract val installmentCount: Int?
 
     abstract val installmentIndex: Int?
+    abstract val refundDate: Long?
+
+    abstract val firstPaymentDate: Long
+
     //abstract val installmentStartDate: AppDate?
     abstract val note: String?
 
@@ -51,8 +54,9 @@ sealed class Transaction {
         override val relatedTransactionId: Int? = null,
         override val installmentCount: Int? = null,
         override val installmentIndex: Int = -1,
-        //override val installmentStartDate: AppDate? = null,
-        override val note: String? = null
+        override val refundDate: Long? = null,
+        override val note: String? = null,
+        override val firstPaymentDate: Long = transactionDate
     ) : Transaction()
 
     @Serializable
@@ -68,15 +72,14 @@ sealed class Transaction {
         override val relatedTransactionId: Int? = null,
         override val installmentCount: Int? = null,
         override val installmentIndex: Int = -1,
-        //override val installmentStartDate: AppDate? = null,
+        override val refundDate: Long? = null,
         override val note: String? = null,
         val subscriptionId: Int,
         val subscriptionGroupId: String,
         val startDate: AppDate,
         val endDate: AppDate? = null,
-        val colorHex: String? = null,
-        ) : Transaction()
-
+        val colorHex: String? = null, override val firstPaymentDate: Long = transactionDate,
+    ) : Transaction()
 
     @Serializable
     data class RecurringTransaction(
@@ -91,11 +94,12 @@ sealed class Transaction {
         override val relatedTransactionId: Int? = null,
         override val installmentCount: Int? = null,
         override val installmentIndex: Int = -1,
-        //override val installmentStartDate: AppDate? = null,
+        override val refundDate: Long? = null,
         override val note: String? = null,
         val recurringGroupId: String,
         val month: Int,
-        val year: Int
+        val year: Int,
+        override val firstPaymentDate: Long = transactionDate
     ) : Transaction()
 }
 
@@ -111,7 +115,6 @@ val TransactionType.labelRes: StringResource
         else -> Res.string.filter_none
     }
 
-
 @OptIn(ExperimentalTime::class)
 fun List<Transaction>.groupByMonth(): Map<AppDate, List<Transaction>> {
     return this.groupBy { transaction ->
@@ -120,7 +123,33 @@ fun List<Transaction>.groupByMonth(): Map<AppDate, List<Transaction>> {
         AppDate(year = date.year, month = date.month.number)
     }
 }
- fun List<Transaction>.groupByMonthForDashboard(): List<DashboardMonthlyAmount> {
+
+@OptIn(ExperimentalTime::class)
+fun List<Transaction>.groupByFirstPaymentMonth(): Map<AppDate, List<Transaction>> {
+    val grouped = this.groupBy { transaction ->
+        val date = Instant.fromEpochMilliseconds(
+            transaction.firstPaymentDate ?: transaction.transactionDate
+        ).toLocalDateTime(TimeZone.currentSystemDefault())
+        AppDate(year = date.year, month = date.month.number)
+    }
+
+    return grouped.toList().sortedByDescending { (appDate, _) -> // önce yıl, sonra ay
+        appDate.year * 100 + appDate.month // 202501, 202502 gibi
+    }.toMap(LinkedHashMap()) // sıralı map döner
+}
+
+fun List<Transaction>.groupByMonthForDashboard(): List<DashboardMonthlyAmount> {
+    val grouped = this.groupBy { tx ->
+        val localDate = tx.firstPaymentDate.toLocalDate()
+        AppDate(localDate.year, localDate.month.number)
+    }
+
+    return grouped.map { (yearMonth, txList) ->
+        DashboardMonthlyAmount(
+            appDate = yearMonth, amount = txList.map { it.amount })
+    }.sortedWith(compareBy({ it.appDate.year }, { it.appDate.month }))
+}
+fun List<Transaction>.groupByMonthForDashboardIncome(): List<DashboardMonthlyAmount> {
     val grouped = this.groupBy { tx ->
         val localDate = tx.transactionDate.toLocalDate()
         AppDate(localDate.year, localDate.month.number)
@@ -128,11 +157,10 @@ fun List<Transaction>.groupByMonth(): Map<AppDate, List<Transaction>> {
 
     return grouped.map { (yearMonth, txList) ->
         DashboardMonthlyAmount(
-            appDate = yearMonth,
-            amount = txList.map { it.amount }
-        )
+            appDate = yearMonth, amount = txList.map { it.amount })
     }.sortedWith(compareBy({ it.appDate.year }, { it.appDate.month }))
 }
+
 
 fun Transaction.updateAmount(newAmount: Money): Transaction = when (this) {
     is Transaction.NormalTransaction -> this.copy(amount = newAmount)
@@ -173,9 +201,11 @@ fun Transaction.updateDate(newDate: Long): Transaction = when (this) {
 fun Transaction.isSubscription(): Boolean {
     return this is Transaction.SubscriptionTransaction
 }
+
 fun Transaction.isRecurring(): Boolean {
     return this is Transaction.RecurringTransaction
 }
+
 fun Transaction.isNormal(): Boolean {
     return this is Transaction.NormalTransaction
 }
@@ -183,39 +213,89 @@ fun Transaction.isNormal(): Boolean {
 // bu fonksiyon transaction'ı taksitlerine ayırır
 // Taksit yok ise verileni geri döner
 fun Transaction.splitInstallments(card: Card?): List<Transaction> {
-    if (installmentCount == null /*|| installmentStartDate == null*/ || (installmentCount ?: 0) <= 1) {
+    if (installmentCount == null /*|| installmentStartDate == null*/ || (installmentCount
+            ?: 0) <= 1
+    ) {
         return listOf(this)
     }
 
-    val monthlyAmount = amount.divide(installmentCount?:1)
+    val monthlyAmount = amount.divide(installmentCount ?: 1)
     val results = mutableListOf<Transaction>()
 
     val statementDay = card?.statementDay ?: 1 // statement day yoksa ayın 1’i gibi kabul edelim
     var currentDate = transactionDate.toAppDate()//installmentStartDate
 
-    repeat(installmentCount?:1) { index ->
+    repeat(installmentCount ?: 1) { index ->
         // TransactionDate'i statement day'e göre ayarlıyoruz
-        val txDate = currentDate!!.toEpochMillis(statementDay)
+        val txDate = currentDate.toEpochMillis(statementDay)
 
         results += when (this) {
             is Transaction.NormalTransaction -> copy(
                 id = "${id}_$index".hashCode(), // benzersiz id üretmek için
-                installmentIndex = index,
-                amount = monthlyAmount,
-                transactionDate = txDate
+                installmentIndex = index, amount = monthlyAmount, transactionDate = txDate
             )
+
             is Transaction.SubscriptionTransaction -> copy(
                 id = "${id}_$index".hashCode(),
                 installmentIndex = index,
                 amount = monthlyAmount,
                 transactionDate = txDate
             )
+
             is Transaction.RecurringTransaction -> copy(
+                id = "${id}_$index".hashCode(), installmentIndex = index,
+
+                amount = monthlyAmount, transactionDate = txDate
+            )
+        }
+
+        // bir sonraki aya geç
+        currentDate = currentDate.nextMonth()
+    }
+
+    return results
+}
+
+fun Transaction.splitInstallmentsByFirstPaymentDate(card: Card?): List<Transaction> {
+    if (installmentCount == null /*|| installmentStartDate == null*/ || (installmentCount
+            ?: 0) <= 1
+    ) {
+        return listOf(this)
+    }
+
+    val monthlyAmount = amount.divide(installmentCount ?: 1)
+    val results = mutableListOf<Transaction>()
+
+    val statementDay = card?.statementDay ?: 1 // statement day yoksa ayın 1’i gibi kabul edelim
+    var currentDate = firstPaymentDate.toAppDate()
+    currentDate = adjustFirstInstallmentDate(currentDate, statementDay)
+
+    repeat(installmentCount ?: 1) { index ->
+        // TransactionDate'i statement day'e göre ayarlıyoruz
+        val txDate = currentDate.toEpochMillis(statementDay)
+
+        results += when (this) {
+            is Transaction.NormalTransaction -> copy(
+                id = "${id}_$index".hashCode(), // benzersiz id üretmek için
+                installmentIndex = index,
+                amount = monthlyAmount,
+                transactionDate = transactionDate,
+                firstPaymentDate = txDate
+
+            )
+
+            is Transaction.SubscriptionTransaction -> copy(
                 id = "${id}_$index".hashCode(),
                 installmentIndex = index,
-
                 amount = monthlyAmount,
-                transactionDate = txDate
+                transactionDate = transactionDate,
+                firstPaymentDate = txDate
+            )
+
+            is Transaction.RecurringTransaction -> copy(
+                id = "${id}_$index".hashCode(), installmentIndex = index,
+
+                amount = monthlyAmount, transactionDate = transactionDate, firstPaymentDate = txDate
             )
         }
 
@@ -236,21 +316,36 @@ fun Transaction.getInstallmentLabel(index: Int? = null): String {
     return "$current/$total"
 }
 
-fun Transaction.NormalTransaction.toRefundTransaction(): Transaction {
-    // todo taksit olmadıgına dikkat et koşuluna bakıalcak original id varsa taksitmi vs
-    return  this.copy(
-            id = 0,
-            originalId = 0,
-            amount = this.amount.copy(amount = amount.amount * -1),
-            transactionType = TransactionType.REFUND,
-            relatedTransactionId = this.id,
-            installmentIndex = -1
+fun Transaction.NormalTransaction.toRefundTransaction(refundDate: AppDate): Transaction {
+    return this.copy(
+        id = 0,
+        originalId = 0,
+        amount = this.amount.copy(amount = (amount.amount * -1)),
+        transactionType = TransactionType.REFUND,
+        relatedTransactionId = this.id,
+        installmentIndex = -1,
+        transactionDate = refundDate.toEpochMillis(),
+        refundDate = refundDate.toEpochMillis()
+
     )
 
 }
 
-fun Transaction.isInstallmentRefund(): Boolean{
+fun Transaction.isInstallmentRefund(): Boolean {
     return this.isInstallment() && this.transactionType == TransactionType.REFUND
 }
 
+fun Transaction.isRefund(): Boolean {
+    return this.transactionType == TransactionType.REFUND
+}
 
+
+fun adjustFirstInstallmentDate(date: AppDate, statementDay: Int): AppDate {
+    val isAfterStatementDay = (date.day ?: 1) > statementDay
+    return if (isAfterStatementDay) {
+        // Eğer işlem tarihi statement day'den sonra ise → ilk taksit bir sonraki aya kayar
+        date.nextMonth()
+    } else {
+        date.copy(day = statementDay)
+    }
+}

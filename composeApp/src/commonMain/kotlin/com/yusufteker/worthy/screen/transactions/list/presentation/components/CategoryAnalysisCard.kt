@@ -1,5 +1,6 @@
 package com.yusufteker.worthy.screen.transactions.list.presentation.components
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -152,18 +153,20 @@ fun CategoryAnalysisPager(
     transactions: List<Transaction>, categories: List<Category>,
     backgroundColor: Color = AppColors.secondaryContainer,
 ) {
+
+    val transactionsWithoutRefunds = transactions.filter { it -> !(it.transactionType == TransactionType.EXPENSE && it.refundDate != null) }
     val typeList: MutableList<TransactionType> = mutableListOf()
     // öncelik  expense income refund
-    if (transactions.any { it.transactionType == TransactionType.EXPENSE }) {
+    if (transactionsWithoutRefunds.any { it.transactionType == TransactionType.EXPENSE }) { // todo refundlar dikkate alınmıyor
         typeList.add(TransactionType.EXPENSE)
     }
-    if (transactions.any { it.transactionType == TransactionType.INCOME }) {
+    if (transactionsWithoutRefunds.any { it.transactionType == TransactionType.INCOME }) {
         typeList.add(TransactionType.INCOME)
     }
 
-    if (transactions.any { it.transactionType == TransactionType.REFUND }) {
+    /*if (filteredTransactions.any { it.transactionType == TransactionType.REFUND }) {
         typeList.add(TransactionType.REFUND)
-    }
+    }*/
 
     val pagerState = rememberPagerState(
         initialPage = 0,
@@ -178,10 +181,11 @@ fun CategoryAnalysisPager(
         HorizontalPager(
             state = pagerState,
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth().animateContentSize(),
 
             ) { page ->
-            val filteredTransactions = transactions.filter { it.transactionType == typeList[page] }
+            // todo expenselerden refundlar çıkarıldı
+            val filteredTransactions = transactionsWithoutRefunds.filter { it.transactionType == typeList[page]}
             CategoryAnalysisCard(
                 transactions = filteredTransactions,
                 categories = categories,

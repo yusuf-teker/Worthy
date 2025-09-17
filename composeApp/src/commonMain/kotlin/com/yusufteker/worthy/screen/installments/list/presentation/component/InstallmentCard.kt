@@ -27,6 +27,7 @@ import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.getMonthShortName
 import com.yusufteker.worthy.core.presentation.theme.AppColors
 import com.yusufteker.worthy.core.presentation.theme.AppTypography
+import com.yusufteker.worthy.core.presentation.util.formatMoneyText
 import com.yusufteker.worthy.core.presentation.util.formatted
 import com.yusufteker.worthy.screen.installments.list.domain.model.InstallmentCardUIModel
 import org.jetbrains.compose.resources.painterResource
@@ -43,7 +44,7 @@ fun InstallmentCard(installment: InstallmentCardUIModel, onClick: () -> Unit) {
     val transaction = installment.transaction
     val isRefund = transaction.transactionType == TransactionType.REFUND
 
-    val selectedDay = transaction.transactionDate.toAppDate()
+    val selectedDay = transaction.firstPaymentDate.toAppDate()
     val selectedLatPaymentDay = installment.card?.statementDay ?: 1
 
     val isPast = selectedDay.copy(day = selectedLatPaymentDay).isBeforeToday()
@@ -137,7 +138,7 @@ fun InstallmentCard(installment: InstallmentCardUIModel, onClick: () -> Unit) {
                             Text(
                                 text = " ${installment.card?.statementDay} ${
                                     getMonthShortName(
-                                        transaction.transactionDate.toAppDate().month
+                                        (transaction.firstPaymentDate?.toAppDate()?:transaction.transactionDate.toAppDate()).month
                                     )
                                 }",
                                 style = MaterialTheme.typography.bodySmall,

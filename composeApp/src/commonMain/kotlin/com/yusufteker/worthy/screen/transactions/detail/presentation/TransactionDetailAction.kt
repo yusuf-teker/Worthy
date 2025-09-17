@@ -1,5 +1,6 @@
 package com.yusufteker.worthy.screen.transactions.detail.presentation
 
+import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.Money
 import com.yusufteker.worthy.core.domain.model.Transaction
@@ -27,6 +28,6 @@ sealed interface TransactionDetailAction {
 
     data class DeleteTransaction(val transaction: Transaction): TransactionDetailAction
 
-    data class RefundTransaction(val transaction: Transaction): TransactionDetailAction
+    data class RefundTransaction(val refundDate: AppDate): TransactionDetailAction
 
 }

@@ -27,8 +27,10 @@ interface TransactionDao {
 
     @Query("SELECT * FROM transactions WHERE id = :id OR relatedTransactionId = :id")
     suspend fun getById(id: Int): TransactionEntity?
+
     @Query("SELECT * FROM transactions WHERE id = :id OR relatedTransactionId = :id")
     suspend fun getByIdWithRefund(id: Int): List<TransactionEntity>?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(transaction: TransactionEntity): Long
 
@@ -49,7 +51,12 @@ interface TransactionDao {
     suspend fun deleteById(transactionId: Int)
 
     // delete by original ıd
-    @Query("DELETE FROM transactions WHERE originalId = :originalId")
+    @Query(
+        """
+    DELETE FROM transactions 
+    WHERE originalId = :originalId OR relatedTransactionId = :originalId
+"""
+    )
     suspend fun deleteByOriginalId(originalId: Int)
 
     @Delete
@@ -59,8 +66,9 @@ interface TransactionDao {
     fun getTransactionsFrom(startDate: Long): Flow<List<TransactionEntity>>
 
     @Query("SELECT * FROM transactions WHERE transactionDate >= :startDate AND transactionType = :transactionType ORDER BY transactionDate DESC")
-    fun getTransactionsFrom(startDate: Long, transactionType: TransactionType): Flow<List<TransactionEntity>>
-
+    fun getTransactionsFrom(
+        startDate: Long, transactionType: TransactionType
+    ): Flow<List<TransactionEntity>>
 
     @Query("SELECT * FROM transactions WHERE relatedTransactionId = :relatedTransactionId ORDER BY transactionDate DESC")
     fun getRelatedTransactions(relatedTransactionId: Int): Flow<List<TransactionEntity>>
@@ -68,8 +76,8 @@ interface TransactionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun refundTransaction(transaction: TransactionEntity): Long
 
-
-    @Query("""
+    @Query(
+        """
         SELECT t.* FROM transactions t
         LEFT JOIN transactions refund
         ON refund.relatedTransactionId = t.id AND refund.transactionType = 'REFUND'
@@ -77,6 +85,7 @@ interface TransactionDao {
         AND (refund.id IS NULL OR refund.id = t.id)
         GROUP BY COALESCE(refund.id, t.id)
         ORDER BY t.transactionDate DESC
-    """)
+    """
+    )
     fun getAllInstallments(): Flow<List<TransactionEntity>> // Refund var ise normali getirme sadece refundu al
 }

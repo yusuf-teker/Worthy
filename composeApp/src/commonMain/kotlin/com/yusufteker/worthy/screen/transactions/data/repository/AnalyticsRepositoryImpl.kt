@@ -4,7 +4,7 @@ import com.yusufteker.worthy.core.data.database.mappers.toTransactions
 import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.Currency
 import com.yusufteker.worthy.core.domain.model.Transaction
-import com.yusufteker.worthy.core.domain.model.splitInstallments
+import com.yusufteker.worthy.core.domain.model.splitInstallmentsByFirstPaymentDate
 import com.yusufteker.worthy.core.domain.repository.CategoryRepository
 import com.yusufteker.worthy.core.domain.repository.TransactionRepository
 import com.yusufteker.worthy.screen.transactions.domain.repository.AnalyticsRepository
@@ -48,10 +48,11 @@ class AnalyticsRepositoryImpl(
             // 2️⃣ Normal + subscription transaction'larını birleştir
             val allTransactions = transactions + subscriptionTransactions
 
+            allTransactions
             // 3️⃣ Hepsini taksitlerine böl
             allTransactions.flatMap { tx ->
                 val card = tx.cardId?.let { id -> cards.find { it.id == id } }
-                tx.splitInstallments(card)
+                tx.splitInstallmentsByFirstPaymentDate(card)
             }
         }
     }
