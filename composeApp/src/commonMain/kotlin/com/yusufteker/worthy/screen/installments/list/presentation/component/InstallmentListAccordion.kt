@@ -68,7 +68,7 @@ fun InstallmentListAccordion(
                         verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         monthModel.installments.forEach { transaction ->
-                            InstallmentCard(
+                            InstallmentCardV2(
                                 installment = transaction, onClick = { onItemClicked(transaction) })
                         }
                     }

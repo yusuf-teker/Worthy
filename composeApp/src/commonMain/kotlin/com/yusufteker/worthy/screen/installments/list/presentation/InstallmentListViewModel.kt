@@ -4,6 +4,7 @@ import com.yusufteker.worthy.core.domain.getCurrentMonth
 import com.yusufteker.worthy.core.domain.getCurrentYear
 import com.yusufteker.worthy.core.domain.model.AppDate
 import com.yusufteker.worthy.core.domain.model.Currency
+import com.yusufteker.worthy.core.domain.model.TransactionType
 import com.yusufteker.worthy.core.domain.model.toAppDate
 import com.yusufteker.worthy.core.presentation.base.BaseViewModel
 import com.yusufteker.worthy.screen.installments.list.domain.model.InstallmentMonthUIModel
@@ -27,7 +28,9 @@ class InstallmentListViewModel(
 
                 val monthModels = sortedKeys.map { monthKey ->
                     val monthInstallments = grouped[monthKey].orEmpty()
-                    val totalAmount = monthInstallments.sumOf { it.transaction.amount.amount }
+                    // todo refund olanları alma çünkü refund olanları merge ettim normal expenseler gözikmicek refund ise 1 tane refund gözükecek ama amountunu yok sayıyoruz
+                    // kod copluk oldu ama yapacak birşey yok bunu okuyan kişi zamanında yardım etse iyiydi
+                    val totalAmount = monthInstallments.sumOf { if (it.transaction.transactionType == TransactionType.REFUND) 0.0 else it.transaction.amount.amount }
                     val currency = monthInstallments.firstOrNull()?.transaction?.amount?.currency ?: Currency.TRY
 
                     InstallmentMonthUIModel(

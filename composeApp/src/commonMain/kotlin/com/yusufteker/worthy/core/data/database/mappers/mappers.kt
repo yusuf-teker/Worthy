@@ -161,7 +161,7 @@ fun TransactionEntity.toDomain(): Transaction {
         transactionDate = transactionDate,
         relatedTransactionId = relatedTransactionId,
         installmentCount = installmentCount,
-        installmentIndex = -1,// şimdilik dbde saklamıyorum runtime'da hesaplanıyor
+        installmentIndex = null,// şimdilik dbde saklamıyorum runtime'da hesaplanıyor
         refundDate = refundDate,
         firstPaymentDate = firstPaymentDate,
         note = note

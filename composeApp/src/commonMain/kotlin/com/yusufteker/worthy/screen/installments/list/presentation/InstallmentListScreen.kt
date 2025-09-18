@@ -16,7 +16,6 @@ import org.koin.compose.viewmodel.koinViewModel
 import worthy.composeapp.generated.resources.Res
 import com.yusufteker.worthy.app.navigation.NavigationHandler
 import com.yusufteker.worthy.app.navigation.NavigationModel
-import com.yusufteker.worthy.screen.installments.list.presentation.component.InstallmentCard
 import com.yusufteker.worthy.screen.installments.list.presentation.component.InstallmentListAccordion
 import worthy.composeapp.generated.resources.installments
 

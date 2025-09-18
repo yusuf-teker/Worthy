@@ -53,7 +53,7 @@ sealed class Transaction {
         override val transactionDate: Long,
         override val relatedTransactionId: Int? = null,
         override val installmentCount: Int? = null,
-        override val installmentIndex: Int = -1,
+        override val installmentIndex: Int? = null,
         override val refundDate: Long? = null,
         override val note: String? = null,
         override val firstPaymentDate: Long = transactionDate
@@ -71,7 +71,7 @@ sealed class Transaction {
         override val transactionDate: Long,
         override val relatedTransactionId: Int? = null,
         override val installmentCount: Int? = null,
-        override val installmentIndex: Int = -1,
+        override val installmentIndex: Int? = null,
         override val refundDate: Long? = null,
         override val note: String? = null,
         val subscriptionId: Int,
@@ -93,7 +93,7 @@ sealed class Transaction {
         override val transactionDate: Long,
         override val relatedTransactionId: Int? = null,
         override val installmentCount: Int? = null,
-        override val installmentIndex: Int = -1,
+        override val installmentIndex: Int? = null,
         override val refundDate: Long? = null,
         override val note: String? = null,
         val recurringGroupId: String,
@@ -268,7 +268,7 @@ fun Transaction.splitInstallmentsByFirstPaymentDate(card: Card?): List<Transacti
 
     val statementDay = card?.statementDay ?: 1 // statement day yoksa ayın 1’i gibi kabul edelim
     var currentDate = firstPaymentDate.toAppDate()
-    currentDate = adjustFirstInstallmentDate(currentDate, statementDay)
+    //currentDate = adjustFirstInstallmentDate(currentDate, statementDay)
 
     repeat(installmentCount ?: 1) { index ->
         // TransactionDate'i statement day'e göre ayarlıyoruz

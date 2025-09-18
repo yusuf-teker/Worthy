@@ -76,16 +76,11 @@ interface TransactionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun refundTransaction(transaction: TransactionEntity): Long
 
-    @Query(
-        """
-        SELECT t.* FROM transactions t
-        LEFT JOIN transactions refund
-        ON refund.relatedTransactionId = t.id AND refund.transactionType = 'REFUND'
-        WHERE t.installmentCount IS NOT NULL
-        AND (refund.id IS NULL OR refund.id = t.id)
-        GROUP BY COALESCE(refund.id, t.id)
-        ORDER BY t.transactionDate DESC
-    """
-    )
-    fun getAllInstallments(): Flow<List<TransactionEntity>> // Refund var ise normali getirme sadece refundu al
+    @Query("""
+    SELECT * FROM transactions 
+    WHERE transactionType IN ('EXPENSE', 'REFUND') 
+    ORDER BY transactionDate DESC
+""")
+     fun getExpenseAndRefundTransactions(): Flow<List<TransactionEntity>>
+
 }

@@ -32,6 +32,7 @@ import com.yusufteker.worthy.screen.card.domain.model.Card
 import com.yusufteker.worthy.core.domain.model.Category
 import com.yusufteker.worthy.core.domain.model.CategoryType
 import com.yusufteker.worthy.core.domain.model.Money
+import com.yusufteker.worthy.core.domain.model.toAppDate
 import com.yusufteker.worthy.core.presentation.UiText
 import com.yusufteker.worthy.core.presentation.components.AppButton
 import com.yusufteker.worthy.core.presentation.components.CardSelector
@@ -151,7 +152,7 @@ fun AddTransactionForm(
         // Date selector
 
         WheelDatePickerV3(
-            initialDate = getCurrentAppDate(),
+            initialDate = state.transactionDate.toAppDate(),
             onDateSelected = { appDate ->
                 onTransactionDateChange(appDate)
             },
